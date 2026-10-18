@@ -3,8 +3,11 @@
 Bàn 11×11, **5 quân liên tiếp trở lên là thắng**, không có luật chặn hai đầu.
 Engine dùng bitboard; tác tử từ cấp 1 (ngẫu nhiên) đến cấp 8 (AlphaZero-inspired).
 
+
 Tài liệu thiết kế: [`docs/engine-caro-11x11.html`](docs/engine-caro-11x11.html) ·
 lộ trình học bitboard: [`docs/lo-trinh-hoc-bitboard.html`](docs/lo-trinh-hoc-bitboard.html)
+
+[engine-caro-11x11](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SGU-ML25/CaroGame/refs/heads/main/docs/engine-caro-11x11.html)
 
 **Hướng dẫn sử dụng đầy đủ (cài đặt, config, log, Hugging Face, quy trình nhóm, các phần sắp làm):
 [`docs/HUONG_DAN.md`](docs/HUONG_DAN.md)**
