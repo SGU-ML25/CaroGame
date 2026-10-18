@@ -2,11 +2,23 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+.ruff_cache/
 .ipynb_checkpoints/
 
-# log và checkpoint: chỉ giữ cấu trúc thư mục
-runs/*
-!runs/.gitkeep
+# runs/: MỌI log được commit (config.yaml, meta.json, run.log, *.jsonl, summary.json).
+# Trừ các thứ dưới đây — model nằm trên Hugging Face (caro-hub push), dữ liệu lớn không vào git.
+runs/**/checkpoints/
+runs/**/latest
+runs/**/latest.txt
+runs/index.jsonl
+runs/data/
+runs/scratch/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.npz
+*.npy
 
 # bí mật
 .env

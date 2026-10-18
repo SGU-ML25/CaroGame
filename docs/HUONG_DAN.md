@@ -90,7 +90,7 @@ CaroGame/
 │   └── ui/            🚧  server.py, static/
 ├── configs/           ✅  MỌI tham số nằm ở đây (mục 3)
 ├── tests/             ✅
-├── runs/                  kết quả chạy — không commit
+├── runs/                  log mọi lần chạy — commit lên GitHub (trừ checkpoint, mục 4.3)
 ├── notebooks/         🚧  sinh bảng / biểu đồ cho báo cáo từ log thô
 └── docs/
 ```
@@ -181,8 +181,8 @@ runs/<kind>/<name>/<YYYYmmdd-HHMMSS>[_<tag>]/
 ├── metrics.jsonl    loss / accuracy / score theo step
 ├── summary.json     ok | error | interrupted, thời lượng, số bản ghi
 └── checkpoints/
-runs/<kind>/<name>/latest  → run gần nhất
-runs/index.jsonl           sổ đăng ký: dòng start/end cho mọi run
+runs/<kind>/<name>/latest  → run gần nhất          (chỉ trên máy bạn, không commit)
+runs/index.jsonl           sổ đăng ký start/end      (chỉ trên máy bạn, không commit)
 ```
 
 `kind` lấy từ `experiment.kind`: `tournament`, `bench`, `train`, `datagen`.
@@ -212,23 +212,42 @@ tuỳ chọn: `time_ms, nodes, sims` (mảng theo từng nước, tắt bằng `
 
 ### 4.3 Run chính thức và run nháp
 
-| Loại | Cách chạy | Commit? |
-|---|---|---|
-| Nháp, debug, thử tham số | thêm `run.root=runs/scratch` | Không |
-| Chính thức (đưa vào báo cáo) | config trong `experiments/`, code đã commit (meta không `dirty`) | Log có thể commit nếu nhóm thống nhất; checkpoint đưa lên Hugging Face |
+**Log ở GitHub, model ở Hugging Face.** Mọi file log trong thư mục run đều được commit:
 
-Hiện `.gitignore` bỏ qua toàn bộ `runs/`. Khi có kết quả chính thức, nhóm quyết định commit log nào
-(gợi ý: `config.yaml`, `meta.json`, `summary.json`, `games.jsonl`; không bao giờ commit `checkpoints/`).
+| Trong `runs/` | Lên GitHub? | Lý do |
+|---|---|---|
+| `config.yaml`, `meta.json`, `run.log`, `games.jsonl`, `metrics.jsonl`, `summary.json` | ✅ | Log thô để tái tạo mọi bảng/biểu đồ |
+| `runs/openings/*.json` (bộ khai cuộc) | ✅ | Cần để chạy lại đúng giải |
+| `checkpoints/`, mọi `*.pt *.pth *.ckpt *.safetensors *.npz *.npy` | ❌ | Model nằm trên Hugging Face (`caro-hub push`) |
+| `runs/data/` (dữ liệu chuyên gia) | ❌ | Quá lớn; sinh lại được từ config + seed |
+| `runs/scratch/` | ❌ | Run nháp: thêm `run.root=runs/scratch` khi debug, thử tham số |
+| `latest`, `runs/index.jsonl` | ❌ | Chỉ có nghĩa trên từng máy; `index.jsonl` mọi người cùng ghi nối nên sẽ xung đột khi merge |
+
+Sau khi chạy xong:
+
+```bash
+git add runs/
+git commit -m "run: main_mode_b 20261020-1405"
+```
+
+Mỗi run nằm trong thư mục riêng có dấu thời gian nên các thành viên commit log không bao giờ đụng nhau.
+Một file log vượt 50 MB → `run.log` có cảnh báo (GitHub từ chối file > 100 MB); khi đó tắt
+`log.per_move_stats` hoặc chia giải thành nhiều run.
 
 ### 4.4 Đọc log
 
 ```python
 import pandas as pd
-games = pd.read_json("runs/tournament/main_mode_b/latest/games.jsonl", lines=True)
-games.groupby(["agent_x", "agent_o"]).result.mean()
+import json
+from pathlib import Path
 
-runs = pd.read_json("runs/index.jsonl", lines=True)      # mọi lần chạy
-runs[runs.event == "end"].tail()
+# mọi run của cả nhóm (sau git pull) — đọc từ file đã commit, không dựa vào latest / index.jsonl
+runs = pd.DataFrame([{"dir": str(p.parent), **json.loads(p.read_text())}
+                     for p in Path("runs").glob("*/*/*/summary.json")])
+
+games = pd.concat(pd.read_json(p, lines=True)
+                  for p in Path("runs/tournament/main_mode_b").glob("*/games.jsonl"))
+games.groupby(["agent_x", "agent_o"]).result.mean()
 ```
 
 Hoặc trên terminal: `tail -f runs/train/sl_policy/latest/run.log`.
@@ -241,7 +260,7 @@ Trọng số **chỉ** nằm trên Hugging Face. GitHub giữ `configs/models.ya
 nên checkout commit GitHub nào là chạy đúng model đã dùng ở commit đó.
 
 ```yaml
-repo: caro-11x11-team/caro-models
+repo: solozy/CaroGame
 models:
   l5: {file: l5/best.pt, revision: null}   # null = chưa push
   l6: {file: l6/best.pt, revision: null}
@@ -316,8 +335,9 @@ git checkout <commit> -- configs/models.yaml         # hoặc git revert commit 
 1. Mỗi việc một nhánh: `git switch -c feat/l3-alphabeta`.
 2. Trước khi push: `uv run ruff check caro tests` và `uv run pytest`.
 3. Mở Pull Request vào `main`, ít nhất một người xem.
-4. **Không commit**: `.env`, `runs/` (trừ log chính thức đã thống nhất), file `.pt`, `.venv/`.
-5. **Luôn commit**: `pyproject.toml` + `uv.lock` khi thêm thư viện; `configs/models.yaml` sau khi push model.
+4. **Không commit**: `.env`, checkpoint/`.pt`, `runs/scratch/`, `runs/data/`, `.venv/` — `.gitignore` đã lo.
+5. **Luôn commit**: `pyproject.toml` + `uv.lock` khi thêm thư viện; `configs/models.yaml` sau khi push model;
+   `runs/` sau mỗi lần chạy (trừ run nháp).
 6. Chạy thực nghiệm chính thức từ code **đã commit**, để `meta.json` ghi được commit tái lập.
 
 ---
@@ -396,7 +416,7 @@ Trong vòng lặp: `run.log_metric(...)` mỗi epoch/iteration; checkpoint lưu 
 
 ### 7.5 Phân tích (tuần 7–8)
 
-`notebooks/analysis.ipynb` chỉ đọc `runs/**/games.jsonl`, `metrics.jsonl`, `index.jsonl` →
+`notebooks/analysis.ipynb` chỉ đọc `runs/**/games.jsonl`, `metrics.jsonl`, `summary.json` đã commit →
 sinh **mọi** bảng và biểu đồ trong báo cáo. Không chép số tay vào báo cáo.
 Cài thêm: `uv sync --group dev --extra analysis`.
 
@@ -418,6 +438,7 @@ Endpoint theo Phần 11: tạo ván người–máy / máy–máy, xem lại vá
 - [ ] Code đã commit (meta không `dirty`), `uv run pytest` qua
 - [ ] Đúng config trong `experiments/`, kiểm tra bằng `caro-config … --hash`
 - [ ] Model cần dùng đã push và `models.yaml` đã commit (`caro-hub status`)
+- [ ] Sau khi chạy: `git add runs/` và commit log
 - [ ] Chọn đúng chế độ ngân sách (A: thời gian, B: cố định)
 
 **Trước khi nộp**
@@ -450,5 +471,7 @@ và đọc `secrets.HF_TOKEN`; biến môi trường có sẵn được ưu tiê
 | Không có `runs/.../latest` (Windows) | Hệ thống không cho tạo symlink → đọc `latest.txt` cùng thư mục |
 | `warning: Failed to hardlink files` khi `uv sync` | Vô hại; tắt bằng `export UV_LINK_MODE=copy` |
 | `cảnh báo: run được chạy khi code chưa commit` | Commit code rồi chạy lại nếu là run chính thức |
+| `… nặng … MB — GitHub từ chối file > 100 MB` | Tắt `log.per_move_stats` hoặc chia nhỏ run; không commit file > 100 MB |
+| Muốn bỏ một run nháp đã lỡ chạy vào `runs/` | Xoá thư mục run đó trước khi `git add runs/` |
 | `defaults bị vòng` | Hai file config `defaults` lẫn nhau |
 | `trùng id tác tử` | Hai biến thể trong cùng experiment phải có `id` khác nhau |

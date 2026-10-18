@@ -5,7 +5,7 @@
 # Không sửa tay: `caro-hub push <tên> <thư mục run>` tự cập nhật dòng tương ứng.
 # Giữ mỗi model trên MỘT dòng dạng {…} để lệnh push sửa được.
 
-repo: caro-11x11-team/caro-models   # đổi thành <organization>/<repo> của nhóm
+repo: solozy/CaroGame               # repo model trên Hugging Face (public)
 repo_type: model
 
 models:

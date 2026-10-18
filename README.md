@@ -32,7 +32,7 @@ caro/
 └── ui/            # FastAPI + static
 configs/           # MỌI tham số thực nghiệm nằm ở đây
 tests/
-runs/              # kết quả chạy (không commit)
+runs/              # log mọi lần chạy — commit lên GitHub (checkpoint thì lên Hugging Face)
 notebooks/         # sinh bảng / biểu đồ từ log thô
 docs/
 ```
@@ -98,9 +98,13 @@ runs/<kind>/<name>/<YYYYmmdd-HHMMSS>[_<tag>]/
 ├── metrics.jsonl
 ├── summary.json     # ok | error | interrupted, thời lượng, số bản ghi
 └── checkpoints/
-runs/<kind>/<name>/latest → run gần nhất
-runs/index.jsonl           # sổ đăng ký: dòng start/end cho mọi run
+runs/<kind>/<name>/latest → run gần nhất      (chỉ trên máy, không commit)
+runs/index.jsonl           # sổ đăng ký start/end (chỉ trên máy, không commit)
 ```
+
+**Log ở GitHub, model ở Hugging Face:** chạy xong thì `git add runs/` và commit. `.gitignore` tự loại
+`checkpoints/`, file nhị phân (`*.pt`, `*.npz`…), `runs/data/`, `runs/scratch/` (run nháp: `run.root=runs/scratch`),
+`latest` và `runs/index.jsonl`.
 
 Bản ghi một ván (bắt buộc): `game_id, tournament_id, agent_x, agent_o, opening_id, seed, moves, result, termination`;
 tuỳ chọn theo nước: `time_ms, nodes, sims` (tắt bằng `log.per_move_stats=false`).
@@ -115,7 +119,7 @@ Config tham chiếu bằng `model:<tên>`, nên checkout commit GitHub nào là 
 
 ```yaml
 # configs/models.yaml
-repo: caro-11x11-team/caro-models
+repo: solozy/CaroGame
 models:
   l5: {file: l5/best.pt, revision: 3f2a9c1e…}
 ```

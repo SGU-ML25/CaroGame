@@ -69,3 +69,14 @@ def test_derive_seed_stable_and_distinct():
     seeds = {derive_seed(2026, g, c) for g in range(200) for c in "XO"}
     assert len(seeds) == 400
     assert 0 <= derive_seed(1) < 2**63
+
+
+def test_warns_on_large_log(tmp_path, monkeypatch, caplog):
+    import caro.runlog as rl
+    monkeypatch.setattr(rl, "LOG_WARN_MB", 0)
+    run = Run(_cfg(tmp_path))
+    run.log.propagate = True
+    run.log_game(_game())
+    with caplog.at_level("WARNING"):
+        run.finish()
+    assert "GitHub" in caplog.text

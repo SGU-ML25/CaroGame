@@ -10,8 +10,10 @@ Mỗi lần chạy tạo một thư mục riêng:
         metrics.jsonl   loss / accuracy / score… theo step
         summary.json    trạng thái kết thúc, thời lượng, số bản ghi
         checkpoints/
-    runs/<kind>/<name>/latest → run gần nhất
-    runs/index.jsonl  sổ đăng ký: một dòng "start" và một dòng "end" cho mỗi run
+    runs/<kind>/<name>/latest → run gần nhất (chỉ trên máy, không commit)
+    runs/index.jsonl  sổ đăng ký trên máy: một dòng "start" và một dòng "end" cho mỗi run
+
+Mọi file log trong thư mục run được commit lên GitHub; checkpoints/ thì không (model nằm trên Hugging Face).
 
 Dùng:
     cfg = load_config("experiments/smoke")
@@ -43,6 +45,7 @@ GAME_FIELDS = (
     "seed", "moves", "result", "termination",
 )
 PER_MOVE_FIELDS = ("time_ms", "nodes", "sims")
+LOG_WARN_MB = 50   # log được commit lên GitHub; GitHub từ chối file > 100 MB
 
 
 def derive_seed(base_seed: int, *parts: Any) -> int:
@@ -230,6 +233,10 @@ class Run:
             **summary,
         }
         (self.dir / "summary.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        for f in self.dir.iterdir():
+            if f.is_file() and f.stat().st_size > LOG_WARN_MB * 2**20:
+                self.log.warning("%s nặng %.0f MB — GitHub từ chối file > 100 MB, cân nhắc tắt log.per_move_stats "
+                                 "hoặc chia nhỏ", f.name, f.stat().st_size / 2**20)
         self._index_event("end", status=status, duration_s=result["duration_s"], games=self.games.count)
         self.log.info("kết thúc: %s sau %.1f s", status, result["duration_s"])
         self.games.close()
