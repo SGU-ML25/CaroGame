@@ -20,8 +20,9 @@ Tài liệu liên quan:
 | Config tập trung `configs/` + `caro/config.py` | ✅ | 31 file YAML, lệnh `caro-config` |
 | Thư mục run, meta, log JSONL `caro/runlog.py` | ✅ | |
 | Model trên Hugging Face `caro/hub.py` | ✅ | lệnh `caro-hub`; cần organization + token |
-| Test `tests/` | ✅ | 38 test |
-| Engine bitboard `caro/engine/` | 🚧 | Phần 01–02 của tài liệu thiết kế |
+| Test `tests/` | ✅ | 96 test |
+| Engine bitboard `caro/engine/` | ✅ | Python thuần, stride 11; test đối chiếu với bản duyệt mảng |
+| Notebook thử engine `notebooks/engine_playground.ipynb` | ✅ | Minh hoạ từng tính năng + bàn cờ bấm được |
 | Tác tử cấp 1–8 `caro/agents/` | 🚧 | Phần 04–09 |
 | Mạng nơ-ron `caro/nn/`, huấn luyện `caro/training/` | 🚧 | Phần 07–09 |
 | Arena, giải đấu, thống kê `caro/arena/` | 🚧 | Phần 10 |
@@ -51,7 +52,7 @@ git clone <url-repo-github> CaroGame
 cd CaroGame
 uv sync --group dev              # tạo .venv/, cài numpy, pyyaml, huggingface_hub, pytest, ruff
 uv sync --group dev --extra nn   # thêm PyTorch — chỉ khi làm cấp 5–8
-uv run pytest                    # phải thấy "38 passed"
+uv run pytest                    # phải thấy "96 passed"
 ```
 
 `uv.lock` khoá chính xác phiên bản mọi thư viện → cả nhóm có môi trường giống hệt nhau.
@@ -82,7 +83,7 @@ CaroGame/
 │   ├── config.py      ✅  ghép config, override, giải tham chiếu tác tử
 │   ├── runlog.py      ✅  thư mục run, meta.json, log chữ, JSONL, derive_seed
 │   ├── hub.py         ✅  model trên Hugging Face
-│   ├── engine/        🚧  bitboard.py, game.py, zobrist.py, symmetry.py
+│   ├── engine/        ✅  bitboard.py, game.py, zobrist.py, symmetry.py
 │   ├── agents/        🚧  base.py, random_agent.py … puct.py
 │   ├── nn/            🚧  features.py, model.py, dataset.py
 │   ├── training/      🚧  gen_expert_data.py, train_sl.py, train_pg.py, alphazero_loop.py
@@ -91,7 +92,7 @@ CaroGame/
 ├── configs/           ✅  MỌI tham số nằm ở đây (mục 3)
 ├── tests/             ✅
 ├── runs/                  log mọi lần chạy — commit lên GitHub (trừ checkpoint, mục 4.3)
-├── notebooks/         🚧  sinh bảng / biểu đồ cho báo cáo từ log thô
+├── notebooks/             engine_playground.ipynb ✅ (thử engine) · analysis.ipynb 🚧 (bảng/biểu đồ báo cáo)
 └── docs/
 ```
 
@@ -355,6 +356,9 @@ Thứ tự theo lộ trình ở Phần 12 của tài liệu thiết kế. Mỗi 
 - `zobrist.py`, `symmetry.py` (8 phép đối xứng D4).
 - Đọc `engine.layout` từ config (`stride11` / `stride12`).
 - Test: so với cài đặt ngây thơ (duyệt từng ô) trên nhiều bàn ngẫu nhiên.
+
+Thử engine bằng tay: `uv sync --group dev --extra analysis` rồi
+`uv run jupyter lab notebooks/engine_playground.ipynb` (hoặc mở trong VS Code, chọn kernel `.venv`).
 
 ### 7.2 Tác tử (tuần 2–6)
 

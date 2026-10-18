@@ -8,7 +8,7 @@ device: auto                # auto | cpu | cuda
 engine:
   size: 11
   win_length: 5             # ≥ 5 quân liên tiếp là thắng, không luật chặn 2 đầu
-  layout: stride11          # stride11 (121 bit, cần mặt nạ START) | stride12 (131 bit, cột đệm)
+  layout: stride11          # 121 bit = chỉ số nước đi 0..120, vừa u128 cho bản native; stride12 (131 bit) không cài
 
 experiment:
   kind: misc                # tournament | bench | train | datagen | misc
