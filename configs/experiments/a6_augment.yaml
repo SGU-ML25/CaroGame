@@ -1,0 +1,5 @@
+# A6 — Huấn luyện có / không augmentation ×8. Chạy 2 lần:
+#   ... experiments/a6_augment data.augment_x8=false run.tag=no_aug
+defaults: [training/sl]
+experiment: {name: a6_augment}
+run: {tag: aug_x8}

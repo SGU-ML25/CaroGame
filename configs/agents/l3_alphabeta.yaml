@@ -1,0 +1,12 @@
+id: L3-AlphaBeta
+level: 3
+kind: alphabeta
+params:
+  pruning: true             # A1
+  move_ordering: true       # A2
+  tt: true                  # A2 — bảng chuyển vị Zobrist
+  tt_size_mb: 64
+  iterative_deepening: true
+  forced_moves: true        # nước bắt buộc: thắng ngay / chặn tứ
+  radius: 2                 # tập ứng viên = dilation bán kính 2
+  eval_weights: default     # A7: default | no_defense

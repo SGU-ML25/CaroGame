@@ -1,0 +1,6 @@
+# Chế độ A — cùng thời gian mỗi nước cho mọi tác tử (mục 10.1)
+budget:
+  mode: time
+  time_ms: 1000
+  max_depth: null
+  max_sims: null

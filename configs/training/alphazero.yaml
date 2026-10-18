@@ -1,0 +1,26 @@
+# Vòng lặp AlphaZero-inspired — cấp 8 (mục 09.2)
+defaults: [base, model/resnet_small]
+experiment: {kind: train, name: alphazero, rq: [RQ2]}
+selfplay:
+  games_per_iter: 200
+  sims_per_move: 400        # 200–800
+  c_puct: 1.5
+  dirichlet: {alpha: 0.3, epsilon: 0.25}
+  temperature_moves: 8      # τ = 1 cho 8 nước đầu, sau đó τ → 0
+  workers: 8
+buffer:
+  window_games: 5000        # cửa sổ trượt
+  augment_x8: true
+train:
+  init: random
+  optimizer: adam
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  batch_size: 256
+  steps_per_iter: 1000
+  iterations: 50
+gating:
+  games: 100
+  swap_colors: true
+  threshold: 0.55
+  sims_per_move: 200

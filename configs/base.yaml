@@ -1,0 +1,35 @@
+# Cấu hình gốc — mọi file khác kế thừa (trực tiếp hoặc gián tiếp) từ đây.
+# Thứ tự ghép: defaults (trái → phải) → nội dung file → override dòng lệnh (a.b=c).
+
+project: caro-11x11
+seed: 2026                  # seed gốc; seed từng ván = derive_seed(seed, game_id, color)
+device: auto                # auto | cpu | cuda
+
+engine:
+  size: 11
+  win_length: 5             # ≥ 5 quân liên tiếp là thắng, không luật chặn 2 đầu
+  layout: stride11          # stride11 (121 bit, cần mặt nạ START) | stride12 (131 bit, cột đệm)
+
+experiment:
+  kind: misc                # tournament | bench | train | datagen | misc
+  name: null                # null → lấy theo tên file config
+  description: ""
+  rq: []                    # câu hỏi nghiên cứu liên quan (RQ1–RQ4)
+
+run:
+  root: runs                # mọi kết quả nằm dưới thư mục này
+  tag: null                 # nhãn phụ gắn vào tên thư mục run
+  index: runs/index.jsonl   # sổ đăng ký: mỗi lần chạy thêm một dòng
+
+log:
+  level: INFO
+  console: true
+  file: run.log             # log dạng chữ (Python logging)
+  games: games.jsonl        # mỗi ván một dòng (schema ở mục 03.3)
+  metrics: metrics.jsonl    # loss, accuracy, score… theo step
+  per_move_stats: true      # ghi time_ms[], nodes[] / sims[] cho từng nước
+  flush_every: 1            # flush file JSONL sau mỗi n bản ghi
+
+checkpoint:
+  dir: checkpoints          # tương đối so với thư mục run
+  keep_last: 5

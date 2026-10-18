@@ -1,0 +1,10 @@
+id: L7-PUCT
+level: 7
+kind: puct
+params:
+  checkpoint: runs/train/sl_policy/latest/checkpoints/best.pt
+  c_puct: 1.5
+  leaf_eval: value          # value | mix (AlphaGo: (1−λ)·v + λ·z_rollout)
+  mix_lambda: 0.5
+  dirichlet: null           # không thêm nhiễu khi thi đấu
+  batch_leaves: 8           # gom lá + virtual loss

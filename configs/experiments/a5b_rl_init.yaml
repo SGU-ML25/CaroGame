@@ -1,0 +1,5 @@
+# A5b — RL khởi tạo từ cấp 5 / từ ngẫu nhiên. Chạy 2 lần với override:
+#   ... experiments/a5b_rl_init train.init=random run.tag=from_random
+defaults: [training/pg]
+experiment: {name: a5b_rl_init}
+run: {tag: from_sl}

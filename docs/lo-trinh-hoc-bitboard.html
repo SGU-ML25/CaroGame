@@ -1,0 +1,2405 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lộ Trình Học Bitboard</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #312e81;
+            --accent: #0891b2;
+            --accent-light: #22d3ee;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #212121;
+            --text-secondary: #616161;
+            --border: #e0e0e0;
+            --code-bg: #263238;
+            --code-text: #eeffff;
+            --success: #2e7d32;
+            --warning: #f57f17;
+            --info: #1565c0;
+            --danger: #c62828;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        [id] {
+            scroll-margin-top: 80px;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--primary);
+            color: white;
+            min-height: 56px;
+            padding: .35rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -.5px;
+            white-space: nowrap;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: .5rem;
+            row-gap: .25rem;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        nav .nav-links a {
+            color: rgba(255, 255, 255, .85);
+            text-decoration: none;
+            font-size: .82rem;
+            padding: .35rem .7rem;
+            border-radius: 4px;
+            transition: background .2s;
+        }
+
+        nav .nav-links a:hover {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            margin-top: 56px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+            color: white;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: .5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            opacity: .9;
+            max-width: 760px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .hero .badges {
+            display: flex;
+            justify-content: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+        }
+
+        .hero .badge {
+            background: rgba(255, 255, 255, .2);
+            padding: .3rem .8rem;
+            border-radius: 20px;
+            font-size: .8rem;
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        section:nth-child(even) {
+            background: var(--surface);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .section-header .section-num {
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .lead {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        h3.sub {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin: 1.6rem 0 .4rem;
+        }
+
+        /* ===== CARDS ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-width: 0;
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            margin-bottom: .4rem;
+            color: var(--primary-dark);
+        }
+
+        .card p,
+        .card li {
+            font-size: .9rem;
+            color: var(--text-secondary);
+        }
+
+        .card ul {
+            padding-left: 1.2rem;
+            margin-top: .4rem;
+        }
+
+        .card li {
+            margin-bottom: .2rem;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .88rem;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: .6rem .8rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: .55rem .8rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        table:not(.bt) tr:hover td {
+            background: #eef2ff;
+        }
+
+        tr.pick td {
+            background: #e8f5e9;
+        }
+
+        /* ===== CODE ===== */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: .82rem;
+            line-height: 1.7;
+            margin: 1rem 0;
+            white-space: pre;
+            tab-size: 4;
+        }
+
+        .code-block .comment { color: #7f939c; }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .number { color: #f78c6c; }
+        .code-block .fn { color: #82aaff; }
+
+        code {
+            background: #eceff1;
+            padding: .15rem .4rem;
+            border-radius: 3px;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: .85em;
+            overflow-wrap: anywhere;
+        }
+
+        /* ===== STATS ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.2rem .8rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-card .label {
+            font-size: .78rem;
+            color: var(--text-secondary);
+            margin-top: .2rem;
+        }
+
+        /* ===== HIGHLIGHT ===== */
+        .highlight {
+            border-left: 4px solid var(--primary);
+            background: #fff3e0;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .highlight.info { border-color: var(--info); background: #e3f2fd; }
+        .highlight.success { border-color: var(--success); background: #e8f5e9; }
+        .highlight.warning { border-color: var(--warning); background: #fff8e1; }
+        .highlight.danger { border-color: var(--danger); background: #fdecea; }
+        .highlight ul { padding-left: 1.2rem; margin-top: .4rem; }
+        .highlight li { margin-bottom: .25rem; }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.2rem;
+            min-width: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .timeline-item.done::before {
+            background: var(--success);
+            box-shadow: 0 0 0 2px var(--success);
+        }
+
+        .timeline-item h4 {
+            font-size: .95rem;
+            color: var(--primary-dark);
+            margin-bottom: .2rem;
+        }
+
+        .timeline-item h4 a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .timeline-item h4 a:hover {
+            text-decoration: underline;
+        }
+
+        .timeline-item p {
+            font-size: .85rem;
+            color: var(--text-secondary);
+        }
+
+        .timeline-item .days {
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        /* ===== STAGE META ===== */
+        .stage-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin: -.6rem 0 1.2rem;
+        }
+
+        .chip {
+            font-size: .75rem;
+            padding: .2rem .7rem;
+            border-radius: 20px;
+            background: #eef2ff;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .chip.time { background: #e0f7fa; color: #0e7490; }
+        .chip.link { background: #f3e5f5; color: #6a1b9a; text-decoration: none; }
+        .chip.link:hover { text-decoration: underline; }
+
+        /* ===== TASK CHECKLIST ===== */
+        .tasks {
+            list-style: none;
+            margin: .6rem 0;
+        }
+
+        .tasks li {
+            margin: .35rem 0;
+        }
+
+        .tasks label {
+            display: flex;
+            gap: .6rem;
+            align-items: flex-start;
+            font-size: .92rem;
+            cursor: pointer;
+            padding: .45rem .7rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .tasks input {
+            margin-top: .3rem;
+            accent-color: var(--success);
+            flex-shrink: 0;
+        }
+
+        .tasks input:checked + span {
+            color: var(--text-secondary);
+            text-decoration: line-through;
+            text-decoration-color: rgba(0, 0, 0, .3);
+        }
+
+        .progress {
+            margin: 1.2rem 0 .3rem;
+            height: 10px;
+            border-radius: 6px;
+            background: #e0e7ff;
+            overflow: hidden;
+        }
+
+        .progress > div {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--success), #66bb6a);
+            transition: width .3s;
+        }
+
+        .progress-label {
+            font-size: .82rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== QUIZ ===== */
+        details.quiz {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            margin: .6rem 0;
+            padding: .7rem 1rem;
+        }
+
+        details.quiz summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: .92rem;
+        }
+
+        details.quiz[open] summary {
+            margin-bottom: .5rem;
+        }
+
+        details.quiz p,
+        details.quiz li {
+            font-size: .9rem;
+            color: var(--text-secondary);
+        }
+
+        details.quiz ul {
+            padding-left: 1.2rem;
+        }
+
+        /* ===== STRIP VISUALIZER ===== */
+        .viz {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin: 1.2rem 0;
+            min-width: 0;
+        }
+
+        .viz-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            align-items: center;
+            margin-bottom: .9rem;
+            font-size: .85rem;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: .35rem .8rem;
+            border-radius: 18px;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn.alt { background: var(--accent); }
+        .btn.ghost { background: #eceff1; color: var(--text); }
+        .btn.on { box-shadow: 0 0 0 2px var(--primary-dark); }
+
+        .strip-scroll {
+            overflow-x: auto;
+            padding-bottom: .3rem;
+        }
+
+        .strip-row {
+            display: grid;
+            grid-template-columns: 9.5rem auto;
+            align-items: center;
+            gap: .6rem;
+            margin: 3px 0;
+            min-width: max-content;
+        }
+
+        .strip-row .lbl {
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: .74rem;
+            color: var(--text-secondary);
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .strip-row.result .lbl {
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .strip {
+            display: flex;
+            gap: 2px;
+        }
+
+        .strip .b {
+            width: 22px;
+            height: 22px;
+            border-radius: 3px;
+            background: #eceff1;
+            font-size: .58rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9e9e9e;
+            font-family: 'Cascadia Code', monospace;
+            flex-shrink: 0;
+        }
+
+        .strip .b.one { background: var(--primary); color: #fff; font-weight: 700; }
+        .strip .b.pad { background: repeating-linear-gradient(45deg, #e0e0e0 0 3px, #fafafa 3px 6px); color: #bdbdbd; }
+        .strip .b.gap { margin-left: 8px; }
+        .strip .b.hit { background: var(--success); color: #fff; }
+        .strip .b.fake { background: var(--danger); color: #fff; }
+        .strip.input .b { cursor: pointer; }
+        .strip.input .b.pad { cursor: not-allowed; }
+
+        .verdict {
+            margin-top: .8rem;
+            font-size: .9rem;
+            padding: .6rem .8rem;
+            border-radius: 8px;
+            background: #eef2ff;
+        }
+
+        .verdict.ok { background: #e8f5e9; }
+        .verdict.bad { background: #fdecea; }
+
+        /* ===== MINI BOARD ===== */
+        .mini-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 1rem 0;
+            align-items: flex-start;
+        }
+
+        .mini-fig {
+            flex: 1 1 240px;
+            max-width: 340px;
+            min-width: 0;
+        }
+
+        .mini-fig figcaption {
+            font-size: .8rem;
+            color: var(--text-secondary);
+            margin-top: .4rem;
+            text-align: center;
+        }
+
+        .mini {
+            display: grid;
+            gap: 2px;
+            background: var(--border);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .mini div {
+            aspect-ratio: 1;
+            background: var(--surface);
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .6rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .mini div.pad { background: repeating-linear-gradient(45deg, #e0e0e0 0 3px, #fafafa 3px 6px); }
+        .mini div.stone { background: #1e293b; }
+        .mini div.ok { background: #a7f3d0; }
+        .mini div.bad { background: var(--danger); }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .8rem;
+            font-size: .78rem;
+            color: var(--text-secondary);
+            margin-top: .4rem;
+        }
+
+        .legend span::before {
+            content: '';
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            margin-right: .3rem;
+            vertical-align: -1px;
+            background: var(--sw);
+        }
+
+        th code {
+            background: rgba(255, 255, 255, .2);
+            color: #fff;
+        }
+
+        /* ===== BẢNG BIT ===== */
+        .bt-wrap {
+            overflow-x: auto;
+            margin: .6rem 0 1.2rem;
+            padding-bottom: .3rem;
+        }
+
+        table.bt {
+            width: auto;
+            border-collapse: separate;
+            border-spacing: 2px;
+            font-size: .75rem;
+        }
+
+        .bt th {
+            background: none;
+            color: #9e9e9e;
+            font-weight: 500;
+            padding: 0 0 1px;
+            text-align: center;
+            font-size: .62rem;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+        }
+
+        .bt tr.h2 th {
+            font-size: .5rem;
+            color: #b0b0b0;
+            white-space: nowrap;
+        }
+
+        .bt tr.h2 th:first-child {
+            text-align: right;
+            padding-right: .5rem;
+        }
+
+        .bt td {
+            width: 24px;
+            min-width: 24px;
+            height: 24px;
+            padding: 0;
+            text-align: center;
+            border: none;
+            border-radius: 3px;
+            background: #eceff1;
+            color: #b0bec5;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: .72rem;
+        }
+
+        .bt td.one { background: var(--primary); color: #fff; font-weight: 700; }
+        .bt td.res1 { background: var(--success); color: #fff; font-weight: 700; }
+        .bt td.msk { background: #c7d2fe; color: var(--primary-dark); font-weight: 700; }
+        .bt td.hl { background: var(--accent); color: #fff; font-weight: 700; }
+        .bt td.bad { background: var(--danger); color: #fff; font-weight: 700; }
+        .bt td.pad { background: repeating-linear-gradient(45deg, #e0e0e0 0 3px, #fafafa 3px 6px); color: #bdbdbd; }
+        .bt td.padon { background: #fb8c00; color: #fff; font-weight: 700; }
+        .bt .rs { box-shadow: -3px 0 0 var(--primary-light); }
+
+        .bt td.bt-l {
+            background: none;
+            width: auto;
+            text-align: right;
+            padding-right: .5rem;
+            white-space: nowrap;
+            color: var(--text);
+            font-family: inherit;
+        }
+
+        .bt td.bt-l code { font-size: .74rem; }
+
+        .bt td.bt-n {
+            background: none;
+            width: auto;
+            min-width: 220px;
+            text-align: left;
+            padding-left: .7rem;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: .8rem;
+            line-height: 1.35;
+        }
+
+        .bt tr.bt-sep td {
+            background: none;
+            text-align: left;
+            padding: .6rem 0 .15rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-family: inherit;
+            font-size: .82rem;
+        }
+
+        .ex-intro {
+            color: var(--text-secondary);
+            font-size: .92rem;
+        }
+
+        .exercise {
+            border: 2px dashed #c7d2fe;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin: 1rem 0;
+            background: #f8f9ff;
+        }
+
+        .exercise > p { font-size: .92rem; }
+        .mini div.padon { background: #fb8c00; }
+        .mini div.one { background: var(--primary); }
+        .mini div.res { background: var(--success); }
+        .mini div.msk { background: #c7d2fe; }
+
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .9rem;
+            margin: .8rem 0 .4rem;
+        }
+
+        .steps .step {
+            width: 150px;
+            min-width: 0;
+        }
+
+        .steps .step figcaption {
+            font-size: .72rem;
+            color: var(--text-secondary);
+            margin-top: .3rem;
+            line-height: 1.3;
+        }
+
+        .steps .step figcaption code {
+            font-size: .7rem;
+        }
+
+        .ofs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+        }
+
+        .ofs div {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            background: #eef2ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .ofs div small {
+            font-size: .7rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .ofs div.diag { background: #fef3c7; }
+        .ofs div.diag small { color: #b45309; }
+        .ofs div.ctr { background: var(--primary); color: #fff; }
+
+        @media (max-width: 768px) {
+            .steps .step { width: calc(50% - .5rem); }
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--code-bg);
+            color: rgba(255, 255, 255, .6);
+            font-size: .8rem;
+        }
+
+        footer strong { color: rgba(255, 255, 255, .9); }
+        footer a { color: #c7d2fe; }
+
+        li, p, td, th { overflow-wrap: break-word; }
+
+        @media (max-width: 1200px) {
+            nav .logo { font-size: .9rem; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.6rem; }
+            .hero { padding: 3rem 1rem 2rem; }
+            section { padding: 2rem 1rem; }
+            nav { padding: .35rem 1rem; }
+            nav .nav-links { display: none; }
+            .card-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .code-block { padding: 1rem; font-size: .76rem; }
+            .strip-row { grid-template-columns: 7.5rem auto; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">🧭 Lộ Trình Học Bitboard</div>
+        <ul class="nav-links">
+            <li><a href="#overview">Tổng quan</a></li>
+            <li><a href="#howto">Cách đọc</a></li>
+            <li><a href="#g0">GĐ 0</a></li>
+            <li><a href="#g1">GĐ 1</a></li>
+            <li><a href="#g2">GĐ 2</a></li>
+            <li><a href="#g3">GĐ 3</a></li>
+            <li><a href="#g4">GĐ 4</a></li>
+            <li><a href="#g5">GĐ 5</a></li>
+            <li><a href="#g6">GĐ 6</a></li>
+            <li><a href="#pitfalls">Lỗi hay gặp</a></li>
+            <li><a href="#code">Code (để sau)</a></li>
+            <li><a href="engine-caro-11x11.html">← Tài liệu engine</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <h1>Lộ Trình Học Bitboard Cho Caro 11×11</h1>
+        <p class="subtitle">Bàn 11×11 có 121 ô, nên quân của mỗi bên là một số nguyên 121 bit. Phần lớn công việc
+            của engine (kiểm tra thắng, sinh nước đi, nhận diện thế cờ) quy về vài phép shift, AND, OR. Lộ trình đi
+            theo thứ tự <strong>hiểu vì sao</strong> trước, <strong>làm thế nào</strong> sau: mỗi giai đoạn là các ví dụ
+            tính tay trên từng dãy bit, kèm bài tự tính có đáp án. Code để sau.</p>
+        <div class="badges">
+            <span class="badge">7 giai đoạn · 2–3 tuần</span>
+            <span class="badge">1–2 giờ mỗi ngày</span>
+            <span class="badge">Ví dụ tính tay trên từng dãy bit</span>
+            <span class="badge">Luật tự do: ≥ 5 quân là thắng</span>
+            <span class="badge">Code để sau, gom ở phụ lục</span>
+        </div>
+    </div>
+
+    <!-- ===== TỔNG QUAN ===== -->
+    <section id="overview">
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="value">7</div>
+                <div class="label">Giai đoạn, từ phép bit tới đo đạc</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">~19</div>
+                <div class="label">Ngày học, mỗi ngày 1–2 giờ</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">2</div>
+                <div class="label">Layout so sánh: stride 11 và stride 12</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">24</div>
+                <div class="label">Bảng bit tính sẵn từng bước</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">0</div>
+                <div class="label">Dòng code cần đọc để hiểu các ví dụ</div>
+            </div>
+        </div>
+
+        <div class="highlight success">
+            <strong>Luật đã chốt cho dự án:</strong> Gomoku tự do. Có ≥ 5 quân liên tiếp là thắng, dãy 6 trở lên vẫn
+            thắng, không áp luật chặn 2 đầu. Vì vậy ở Giai đoạn 2, hàm kiểm tra thắng <strong>không cần</strong> nhìn
+            hai đầu dãy, và có thể bỏ qua mọi hướng dẫn kiểu "nếu luật yêu cầu đúng 5". Luật Caro Việt (đúng 5, hoặc
+            chặn 2 đầu không tính) chỉ được nhắc tới để so sánh.
+        </div>
+
+        <div class="highlight danger">
+            <strong>Đính chính so với bản lộ trình nháp ban đầu</strong> (đã kiểm chứng):
+            <ul>
+                <li><strong>Sinh nước với stride 12 và <code>radius ≥ 2</code> bị sai</strong> nếu chỉ AND với
+                    <code>BOARD_MASK</code> ở cuối hàm. Ở vòng giãn thứ nhất, bit rơi vào cột đệm; sang vòng thứ hai,
+                    bit đó lại bị dịch tiếp sang cột 0 của hàng bên cạnh. Chạy thử trên 2 000 thế ngẫu nhiên thì có
+                    878 thế cho kết quả sai. Cách sửa: AND với <code>BOARD_MASK</code> <em>sau mỗi vòng</em>. Ví dụ 3.2 và 3.3 ở <a
+                        href="#g3">Giai đoạn 3</a> tính từng bit cho thấy chỗ sai.</li>
+                <li>Stride 12 cần <strong>131 bit</strong> (ô cuối là <code>10·12 + 10 = 130</code>), nên không vừa
+                    128 bit.</li>
+                <li>Hàm sinh nước phải xử lý riêng bàn trống, nếu không sẽ trả về tập rỗng ở nước đầu tiên.</li>
+            </ul>
+        </div>
+
+        <h3 class="sub">Lịch học và tiến độ</h3>
+        <div class="progress" aria-hidden="true"><div id="progBar"></div></div>
+        <div class="progress-label" id="progLabel">0 / 0 bài tập</div>
+        <div class="timeline" id="timeline">
+            <div class="timeline-item" data-stage="g0"><div class="days">Ngày 1–2</div><h4><a href="#g0">Giai đoạn 0 · Nền tảng bit</a></h4><p>&amp; | ^ ~ &lt;&lt; &gt;&gt;, popcount, x &amp; -x, duyệt bit.</p></div>
+            <div class="timeline-item" data-stage="g1"><div class="days">Ngày 3–5</div><h4><a href="#g1">Giai đoạn 1 · Biểu diễn bàn cờ</a></h4><p>Chọn layout, idx, in bàn, đặt/gỡ quân bằng XOR, BOARD_MASK.</p></div>
+            <div class="timeline-item" data-stage="g2"><div class="days">Ngày 6–7</div><h4><a href="#g2">Giai đoạn 2 · Kiểm tra thắng</a></h4><p>Mẹo nhân đôi 3 phép AND, chống tràn hàng, test cả 4 hướng và sát biên.</p></div>
+            <div class="timeline-item" data-stage="g3"><div class="days">Ngày 8–9</div><h4><a href="#g3">Giai đoạn 3 · Sinh nước đi</a></h4><p>Giãn nở (dilation), bán kính 1 và 2, bàn trống.</p></div>
+            <div class="timeline-item" data-stage="g4"><div class="days">Ngày 10–13</div><h4><a href="#g4">Giai đoạn 4 · Thế cờ và lượng giá</a></h4><p>Ô thắng ngay, tứ mở, ba mở, chấm điểm bằng popcount.</p></div>
+            <div class="timeline-item" data-stage="g5"><div class="days">Ngày 14–17</div><h4><a href="#g5">Giai đoạn 5 · Ghép vào tìm kiếm</a></h4><p>Make/unmake bằng XOR, Zobrist, sắp xếp nước, iterative deepening, TT.</p></div>
+            <div class="timeline-item" data-stage="g6"><div class="days">Ngày 18–19</div><h4><a href="#g6">Giai đoạn 6 · Đo đạc</a></h4><p>Số nút/giây, độ sâu đạt được, đối chiếu kết quả với bản mảng 2D.</p></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-secondary);">Đánh dấu bài tập ở từng giai đoạn để cập nhật thanh
+            tiến độ. Tiến độ chỉ được lưu trong trình duyệt này.</p>
+    </section>
+
+        <!-- ===== CÁCH ĐỌC BẢNG BIT ===== -->
+    <section id="howto">
+        <div class="section-header">
+            <div class="icon" style="background:#e0f7fa;color:var(--accent);">👓</div>
+            <div>
+                <div class="section-num">Trước khi bắt đầu</div>
+                <h2>Cách Đọc Các Bảng Bit</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Kiểu ① — Số nhị phân thông thường</h3>
+                <p>Chỉ dùng ở Giai đoạn 0 và 5. Bit cao viết bên <strong>trái</strong>, bit 0 bên <strong>phải</strong>,
+                    giống cách viết <code>0b10110100</code>. Ở kiểu này, <code>&gt;&gt;</code> đẩy dãy sang phải và
+                    <code>&lt;&lt;</code> đẩy dãy sang trái.</p>
+            </div>
+            <div class="card">
+                <h3>Kiểu ② — Thứ tự ô trên bàn</h3>
+                <p>Dùng từ Giai đoạn 1 trở đi. Bit 0 nằm bên <strong>trái</strong>, chỉ số tăng sang phải, giống
+                    như đọc hàng cờ từ cột 0 tới cột 10. Ở kiểu này, <code>x &gt;&gt; d</code> trông như kéo dãy sang
+                    <strong>trái</strong> <code>d</code> ô, vì ô <code>p</code> nhận giá trị của ô <code>p + d</code>.</p>
+            </div>
+            <div class="card">
+                <h3>Màu</h3>
+                <div class="legend" style="margin-top:.2rem;">
+                    <span style="--sw:var(--primary)">bit 1</span>
+                    <span style="--sw:var(--success)">bit 1 của kết quả</span>
+                    <span style="--sw:var(--accent)">bit đang chú ý</span>
+                    <span style="--sw:var(--danger)">bit sai / giả</span>
+                    <span style="--sw:repeating-linear-gradient(45deg,#e0e0e0 0 3px,#fafafa 3px 6px)">cột đệm</span>
+                </div>
+                <p style="margin-top:.5rem;">Mọi dãy bit trên trang này được tính bằng chính phép toán ghi ở cột trái
+                    khi trang tải, không phải gõ tay.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== GĐ 0 ===== -->
+    <section id="g0">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">🔢</div>
+            <div>
+                <div class="section-num">Giai đoạn 0</div>
+                <h2>Nền Tảng Bit</h2>
+            </div>
+        </div>
+        <div class="stage-meta">
+            <span class="chip time">⏱ 1–2 ngày</span>
+            <span class="chip">Gần như đã có từ Verilog</span>
+            <span class="chip">Bảng kiểu ①</span>
+        </div>
+
+        <h3 class="sub">Ví dụ 0.1 · AND, OR, XOR, NOT</h3>
+        <p class="ex-intro">So từng cột một. Mỗi cột độc lập với các cột khác: đây chính là "121 phép tính cùng lúc" mà
+            bitboard tận dụng.</p>
+        <div class="bt-wrap" id="E01"></div>
+
+        <h3 class="sub">Ví dụ 0.2 · Dịch trái, dịch phải</h3>
+        <p class="ex-intro"><code>x &lt;&lt; k</code> đẩy mọi bit lên <code>k</code> bậc, chỗ trống bên phải điền
+            0. <code>x &gt;&gt; k</code> đẩy mọi bit xuống <code>k</code> bậc, và <code>k</code> bit thấp nhất rơi mất.</p>
+        <div class="bt-wrap" id="E02"></div>
+
+        <h3 class="sub">Ví dụ 0.3 · Lấy và xoá bit thấp nhất</h3>
+        <p class="ex-intro"><code>-x</code> trong hệ bù 2 bằng <code>~x + 1</code>. Phép <code>+1</code> là phép
+            cộng có nhớ: trong <code>~x</code>, tìm <strong>bit 0 thấp nhất</strong> → bit đó thành 1, các bit 1
+            <strong>bên dưới</strong> nó lật hết về 0, các bit <strong>bên trên</strong> giữ nguyên. Bit 0 thấp nhất
+            của <code>~x</code> cũng chính là bit 1 thấp nhất của <code>x</code>. Vì vậy so với <code>x</code>: bên
+            trên bit đó thì <code>-x</code> ngược hẳn <code>x</code>, bên dưới thì cả hai đều là 0, và chỉ ở đúng bit đó
+            cả hai cùng là 1.</p>
+        <div class="bt-wrap" id="E03"></div>
+
+        <h3 class="sub">Ví dụ 0.4 · Duyệt mọi bit đang bật (không cần vòng qua từng ô)</h3>
+        <p class="ex-intro">Lặp lại: lấy bit thấp nhất (<code>low = x &amp; -x</code>), ghi chỉ số của nó, rồi xoá nó
+            (<code>x ^= low</code>). Số vòng lặp bằng đúng số bit 1, không phụ thuộc độ rộng của số.</p>
+        <div class="bt-wrap" id="E04"></div>
+
+        <details class="quiz">
+            <summary>Vì sao <code>x ^= low</code> chắc chắn làm vòng lặp kết thúc?</summary>
+            <p><code>low</code> chỉ có một bit 1, và bit đó cũng đang bật trong <code>x</code>. XOR với 1 lật đúng bit
+                đó về 0, các bit khác giữ nguyên. Mỗi vòng, số bit 1 giảm đúng 1, nên sau <code>popcount(x)</code>
+                vòng thì <code>x = 0</code>. Nhìn bảng trên: 4 bit 1 thì đúng 4 vòng.</p>
+        </details>
+
+        <h3 class="sub">Bài tự tính</h3>
+        <div class="exercise">
+            <p><strong>Bài 0.</strong> Với <code>x = 01101000</code>, hãy tính tay <code>~x</code>,
+                <code>-x</code>, <code>x &amp; -x</code>, <code>x - 1</code>, <code>x &amp; (x - 1)</code>, rồi liệt kê
+                chỉ số các bit 1 theo thứ tự mà vòng lặp ở Ví dụ 0.4 sẽ in ra.</p>
+            <details class="quiz">
+                <summary>Xem đáp án</summary>
+                <div class="bt-wrap" id="Q0"></div>
+                <p>Thứ tự in ra: 3, 5, 6.</p>
+            </details>
+        </div>
+
+        <ul class="tasks" data-stage="g0">
+            <li><label><input type="checkbox" data-task="g0-1"><span>Chép lại Ví dụ 0.1–0.3 ra giấy và tự tính mà không nhìn bảng.</span></label></li>
+            <li><label><input type="checkbox" data-task="g0-2"><span>Tự chạy tay Ví dụ 0.4 với một số khác, ví dụ <code>11010010</code>.</span></label></li>
+            <li><label><input type="checkbox" data-task="g0-3"><span>Làm Bài 0 rồi đối chiếu đáp án.</span></label></li>
+        </ul>
+    </section>
+
+    <!-- ===== GĐ 1 ===== -->
+    <section id="g1">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">📐</div>
+            <div>
+                <div class="section-num">Giai đoạn 1</div>
+                <h2>Biểu Diễn Bàn Cờ</h2>
+            </div>
+        </div>
+        <div class="stage-meta">
+            <span class="chip time">⏱ 2–3 ngày</span>
+            <span class="chip">Bảng kiểu ②</span>
+            <a class="chip link" href="engine-caro-11x11.html#layout">Tài liệu engine · 01.3</a>
+        </div>
+
+        <p class="lead">Ô <code>(r, c)</code> được đặt vào bit <code>r · STRIDE + c</code>. Với
+            <strong>stride 11</strong>, các hàng nối liền nhau; với <strong>stride 12</strong>, cuối mỗi hàng có thêm
+            1 ô đệm luôn bằng 0. Để dễ nhìn, các ví dụ chỉ vẽ 2 hàng đầu (hàng 0 và hàng 1) của bàn 11×11.</p>
+
+        <h3 class="sub">Ví dụ 1.1 · Stride 11: cuối hàng 0 dính liền đầu hàng 1</h3>
+        <div class="bt-wrap" id="E11"></div>
+
+        <h3 class="sub">Ví dụ 1.2 · Stride 12: có ô đệm chen giữa</h3>
+        <div class="bt-wrap" id="E12"></div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Ô</th><th>Stride 11: <code>r·11 + c</code></th><th>Stride 12: <code>r·12 + c</code></th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>(0, 0)</td><td>0</td><td>0</td></tr>
+                    <tr><td>(0, 10)</td><td>10</td><td>10</td></tr>
+                    <tr><td>(1, 0)</td><td>11 ← sát ngay sau (0, 10)</td><td>12 ← cách (0, 10) một ô đệm (11)</td></tr>
+                    <tr><td>(2, 3)</td><td>25</td><td>27</td></tr>
+                    <tr><td>(10, 10)</td><td>120 → cần 121 bit</td><td>130 → cần 131 bit</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="sub">Ví dụ 1.3 · Đặt quân bằng OR, gỡ quân bằng XOR</h3>
+        <p class="ex-intro">Hàng 0 đang có quân ở cột 1 và 6, đặt thêm quân ở <code>(0, 3)</code> rồi lùi lại.</p>
+        <div class="bt-wrap" id="E13"></div>
+
+        <h3 class="sub">Bài tự tính</h3>
+        <div class="exercise">
+            <p><strong>Bài 1.</strong> Tính chỉ số của ô <code>(4, 7)</code> theo cả hai layout. Ô bên phải nó và ô ngay
+                dưới nó cách nó bao nhiêu chỉ số?</p>
+            <details class="quiz">
+                <summary>Xem đáp án</summary>
+                <ul>
+                    <li>Stride 11: <code>4·11 + 7 = 51</code>. Bên phải <code>(4, 8)</code> = 52 (+1); bên dưới
+                        <code>(5, 7)</code> = 62 (+11).</li>
+                    <li>Stride 12: <code>4·12 + 7 = 55</code>. Bên phải = 56 (+1); bên dưới = 67 (+12).</li>
+                    <li>Vậy "đi một bước theo hướng" chính là "cộng một hằng số vào chỉ số", và hằng số đó là độ dịch của
+                        hướng.</li>
+                </ul>
+            </details>
+        </div>
+
+        <ul class="tasks" data-stage="g1">
+            <li><label><input type="checkbox" data-task="g1-1"><span>Vẽ lại 2 hàng đầu theo cả hai layout, ghi chỉ số dưới mỗi ô.</span></label></li>
+            <li><label><input type="checkbox" data-task="g1-2"><span>Tự làm Ví dụ 1.3 với ô khác, kiểm tra XOR hai lần thì về như cũ.</span></label></li>
+            <li><label><input type="checkbox" data-task="g1-3"><span>Làm Bài 1.</span></label></li>
+        </ul>
+    </section>
+
+    <!-- ===== GĐ 2 ===== -->
+    <section id="g2">
+        <div class="section-header">
+            <div class="icon" style="background:#fef9c3;color:#a16207;">🏆</div>
+            <div>
+                <div class="section-num">Giai đoạn 2</div>
+                <h2>Kiểm Tra Thắng Bằng Shift</h2>
+            </div>
+        </div>
+        <div class="stage-meta">
+            <span class="chip time">⏱ 2 ngày</span>
+            <span class="chip">Bảng kiểu ②</span>
+            <a class="chip link" href="engine-caro-11x11.html#win">Tài liệu engine · 01.5</a>
+        </div>
+
+        <p class="lead">Ý tưởng: dịch bàn cờ rồi AND với chính nó. Sau mỗi lần như vậy, bit <code>p</code> còn sống
+            nghĩa là "từ ô <code>p</code> có một chuỗi dài gấp đôi". Ba bước: <strong>2 ô → 4 ô → 5 ô</strong>.
+            Các ví dụ dưới dùng hướng ngang, độ dịch <code>d = 1</code>.</p>
+
+        <h3 class="sub">Ví dụ 2.1 · Năm quân ở cột 3–7 (stride 12, một hàng)</h3>
+        <div class="bt-wrap" id="E21"></div>
+
+        <h3 class="sub">Ví dụ 2.2 · Chỉ có bốn quân (cột 3–6) → không thắng</h3>
+        <div class="bt-wrap" id="E22"></div>
+
+        <h3 class="sub">Ví dụ 2.3 · Dãy giả do tràn hàng, stride 11</h3>
+        <p class="ex-intro">X ở <code>(0, 8) (0, 9) (0, 10) (1, 0) (1, 1)</code>. Trên bàn đây là 3 quân cuối hàng 0
+            và 2 quân đầu hàng 1, không thẳng hàng. Nhưng chỉ số của chúng là 8, 9, 10, 11, 12, liên tiếp nhau.</p>
+        <div class="bt-wrap" id="E23"></div>
+
+        <h3 class="sub">Ví dụ 2.4 · Cùng 5 quân đó, stride 12</h3>
+        <p class="ex-intro">Giờ chỉ số là 8, 9, 10, <strong>12</strong>, 13, vì ô đệm 11 luôn bằng 0 nên chuỗi bị
+            ngắt. Lỗi tự biến mất ngay ở bước "chuỗi 4", không cần mặt nạ.</p>
+        <div class="bt-wrap" id="E24"></div>
+
+        <h3 class="sub">Ví dụ 2.5 · Hướng dọc (stride 12, d = 12)</h3>
+        <p class="ex-intro">X ở cột 4, hàng 2 → 6. Dãy 131 bit quá dài để vẽ, nên bảng chỉ ghi <em>các chỉ số bit đang
+            bật</em> sau mỗi bước. Phép tính y hệt, chỉ thay 1 bằng 12.</p>
+        <div class="table-wrap" id="E25"></div>
+
+        <h3 class="sub">Đường chéo · Vì sao độ dịch là 13 và 11</h3>
+        <p class="ex-intro">Đi một bước theo đường chéo là đi đồng thời một bước dọc và một bước ngang, nên độ dịch
+            bằng <strong>tổng</strong> hai độ dịch đó. Với stride 12: xuống 1 hàng là <code>+12</code>, sang phải 1 cột
+            là <code>+1</code>, sang trái 1 cột là <code>−1</code>.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Hướng</th><th>Bước trên bàn</th><th>Stride 12</th><th>Stride 11</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Chéo ↘ (chéo chính)</td><td>xuống 1 hàng + sang phải 1 cột</td><td><code>12 + 1 = 13</code></td><td><code>11 + 1 = 12</code></td></tr>
+                    <tr><td>Chéo ↙ (chéo phụ)</td><td>xuống 1 hàng + sang trái 1 cột</td><td><code>12 − 1 = 11</code></td><td><code>11 − 1 = 10</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mini-wrap">
+            <figure class="mini-fig" style="max-width:260px">
+                <div class="ofs" id="ofs12"></div>
+                <figcaption>Stride 12: 8 hàng xóm của ô (5, 5) = bit 65. Dòng trên là chỉ số, dòng dưới là độ chênh.</figcaption>
+            </figure>
+            <figure class="mini-fig" style="max-width:260px">
+                <div class="ofs" id="ofs11"></div>
+                <figcaption>Stride 11: cùng ô (5, 5) = bit 60.</figcaption>
+            </figure>
+            <div style="flex:1 1 260px;min-width:0;">
+                <p class="ex-intro">Phép <code>b &gt;&gt; 13</code>: ô <code>(r, c)</code> nhận giá trị của ô
+                    <code>(r+1, c+1)</code>. Trên hình, cả cụm quân trông như <strong>dời lên trên-trái 1 ô</strong>.
+                    Tương tự, <code>b &gt;&gt; 11</code> làm cả cụm dời <strong>lên trên-phải 1 ô</strong>.</p>
+                <p class="ex-intro">Mẹo AND vẫn y hệt hướng ngang: dời rồi AND với chính nó thì chỉ còn các ô mà
+                    <em>ô kế tiếp theo đường chéo</em> cũng có quân. Lặp 3 lần: 2 ô → 4 ô → 5 ô.</p>
+            </div>
+        </div>
+
+        <h3 class="sub">Ví dụ 2.6 · Chéo ↘: X ở (2,2) (3,3) (4,4) (5,5) (6,6), stride 12, d = 13</h3>
+        <p class="ex-intro">Mỗi hình là một bước, vẽ hàng 0 → 7 của bàn (cột gạch chéo là ô đệm).</p>
+        <div class="steps" id="D1g"></div>
+        <div class="table-wrap" id="D1t"></div>
+
+        <h3 class="sub">Ví dụ 2.7 · Chéo ↙: X ở (2,8) (3,7) (4,6) (5,5) (6,4), stride 12, d = 11</h3>
+        <div class="steps" id="D2g"></div>
+        <div class="table-wrap" id="D2t"></div>
+
+        <h3 class="sub">Ví dụ 2.8 · Dãy chéo giả khi không có ô đệm (stride 11)</h3>
+        <p class="ex-intro">Với stride 11, cộng độ dịch chéo vào một ô ở <strong>mép</strong> sẽ rơi sai chỗ:</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Từ ô</th><th>Phép cộng</th><th>Mong muốn</th><th>Thực tế rơi vào</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>(2, 10) = bit 32</td><td>↘ <code>32 + 12 = 44</code></td><td>(3, 11), ngoài bàn</td><td><strong>(4, 0)</strong>: nhảy qua hẳn 1 hàng, sang mép trái</td></tr>
+                    <tr><td>(2, 0) = bit 22</td><td>↙ <code>22 + 10 = 32</code></td><td>(3, −1), ngoài bàn</td><td><strong>(2, 10)</strong>: vẫn hàng 2, bị kéo sang mép phải</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="ex-intro">Vì vậy 5 ô dưới đây có chỉ số cách đều nhau đúng một độ dịch chéo, và mẹo AND sẽ báo
+            "5 liền", dù trên bàn chúng không thẳng hàng. Mặt nạ <code>START</code> của từng hướng loại được kết quả
+            giả này.</p>
+
+        <p class="ex-intro"><strong>↘ giả:</strong> (0,8) (1,9) (2,10) (4,0) (5,1) → bit 8, 20, 32, 44, 56, cách đều 12.</p>
+        <div class="steps" id="D3g"></div>
+        <div class="table-wrap" id="D3t"></div>
+
+        <p class="ex-intro"><strong>↙ giả:</strong> (0,2) (1,1) (2,0) (2,10) (3,9) → bit 2, 12, 22, 32, 42, cách đều 10.</p>
+        <div class="steps" id="D4g"></div>
+        <div class="table-wrap" id="D4t"></div>
+
+        <div class="highlight success">
+            <strong>Với stride 12 thì sao?</strong> Cùng các ô đó, chỉ số thành 8, 21, 34, <strong>48</strong>, 61
+            (↘, khoảng cách 13, 13, <strong>14</strong>, 13) và 2, 13, 24, <strong>34</strong>, 45 (↙, khoảng cách 11, 11,
+            <strong>10</strong>, 11). Bước "tràn" bắt buộc phải đi qua một ô đệm: <code>34 + 13 = 47 = (3, 11)</code>
+            và <code>24 + 11 = 35 = (2, 11)</code>, đều là ô đệm luôn bằng 0. Vì vậy chuỗi đứt và không cần mặt nạ.
+        </div>
+
+        <h3 class="sub">Tự thử</h3>
+        <p class="ex-intro">Bấm vào ô ở dòng <code>b</code> để đặt hoặc gỡ quân, và đổi qua lại giữa stride 11 và 12.</p>
+        <div class="viz">
+            <div class="viz-controls">
+                <span>Layout:</span>
+                <button class="btn ghost" id="vS11">Stride 11</button>
+                <button class="btn ghost" id="vS12">Stride 12</button>
+                <span style="width:.6rem"></span>
+                <button class="btn alt" id="vMid">5 liền giữa hàng</button>
+                <button class="btn alt" id="vWrap">Tràn hàng</button>
+                <button class="btn ghost" id="vClear">Xoá</button>
+            </div>
+            <div class="strip-scroll" id="vizRows"></div>
+            <div class="verdict" id="vizVerdict"></div>
+        </div>
+
+        <h3 class="sub">Vì sao cột đệm chặn được cả 4 hướng (stride 12)</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Hướng</th><th>d</th><th>Ô thứ k của chuỗi từ (r, c)</th><th>Vì sao chuỗi tràn phải đi qua cột đệm</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Ngang →</td><td>1</td><td><code>r·12 + (c + k)</code></td><td>Cột tăng 1 mỗi bước; muốn vượt cột 10 thì phải chạm cột 11 trước</td></tr>
+                    <tr><td>Dọc ↓</td><td>12</td><td><code>(r + k)·12 + c</code></td><td>Không đổi cột; vượt hàng 10 thì chỉ số &gt; 130, ngoài bàn nên bằng 0</td></tr>
+                    <tr><td>Chéo ↘</td><td>13</td><td><code>(r + k)·12 + (c + k)</code></td><td>Như hướng ngang: cột tăng 1 mỗi bước nên phải chạm cột 11</td></tr>
+                    <tr><td>Chéo ↙</td><td>11</td><td><code>(r + k)·12 + (c − k)</code></td><td>Khi <code>c − k = −1</code>, chỉ số bằng <code>(r + k − 1)·12 + 11</code>, chính là ô đệm của hàng trên</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="highlight success">
+            <strong>Luật tự do làm mọi thứ gọn:</strong> dãy 6 chứa ít nhất một dãy 5 nên vẫn bị phát hiện, và không cần
+            xét ô ở hai đầu dãy. Dự án không áp luật "đúng 5" hay "chặn 2 đầu", nên không có thêm bước nào nữa.
+        </div>
+
+        <h3 class="sub">Bài tự tính</h3>
+        <div class="exercise">
+            <p><strong>Bài 2.</strong> Hàng 0 (stride 12) có X ở cột 6, 7, 8, 9, 10, tức sát mép phải. Tính tay từng
+                bước như Ví dụ 2.1. Bit nào còn lại cuối cùng, và các bit dịch ra ngoài cột 10 đi đâu?</p>
+            <details class="quiz">
+                <summary>Xem đáp án</summary>
+                <div class="bt-wrap" id="Q2"></div>
+                <p>Còn bit 6, tức dãy 5 bắt đầu ở cột 6. Phép <code>&gt;&gt;</code> chỉ kéo bit từ ô có chỉ số lớn hơn về,
+                    và ô 11 (đệm) luôn bằng 0, nên không có bit nào của hàng khác lọt vào.</p>
+            </details>
+        </div>
+
+        <div class="exercise">
+            <p><strong>Bài 2b.</strong> Stride 12, X ở (2,4) (3,3) (4,2) (5,1) (6,0), tức dãy ↙ chạm mép trái.
+                Tính các chỉ số bit, rồi tính từng bước với <code>d = 11</code>. Kết quả cuối còn bit nào? Ô (6,0) cộng
+                thêm 11 nữa thì rơi vào đâu?</p>
+            <details class="quiz">
+                <summary>Xem đáp án</summary>
+                <div class="steps" id="Q2bg"></div>
+                <div class="table-wrap" id="Q2bt"></div>
+                <p>(6,0) = bit 72, cộng 11 được 83 = (6, 11), là ô đệm. Nhờ vậy dãy không thể "lố" sang mép phải.</p>
+            </details>
+        </div>
+
+        <ul class="tasks" data-stage="g2">
+            <li><label><input type="checkbox" data-task="g2-1"><span>Chép Ví dụ 2.1 ra giấy, tự tính 7 dòng mà không nhìn bảng.</span></label></li>
+            <li><label><input type="checkbox" data-task="g2-2"><span>Tự giải thích vì sao Ví dụ 2.3 báo sai còn Ví dụ 2.4 thì không.</span></label></li>
+            <li><label><input type="checkbox" data-task="g2-3"><span>Tự tính Ví dụ 2.6 và 2.7 trên giấy kẻ ô: vẽ từng bước dời cụm quân rồi AND.</span></label></li>
+            <li><label><input type="checkbox" data-task="g2-5"><span>Giải thích bằng lời vì sao Ví dụ 2.8 báo sai ở stride 11 nhưng không sai ở stride 12.</span></label></li>
+            <li><label><input type="checkbox" data-task="g2-6"><span>Làm Bài 2b (chéo ↙ sát mép trái).</span></label></li>
+            <li><label><input type="checkbox" data-task="g2-4"><span>Làm Bài 2.</span></label></li>
+        </ul>
+    </section>
+
+    <!-- ===== GĐ 3 ===== -->
+    <section id="g3">
+        <div class="section-header">
+            <div class="icon" style="background:#dcfce7;color:var(--success);">🌱</div>
+            <div>
+                <div class="section-num">Giai đoạn 3</div>
+                <h2>Sinh Nước Đi</h2>
+            </div>
+        </div>
+        <div class="stage-meta">
+            <span class="chip time">⏱ 1–2 ngày</span>
+            <span class="chip">Bảng kiểu ②</span>
+            <a class="chip link" href="engine-caro-11x11.html#movegen">Tài liệu engine · 01.6</a>
+        </div>
+
+        <p class="lead">Chỉ xét ô trống gần quân đã đánh. "Gần" được tính bằng phép <strong>giãn</strong>: OR bàn cờ
+            với các bản dịch của chính nó. Mỗi vòng giãn mở rộng vùng thêm 1 ô về mọi phía. Ở kiểu bảng ②,
+            <code>&lt;&lt; 1</code> đưa quân sang phải 1 ô (chỉ số +1), <code>&gt;&gt; 1</code> đưa sang trái 1 ô.</p>
+
+        <h3 class="sub">Ví dụ 3.1 · Giãn trên một hàng, quân ở cột 5</h3>
+        <div class="bt-wrap" id="E31"></div>
+
+        <h3 class="sub">Ví dụ 3.2 · Quân sát mép phải: vì sao phải xoá ô đệm sau mỗi vòng</h3>
+        <p class="ex-intro">Quân ở <code>(0, 10)</code>, stride 12, vẽ 2 hàng. Vòng 1 đẩy một bit vào ô đệm 11. Nếu
+            không xoá, vòng 2 đẩy tiếp nó sang ô 12, tức <code>(1, 0)</code> ở <strong>mép trái hàng dưới</strong>, cách
+            quân thật 10 cột.</p>
+        <div class="bt-wrap" id="E32"></div>
+
+        <h3 class="sub">Ví dụ 3.3 · Cùng quân đó, xoá ô đệm sau mỗi vòng</h3>
+        <div class="bt-wrap" id="E33"></div>
+
+        <h3 class="sub">Nhìn trên cả bàn (8 hướng, bán kính 2, quân ở (5, 10))</h3>
+        <div class="mini-wrap">
+            <figure class="mini-fig">
+                <div class="mini" id="candR1" style="grid-template-columns:repeat(12,1fr)"></div>
+                <figcaption>Sau vòng 1, chưa xoá: 3 ô đệm (cam) bị bật.</figcaption>
+            </figure>
+            <figure class="mini-fig">
+                <div class="mini" id="candBad" style="grid-template-columns:repeat(12,1fr)"></div>
+                <figcaption>Vòng 2, không xoá ô đệm: thừa 5 ô đỏ ở cột 0.</figcaption>
+            </figure>
+            <figure class="mini-fig">
+                <div class="mini" id="candGood" style="grid-template-columns:repeat(12,1fr)"></div>
+                <figcaption>Xoá ô đệm sau mỗi vòng: đúng ô vuông 5×5, bị cắt ở mép.</figcaption>
+            </figure>
+        </div>
+
+        <h3 class="sub">Bài tự tính</h3>
+        <div class="exercise">
+            <p><strong>Bài 3.</strong> Stride 12, quân ở <code>(1, 0)</code> (chỉ số 12). Giãn 1 vòng theo hướng
+                ngang. Phép <code>&gt;&gt; 1</code> đưa bit tới ô nào? Ô đó có thuộc bàn không?</p>
+            <details class="quiz">
+                <summary>Xem đáp án</summary>
+                <div class="bt-wrap" id="Q3"></div>
+                <p><code>&gt;&gt; 1</code> đưa bit 12 về bit 11, là ô đệm của hàng 0. Xoá ô đệm thì nó biến mất, nên ứng
+                    viên đúng chỉ là <code>(1, 1)</code>. Với stride 11 thì bit này sẽ rơi vào <code>(0, 10)</code>, một ô
+                    thật, và trở thành lỗi khó thấy.</p>
+            </details>
+        </div>
+
+        <ul class="tasks" data-stage="g3">
+            <li><label><input type="checkbox" data-task="g3-1"><span>Tự tính Ví dụ 3.1 với bán kính 2 cho quân ở cột 0 và cột 10.</span></label></li>
+            <li><label><input type="checkbox" data-task="g3-2"><span>Giải thích bằng lời vì sao Ví dụ 3.2 sai còn 3.3 đúng.</span></label></li>
+            <li><label><input type="checkbox" data-task="g3-3"><span>Làm Bài 3.</span></label></li>
+        </ul>
+    </section>
+
+    <!-- ===== GĐ 4 ===== -->
+    <section id="g4">
+        <div class="section-header">
+            <div class="icon" style="background:#fee2e2;color:var(--danger);">⚠️</div>
+            <div>
+                <div class="section-num">Giai đoạn 4</div>
+                <h2>Nhận Diện Thế Cờ</h2>
+            </div>
+        </div>
+        <div class="stage-meta">
+            <span class="chip time">⏱ 3–4 ngày</span>
+            <span class="chip">Bảng kiểu ②</span>
+            <a class="chip link" href="engine-caro-11x11.html#threat">Tài liệu engine · 01.7–01.8</a>
+        </div>
+
+        <p class="lead">Ngoài bitboard quân, dùng thêm bitboard <strong>ô trống</strong>
+            <code>E = ~(X | O) &amp; BOARD_MASK</code>. Câu hỏi: ô trống nào mà X đặt vào sẽ có 5 liền ngay? Xét cửa sổ 5
+            ô bắt đầu ở <code>p</code>. Nếu ô thứ <code>j</code> trống và 4 ô còn lại là X, thì ô <code>p + j</code> là
+            <strong>ô thắng ngay</strong>. Dịch từng bitboard để cả 5 ô của cửa sổ cùng về vị trí <code>p</code>, AND
+            lại, rồi dịch kết quả ngược về đúng ô trống (<code>&lt;&lt; j</code>). Lặp với <code>j = 0 … 4</code>.</p>
+
+        <h3 class="sub">Ví dụ 4.1 · Bốn mở: X ở cột 3–6, hai đầu trống</h3>
+        <div class="bt-wrap" id="E41"></div>
+
+        <h3 class="sub">Ví dụ 4.2 · Bốn bị chặn: thêm O ở cột 2</h3>
+        <div class="bt-wrap" id="E42"></div>
+
+        <h3 class="sub">Ví dụ 4.3 · Bốn có lỗ: X ở cột 3, 4, 6, 7</h3>
+        <div class="bt-wrap" id="E43"></div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Thế</th><th>Số ô thắng ngay (đếm số bit 1)</th><th>Ý nghĩa</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Bốn bị chặn, bốn có lỗ</td><td>1</td><td>Đối thủ chặn được, nhưng <strong>bắt buộc</strong> phải chặn ngay</td></tr>
+                    <tr><td>Bốn mở, hoặc hai bốn khác hướng</td><td>≥ 2</td><td>Đối thủ chỉ chặn được 1 ô → thắng ở nước sau</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size:.88rem;color:var(--text-secondary);">Điểm thế cờ cũng tính kiểu này: tạo bitboard cho từng
+            loại thế, đếm số bit 1, nhân với trọng số rồi cộng lại. Ví dụ: bàn có 1 bốn mở (2 ô thắng) và 3 ô "ba mở" thì
+            <code>điểm = 2·w₄ + 3·w₃</code>. Tài liệu engine dùng một biến thể tổng quát hơn là <a
+                href="engine-caro-11x11.html#eval">đếm cửa sổ 5 ô</a>.</p>
+
+        <h3 class="sub">Bài tự tính</h3>
+        <div class="exercise">
+            <p><strong>Bài 4.</strong> X ở cột 2, 3, 5, 6 của hàng 0, không có O. Tìm ô thắng ngay. Chỉ cần tính trường
+                hợp <code>j</code> cho ra kết quả khác 0. Gợi ý: ô trống nằm ở giữa cửa sổ.</p>
+            <details class="quiz">
+                <summary>Xem đáp án</summary>
+                <div class="bt-wrap" id="Q4"></div>
+                <p>Chỉ có cửa sổ bắt đầu ở cột 2 với <code>j = 2</code>, nên ô thắng ngay là cột 4. Có 1 ô → đây là "bốn có
+                    lỗ".</p>
+            </details>
+        </div>
+
+        <ul class="tasks" data-stage="g4">
+            <li><label><input type="checkbox" data-task="g4-1"><span>Tự tính Ví dụ 4.1 cho cả 5 giá trị j, kiểm tra j = 1, 2, 3 đều ra 0.</span></label></li>
+            <li><label><input type="checkbox" data-task="g4-2"><span>Tự nghĩ cách viết "ba mở" <code>_ X X X _</code> bằng E và X dịch đi các bước 0…4.</span></label></li>
+            <li><label><input type="checkbox" data-task="g4-3"><span>Làm Bài 4.</span></label></li>
+        </ul>
+    </section>
+
+    <!-- ===== GĐ 5 ===== -->
+    <section id="g5">
+        <div class="section-header">
+            <div class="icon" style="background:#ede7f6;color:#5e35b1;">🌳</div>
+            <div>
+                <div class="section-num">Giai đoạn 5</div>
+                <h2>Ghép Vào Tìm Kiếm</h2>
+            </div>
+        </div>
+        <div class="stage-meta">
+            <span class="chip time">⏱ 3–4 ngày</span>
+            <span class="chip">Bảng kiểu ①</span>
+            <a class="chip link" href="engine-caro-11x11.html#p05">Tài liệu engine · Phần 05</a>
+        </div>
+
+        <p class="lead">Thuật toán tìm kiếm đi thử rồi lùi nước rất nhiều lần. Đi và lùi đều là XOR (Ví dụ 1.3).
+            Khoá băm Zobrist của thế cờ cũng cập nhật bằng XOR: mỗi cặp (bên, ô) có sẵn một số ngẫu nhiên, đặt hoặc gỡ quân
+            thì XOR số đó vào khoá. Trong ví dụ, khoá chỉ dài 4 bit cho dễ nhìn; thực tế dùng 64 bit.</p>
+
+        <h3 class="sub">Ví dụ 5.1 · Đi X ở ô a, đi O ở ô b, rồi lùi cả hai</h3>
+        <div class="bt-wrap" id="E51"></div>
+
+        <h3 class="sub">Ví dụ 5.2 · Đi theo thứ tự khác, ra cùng một thế → cùng khoá</h3>
+        <div class="bt-wrap" id="E52"></div>
+        <p style="font-size:.88rem;color:var(--text-secondary);">Vì XOR có tính giao hoán, nên khoá chỉ phụ thuộc vào
+            <em>bàn cờ hiện tại</em>, không phụ thuộc thứ tự đi. Nhờ vậy bảng chuyển vị nhận ra được hai đường đi khác nhau
+            dẫn tới cùng một thế, và không tính lại thế đó.</p>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Thứ tự nước đi</h3>
+                <p>Thử trước ô thắng ngay của mình (Giai đoạn 4), rồi tới ô thắng ngay của đối thủ (phải chặn), rồi ô tạo
+                    bốn, rồi tới phần còn lại. Alpha-beta cắt tỉa được nhiều hơn khi nước tốt được thử trước.</p>
+            </div>
+            <div class="card">
+                <h3>Về "độ khó"</h3>
+                <p>Độ sâu tìm kiếm và độ phức tạp của hàm điểm là tham số của tác tử Alpha-Beta (cấp 3). 8 cấp AI của đề
+                    là 8 phương pháp khác nhau, không phải dễ/vừa/khó.</p>
+            </div>
+        </div>
+
+        <ul class="tasks" data-stage="g5">
+            <li><label><input type="checkbox" data-task="g5-1"><span>Tự tính lại Ví dụ 5.1 và 5.2 với hai số 4 bit khác.</span></label></li>
+            <li><label><input type="checkbox" data-task="g5-2"><span>Giải thích bằng lời vì sao lùi nước theo thứ tự ngược lại vẫn ra khoá ban đầu.</span></label></li>
+        </ul>
+    </section>
+
+    <!-- ===== GĐ 6 ===== -->
+    <section id="g6">
+        <div class="section-header">
+            <div class="icon" style="background:#e3f2fd;color:var(--info);">⏱️</div>
+            <div>
+                <div class="section-num">Giai đoạn 6</div>
+                <h2>Đo Đạc &amp; Đánh Giá</h2>
+            </div>
+        </div>
+        <div class="stage-meta">
+            <span class="chip time">⏱ 1–2 ngày</span>
+            <a class="chip link" href="engine-caro-11x11.html#p10">Tài liệu engine · Phần 10</a>
+        </div>
+
+        <p class="lead">Giai đoạn này làm sau khi đã có code. Phần dưới chỉ ghi lại cần đo những gì.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Đo gì</th><th>Cách đo</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Số phép tính: bitboard vs mảng 2D</td><td>Đếm trên giấy trước: kiểm tra thắng bằng mảng phải xét mọi ô × 4 hướng × 5 ô; bitboard chỉ cần 3 phép dịch và 3 phép AND mỗi hướng</td></tr>
+                    <tr><td>Số nút / giây, độ sâu đạt được trong 1 s</td><td>Cùng thuật toán, cùng tập thế cờ</td></tr>
+                    <tr><td>Tính đúng đắn</td><td>Bản bitboard và bản mảng phải cho cùng kết quả ở cùng độ sâu</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="tasks" data-stage="g6">
+            <li><label><input type="checkbox" data-task="g6-1"><span>Đếm tay số phép toán để kiểm tra thắng trên mảng 2D và trên bitboard.</span></label></li>
+            <li><label><input type="checkbox" data-task="g6-2"><span>Khi đã có code: đo thời gian thật (xem phụ lục code).</span></label></li>
+        </ul>
+    </section>
+
+<!-- ===== LỖI HAY GẶP ===== -->
+    <section id="pitfalls">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">🪤</div>
+            <div>
+                <div class="section-num">Tổng kết</div>
+                <h2>Lỗi Hay Gặp</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Lỗi</th><th>Triệu chứng</th><th>Ví dụ / test liên quan</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Quên AND với <code>BOARD_MASK</code> sau khi shift</td><td>Quân "xuất hiện" ở cột đệm hoặc ngoài bàn; với radius ≥ 2 thì lan sang mép đối diện</td><td><code>test_candidates_*</code></td></tr>
+                    <tr><td>Dịch dồn trong cùng một vòng giãn</td><td>Ứng viên ở xa hơn bán kính đã định</td><td><code>test_candidates_match_naive</code></td></tr>
+                    <tr><td>Nhầm độ dịch hai đường chéo (11 ↔ 13 ở stride 12; 10 ↔ 12 ở stride 11)</td><td>Bỏ sót một hướng chéo, hoặc nhận nhầm dãy giả</td><td><code>test_every_five_on_board_wins</code></td></tr>
+                    <tr><td>Chỉ test thế cờ giữa bàn</td><td>Lỗi ở mép và góc lọt qua</td><td>Test mọi vị trí bắt đầu</td></tr>
+                    <tr><td>Dùng <code>~x</code> mà không AND mặt nạ</td><td>Số âm trong Python, popcount sai</td><td><code>test_winning_squares_match_naive</code></td></tr>
+                    <tr><td>Gộp tập ô bằng <code>+</code> thay vì <code>|</code></td><td>Ô trùng tạo ra bit sai do nhớ</td><td>Đối chiếu với bản ngây thơ</td></tr>
+                    <tr><td>Quên trường hợp bàn trống</td><td>Không có nước nào để đi ở nước đầu</td><td><code>test_empty_board_plays_center</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="sub">Tài liệu</h3>
+        <div class="card-grid">
+            <div class="card">
+                <h3>Chess Programming Wiki — Bitboards</h3>
+                <p>Giải thích kỹ tư duy dịch bit, dù viết cho cờ vua. Các kỹ thuật như magic bitboard không cần cho
+                    Caro. <a href="https://www.chessprogramming.org/Bitboards" target="_blank" rel="noopener">chessprogramming.org/Bitboards</a></p>
+            </div>
+            <div class="card">
+                <h3>Gomocup</h3>
+                <p>Giải thi đấu AI Gomoku hằng năm. Mã nguồn và mô tả của các engine tham gia cho thấy cách tổ chức mẫu
+                    và tìm kiếm. <a href="https://gomocup.org" target="_blank" rel="noopener">gomocup.org</a></p>
+            </div>
+            <div class="card">
+                <h3>Tài liệu engine của dự án</h3>
+                <p>Phần 01 là bitboard ở dạng hoàn chỉnh (stride 11, mặt nạ START, đếm cửa sổ), có bàn cờ tương tác.
+                    Phần 02–12 bao quát cả đề tài. <a href="engine-caro-11x11.html">engine-caro-11x11.html</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PHỤ LỤC CODE ===== -->
+    <section id="code">
+        <div class="section-header">
+            <div class="icon" style="background:#eceff1;color:var(--text-secondary);">📦</div>
+            <div>
+                <div class="section-num">Phụ lục</div>
+                <h2>Code Tham Khảo (Để Sau)</h2>
+            </div>
+        </div>
+        <p class="lead">Chưa cần đọc phần này. Khi đã tự tính được các ví dụ ở trên, mở từng mục để xem cùng phép tính
+            đó viết thành Python. Code dùng stride 12; tài liệu engine dùng stride 11 kèm mặt nạ.</p>
+
+        <details class="quiz">
+            <summary>Giai đoạn 0 · duyệt bit bằng <code>x &amp; -x</code></summary>
+            <div class="code-block"><span class="keyword">def</span> <span class="fn">iter_bits</span>(x):
+    <span class="keyword">while</span> x:
+        low = x &amp; -x                  <span class="comment"># chỉ giữ bit thấp nhất</span>
+        <span class="keyword">yield</span> low.bit_length() - <span class="number">1</span>   <span class="comment"># chỉ số của bit đó</span>
+        x ^= low                      <span class="comment"># xoá bit đó</span>
+
+<span class="fn">print</span>(<span class="fn">list</span>(iter_bits(<span class="number">0b10110</span>)))   <span class="comment"># [1, 2, 4]</span></div>
+        </details>
+        <details class="quiz">
+            <summary>Giai đoạn 1 · <code>idx</code>, <code>BOARD_MASK</code>, <code>place</code>, <code>render</code> (stride 12)</summary>
+            <div class="code-block">N = <span class="number">11</span>
+STRIDE = <span class="number">12</span>                                   <span class="comment"># 11 cột thật + 1 cột đệm</span>
+DIRS = (<span class="number">1</span>, STRIDE, STRIDE + <span class="number">1</span>, STRIDE - <span class="number">1</span>)    <span class="comment"># ngang, dọc, chéo ↘, chéo ↙</span>
+
+<span class="keyword">def</span> <span class="fn">idx</span>(r, c):
+    <span class="keyword">return</span> r * STRIDE + c
+
+BOARD_MASK = <span class="fn">sum</span>(<span class="number">1</span> &lt;&lt; idx(r, c) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N))   <span class="comment"># 121 ô thật, không có cột đệm</span>
+
+<span class="keyword">def</span> <span class="fn">place</span>(b, r, c):
+    <span class="keyword">return</span> b | (<span class="number">1</span> &lt;&lt; idx(r, c))
+
+<span class="keyword">def</span> <span class="fn">render</span>(X, O):
+    sym = <span class="keyword">lambda</span> i: <span class="string">"X"</span> <span class="keyword">if</span> X &gt;&gt; i &amp; <span class="number">1</span> <span class="keyword">else</span> <span class="string">"O"</span> <span class="keyword">if</span> O &gt;&gt; i &amp; <span class="number">1</span> <span class="keyword">else</span> <span class="string">"."</span>
+    <span class="keyword">return</span> <span class="string">"\n"</span>.join(<span class="string">" "</span>.join(sym(idx(r, c)) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N)) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N))</div>
+        </details>
+        <details class="quiz">
+            <summary>Giai đoạn 2 · <code>has_five_dir</code>, <code>wins</code></summary>
+            <div class="code-block"><span class="keyword">def</span> <span class="fn">has_five_dir</span>(b, d):
+    t = b &amp; (b &gt;&gt; d)              <span class="comment"># bit p bật nếu p và p+d cùng có quân (2 liên tiếp)</span>
+    t &amp;= t &gt;&gt; (<span class="number">2</span> * d)             <span class="comment"># 4 liên tiếp: p, p+d, p+2d, p+3d</span>
+    <span class="keyword">return</span> (t &amp; (b &gt;&gt; (<span class="number">4</span> * d))) != <span class="number">0</span>   <span class="comment"># thêm p+4d → 5 liên tiếp</span>
+
+<span class="keyword">def</span> <span class="fn">wins</span>(b):                      <span class="comment"># b phải nằm trong BOARD_MASK (cột đệm = 0)</span>
+    <span class="keyword">return</span> <span class="fn">any</span>(has_five_dir(b, d) <span class="keyword">for</span> d <span class="keyword">in</span> DIRS)</div>
+        </details>
+        <details class="quiz">
+            <summary>Giai đoạn 3 · <code>candidates</code> (có xoá ô đệm sau mỗi vòng)</summary>
+            <div class="code-block"><span class="keyword">def</span> <span class="fn">candidates</span>(X, O, radius=<span class="number">1</span>):
+    occ = X | O
+    <span class="keyword">if</span> occ == <span class="number">0</span>:
+        <span class="keyword">return</span> <span class="number">1</span> &lt;&lt; idx(N // <span class="number">2</span>, N // <span class="number">2</span>)          <span class="comment"># bàn trống: đi giữa</span>
+    near = occ
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(radius):
+        cur = near                                <span class="comment"># dịch từ ảnh chụp của vòng trước</span>
+        <span class="keyword">for</span> d <span class="keyword">in</span> DIRS:                            <span class="comment"># 8 hàng xóm = 4 độ dịch × 2 chiều</span>
+            near |= (cur &lt;&lt; d) | (cur &gt;&gt; d)
+        near &amp;= BOARD_MASK                        <span class="comment"># ← BẮT BUỘC sau MỖI vòng</span>
+    <span class="keyword">return</span> near &amp; ~occ &amp; BOARD_MASK</div>
+        </details>
+        <details class="quiz">
+            <summary>Giai đoạn 4 · <code>winning_squares</code></summary>
+            <div class="code-block"><span class="keyword">def</span> <span class="fn">winning_squares</span>(me, opp):
+    empty = ~(me | opp) &amp; BOARD_MASK
+    res = <span class="number">0</span>
+    <span class="keyword">for</span> d <span class="keyword">in</span> DIRS:
+        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>):                    <span class="comment"># j = vị trí ô trống trong cửa sổ</span>
+            w = empty &gt;&gt; (j * d)
+            <span class="keyword">for</span> k <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>):
+                <span class="keyword">if</span> k != j:
+                    w &amp;= me &gt;&gt; (k * d)
+            res |= w &lt;&lt; (j * d)                <span class="comment"># đưa bit từ ô đầu cửa sổ về đúng ô trống</span>
+    <span class="keyword">return</span> res &amp; BOARD_MASK</div>
+        </details>
+        <details class="quiz">
+            <summary>Giai đoạn 6 · đo thời gian bằng <code>timeit</code></summary>
+            <div class="code-block"><span class="keyword">import</span> timeit, random
+
+rng = random.Random(<span class="number">0</span>)
+boards = [<span class="fn">sum</span>(<span class="number">1</span> &lt;&lt; idx(r, c) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">if</span> rng.random() &lt; <span class="number">0.25</span>) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">1000</span>)]
+
+<span class="keyword">for</span> name, fn <span class="keyword">in</span> ((<span class="string">"bitboard"</span>, wins), (<span class="string">"mảng 2D"</span>, naive_wins)):
+    t = timeit.timeit(<span class="keyword">lambda</span>: [fn(b) <span class="keyword">for</span> b <span class="keyword">in</span> boards], number=<span class="number">5</span>)
+    <span class="fn">print</span>(<span class="string">f"{name:10s} {t / 5000 * 1e6:8.1f} µs / bàn"</span>)</div>
+        </details>
+        <details class="quiz">
+            <summary>Bộ 17 test pytest cho Giai đoạn 0–4 (đã chạy qua với cả stride 11 và stride 12)</summary>
+            <div class="code-block"><span class="keyword">import</span> random
+
+<span class="keyword">import</span> pytest
+
+<span class="keyword">from</span> bitboard <span class="keyword">import</span> N, BOARD_MASK, idx, iter_bits, popcount, place, wins, candidates, winning_squares
+
+DIRS_RC = [(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">0</span>), (<span class="number">1</span>, <span class="number">1</span>), (<span class="number">1</span>, -<span class="number">1</span>)]
+rng = random.Random(<span class="number">2026</span>)
+
+
+<span class="keyword">def</span> <span class="fn">bits</span>(*cells):
+    x = <span class="number">0</span>
+    <span class="keyword">for</span> r, c <span class="keyword">in</span> cells:
+        x |= <span class="number">1</span> &lt;&lt; idx(r, c)            <span class="comment"># OR, không dùng sum: ô trùng sẽ cộng có nhớ sang bit khác</span>
+    <span class="keyword">return</span> x
+
+
+<span class="keyword">def</span> <span class="fn">random_board</span>(p):
+    <span class="keyword">return</span> bits(*[(r, c) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">if</span> rng.random() &lt; p])
+
+
+<span class="comment"># ---------- bản ngây thơ để đối chiếu ----------</span>
+<span class="keyword">def</span> <span class="fn">on</span>(x, r, c):
+    <span class="keyword">return</span> <span class="number">0</span> &lt;= r &lt; N <span class="keyword">and</span> <span class="number">0</span> &lt;= c &lt; N <span class="keyword">and</span> (x &gt;&gt; idx(r, c)) &amp; <span class="number">1</span>
+
+
+<span class="keyword">def</span> <span class="fn">naive_wins</span>(x):
+    <span class="keyword">return</span> <span class="fn">any</span>(<span class="fn">all</span>(on(x, r + k * dr, c + k * dc) <span class="keyword">for</span> k <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>))
+               <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> dr, dc <span class="keyword">in</span> DIRS_RC)
+
+
+<span class="keyword">def</span> <span class="fn">naive_candidates</span>(occ, radius):
+    <span class="keyword">return</span> bits(*[(r, c) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N)
+                  <span class="keyword">if not</span> on(occ, r, c) <span class="keyword">and</span> <span class="fn">any</span>(on(occ, r + a, c + b)
+                                              <span class="keyword">for</span> a <span class="keyword">in</span> <span class="fn">range</span>(-radius, radius + <span class="number">1</span>)
+                                              <span class="keyword">for</span> b <span class="keyword">in</span> <span class="fn">range</span>(-radius, radius + <span class="number">1</span>))])
+
+
+<span class="comment"># ---------- Giai đoạn 0 ----------</span>
+<span class="keyword">def</span> <span class="fn">test_iter_bits_and_popcount</span>():
+    <span class="keyword">assert</span> <span class="fn">list</span>(iter_bits(<span class="number">0b10110</span>)) == [<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>]
+    <span class="keyword">assert</span> <span class="fn">list</span>(iter_bits(<span class="number">0</span>)) == []
+    <span class="keyword">assert</span> popcount(<span class="number">0b10110</span>) == <span class="number">3</span>
+
+
+<span class="comment"># ---------- Giai đoạn 1 ----------</span>
+<span class="keyword">def</span> <span class="fn">test_board_mask_has_121_cells</span>():
+    <span class="keyword">assert</span> popcount(BOARD_MASK) == N * N
+    <span class="keyword">assert</span> <span class="fn">all</span>((BOARD_MASK &gt;&gt; idx(r, c)) &amp; <span class="number">1</span> <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N))
+
+
+<span class="keyword">def</span> <span class="fn">test_place_then_xor_undo</span>():
+    b = place(<span class="number">0</span>, <span class="number">3</span>, <span class="number">7</span>)
+    <span class="keyword">assert</span> b == <span class="number">1</span> &lt;&lt; idx(<span class="number">3</span>, <span class="number">7</span>)
+    <span class="keyword">assert</span> b ^ (<span class="number">1</span> &lt;&lt; idx(<span class="number">3</span>, <span class="number">7</span>)) == <span class="number">0</span>
+
+
+<span class="comment"># ---------- Giai đoạn 2 ----------</span>
+<span class="keyword">@pytest.mark.parametrize</span>(<span class="string">"dr,dc"</span>, DIRS_RC)
+<span class="keyword">def</span> <span class="fn">test_every_five_on_board_wins</span>(dr, dc):
+    <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N):
+        <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N):
+            cells = [(r + k * dr, c + k * dc) <span class="keyword">for</span> k <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>)]
+            <span class="keyword">if</span> <span class="fn">all</span>(<span class="number">0</span> &lt;= rr &lt; N <span class="keyword">and</span> <span class="number">0</span> &lt;= cc &lt; N <span class="keyword">for</span> rr, cc <span class="keyword">in</span> cells):
+                <span class="keyword">assert</span> wins(bits(*cells)), cells
+                <span class="keyword">assert not</span> wins(bits(*cells[:<span class="number">4</span>])), cells[:<span class="number">4</span>]
+
+
+<span class="keyword">def</span> <span class="fn">test_overline_and_blocked_five_win</span>():
+    <span class="keyword">assert</span> wins(bits(*[(<span class="number">5</span>, c) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">6</span>)]))            <span class="comment"># 6 quân vẫn thắng</span>
+    <span class="keyword">assert</span> wins(bits(*[(<span class="number">5</span>, c) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">1</span>, <span class="number">6</span>)]))         <span class="comment"># quân O ở 2 đầu không ảnh hưởng X</span>
+
+
+<span class="keyword">def</span> <span class="fn">test_wrap_around_is_not_five</span>():
+    <span class="keyword">assert not</span> wins(bits((<span class="number">2</span>, <span class="number">8</span>), (<span class="number">2</span>, <span class="number">9</span>), (<span class="number">2</span>, <span class="number">10</span>), (<span class="number">3</span>, <span class="number">0</span>), (<span class="number">3</span>, <span class="number">1</span>)))
+    <span class="keyword">assert not</span> wins(bits((<span class="number">2</span>, <span class="number">10</span>), (<span class="number">3</span>, <span class="number">0</span>), (<span class="number">4</span>, <span class="number">1</span>), (<span class="number">5</span>, <span class="number">2</span>), (<span class="number">6</span>, <span class="number">3</span>)))  <span class="comment"># "chéo" giả</span>
+
+
+<span class="keyword">def</span> <span class="fn">test_wins_matches_naive</span>():
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">3000</span>):
+        x = random_board(<span class="number">0.3</span>)
+        <span class="keyword">assert</span> wins(x) == naive_wins(x)
+
+
+<span class="comment"># ---------- Giai đoạn 3 ----------</span>
+<span class="keyword">def</span> <span class="fn">test_empty_board_plays_center</span>():
+    <span class="keyword">assert</span> candidates(<span class="number">0</span>, <span class="number">0</span>) == <span class="number">1</span> &lt;&lt; idx(N // <span class="number">2</span>, N // <span class="number">2</span>)
+
+
+<span class="keyword">@pytest.mark.parametrize</span>(<span class="string">"radius"</span>, [<span class="number">1</span>, <span class="number">2</span>])
+<span class="keyword">def</span> <span class="fn">test_candidates_match_naive</span>(radius):
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">2000</span>):
+        occ = bits(*[(rng.randrange(N), rng.randrange(N)) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(rng.randint(<span class="number">1</span>, <span class="number">8</span>))])
+        <span class="keyword">assert</span> candidates(occ, <span class="number">0</span>, radius) == naive_candidates(occ, radius)
+
+
+<span class="keyword">def</span> <span class="fn">test_candidates_edge_stone_radius_2</span>():
+    <span class="comment"># lỗi điển hình của stride 12: bit lọt qua cột đệm sang cột 0 ở vòng giãn thứ hai</span>
+    got = candidates(bits((<span class="number">5</span>, <span class="number">10</span>)), <span class="number">0</span>, <span class="number">2</span>)
+    <span class="keyword">assert not</span> <span class="fn">any</span>(on(got, r, <span class="number">0</span>) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N))
+
+
+<span class="comment"># ---------- Giai đoạn 4 ----------</span>
+<span class="keyword">def</span> <span class="fn">test_open_four_has_two_winning_squares</span>():
+    me = bits((<span class="number">5</span>, <span class="number">3</span>), (<span class="number">5</span>, <span class="number">4</span>), (<span class="number">5</span>, <span class="number">5</span>), (<span class="number">5</span>, <span class="number">6</span>))
+    <span class="keyword">assert</span> <span class="fn">set</span>(iter_bits(winning_squares(me, <span class="number">0</span>))) == {idx(<span class="number">5</span>, <span class="number">2</span>), idx(<span class="number">5</span>, <span class="number">7</span>)}
+    <span class="keyword">assert</span> <span class="fn">set</span>(iter_bits(winning_squares(me, bits((<span class="number">5</span>, <span class="number">2</span>))))) == {idx(<span class="number">5</span>, <span class="number">7</span>)}
+
+
+<span class="keyword">def</span> <span class="fn">test_split_four</span>():
+    me = bits((<span class="number">5</span>, <span class="number">3</span>), (<span class="number">5</span>, <span class="number">4</span>), (<span class="number">5</span>, <span class="number">6</span>), (<span class="number">5</span>, <span class="number">7</span>))
+    <span class="keyword">assert</span> <span class="fn">set</span>(iter_bits(winning_squares(me, <span class="number">0</span>))) == {idx(<span class="number">5</span>, <span class="number">5</span>)}
+
+
+<span class="keyword">def</span> <span class="fn">test_winning_squares_match_naive</span>():
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">800</span>):
+        me, opp = random_board(<span class="number">0.2</span>), random_board(<span class="number">0.2</span>)
+        opp &amp;= ~me
+        <span class="keyword">if</span> wins(me):
+            <span class="keyword">continue</span>
+        empty = ~(me | opp) &amp; BOARD_MASK
+        expected = <span class="fn">sum</span>(<span class="number">1</span> &lt;&lt; i <span class="keyword">for</span> i <span class="keyword">in</span> iter_bits(empty) <span class="keyword">if</span> wins(me | (<span class="number">1</span> &lt;&lt; i)))
+        <span class="keyword">assert</span> winning_squares(me, opp) == expected</div>
+            <p>Hàm <code>bits()</code> trong test gộp ô bằng OR. Nếu dùng <code>sum</code>, ô bị chọn trùng sẽ cộng
+                có nhớ sang bit khác, làm test báo lỗi oan.</p>
+        </details>
+    </section>
+
+    <footer>
+        <p><strong>Lộ Trình Học Bitboard Cho Caro 11×11</strong></p>
+        <p>Luật tự do: ≥ 5 quân liên tiếp là thắng, không luật chặn 2 đầu</p>
+        <p style="margin-top:.5rem;"><a href="engine-caro-11x11.html">Tài liệu thiết kế engine Caro 11×11</a></p>
+    </footer>
+
+    <script>
+        // Giữ hero không bị nav (có thể cao hơn 56px) che mất
+        (function () {
+            function fixNavOffset() {
+                var nav = document.querySelector('nav');
+                var hero = document.querySelector('.hero');
+                if (nav && hero) hero.style.marginTop = nav.offsetHeight + 'px';
+            }
+            window.addEventListener('load', fixNavOffset);
+            window.addEventListener('resize', fixNavOffset);
+            fixNavOffset();
+        })();
+    </script>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const N = 11;
+
+        // ===== Tiến độ bài tập (chỉ lưu trong trình duyệt này) =====
+        const STORE_KEY = 'caro-bitboard-roadmap-v1';
+        function loadDone() {
+            try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { return {}; }
+        }
+        function saveDone(d) {
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch (e) { /* trình duyệt chặn storage */ }
+        }
+        const done = loadDone();
+        const boxes = [...document.querySelectorAll('.tasks input[data-task]')];
+        boxes.forEach(b => {
+            b.checked = !!done[b.dataset.task];
+            b.addEventListener('change', () => {
+                done[b.dataset.task] = b.checked;
+                saveDone(done);
+                updateProgress();
+            });
+        });
+        function updateProgress() {
+            const n = boxes.filter(b => b.checked).length;
+            $('progBar').style.width = (boxes.length ? 100 * n / boxes.length : 0) + '%';
+            $('progLabel').textContent = `${n} / ${boxes.length} bài tập đã xong`;
+            document.querySelectorAll('.timeline-item[data-stage]').forEach(item => {
+                const own = boxes.filter(b => b.closest('.tasks').dataset.stage === item.dataset.stage);
+                item.classList.toggle('done', own.length > 0 && own.every(b => b.checked));
+            });
+        }
+        updateProgress();
+
+        // ===== Bộ dựng bảng bit =====
+        const BB = (...idx) => idx.reduce((x, i) => x | (1n << BigInt(i)), 0n);
+        const span = (a, b) => { let x = 0n; for (let i = a; i <= b; i++) x |= 1n << BigInt(i); return x; };
+        const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const bitsOf = x => { const r = []; for (let i = 0; x >> BigInt(i); i++) if ((x >> BigInt(i)) & 1n) r.push(i); return r; };
+
+        // cfg: { n, order: 'board' | 'msb', stride, pads, rows: [{ l, v, k: 'in'|'mid'|'res'|'mask', note, marks }, { sep }] }
+        function bitTable(id, cfg) {
+            const el = $(id);
+            if (!el) return;
+            const { n, order = 'board', stride = null, pads = [], rows } = cfg;
+            const cols = [...Array(n).keys()];
+            if (order === 'msb') cols.reverse();
+            const pad = new Set(pads);
+            const rs = i => order === 'board' && stride && i > 0 && i % stride === 0 ? ' rs' : '';
+
+            let h = '<table class="bt"><thead><tr><th></th>';
+            for (const i of cols) h += `<th class="${rs(i).trim()}">${i}</th>`;
+            h += '<th></th></tr>';
+            if (stride) {
+                h += '<tr class="h2"><th>(hàng, cột)</th>';
+                for (const i of cols) {
+                    const r = Math.floor(i / stride), c = i % stride;
+                    h += `<th class="${rs(i).trim()}">${pad.has(i) ? 'đệm' : r + ',' + c}</th>`;
+                }
+                h += '<th></th></tr>';
+            }
+            h += '</thead><tbody>';
+            for (const row of rows) {
+                if (row.sep) {
+                    h += `<tr class="bt-sep"><td colspan="${n + 2}">${row.sep}</td></tr>`;
+                    continue;
+                }
+                const k = row.k || 'mid';
+                h += `<tr class="bt-${k}"><td class="bt-l"><code>${esc(row.l)}</code></td>`;
+                for (const i of cols) {
+                    const on = (row.v >> BigInt(i)) & 1n;
+                    let cls = pad.has(i) ? 'pad' : '';
+                    if (on) cls = (row.marks && row.marks[i]) || (pad.has(i) ? 'padon' : k === 'res' ? 'res1' : k === 'mask' ? 'msk' : 'one');
+                    h += `<td class="${cls}${rs(i)}">${on ? 1 : 0}</td>`;
+                }
+                h += `<td class="bt-n">${row.note || ''}</td></tr>`;
+            }
+            el.innerHTML = h + '</tbody></table>';
+        }
+
+        // ----- Giai đoạn 0 (kiểu ①) -----
+        (function () {
+            const M = 0xFFn;
+            const x = 0b10110100n, y = 0b01100110n;
+            bitTable('E01', {
+                n: 8, order: 'msb', rows: [
+                    { l: 'x', v: x, k: 'in' },
+                    { l: 'y', v: y, k: 'in' },
+                    { l: 'x & y', v: x & y, k: 'res', note: 'AND: 1 khi <strong>cả hai</strong> đều là 1' },
+                    { l: 'x | y', v: x | y, k: 'res', note: 'OR: 1 khi <strong>ít nhất một</strong> bên là 1' },
+                    { l: 'x ^ y', v: x ^ y, k: 'res', note: 'XOR: 1 khi hai bên <strong>khác nhau</strong>' },
+                    { l: '~x  (giữ 8 bit)', v: ~x & M, k: 'res', note: 'NOT: lật mọi bit. Trong Python <code>~x</code> là số âm, nên phải AND với mặt nạ để giữ đúng 8 bit' },
+                ]
+            });
+            bitTable('E02', {
+                n: 10, order: 'msb', rows: [
+                    { l: 'x', v: x, k: 'in' },
+                    { l: 'x << 1', v: x << 1n, k: 'res', note: 'mọi bit lên 1 bậc; bit 0 mới = 0. Bằng nhân 2' },
+                    { l: 'x << 2', v: x << 2n, k: 'res', note: 'lên 2 bậc. Bằng nhân 4' },
+                    { l: 'x >> 1', v: x >> 1n, k: 'res', note: 'xuống 1 bậc; bit 0 cũ (= 0) rơi mất' },
+                    { l: 'x >> 3', v: x >> 3n, k: 'res', note: 'xuống 3 bậc; bit 0, 1, 2 cũ rơi mất, trong đó <strong>bit 2 = 1 bị mất</strong>' },
+                ]
+            });
+            const lowRows = v => [
+                { l: 'x', v, k: 'in' },
+                { l: '~x', v: ~v & M, note: 'lật mọi bit' },
+                { l: '-x = ~x + 1', v: (~v + 1n) & M, note: '+1: bit 0 thấp nhất của <code>~x</code> thành 1, các bit 1 bên dưới nó thành 0, bên trên giữ nguyên' },
+                { l: 'x & -x', v: v & -v, k: 'res', note: `chỉ còn <strong>bit thấp nhất</strong> của x (bit ${bitsOf(v)[0]})` },
+                { l: 'x - 1', v: (v - 1n) & M, note: '−1 (cùng quy tắc, đảo vai): bit 1 thấp nhất của <code>x</code> thành 0, các bit 0 bên dưới nó thành 1' },
+                { l: 'x & (x - 1)', v: v & (v - 1n), k: 'res', note: '<strong>xoá</strong> bit thấp nhất, giữ nguyên phần còn lại' },
+            ];
+            bitTable('E03', { n: 8, order: 'msb', rows: lowRows(x) });
+            bitTable('Q0', { n: 8, order: 'msb', rows: lowRows(0b01101000n) });
+
+            const it = [];
+            let v = x, round = 1;
+            it.push({ l: 'x ban đầu', v, k: 'in', note: `có ${bitsOf(v).length} bit 1 → sẽ lặp đúng ${bitsOf(v).length} vòng` });
+            while (v) {
+                const low = v & -v, i = bitsOf(low)[0];
+                it.push({ sep: `Vòng ${round++}` });
+                it.push({ l: 'low = x & -x', v: low, k: 'res', note: `→ in ra <strong>${i}</strong>` });
+                v ^= low;
+                it.push({ l: 'x ^= low', v, note: v ? `bit ${i} đã bị xoá` : 'x = 0 → <strong>dừng</strong>' });
+            }
+            bitTable('E04', { n: 8, order: 'msb', rows: it });
+        })();
+
+        // ----- Giai đoạn 1 -----
+        (function () {
+            bitTable('E11', {
+                n: 22, stride: 11, rows: [
+                    { l: 'BOARD_MASK', v: span(0, 21), k: 'mask', note: 'cả 22 bit đều là ô thật' },
+                    { l: 'ô (0,10) và (1,0)', v: BB(10, 11), marks: { 10: 'hl', 11: 'hl' }, note: 'chỉ số 10 và 11 <strong>nằm sát nhau</strong>: dịch 1 bit là "nhảy" từ cuối hàng 0 sang đầu hàng 1' },
+                ]
+            });
+            bitTable('E12', {
+                n: 24, stride: 12, pads: [11, 23], rows: [
+                    { l: 'BOARD_MASK', v: span(0, 10) | span(12, 22), k: 'mask', note: 'ô đệm 11 và 23 luôn bằng 0' },
+                    { l: 'ô (0,10) và (1,0)', v: BB(10, 12), marks: { 10: 'hl', 12: 'hl' }, note: 'chỉ số 10 và 12: <strong>ô đệm 11 chen giữa</strong>' },
+                ]
+            });
+            const b = BB(1, 6), m = BB(3);
+            bitTable('E13', {
+                n: 12, stride: 12, pads: [11], rows: [
+                    { l: 'b', v: b, k: 'in', note: 'quân đang có ở cột 1 và 6' },
+                    { l: '1 << idx(0,3)', v: m, k: 'mask', note: 'một bit duy nhất ở ô cần đặt' },
+                    { l: 'b | (1 << 3)', v: b | m, k: 'res', note: '<strong>đặt quân</strong>: OR thêm bit 3' },
+                    { l: '... ^ (1 << 3)', v: (b | m) ^ m, k: 'res', note: '<strong>gỡ quân</strong>: XOR lại đúng bit đó → về đúng <code>b</code>' },
+                ]
+            });
+        })();
+
+        // ----- Giai đoạn 2 -----
+        function fiveRows(b, d, finalNote, marks) {
+            const D = BigInt(d);
+            const t1 = b & (b >> D), t2 = t1 & (t1 >> 2n * D), t3 = t2 & (b >> 4n * D);
+            return [
+                { l: 'b', v: b, k: 'in', note: 'quân X' },
+                { l: `b >> ${d}`, v: b >> D, note: `ô p nhận giá trị của ô p+${d}` },
+                { l: `t = b & (b >> ${d})`, v: t1, note: `p và p+${d} đều có quân → <strong>chuỗi 2</strong> bắt đầu ở p` },
+                { l: `t >> ${2 * d}`, v: t1 >> 2n * D, note: `ô p nhận giá trị t của ô p+${2 * d}` },
+                { l: `t &= t >> ${2 * d}`, v: t2, note: `chuỗi 2 ở p và chuỗi 2 ở p+${2 * d} → <strong>chuỗi 4</strong>` },
+                { l: `b >> ${4 * d}`, v: b >> 4n * D, note: `ô p nhận giá trị của ô p+${4 * d}` },
+                { l: `t &= b >> ${4 * d}`, v: t3, k: 'res', marks, note: finalNote },
+            ];
+        }
+        (function () {
+            bitTable('E21', {
+                n: 12, stride: 12, pads: [11],
+                rows: fiveRows(BB(3, 4, 5, 6, 7), 1, 'chuỗi 4 cộng thêm ô thứ 5 → còn <strong>bit 3</strong>: có 5 liền bắt đầu ở cột 3 → <strong>thắng</strong>')
+            });
+            bitTable('E22', {
+                n: 12, stride: 12, pads: [11],
+                rows: fiveRows(BB(3, 4, 5, 6), 1, 'chuỗi 4 ở bit 3 cần ô 7 là X, nhưng ô 7 trống → <strong>= 0, không thắng</strong>')
+            });
+            const START = span(0, 6) | span(11, 17);
+            const b23 = BB(8, 9, 10, 11, 12);
+            const t23 = fiveRows(b23, 1, '<strong>bit 8 bật</strong>: 5 chỉ số 8…12 liên tiếp, nhưng trên bàn chúng <strong>không thẳng hàng</strong> → dãy giả', { 8: 'bad' });
+            bitTable('E23', {
+                n: 22, stride: 11, rows: [...t23,
+                    { l: 'START (cột 0–6)', v: START, k: 'mask', note: 'ô đầu hợp lệ: dãy 5 bắt đầu từ cột ≤ 6 thì không thể tràn hàng' },
+                    { l: 't & START', v: t23[6].v & START, k: 'res', note: 'bit 8 (cột 8) bị loại → <strong>= 0, không thắng</strong>. Đúng!' },
+                ]
+            });
+            const b24 = BB(8, 9, 10, 12, 13);
+            const r24 = fiveRows(b24, 1, '= 0 → <strong>không thắng</strong>. Không cần mặt nạ nào');
+            r24[1].note = 'bit 12 bị kéo vào ô đệm 11 (cam), nhưng ở dòng sau <code>b</code> tại bit 11 luôn = 0 nên AND loại nó';
+            r24[4].note = 'chuỗi 2 ở bit 8, 9 cần chuỗi 2 ở bit 10, 11, nhưng ô đệm 11 = 0 → <strong>= 0</strong>, lỗi tự biến mất';
+            bitTable('E24', { n: 24, stride: 12, pads: [11, 23], rows: r24 });
+            bitTable('Q2', {
+                n: 12, stride: 12, pads: [11],
+                rows: fiveRows(BB(6, 7, 8, 9, 10), 1, 'còn <strong>bit 6</strong> → 5 liền bắt đầu ở cột 6 (sát mép phải) → thắng')
+            });
+
+            // Ví dụ 2.5: hướng dọc, chỉ ghi tập chỉ số
+            const S = 12, D = 12n;
+            const b = BB(...[2, 3, 4, 5, 6].map(r => r * S + 4));
+            const t1 = b & (b >> D), t2 = t1 & (t1 >> 2n * D), t3 = t2 & (b >> 4n * D);
+            const steps = [
+                ['b', b, 'quân X ở cột 4, hàng 2 → 6'],
+                ['b >> 12', b >> D, 'mỗi chỉ số trừ 12 (lên 1 hàng); số âm bị bỏ'],
+                ['t = b & (b >> 12)', t1, 'chuỗi 2 theo chiều dọc'],
+                ['t >> 24', t1 >> 2n * D, 'trừ 24'],
+                ['t &= t >> 24', t2, 'chuỗi 4'],
+                ['b >> 48', b >> 4n * D, 'trừ 48'],
+                ['t &= b >> 48', t3, '<strong>còn bit 28 = ô (2, 4)</strong>: 5 liền dọc bắt đầu ở (2, 4)'],
+            ];
+            const rc = i => `(${Math.floor(i / S)}, ${i % S})`;
+            $('E25').innerHTML = '<table><thead><tr><th>Bước</th><th>Các bit đang bật</th><th>Ô (hàng, cột)</th><th>Ghi chú</th></tr></thead><tbody>'
+                + steps.map(([l, v, n], k) => `<tr${k === steps.length - 1 ? ' class="pick"' : ''}><td><code>${esc(l)}</code></td><td><code>{${bitsOf(v).join(', ')}}</code></td><td>${bitsOf(v).map(rc).join(' ')}</td><td>${n}</td></tr>`).join('')
+                + '</tbody></table>';
+        })();
+
+        // ----- Giai đoạn 3 -----
+        (function () {
+            const occ = BB(5);
+            const n1 = occ | (occ << 1n) | (occ >> 1n);
+            const n2 = n1 | (n1 << 1n) | (n1 >> 1n);
+            bitTable('E31', {
+                n: 12, stride: 12, pads: [11], rows: [
+                    { l: 'occ', v: occ, k: 'in', note: 'một quân ở cột 5' },
+                    { sep: 'Vòng 1' },
+                    { l: 'occ << 1', v: occ << 1n, note: 'sang phải 1 ô (chỉ số +1)' },
+                    { l: 'occ >> 1', v: occ >> 1n, note: 'sang trái 1 ô (chỉ số −1)' },
+                    { l: 'near = OR cả 3 dòng', v: n1, k: 'res', note: 'cột 4–6: cách quân ≤ 1 ô' },
+                    { sep: 'Vòng 2: lặp lại trên near' },
+                    { l: 'near << 1', v: n1 << 1n },
+                    { l: 'near >> 1', v: n1 >> 1n },
+                    { l: 'near = OR cả 3 dòng', v: n2, k: 'res', note: 'cột 3–7: cách quân ≤ 2 ô' },
+                    { l: 'near & ~occ', v: n2 & ~occ, k: 'res', note: 'bỏ ô đã có quân → <strong>ứng viên</strong>: cột 3, 4, 6, 7' },
+                ]
+            });
+
+            const MASK = span(0, 10) | span(12, 22);
+            const o = BB(10);
+            const a1 = o | (o << 1n) | (o >> 1n);
+            const bad2 = a1 | (a1 << 1n) | (a1 >> 1n);
+            bitTable('E32', {
+                n: 24, stride: 12, pads: [11, 23], rows: [
+                    { l: 'occ', v: o, k: 'in', note: 'quân ở (0, 10), sát mép phải' },
+                    { sep: 'Vòng 1' },
+                    { l: 'occ << 1', v: o << 1n, note: 'bit 10 → <strong>bit 11 = ô đệm</strong>' },
+                    { l: 'occ >> 1', v: o >> 1n },
+                    { l: 'near = OR', v: a1, note: 'chứa ô đệm 11, <strong>chưa xoá</strong>' },
+                    { sep: 'Vòng 2 (không xoá ô đệm)' },
+                    { l: 'near << 1', v: a1 << 1n, marks: { 12: 'bad' }, note: 'bit đệm 11 → <strong>bit 12 = ô (1, 0)</strong>, mép trái hàng dưới!' },
+                    { l: 'near >> 1', v: a1 >> 1n },
+                    { l: 'near = OR', v: bad2, marks: { 12: 'bad' } },
+                    { l: 'near & MASK & ~occ', v: bad2 & MASK & ~o, k: 'res', marks: { 12: 'bad' }, note: 'xoá ô đệm ở cuối thì đã muộn: <strong>(1, 0) bị coi là ứng viên → SAI</strong>' },
+                ]
+            });
+
+            const g1 = (o | (o << 1n) | (o >> 1n)) & MASK;
+            const g2 = (g1 | (g1 << 1n) | (g1 >> 1n)) & MASK;
+            bitTable('E33', {
+                n: 24, stride: 12, pads: [11, 23], rows: [
+                    { l: 'occ', v: o, k: 'in' },
+                    { sep: 'Vòng 1' },
+                    { l: 'near = OR', v: o | (o << 1n) | (o >> 1n), note: 'bit 11 lọt vào ô đệm như trên' },
+                    { l: 'near &= MASK', v: g1, k: 'res', note: '<strong>xoá ô đệm ngay</strong> → còn cột 9, 10' },
+                    { sep: 'Vòng 2' },
+                    { l: 'near << 1', v: g1 << 1n, note: 'bit 10 → ô đệm 11 (sẽ bị xoá)' },
+                    { l: 'near >> 1', v: g1 >> 1n },
+                    { l: 'near = OR, &= MASK', v: g2, k: 'res', note: 'cột 8, 9, 10' },
+                    { l: 'near & ~occ', v: g2 & ~o, k: 'res', note: 'ứng viên đúng: <strong>cột 8, 9</strong>' },
+                ]
+            });
+
+            const q = BB(12);
+            const qn = q | (q << 1n) | (q >> 1n);
+            bitTable('Q3', {
+                n: 24, stride: 12, pads: [11, 23], rows: [
+                    { l: 'occ', v: q, k: 'in', note: 'quân ở (1, 0) = bit 12' },
+                    { l: 'occ >> 1', v: q >> 1n, note: 'bit 12 → <strong>bit 11 = ô đệm của hàng 0</strong>' },
+                    { l: 'occ << 1', v: q << 1n, note: 'bit 13 = (1, 1)' },
+                    { l: 'near = OR', v: qn },
+                    { l: 'near &= MASK', v: qn & MASK, k: 'res', note: 'ô đệm bị xoá' },
+                    { l: 'near & ~occ', v: qn & MASK & ~q, k: 'res', note: 'ứng viên: chỉ <strong>(1, 1)</strong>' },
+                ]
+            });
+
+            // Hình 8 hướng trên cả bàn
+            const S = 12n;
+            const idx = (r, c) => BigInt(r) * S + BigInt(c);
+            let FULL = 0n;
+            for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) FULL |= 1n << idx(r, c);
+            const DIRS = [1n, S, S + 1n, S - 1n];
+            const grow = x => { let y = x; for (const d of DIRS) y |= (x << d) | (x >> d); return y; };
+            const stone = 1n << idx(5, 10);
+            const r1 = grow(stone);
+            const bad = grow(r1) & FULL & ~stone;
+            const good = grow(r1 & FULL) & FULL & ~stone;
+            function draw(el, set, wrong) {
+                for (let r = 0; r < N; r++)
+                    for (let c = 0; c < 12; c++) {
+                        const d = document.createElement('div');
+                        const bit = 1n << idx(r, c);
+                        if (c === 11) d.className = (set & bit) ? 'padon' : 'pad';
+                        else if (stone & bit) d.className = 'stone';
+                        else if (wrong & bit) d.className = 'bad';
+                        else if (set & bit) d.className = 'ok';
+                        el.appendChild(d);
+                    }
+            }
+            draw($('candR1'), r1 & ~stone, 0n);
+            draw($('candBad'), bad, bad & ~good);
+            draw($('candGood'), good, 0n);
+        })();
+
+        // ----- Giai đoạn 4 -----
+        (function () {
+            const MASK = span(0, 10);
+            const opt = { n: 12, stride: 12, pads: [11] };
+            // các dòng của trường hợp j: ô thứ j của cửa sổ là E, 4 ô còn lại là X
+            function jRows(X, E, j, landNote) {
+                const rows = [];
+                let w = MASK;
+                for (let k = 0; k < 5; k++) {
+                    const K = BigInt(k);
+                    const v = k === j ? E >> K : X >> K;
+                    w &= v;
+                    const lab = (k === j ? 'E' : 'X') + (k ? ` >> ${k}` : '');
+                    rows.push({ l: lab, v, k: k === j ? 'mask' : 'mid', note: k === j ? `ô p+${k} phải <strong>trống</strong>` : `ô p+${k} phải là X` });
+                }
+                rows.push({ l: 'w = AND 5 dòng trên', v: w, note: w ? `bit ${bitsOf(w).join(', ')}: cửa sổ bắt đầu ở đó thoả mãn` : '= 0: không có cửa sổ nào' });
+                const land = (w << BigInt(j)) & MASK;
+                rows.push({ l: `w << ${j}`, v: land, k: 'res', note: landNote || (land ? `dịch về đúng ô trống → <strong>ô thắng: cột ${bitsOf(land).join(', ')}</strong>` : '= 0') });
+                return { rows, land };
+            }
+            function allJ(X, E) {
+                let r = 0n;
+                for (let j = 0; j < 5; j++) r |= jRows(X, E, j).land;
+                return r;
+            }
+
+            const X1 = BB(3, 4, 5, 6), E1 = MASK & ~X1;
+            const j0 = jRows(X1, E1, 0), j4 = jRows(X1, E1, 4);
+            const mid = [1, 2, 3].map(j => ({ l: `j = ${j}: w << ${j}`, v: jRows(X1, E1, j).land, k: 'res', note: '= 0' }));
+            const all1 = allJ(X1, E1);
+            bitTable('E41', {
+                ...opt, rows: [
+                    { l: 'X', v: X1, k: 'in', note: 'quân X ở cột 3–6' },
+                    { l: 'E', v: E1, k: 'mask', note: 'ô trống (ô đệm 11 không tính là trống)' },
+                    { sep: 'j = 0: ô trống ở đầu cửa sổ, 4 ô X ở p+1 … p+4' },
+                    ...j0.rows,
+                    { sep: 'j = 1, 2, 3: ô trống nằm giữa cửa sổ' },
+                    ...mid,
+                    { sep: 'j = 4: 4 ô X ở p … p+3, ô trống ở p+4' },
+                    ...j4.rows,
+                    { sep: 'Gộp 5 trường hợp bằng OR' },
+                    { l: 'ô thắng ngay', v: all1, k: 'res', note: `<strong>${bitsOf(all1).length} ô</strong> (cột ${bitsOf(all1).join(' và ')}) → bốn mở: O chỉ chặn được 1 ô` },
+                ]
+            });
+
+            const O2 = BB(2), E2 = MASK & ~(X1 | O2);
+            const all2 = allJ(X1, E2);
+            bitTable('E42', {
+                ...opt, rows: [
+                    { l: 'X', v: X1, k: 'in' },
+                    { l: 'O', v: O2, k: 'in', marks: { 2: 'bad' }, note: 'O chặn ở cột 2' },
+                    { l: 'E', v: E2, k: 'mask', note: 'cột 2 không còn trống' },
+                    { sep: 'j = 0' },
+                    ...jRows(X1, E2, 0).rows,
+                    { sep: 'j = 4 (giống Ví dụ 4.1)' },
+                    ...jRows(X1, E2, 4).rows.slice(-1),
+                    { sep: 'Gộp' },
+                    { l: 'ô thắng ngay', v: all2, k: 'res', note: `chỉ còn <strong>${bitsOf(all2).length} ô</strong> (cột ${bitsOf(all2).join(', ')}) → O bắt buộc chặn ở đó` },
+                ]
+            });
+
+            const X3 = BB(3, 4, 6, 7), E3 = MASK & ~X3;
+            const all3 = allJ(X3, E3);
+            bitTable('E43', {
+                ...opt, rows: [
+                    { l: 'X', v: X3, k: 'in', note: 'X X _ X X' },
+                    { l: 'E', v: E3, k: 'mask' },
+                    { sep: 'j = 2: ô trống ở giữa cửa sổ' },
+                    ...jRows(X3, E3, 2).rows,
+                    { sep: 'Gộp (các j khác đều ra 0)' },
+                    { l: 'ô thắng ngay', v: all3, k: 'res', note: `<strong>${bitsOf(all3).length} ô</strong>: cột ${bitsOf(all3).join(', ')}` },
+                ]
+            });
+
+            const X4 = BB(2, 3, 5, 6), E4 = MASK & ~X4;
+            const all4 = allJ(X4, E4);
+            bitTable('Q4', {
+                ...opt, rows: [
+                    { l: 'X', v: X4, k: 'in' },
+                    { l: 'E', v: E4, k: 'mask' },
+                    { sep: 'j = 2' },
+                    ...jRows(X4, E4, 2).rows,
+                    { sep: 'Gộp' },
+                    { l: 'ô thắng ngay', v: all4, k: 'res', note: `cột ${bitsOf(all4).join(', ')}` },
+                ]
+            });
+        })();
+
+        // ----- Giai đoạn 5 (kiểu ①, khoá 4 bit) -----
+        (function () {
+            const Za = 0b1011n, Zb = 0b0110n;
+            let key = 0n;
+            const rows = [{ l: 'key', v: key, k: 'in', note: 'bàn trống' },
+                { l: 'Z[X][a]', v: Za, k: 'mask', note: 'số ngẫu nhiên cho (X, ô a)' },
+                { l: 'Z[O][b]', v: Zb, k: 'mask', note: 'số ngẫu nhiên cho (O, ô b)' }];
+            key ^= Za; rows.push({ l: 'key ^= Z[X][a]', v: key, k: 'res', note: '<strong>đi</strong> X ở a' });
+            key ^= Zb; rows.push({ l: 'key ^= Z[O][b]', v: key, k: 'res', note: '<strong>đi</strong> O ở b' });
+            key ^= Zb; rows.push({ l: 'key ^= Z[O][b]', v: key, k: 'res', note: '<strong>lùi</strong> O: XOR lại cùng số → về khoá sau nước X' });
+            key ^= Za; rows.push({ l: 'key ^= Z[X][a]', v: key, k: 'res', note: '<strong>lùi</strong> X → về 0000 như bàn trống' });
+            bitTable('E51', { n: 4, order: 'msb', rows });
+            const k1 = 0n ^ Zb, k2 = k1 ^ Za;
+            bitTable('E52', {
+                n: 4, order: 'msb', rows: [
+                    { l: 'key', v: 0n, k: 'in', note: 'bàn trống' },
+                    { l: 'key ^= Z[O][b]', v: k1, k: 'res', note: 'lần này đi O ở b <strong>trước</strong>' },
+                    { l: 'key ^= Z[X][a]', v: k2, k: 'res', note: `rồi X ở a → <strong>${k2.toString(2).padStart(4, '0')}</strong>, bằng đúng khoá ở Ví dụ 5.1 sau 2 nước` },
+                ]
+            });
+        })();
+
+        // ----- Giai đoạn 2: đường chéo -----
+        (function () {
+            // 8 hàng xóm quanh (5, 5)
+            for (const S of [12, 11]) {
+                const c0 = 5 * S + 5;
+                const offs = [[-S - 1, -S, -S + 1], [-1, 0, 1], [S - 1, S, S + 1]];
+                $('ofs' + S).innerHTML = offs.flat().map(o => {
+                    const cls = o === 0 ? 'ctr' : Math.abs(o) === S - 1 || Math.abs(o) === S + 1 ? 'diag' : '';
+                    return `<div class="${cls}">${c0 + o}<small>${o === 0 ? '(5,5)' : (o > 0 ? '+' : '−') + Math.abs(o)}</small></div>`;
+                }).join('');
+            }
+
+            function diagSteps(S, d, cells, start, finalNote) {
+                const D = BigInt(d);
+                const b = cells.reduce((x, [r, c]) => x | (1n << BigInt(r * S + c)), 0n);
+                const t1 = b & (b >> D), t2 = t1 & (t1 >> 2n * D), t3 = t2 & (b >> 4n * D);
+                const steps = [
+                    { l: 'b', v: b, cls: 'one', note: 'quân X' },
+                    { l: `b >> ${d}`, v: b >> D, cls: 'one', note: d === S + 1 ? 'cả cụm dời lên trên-trái 1 ô' : 'cả cụm dời lên trên-phải 1 ô' },
+                    { l: `t = b & (b >> ${d})`, v: t1, cls: 'one', note: 'ô có quân và ô kế tiếp theo đường chéo cũng có quân → chuỗi 2' },
+                    { l: `t >> ${2 * d}`, v: t1 >> 2n * D, cls: 'one', note: 'dời t thêm 2 bước chéo' },
+                    { l: `t &= t >> ${2 * d}`, v: t2, cls: 'one', note: 'chuỗi 4' },
+                    { l: `b >> ${4 * d}`, v: b >> 4n * D, cls: 'one', note: 'dời b 4 bước chéo' },
+                    { l: `t &= b >> ${4 * d}`, v: t3, cls: start ? 'bad' : 'res', note: finalNote },
+                ];
+                if (start) {
+                    steps.push({ l: 'START', v: start, cls: 'msk', note: 'ô đầu hợp lệ của hướng này' });
+                    steps.push({ l: 't & START', v: t3 & start, cls: 'res', note: (t3 & start) ? 'còn lại' : '<strong>= 0</strong> → đúng: không thắng' });
+                }
+                return steps;
+            }
+
+            function drawSteps(gid, tid, S, steps, rowsShown = 8) {
+                $(gid).innerHTML = steps.map(st => {
+                    let g = `<div class="mini small" style="grid-template-columns:repeat(${S},1fr)">`;
+                    for (let r = 0; r < rowsShown; r++)
+                        for (let c = 0; c < S; c++) {
+                            const i = r * S + c;
+                            const on = (st.v >> BigInt(i)) & 1n;
+                            const cls = S === 12 && c === 11 ? (on ? 'padon' : 'pad') : on ? st.cls : '';
+                            g += `<div class="${cls}"></div>`;
+                        }
+                    return `<figure class="step">${g}</div><figcaption><code>${esc(st.l)}</code><br>${st.note}</figcaption></figure>`;
+                }).join('');
+                const rc = i => `(${Math.floor(i / S)}, ${i % S})`;
+                const shown = steps.filter(st => st.l !== 'START');
+                $(tid).innerHTML = '<table><thead><tr><th>Bước</th><th>Các bit đang bật</th><th>Ô (hàng, cột)</th></tr></thead><tbody>'
+                    + shown.map((st, k) => `<tr${k === shown.length - 1 ? ' class="pick"' : ''}><td><code>${esc(st.l)}</code></td><td><code>{${bitsOf(st.v).join(', ')}}</code></td><td>${bitsOf(st.v).map(rc).join(' ') || '—'}</td></tr>`).join('')
+                    + '</tbody></table>';
+            }
+
+            const mask = (S, pred) => { let m = 0n; for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (pred(r, c)) m |= 1n << BigInt(r * S + c); return m; };
+
+            drawSteps('D1g', 'D1t', 12, diagSteps(12, 13, [[2, 2], [3, 3], [4, 4], [5, 5], [6, 6]], null,
+                'còn <strong>(2, 2)</strong> → 5 liền ↘ bắt đầu ở (2, 2) → thắng'));
+            drawSteps('D2g', 'D2t', 12, diagSteps(12, 11, [[2, 8], [3, 7], [4, 6], [5, 5], [6, 4]], null,
+                'còn <strong>(2, 8)</strong> → 5 liền ↙ bắt đầu ở (2, 8) → thắng'));
+            drawSteps('D3g', 'D3t', 11, diagSteps(11, 12, [[0, 8], [1, 9], [2, 10], [4, 0], [5, 1]],
+                mask(11, (r, c) => r <= 6 && c <= 6),
+                'bit 8 = (0, 8) bật: <strong>dãy giả</strong>'), 7);
+            drawSteps('D4g', 'D4t', 11, diagSteps(11, 10, [[0, 2], [1, 1], [2, 0], [2, 10], [3, 9]],
+                mask(11, (r, c) => r <= 6 && c >= 4),
+                'bit 2 = (0, 2) bật: <strong>dãy giả</strong>'), 7);
+            drawSteps('Q2bg', 'Q2bt', 12, diagSteps(12, 11, [[2, 4], [3, 3], [4, 2], [5, 1], [6, 0]], null,
+                'còn <strong>(2, 4)</strong> → 5 liền ↙ → thắng'));
+        })();
+
+        // ===== Công cụ trực quan: kiểm tra thắng trên 2 hàng, hướng ngang =====
+        (function () {
+            let S = 12;
+            let cells = new Set();
+            const key = (r, c) => r * 16 + c;
+
+            function boardBits() {
+                let b = 0n;
+                for (const k of cells) {
+                    const r = Math.floor(k / 16), c = k % 16;
+                    if (c < N) b |= 1n << BigInt(r * S + c);
+                }
+                return b;
+            }
+
+            const L = () => 2 * S;
+            const isPad = i => S === 12 && i % S === 11;
+            const START11 = (() => { let m = 0n; for (let r = 0; r < 2; r++) for (let c = 0; c <= 6; c++) m |= 1n << BigInt(r * 11 + c); return m; })();
+
+            function stripHTML(label, x, opts = {}) {
+                let h = `<div class="strip-row${opts.result ? ' result' : ''}"><div class="lbl">${esc(label)}</div><div class="strip${opts.input ? ' input' : ''}">`;
+                for (let i = 0; i < L(); i++) {
+                    const on = (x >> BigInt(i)) & 1n;
+                    const cls = ['b'];
+                    if (isPad(i)) cls.push('pad');
+                    if (on) cls.push(opts.mark ? opts.mark(i) : 'one');
+                    if (i === S) cls.push('gap');
+                    h += `<div class="${cls.join(' ')}" data-i="${i}" title="bit ${i}">${on ? 1 : i}</div>`;
+                }
+                return h + '</div></div>';
+            }
+
+            function render() {
+                const b = boardBits();
+                const t1 = b & (b >> 1n);
+                const t1s = t1 >> 2n;
+                const t2 = t1 & t1s;
+                const b4 = b >> 4n;
+                const t3 = t2 & b4;
+                const real = S === 12 ? t3 : t3 & START11;
+                const fake = t3 & ~real;
+                const mark = i => ((real >> BigInt(i)) & 1n) ? 'hit' : ((fake >> BigInt(i)) & 1n) ? 'fake' : 'one';
+
+                let html = stripHTML('b (bấm để đặt)', b, { input: true })
+                    + stripHTML('b >> 1', b >> 1n)
+                    + stripHTML('t = b & (b>>1)', t1)
+                    + stripHTML('t >> 2', t1s)
+                    + stripHTML('t &= t >> 2', t2)
+                    + stripHTML('b >> 4', b4)
+                    + stripHTML('t &= b >> 4', t3, { result: true, mark });
+                if (S === 11) html += stripHTML('START (cột 0–6)', START11)
+                    + stripHTML('t & START', real, { result: true, mark: () => 'hit' });
+                $('vizRows').innerHTML = html;
+
+                $('vizRows').querySelectorAll('.strip.input .b').forEach(el => {
+                    const i = +el.dataset.i;
+                    if (isPad(i)) return;
+                    el.addEventListener('click', () => {
+                        const r = Math.floor(i / S), c = i % S;
+                        const k = key(r, c);
+                        cells.has(k) ? cells.delete(k) : cells.add(k);
+                        render();
+                    });
+                });
+
+                const v = $('vizVerdict');
+                const where = x => { const i = (x & -x).toString(2).length - 1; return `bit ${i} (hàng ${Math.floor(i / S)}, cột ${i % S})`; };
+                if (real) {
+                    v.className = 'verdict ok';
+                    v.innerHTML = `<strong>Có 5 liền thật</strong>, bắt đầu ở ${where(real)}.`;
+                } else if (fake) {
+                    v.className = 'verdict bad';
+                    v.innerHTML = `<code>t</code> có bit bật ở ${where(fake)}, nhưng 5 ô đó <strong>tràn từ hàng 0 sang hàng 1</strong>. Mặt nạ START loại kết quả giả này → không thắng.`;
+                } else if (S === 12 && cells.size >= 5) {
+                    v.className = 'verdict';
+                    v.innerHTML = `Không có 5 liền. Nếu quân nằm ở cuối hàng 0 và đầu hàng 1, chuỗi bit bị ngắt bởi <strong>ô đệm</strong> (bit ${S - 1}).`;
+                } else {
+                    v.className = 'verdict';
+                    v.innerHTML = 'Không có 5 liền.';
+                }
+                $('vS11').classList.toggle('on', S === 11);
+                $('vS12').classList.toggle('on', S === 12);
+            }
+
+            const setCells = list => { cells = new Set(list.map(([r, c]) => key(r, c))); render(); };
+            $('vS11').onclick = () => { S = 11; render(); };
+            $('vS12').onclick = () => { S = 12; render(); };
+            $('vMid').onclick = () => setCells([[0, 3], [0, 4], [0, 5], [0, 6], [0, 7]]);
+            $('vWrap').onclick = () => setCells([[0, 8], [0, 9], [0, 10], [1, 0], [1, 1]]);
+            $('vClear').onclick = () => setCells([]);
+            setCells([[0, 8], [0, 9], [0, 10], [1, 0], [1, 1]]);
+        })();
+    </script>
+</body>
+
+</html>

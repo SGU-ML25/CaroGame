@@ -1,0 +1,6 @@
+id: L6-PolicyRL
+level: 6
+kind: policy
+params:
+  checkpoint: runs/train/pg_policy/latest/checkpoints/best.pt
+  temperature: 0

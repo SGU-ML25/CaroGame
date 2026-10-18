@@ -1,0 +1,6 @@
+# Chế độ B — ngân sách cố định, tái lập được tuyệt đối khi cùng seed (mục 10.1)
+budget:
+  mode: fixed
+  time_ms: null
+  max_depth: 4              # Alpha-Beta
+  max_sims: 800             # MCTS / PUCT

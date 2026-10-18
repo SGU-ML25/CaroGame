@@ -1,0 +1,19 @@
+# REINFORCE có baseline — cấp 6 (mục 08)
+defaults: [base, model/resnet_small]
+experiment: {kind: train, name: pg_policy, rq: [RQ2]}
+train:
+  init: runs/train/sl_policy/latest/checkpoints/best.pt   # A5b: đường dẫn | random
+  episodes: 50000
+  batch_games: 128
+  optimizer: adam
+  lr: 2.0e-4
+  gamma: 1.0
+  baseline: value_head
+  entropy_coef: 0.01
+  entropy_decay: 0.999
+  temperature: 1.0
+  random_opening_plies: 2
+  opponent_pool: {latest: 0.5, past_checkpoints: 0.5}
+  eval_every: 1000          # episode → đóng băng checkpoint, đấu 100 ván
+  eval_vs: [agents/l2_rule, agents/l3_alphabeta]
+  eval_games: 100

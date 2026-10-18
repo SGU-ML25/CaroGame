@@ -1,0 +1,7 @@
+# A1 — Alpha-Beta bật / tắt cắt tỉa. Giữ: độ sâu, tập ứng viên. Đo: số nút, thời gian, giá trị gốc (phải trùng)
+defaults: [base, budgets/mode_b_fixed, arena/bench_positions]
+experiment: {name: a1_ab_pruning, rq: [RQ3]}
+budget: {max_depth: 3}
+agents:
+  - {from: agents/l3_alphabeta, id: AB-prune, params: {pruning: true,  move_ordering: false, tt: false}}
+  - {from: agents/l3_alphabeta, id: AB-full,  params: {pruning: false, move_ordering: false, tt: false}}

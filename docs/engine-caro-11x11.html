@@ -1,0 +1,3242 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engine Caro 11×11</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #312e81;
+            --accent: #0891b2;
+            --accent-light: #22d3ee;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #212121;
+            --text-secondary: #616161;
+            --border: #e0e0e0;
+            --code-bg: #263238;
+            --code-text: #eeffff;
+            --success: #2e7d32;
+            --warning: #f57f17;
+            --info: #1565c0;
+            --danger: #c62828;
+            --stone-x: #1e293b;
+            --stone-o: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--primary);
+            color: white;
+            min-height: 56px;
+            padding: .35rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -.5px;
+            white-space: nowrap;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: .5rem;
+            row-gap: .25rem;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        nav .nav-links a {
+            color: rgba(255, 255, 255, .85);
+            text-decoration: none;
+            font-size: .82rem;
+            padding: .35rem .7rem;
+            border-radius: 4px;
+            transition: background .2s;
+        }
+
+        nav .nav-links a:hover {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            margin-top: 56px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+            color: white;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .hero .part {
+            display: inline-block;
+            font-size: .8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, .18);
+            padding: .25rem .9rem;
+            border-radius: 20px;
+            margin-bottom: .8rem;
+        }
+
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: .5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.15rem;
+            opacity: .9;
+            max-width: 760px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .hero .badges {
+            display: flex;
+            justify-content: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+        }
+
+        .hero .badge {
+            background: rgba(255, 255, 255, .2);
+            padding: .3rem .8rem;
+            border-radius: 20px;
+            font-size: .8rem;
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        section:nth-child(even) {
+            background: var(--surface);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .section-header .section-num {
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .lead {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        h3.sub {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin: 1.6rem 0 .4rem;
+        }
+
+        /* ===== CARDS ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .card-grid.four {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: box-shadow .2s, transform .2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .08);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            margin-bottom: .4rem;
+            color: var(--primary-dark);
+        }
+
+        .card p,
+        .card li {
+            font-size: .9rem;
+            color: var(--text-secondary);
+        }
+
+        .card ul {
+            padding-left: 1.2rem;
+            margin-top: .4rem;
+        }
+
+        .card li {
+            margin-bottom: .2rem;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .88rem;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: .6rem .8rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: .55rem .8rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tr:hover td {
+            background: #eef2ff;
+        }
+
+        tr.pick td {
+            background: #e8f5e9;
+        }
+
+        /* ===== CODE ===== */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: .82rem;
+            line-height: 1.7;
+            margin: 1rem 0;
+            white-space: pre;
+            tab-size: 4;
+        }
+
+        .code-block .comment { color: #7f939c; }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .number { color: #f78c6c; }
+        .code-block .fn { color: #82aaff; }
+
+        code {
+            background: #eceff1;
+            padding: .15rem .4rem;
+            border-radius: 3px;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: .85em;
+            overflow-wrap: anywhere;
+        }
+
+        /* ===== FLOW ===== */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .flow-step {
+            background: var(--primary);
+            color: white;
+            padding: .4rem .9rem;
+            border-radius: 8px;
+            font-size: .82rem;
+            font-weight: 600;
+            max-width: 230px;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .flow-step.alt { background: var(--accent); }
+        .flow-step.success { background: var(--success); }
+        .flow-step.warning { background: var(--warning); color: var(--text); }
+
+        .flow-arrow {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== STATS ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.2rem .8rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-card .label {
+            font-size: .78rem;
+            color: var(--text-secondary);
+            margin-top: .2rem;
+        }
+
+        /* ===== HIGHLIGHT ===== */
+        .highlight {
+            border-left: 4px solid var(--primary);
+            background: #fff3e0;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .highlight.info { border-color: var(--info); background: #e3f2fd; }
+        .highlight.success { border-color: var(--success); background: #e8f5e9; }
+        .highlight.warning { border-color: var(--warning); background: #fff8e1; }
+
+        /* ===== MINI BOARDS (minh hoạ tĩnh) ===== */
+        .mini-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 1rem 0;
+            align-items: flex-start;
+        }
+
+        .mini-fig {
+            flex: 1 1 260px;
+            max-width: 420px;
+            min-width: 0;
+        }
+
+        .mini-fig figcaption {
+            font-size: .8rem;
+            color: var(--text-secondary);
+            margin-top: .4rem;
+            text-align: center;
+        }
+
+        .mini {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 2px;
+            background: var(--border);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .mini div {
+            aspect-ratio: 1;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .6rem;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            color: #9e9e9e;
+            min-width: 0;
+        }
+
+        .mini.small div { font-size: 0; }
+        .mini div.hl { background: #c7d2fe; color: var(--primary-dark); font-weight: 700; }
+        .mini div.center { background: var(--primary); color: #fff; font-weight: 700; }
+        .mini div.on { background: #a7f3d0; color: #065f46; font-weight: 700; }
+        .mini div.x { background: var(--stone-x); color: #fff; font-weight: 700; }
+        .mini div.o { background: var(--stone-o); color: #fff; font-weight: 700; }
+        .mini div.bad { background: #fecaca; color: var(--danger); font-weight: 700; }
+
+        /* ===== DEMO ===== */
+        .demo {
+            display: grid;
+            grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            align-items: start;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 2px;
+            background: #c9a96e;
+            padding: 6px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+            user-select: none;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: #f3e2bf;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: clamp(.7rem, 2.6vw, 1.15rem);
+            padding: 0;
+            min-width: 0;
+            color: var(--text);
+            font-family: inherit;
+        }
+
+        .cell:hover { background: #ead2a0; }
+        .cell .idx {
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            font-size: .5rem;
+            font-weight: 500;
+            color: #8d6e63;
+            font-family: 'Cascadia Code', monospace;
+        }
+
+        .cell.x { color: var(--stone-x); }
+        .cell.o { color: var(--stone-o); }
+        .cell.cand { background: #dcfce7; }
+        .cell.wme { background: #86efac; }
+        .cell.wopp { background: #fecaca; }
+        .cell.wboth { background: repeating-linear-gradient(45deg, #86efac 0 5px, #fecaca 5px 10px); }
+        .cell.win { background: #fde047; }
+        .cell.last { box-shadow: inset 0 0 0 2px var(--primary); }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            min-width: 0;
+        }
+
+        .panel h4 {
+            font-size: .9rem;
+            color: var(--primary-dark);
+            margin: .9rem 0 .35rem;
+        }
+
+        .panel h4:first-child { margin-top: 0; }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: .4rem .85rem;
+            border-radius: 18px;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn.alt { background: var(--accent); }
+        .btn.ghost { background: #eceff1; color: var(--text); }
+        .btn:hover { filter: brightness(1.08); }
+
+        .toggles label {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            font-size: .84rem;
+            color: var(--text-secondary);
+            margin: .2rem 0;
+            cursor: pointer;
+        }
+
+        .status {
+            font-size: .92rem;
+            padding: .6rem .8rem;
+            border-radius: 8px;
+            background: #eef2ff;
+            margin-top: .6rem;
+        }
+
+        .status.win { background: #fef9c3; }
+        .status.bug { background: #fee2e2; }
+
+        .hex {
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: .75rem;
+            background: #eceff1;
+            padding: .35rem .5rem;
+            border-radius: 4px;
+            overflow-wrap: anywhere;
+            word-break: break-all;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .7rem;
+            font-size: .76rem;
+            color: var(--text-secondary);
+            margin-top: .6rem;
+        }
+
+        .legend span::before {
+            content: '';
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            margin-right: .3rem;
+            vertical-align: -1px;
+            background: var(--sw);
+        }
+
+        .wtable td,
+        .wtable th {
+            padding: .3rem .5rem;
+            font-size: .8rem;
+            text-align: center;
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            min-width: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .timeline-item h4 {
+            font-size: .95rem;
+            color: var(--primary-dark);
+            margin-bottom: .3rem;
+        }
+
+        .timeline-item p {
+            font-size: .85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== PART BANNER & MỤC LỤC ===== */
+        [id] {
+            scroll-margin-top: 80px;
+        }
+
+        .part-banner {
+            width: calc(100% - 2rem);
+            max-width: 1100px;
+            margin: 3rem auto 0;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #fff;
+            border-radius: 14px;
+        }
+
+        .part-banner .pb-num {
+            font-size: .75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: .8;
+            font-weight: 600;
+        }
+
+        .part-banner .pb-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            line-height: 1.25;
+        }
+
+        .part-banner .pb-desc {
+            font-size: .85rem;
+            opacity: .85;
+            margin-top: .3rem;
+        }
+
+        .toc {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: .8rem;
+            margin: 1.5rem 0 0;
+        }
+
+        .toc a {
+            display: block;
+            min-width: 0;
+            text-decoration: none;
+            color: inherit;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: .8rem 1rem;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .toc a:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 12px rgba(79, 70, 229, .12);
+        }
+
+        .toc .n {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .toc .t {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: .95rem;
+        }
+
+        .toc .d {
+            font-size: .8rem;
+            color: var(--text-secondary);
+        }
+
+        .sel {
+            font-family: inherit;
+            font-size: .84rem;
+            padding: .3rem .5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .part-banner { padding: 1.2rem 1rem; }
+            .part-banner .pb-title { font-size: 1.25rem; }
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--code-bg);
+            color: rgba(255, 255, 255, .6);
+            font-size: .8rem;
+        }
+
+        footer strong { color: rgba(255, 255, 255, .9); }
+
+        /* Tránh tràn ngang trên mobile */
+        .card,
+        .card-grid > *,
+        .demo > * {
+            min-width: 0;
+        }
+
+        li, p, td, th { overflow-wrap: break-word; }
+
+        @media (max-width: 1200px) {
+            nav .logo { font-size: .9rem; }
+        }
+
+        @media (max-width: 860px) {
+            .demo { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.6rem; }
+            .hero { padding: 3rem 1rem 2rem; }
+            section { padding: 2rem 1rem; }
+            nav { padding: .35rem 1rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            nav .nav-links { display: none; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .code-block { padding: 1rem; font-size: .76rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="logo">♟️ Engine Caro 11×11</div>
+        <ul class="nav-links">
+            <li><a href="#p01">Bitboard</a></li>
+            <li><a href="#p02">Bài toán</a></li>
+            <li><a href="#p03">Kiến trúc</a></li>
+            <li><a href="#p04">Cấp 1–2</a></li>
+            <li><a href="#p05">Alpha-Beta</a></li>
+            <li><a href="#p06">MCTS</a></li>
+            <li><a href="#p07">NN</a></li>
+            <li><a href="#p08">RL</a></li>
+            <li><a href="#p09">AlphaZero</a></li>
+            <li><a href="#p10">Thực nghiệm</a></li>
+            <li><a href="#p11">Giao diện</a></li>
+            <li><a href="#p12">Kế hoạch</a></li>
+            <li><a href="#demo">▶ Chơi thử</a></li>
+            <li><a href="lo-trinh-hoc-bitboard.html">📚 Lộ trình học</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>Engine Caro 11×11</h1>
+        <p class="subtitle">Tài liệu thiết kế engine Caro luật tự do: bàn 11×11, ai có 5 quân liên tiếp trước là
+            thắng, không áp luật chặn 2 đầu. Nền tảng của engine là bitboard: mọi thao tác như kiểm tra thắng,
+            sinh nước đi, tìm ô đe doạ, chấm điểm thế cờ đều chạy bằng vài phép
+            <code style="background:rgba(255,255,255,.2);color:#fff">&amp; | ^ &lt;&lt; &gt;&gt;</code>
+            thay vì vòng lặp duyệt từng ô.</p>
+        <div class="badges">
+            <span class="badge">Luật tự do: 5 quân liên tiếp là thắng</span>
+            <span class="badge">Không luật chặn 2 đầu</span>
+            <span class="badge">121 bit · vừa u128</span>
+            <span class="badge">4 hướng · 252 cửa sổ 5 ô</span>
+            <span class="badge">Python int / C++ __int128</span>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <section>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="value">121</div>
+                <div class="label">Ô trên bàn 11×11 = 121 bit cho mỗi bên</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">2</div>
+                <div class="label">Bitboard: một cho X, một cho O</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">4</div>
+                <div class="label">Hướng = 4 độ dịch bit: 1 · 11 · 12 · 10</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">3</div>
+                <div class="label">Phép dịch để tìm 5 quân liền trên một hướng</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">252</div>
+                <div class="label">Cửa sổ 5 ô: 77 ngang + 77 dọc + 49 + 49 chéo</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">O(1)</div>
+                <div class="label">Đặt / gỡ quân: một phép OR / XOR</div>
+            </div>
+        </div>
+        <div class="highlight info">
+            <strong>Bối cảnh:</strong> đề tài cuối kỳ môn Trí tuệ nhân tạo nâng cao, chủ đề "Xây dựng và đánh giá
+            Game AI đa cấp độ". Tài liệu đi từ engine (bitboard) tới 8 cấp tác tử, thiết kế thí nghiệm, giao diện
+            và sản phẩm nộp. Code minh hoạ viết bằng Python như đề yêu cầu; các công thức bitboard chạy y hệt với
+            <code>unsigned __int128</code> (C++) hoặc <code>u128</code> (Rust) nếu cần tăng tốc. Các ô "—" trong bảng
+            kết quả là chỗ nhóm điền số liệu sau khi chạy, tài liệu không chứa kết quả thí nghiệm nào.
+        </div>
+        <div class="toc" aria-label="Mục lục">
+            <a href="#p01"><div class="n">Phần 01</div><div class="t">Bitboard</div><div class="d">Biểu diễn 121 bit, thắng, sinh nước, đe doạ, đánh giá, demo</div></a>
+            <a href="#p02"><div class="n">Phần 02</div><div class="t">Mô hình hoá &amp; API</div><div class="d">State/action/reward, API thống nhất, RQ1–RQ4, test</div></a>
+            <a href="#p03"><div class="n">Phần 03</div><div class="t">Kiến trúc hệ thống</div><div class="d">Các khối, interface Agent, repo, seed &amp; log</div></a>
+            <a href="#p04"><div class="n">Phần 04</div><div class="t">Cấp 1 Random · Cấp 2 Rule-based</div><div class="d">Baseline, thứ tự ưu tiên P1–P7 và xung đột luật</div></a>
+            <a href="#p05"><div class="n">Phần 05</div><div class="t">Cấp 3 Alpha-Beta</div><div class="d">Negamax, iterative deepening, TT, đo số nút</div></a>
+            <a href="#p06"><div class="n">Phần 06</div><div class="t">Cấp 4 MCTS (UCT)</div><div class="d">4 bước, rollout, khảo sát số mô phỏng</div></a>
+            <a href="#p07"><div class="n">Phần 07</div><div class="t">Cấp 5 Neural Network</div><div class="d">ResNet policy-value, dữ liệu expert, chia tập theo ván</div></a>
+            <a href="#p08"><div class="n">Phần 08</div><div class="t">Cấp 6 Reinforcement Learning</div><div class="d">REINFORCE có baseline, pool đối thủ, learning curve</div></a>
+            <a href="#p09"><div class="n">Phần 09</div><div class="t">Cấp 7–8 AlphaGo/AlphaZero-inspired</div><div class="d">PUCT, vòng lặp self-play, gating</div></a>
+            <a href="#p10"><div class="n">Phần 10</div><div class="t">Thí nghiệm &amp; đo đạc</div><div class="d">Round-robin 200 ván/cặp, Wilson, ablation</div></a>
+            <a href="#p11"><div class="n">Phần 11</div><div class="t">Giao diện &amp; demo</div><div class="d">Người–máy, máy–máy, replay, API</div></a>
+            <a href="#p12"><div class="n">Phần 12</div><div class="t">Kế hoạch &amp; nộp bài</div><div class="d">Lộ trình 8 tuần, phân công, rubric, trích dẫn</div></a>
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 01 ================= -->
+    <div class="part-banner" id="p01">
+        <div class="pb-num">Phần 01</div>
+        <div class="pb-title">Bitboard — Nền Tảng Của Engine</div>
+        <div class="pb-desc">Biểu diễn bàn cờ và mọi thao tác cơ bản mà các tác tử ở Phần 04–09 dùng chung</div>
+    </div>
+
+    <!-- 01.1 LUẬT -->
+    <section id="rules">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">📜</div>
+            <div>
+                <div class="section-num">Mục 01.1</div>
+                <h2>Luật Chơi &amp; Hệ Quả Cho Engine</h2>
+            </div>
+        </div>
+
+        <p class="lead">Bàn 11×11, hai người đi luân phiên, ai có <strong>5 quân liên tiếp</strong> (ngang, dọc
+            hoặc chéo) trước là thắng. <strong>Không áp luật chặn 2 đầu</strong>: dãy 5 bị quân đối phương kẹp hai
+            đầu vẫn thắng, và dãy dài hơn 5 (overline) cũng tính là thắng. Ba hệ quả này quyết định cách thiết kế
+            bitboard:</p>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>① Chỉ cần hỏi "có 5 liền không?"</h3>
+                <p>Không phải xét hai đầu dãy có bị chặn hay không, cũng không phải loại dãy 6. Điều kiện thắng
+                    trở thành đúng một câu hỏi: tồn tại 5 bit liên tiếp theo một hướng. Với bitboard, câu hỏi
+                    này chỉ tốn 3 phép dịch + 3 phép AND cho mỗi hướng.</p>
+            </div>
+            <div class="card">
+                <h3>② Mô hình "cửa sổ 5 ô" là chính xác</h3>
+                <p>Một quân chỉ có thể góp vào chiến thắng qua một <em>cửa sổ 5 ô liên tiếp</em> chưa có quân
+                    địch. Không có luật chặn 2 đầu nên không cần xét ô bên ngoài cửa sổ: cửa sổ có 4 quân mình và
+                    1 ô trống <strong>luôn luôn</strong> là một ô thắng ngay.</p>
+            </div>
+            <div class="card">
+                <h3>③ Bàn nhỏ → vừa một thanh ghi 128 bit</h3>
+                <p>121 ô vừa khít trong 128 bit (dư 7 bit). Toàn bộ quân của một bên nằm trong một số
+                    nguyên, nên sao chép, so sánh, băm thế cờ đều rất rẻ. Bàn 15×15 (225 ô) sẽ không còn
+                    tiện như vậy.</p>
+            </div>
+        </div>
+
+        <div class="highlight warning">
+            <strong>Lưu ý khi đọc tài liệu khác:</strong> nhiều tài liệu Gomoku / Caro Việt Nam dùng luật
+            "chặn 2 đầu không tính" hoặc "đúng 5, không tính 6". Các mẫu nhận diện của chúng phải nhìn thêm ô
+            ngoài cửa sổ. Với luật của dự án này thì <em>không cần</em>, và đó là lý do các công thức bên dưới
+            ngắn hơn hẳn.
+        </div>
+    </section>
+
+    <!-- 01.2 BITBOARD LÀ GÌ -->
+    <section id="concept">
+        <div class="section-header">
+            <div class="icon" style="background:#e0f7fa;color:var(--accent);">🧮</div>
+            <div>
+                <div class="section-num">Mục 01.2</div>
+                <h2>Bitboard Là Gì</h2>
+            </div>
+        </div>
+
+        <p class="lead">Thay vì mảng 2 chiều <code>board[r][c] ∈ {trống, X, O}</code>, ta giữ
+            <strong>hai số nguyên</strong>: <code>X</code> và <code>O</code>. Bit thứ <code>i</code> của
+            <code>X</code> bằng 1 khi ô số <code>i</code> có quân X. Ô <code>(r, c)</code> ứng với bit
+            <code>i = r·11 + c</code>.</p>
+
+        <div class="mini-wrap">
+            <figure class="mini-fig">
+                <div class="mini" id="figIndex"></div>
+                <figcaption>Đánh số bit: <code>i = r·11 + c</code>. Bit 0 ở góc trên trái, bit 120 ở góc dưới phải.
+                    Ô tô đậm là ô 60 (tâm bàn) và 8 hàng xóm của nó.</figcaption>
+            </figure>
+            <div style="flex:1 1 300px;min-width:0;">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Đại lượng</th>
+                                <th>Công thức bitboard</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Ô đã có quân</td><td><code>occ = X | O</code></td></tr>
+                            <tr><td>Ô trống</td><td><code>empty = ~occ &amp; FULL</code></td></tr>
+                            <tr><td>Ô i có quân X?</td><td><code>(X &gt;&gt; i) &amp; 1</code></td></tr>
+                            <tr><td>Đặt X vào ô i</td><td><code>X |= 1 &lt;&lt; i</code></td></tr>
+                            <tr><td>Gỡ quân X ở ô i (undo)</td><td><code>X ^= 1 &lt;&lt; i</code></td></tr>
+                            <tr><td>Số quân X</td><td><code>popcount(X)</code></td></tr>
+                            <tr><td>Bàn đầy (hoà)?</td><td><code>occ == FULL</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="font-size:.88rem;color:var(--text-secondary);">
+                    <code>FULL = (1 &lt;&lt; 121) - 1</code> là mặt nạ 121 bit toàn 1. Phải AND với
+                    <code>FULL</code> sau mỗi phép <code>~</code> hoặc dịch trái, nếu không 7 bit thừa
+                    (121…127) sẽ bị bật và tạo ra "ô ma" ngoài bàn.
+                </p>
+            </div>
+        </div>
+
+        <h3 class="sub">Ý tưởng cốt lõi: xử lý 121 ô cùng lúc</h3>
+        <p style="color:var(--text-secondary);">Một phép <code>X &amp; (X &gt;&gt; 1)</code> hỏi đồng thời cho
+            <em>cả 121 ô</em>: "ô này và ô bên phải nó có cùng là X không?". Vòng lặp duyệt mảng phải hỏi từng ô
+            một. Đây là kiểu song song SIMD bên trong một thanh ghi (bit-parallelism), và là nguồn gốc
+            của toàn bộ lợi thế tốc độ.</p>
+    </section>
+
+    <!-- 01.3 LAYOUT -->
+    <section id="layout">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">📐</div>
+            <div>
+                <div class="section-num">Mục 01.3</div>
+                <h2>Chọn Cách Xếp 121 Ô Vào Bit</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phương án</th>
+                        <th>Số bit</th>
+                        <th>Ưu điểm</th>
+                        <th>Nhược điểm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mảng 2D <code>int[11][11]</code></td>
+                        <td>—</td>
+                        <td>Dễ viết, dễ debug</td>
+                        <td>Mỗi câu hỏi phải lặp qua từng ô; chậm khi tìm kiếm sâu</td>
+                    </tr>
+                    <tr>
+                        <td>2 × <code>uint64</code> (chia đôi bàn)</td>
+                        <td>128</td>
+                        <td>Chạy được ở mọi ngôn ngữ</td>
+                        <td>Mọi phép dịch phải xử lý bit "tràn" giữa hai từ 64 bit; code rối</td>
+                    </tr>
+                    <tr class="pick">
+                        <td><strong>Hàng rộng 11, 1 số 128 bit</strong> ✅</td>
+                        <td>121 (dư 7)</td>
+                        <td>Vừa khít <code>u128</code> / <code>__int128</code>; Python int dùng thẳng; công thức gọn</td>
+                        <td>Phép dịch ngang/chéo bị "lọt" sang hàng kế bên → cần mặt nạ cột (mục 01.4)</td>
+                    </tr>
+                    <tr>
+                        <td>Hàng rộng 12 (thêm 1 cột đệm luôn = 0)</td>
+                        <td>132</td>
+                        <td>Cột đệm chặn lỗi lọt hàng, gần như không cần mặt nạ</td>
+                        <td>132 &gt; 128: không vừa <code>u128</code>, phải dùng 3 × u64 (Python thì không sao)</td>
+                    </tr>
+                    <tr>
+                        <td>Bitboard theo đường (mỗi hàng / cột / chéo là 1 số nhỏ ≤ 11 bit)</td>
+                        <td>11 + 11 + 13 + 13 đường</td>
+                        <td>Tra bảng mẫu theo đường: 3<sup>11</sup> = 177 147 trạng thái/đường</td>
+                        <td>Mỗi nước đi phải cập nhật 4 đường; thường dùng <em>bổ sung</em> cho phần đánh giá</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="highlight success">
+            <strong>Chọn cho dự án:</strong> hàng rộng 11, mỗi bên một số 121 bit. Python thì dùng
+            <code>int</code>; khi cần tốc độ thì chuyển sang C++/Rust với <code>u128</code> mà không phải đổi
+            công thức. Toàn bộ tài liệu và demo bên dưới dùng layout này.
+        </div>
+    </section>
+
+    <!-- 01.4 DỊCH BIT -->
+    <section id="shift">
+        <div class="section-header">
+            <div class="icon" style="background:#ede7f6;color:#5e35b1;">↔️</div>
+            <div>
+                <div class="section-num">Mục 01.4</div>
+                <h2>Dịch Bit = Đi Theo Một Hướng</h2>
+            </div>
+        </div>
+
+        <p class="lead">Với <code>i = r·11 + c</code>, đi một bước theo một hướng tức là cộng một hằng số vào
+            chỉ số. Phép <code>x &gt;&gt; d</code> đưa bit ở ô <code>i + d</code> về vị trí <code>i</code>, nghĩa là
+            "nhìn sang ô hàng xóm cách <code>d</code>" cho cả bàn cùng lúc.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hướng</th>
+                        <th>(Δr, Δc)</th>
+                        <th>Độ dịch d</th>
+                        <th>Nguy cơ lọt hàng</th>
+                        <th>Ô bắt đầu hợp lệ cho dãy 5 (START mask)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Ngang →</td><td>(0, +1)</td><td><code>1</code></td><td>Cột 10 lọt sang cột 0 hàng dưới</td><td>cột 0…6</td></tr>
+                    <tr><td>Dọc ↓</td><td>(+1, 0)</td><td><code>11</code></td><td>Không (bit &gt; 120 là 0)</td><td>hàng 0…6</td></tr>
+                    <tr><td>Chéo ↘</td><td>(+1, +1)</td><td><code>12</code></td><td>Cột 10 lọt sang cột 0</td><td>hàng 0…6, cột 0…6</td></tr>
+                    <tr><td>Chéo ↙</td><td>(+1, −1)</td><td><code>10</code></td><td>Cột 0 lọt sang cột 10</td><td>hàng 0…6, cột 4…10</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="sub">Mặt nạ START: ô nào được phép là ô đầu của một dãy 5</h3>
+        <p style="color:var(--text-secondary);">Nếu ô đầu <code>(r, c)</code> nằm trong vùng xanh, thì 4 ô tiếp
+            theo <code>(r+kΔr, c+kΔc)</code> chắc chắn vẫn nằm trong bàn và cùng một đường thẳng, nên không thể
+            lọt hàng. Chỉ cần AND kết quả cuối với <code>START[d]</code> là mọi kết quả sai do lọt hàng bị loại.</p>
+        <div class="mini-wrap" id="figStarts"></div>
+
+        <h3 class="sub">Lỗi kinh điển: dãy 5 "giả" do lọt hàng</h3>
+        <div class="mini-wrap">
+            <figure class="mini-fig">
+                <div class="mini" id="figWrap"></div>
+                <figcaption>X ở ô 30, 31, 32 (hàng 2, cột 8–10) và 33, 34 (hàng 3, cột 0–1).
+                    Năm chỉ số liên tiếp nhưng <strong>không</strong> thẳng hàng.</figcaption>
+            </figure>
+            <div style="flex:1 1 300px;min-width:0;">
+                <p style="color:var(--text-secondary);font-size:.92rem;">Chỉ số 30…34 liên tiếp nên
+                    <code>X &amp; X&gt;&gt;1 &amp; X&gt;&gt;2 &amp; X&gt;&gt;3 &amp; X&gt;&gt;4</code> có bit 30 bật. Engine thiếu
+                    mặt nạ sẽ báo <strong>X thắng</strong>, trong khi trên bàn thật đây chỉ là 3 quân + 2 quân rời
+                    nhau. Ô 30 nằm ở cột 8 &gt; 6, không thuộc <code>START[ngang]</code>, nên AND với mặt nạ là
+                    loại được kết quả sai.</p>
+                <p style="color:var(--text-secondary);font-size:.92rem;">Bạn có thể tái hiện lỗi này trong
+                    <a href="#demo">demo</a> bằng nút "Ví dụ: lỗi lọt hàng" và tuỳ chọn "Bỏ mặt nạ START".</p>
+            </div>
+        </div>
+
+        <div class="code-block"><span class="keyword">N</span> = <span class="number">11</span>
+<span class="keyword">FULL</span> = (<span class="number">1</span> &lt;&lt; (N * N)) - <span class="number">1</span>
+
+<span class="keyword">def</span> <span class="fn">bit</span>(r, c):
+    <span class="keyword">return</span> <span class="number">1</span> &lt;&lt; (r * N + c)
+
+<span class="keyword">def</span> <span class="fn">mask_of</span>(pred):
+    <span class="keyword">return</span> <span class="fn">sum</span>(bit(r, c) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">if</span> pred(r, c))
+
+<span class="keyword">def</span> <span class="fn">inside</span>(v):
+    <span class="keyword">return</span> <span class="number">0</span> &lt;= v &lt; N
+
+<span class="comment"># (độ dịch d, START mask) cho 4 hướng: ngang, dọc, chéo ↘, chéo ↙</span>
+<span class="keyword">LINES</span> = [
+    (dr * N + dc, mask_of(<span class="keyword">lambda</span> r, c, dr=dr, dc=dc: inside(r + <span class="number">4</span> * dr) <span class="keyword">and</span> inside(c + <span class="number">4</span> * dc)))
+    <span class="keyword">for</span> dr, dc <span class="keyword">in</span> ((<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">0</span>), (<span class="number">1</span>, <span class="number">1</span>), (<span class="number">1</span>, -<span class="number">1</span>))
+]
+
+<span class="keyword">NOT_COL0</span>  = FULL &amp; ~mask_of(<span class="keyword">lambda</span> r, c: c == <span class="number">0</span>)
+<span class="keyword">NOT_COL10</span> = FULL &amp; ~mask_of(<span class="keyword">lambda</span> r, c: c == N - <span class="number">1</span>)</div>
+        <p style="font-size:.85rem;color:var(--text-secondary);">Mọi mặt nạ được <strong>sinh bằng vòng lặp lúc
+            khởi động</strong>, không chép tay hằng số hex. Viết tay hằng số 121 bit rất dễ sai một bit mà không
+            ai phát hiện.</p>
+    </section>
+
+    <!-- 01.5 KIỂM TRA THẮNG -->
+    <section id="win">
+        <div class="section-header">
+            <div class="icon" style="background:#fef9c3;color:#a16207;">🏆</div>
+            <div>
+                <div class="section-num">Mục 01.5</div>
+                <h2>Kiểm Tra Thắng Bằng 3 Phép Dịch</h2>
+            </div>
+        </div>
+
+        <p class="lead">Cách ngây thơ cần 5 phép dịch: <code>x &amp; x&gt;&gt;d &amp; x&gt;&gt;2d &amp; x&gt;&gt;3d &amp;
+            x&gt;&gt;4d</code>. Dùng mẹo "nhân đôi" thì chỉ cần 3:</p>
+
+        <div class="flow">
+            <div class="flow-step">t = x &amp; (x≫d)<br>bit i: ô i, i+d là X</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">t &amp;= t≫2d<br>bit i: 4 ô i…i+3d</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">t &amp;= x≫4d<br>bit i: 5 ô i…i+4d</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step warning">t &amp; START[d]<br>bỏ kết quả lọt hàng</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step success">≠ 0 → thắng</div>
+        </div>
+
+        <div class="code-block"><span class="keyword">def</span> <span class="fn">has_five</span>(x):
+    <span class="keyword">for</span> d, start <span class="keyword">in</span> LINES:
+        t = x &amp; (x &gt;&gt; d)          <span class="comment"># cặp 2</span>
+        t &amp;= t &gt;&gt; (<span class="number">2</span> * d)          <span class="comment"># cặp 2 + cặp 2 = dãy 4</span>
+        t &amp;= x &gt;&gt; (<span class="number">4</span> * d)          <span class="comment"># dãy 4 + ô thứ 5</span>
+        <span class="keyword">if</span> t &amp; start:
+            <span class="keyword">return</span> <span class="keyword">True</span>
+    <span class="keyword">return</span> <span class="keyword">False</span></div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Vì sao đúng với luật "≥ 5"?</h3>
+                <p>Bit <code>i</code> của <code>t</code> bật khi và chỉ khi 5 ô <code>i, i+d, …, i+4d</code> đều là
+                    X. Dãy 6 hay 7 quân cũng chứa ít nhất một dãy 5 nên cũng được phát hiện. Không có luật chặn 2 đầu
+                    nên không cần nhìn ô <code>i−d</code> hay <code>i+5d</code>.</p>
+            </div>
+            <div class="card">
+                <h3>Chỉ kiểm tra quanh nước vừa đi</h3>
+                <p>Thế cờ trước đó chưa ai thắng, nên dãy 5 mới (nếu có) phải đi qua ô vừa đặt. Có thể AND
+                    <code>x</code> với mặt nạ "9 ô quanh nước đi theo hướng d" (tính sẵn
+                    <code>SEG[i][d]</code>) trước khi chạy công thức, để kết quả không bị nhiễu bởi phần còn lại của
+                    bàn. Với 121 bit thì kiểm tra cả bàn cũng đã rất rẻ.</p>
+            </div>
+            <div class="card">
+                <h3>Bản C++ / Rust</h3>
+                <p>Giống hệt, chỉ đổi kiểu: <code>unsigned __int128</code> (GCC/Clang) hoặc <code>u128</code>
+                    (Rust). Phép dịch, AND, so sánh với 0 đều được trình biên dịch sinh thành vài lệnh 64 bit.</p>
+            </div>
+        </div>
+
+        <div class="code-block"><span class="keyword">using</span> u128 = <span class="keyword">unsigned</span> __int128;
+
+<span class="keyword">inline bool</span> <span class="fn">has_five</span>(u128 x) {
+    <span class="keyword">for</span> (<span class="keyword">const auto</span>&amp; [d, start] : LINES) {    <span class="comment">// LINES tính sẵn lúc khởi động</span>
+        u128 t = x &amp; (x &gt;&gt; d);
+        t &amp;= t &gt;&gt; (<span class="number">2</span> * d);
+        t &amp;= x &gt;&gt; (<span class="number">4</span> * d);
+        <span class="keyword">if</span> (t &amp; start) <span class="keyword">return true</span>;
+    }
+    <span class="keyword">return false</span>;
+}</div>
+    </section>
+
+    <!-- 01.6 SINH NƯỚC ĐI -->
+    <section id="movegen">
+        <div class="section-header">
+            <div class="icon" style="background:#dcfce7;color:var(--success);">🌱</div>
+            <div>
+                <div class="section-num">Mục 01.6</div>
+                <h2>Sinh Nước Đi Ứng Viên Bằng "Giãn Nở"</h2>
+            </div>
+        </div>
+
+        <p class="lead">Đi ở ô xa mọi quân hầu như không bao giờ tốt, nên engine chỉ xét các ô trống trong bán
+            kính 1–2 quanh quân đã có. Với bitboard, "lấy vùng lân cận" là phép <strong>giãn nở</strong>
+            (dilation): OR bàn cờ với các bản dịch của chính nó theo 8 hướng.</p>
+
+        <div class="code-block"><span class="keyword">def</span> <span class="fn">dilate</span>(x):
+    v = x | (x &lt;&lt; N) | (x &gt;&gt; N)                 <span class="comment"># thêm ô trên, ô dưới</span>
+    h = v | ((v &lt;&lt; <span class="number">1</span>) &amp; NOT_COL0) | ((v &gt;&gt; <span class="number">1</span>) &amp; NOT_COL10)  <span class="comment"># thêm trái, phải (chặn lọt hàng)</span>
+    <span class="keyword">return</span> h &amp; FULL                          <span class="comment"># cắt 7 bit thừa</span>
+
+<span class="keyword">def</span> <span class="fn">candidates</span>(X, O, radius=<span class="number">2</span>):
+    occ = X | O
+    <span class="keyword">if</span> occ == <span class="number">0</span>:
+        <span class="keyword">return</span> bit(N // <span class="number">2</span>, N // <span class="number">2</span>)                <span class="comment"># bàn trống: đi giữa</span>
+    area = occ
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(radius):
+        area = dilate(area)
+    <span class="keyword">return</span> area &amp; ~occ &amp; FULL
+
+<span class="keyword">def</span> <span class="fn">iter_bits</span>(b):                              <span class="comment"># duyệt từng bit 1</span>
+    <span class="keyword">while</span> b:
+        low = b &amp; -b                               <span class="comment"># tách bit thấp nhất</span>
+        <span class="keyword">yield</span> low.bit_length() - <span class="number">1</span>
+        b ^= low</div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Vì sao mặt nạ ở phép dịch trái/phải lại khác START?</h3>
+                <p>Ở đây ta di chuyển <em>quân</em> sang ô bên cạnh, nên chỉ cần chặn đúng cột bị lọt:
+                    <code>v &lt;&lt; 1</code> đẩy cột 10 sang cột 0 hàng dưới, nên xoá cột 0 của kết quả;
+                    <code>v &gt;&gt; 1</code> thì ngược lại. Áp dụng ngang sau dọc là đủ để có ô vuông 3×3, gồm cả
+                    4 ô chéo.</p>
+            </div>
+            <div class="card">
+                <h3>Thứ tự duyệt nước đi</h3>
+                <p><code>iter_bits</code> trả về ô theo chỉ số tăng dần. Alpha-beta cắt tỉa tốt hơn nhiều nếu
+                    nước mạnh được xét trước, nên <a href="#ab-tech">mục 05.2</a> sắp xếp theo: ô thắng ngay → ô chặn thua
+                    ngay → điểm heuristic. Hai nhóm đầu lấy trực tiếp từ <a href="#threat">mục 01.7</a>.</p>
+            </div>
+            <div class="card">
+                <h3>Trong C++ dùng gì thay <code>bit_length</code>?</h3>
+                <p>Tách u128 thành 2 nửa 64 bit và dùng <code>__builtin_ctzll</code> (đếm số 0 cuối) cho nửa thấp,
+                    hết thì sang nửa cao. <code>popcount</code> tương tự: cộng
+                    <code>__builtin_popcountll</code> của 2 nửa (hoặc <code>std::popcount</code>, C++20).</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 01.7 ĐE DOẠ -->
+    <section id="threat">
+        <div class="section-header">
+            <div class="icon" style="background:#fee2e2;color:var(--danger);">⚠️</div>
+            <div>
+                <div class="section-num">Mục 01.7</div>
+                <h2>Đếm Cửa Sổ 5 Ô &amp; Tìm Ô Thắng Ngay</h2>
+            </div>
+        </div>
+
+        <p class="lead">Mỗi cửa sổ 5 ô được đại diện bởi <strong>ô đầu</strong> của nó (một bit trong
+            <code>START[d]</code>). Muốn biết cửa sổ bắt đầu ở <code>i</code> có bao nhiêu quân X, ta cộng 5
+            "lớp" <code>X≫0, X≫d, …, X≫4d</code>, nhưng cộng <strong>theo bit, song song cho cả 121 cửa
+            sổ</strong>, bằng mạch cộng nhị phân 3 bit (c2 c1 c0). Kỹ thuật này gọi là bit-sliced counting.</p>
+
+        <div class="code-block"><span class="keyword">def</span> <span class="fn">window_counts</span>(me, opp, d, start):
+    <span class="string">"""Trả (c0, c1, c2, free): số quân 'me' trong mỗi cửa sổ, viết dạng nhị phân c2c1c0.
+    free = các cửa sổ hợp lệ không có quân 'opp'."""</span>
+    free = start
+    <span class="keyword">for</span> k <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>):
+        free &amp;= ~(opp &gt;&gt; (k * d))
+    c0 = c1 = c2 = <span class="number">0</span>
+    <span class="keyword">for</span> k <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>):
+        p = (me &gt;&gt; (k * d)) &amp; free
+        carry = c0 &amp; p;  c0 ^= p                  <span class="comment"># cộng bit thấp</span>
+        carry2 = c1 &amp; carry;  c1 ^= carry         <span class="comment"># nhớ sang bit giữa</span>
+        c2 |= carry2                              <span class="comment"># tối đa 5 = 101b, không tràn</span>
+    <span class="keyword">return</span> c0, c1, c2, free
+
+<span class="keyword">def</span> <span class="fn">exactly</span>(k, c0, c1, c2, free):        <span class="comment"># các cửa sổ có đúng k quân</span>
+    m = free
+    m &amp;= c0 <span class="keyword">if</span> k &amp; <span class="number">1</span> <span class="keyword">else</span> ~c0
+    m &amp;= c1 <span class="keyword">if</span> k &amp; <span class="number">2</span> <span class="keyword">else</span> ~c1
+    m &amp;= c2 <span class="keyword">if</span> k &amp; <span class="number">4</span> <span class="keyword">else</span> ~c2
+    <span class="keyword">return</span> m
+
+<span class="keyword">def</span> <span class="fn">winning_squares</span>(me, opp):
+    <span class="string">"""Bitboard các ô trống mà 'me' đặt vào là có 5 liền ngay."""</span>
+    empty = ~(me | opp) &amp; FULL
+    res = <span class="number">0</span>
+    <span class="keyword">for</span> d, start <span class="keyword">in</span> LINES:
+        w4 = exactly(<span class="number">4</span>, *window_counts(me, opp, d, start))
+        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>):                    <span class="comment"># đưa bit ô đầu về đúng ô trống trong cửa sổ</span>
+            res |= (w4 &lt;&lt; (j * d)) &amp; empty
+    <span class="keyword">return</span> res</div>
+
+        <h3 class="sub">Từ số ô thắng ngay suy ra các thế đe doạ cổ điển</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Thế</th>
+                        <th>Ví dụ trên một đường</th>
+                        <th>Cửa sổ có 4 quân</th>
+                        <th><code>popcount(winning_squares)</code></th>
+                        <th>Ý nghĩa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Tứ bị chặn</td><td><code>O X X X X _</code></td><td>1</td><td>1</td><td>Đối thủ chặn được, nhưng <strong>bắt buộc</strong> phải chặn</td></tr>
+                    <tr><td>Tứ có lỗ</td><td><code>X X _ X X</code></td><td>1</td><td>1</td><td>Như trên, ô trống ở giữa</td></tr>
+                    <tr><td>Tứ mở</td><td><code>_ X X X X _</code></td><td>2</td><td>2</td><td>Không chặn nổi → thắng ở nước sau</td></tr>
+                    <tr><td>Tứ kép (hai hướng)</td><td>2 tứ bị chặn giao nhau</td><td>≥ 2</td><td>≥ 2</td><td>Cũng không chặn nổi</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="highlight success">
+            <strong>Một con số thay cho cả bộ nhận diện mẫu:</strong> sau nước đi của mình, nếu
+            <code>popcount(winning_squares(me, opp)) ≥ 2</code> và đối thủ không có ô thắng ngay nào thì mình chắc
+            chắn thắng. Kiểm tra "bị chặn hai đầu hay không" là thừa vì luật không xét chuyện đó. Các ô
+            <code>winning_squares(opp, me)</code> cũng chính là những <strong>ô bắt buộc phải chặn</strong>, dùng
+            để cắt bớt nhánh tìm kiếm (<a href="#ab-tech">mục 05.2</a>).
+        </div>
+
+        <h3 class="sub">Thứ tự ưu tiên khi chọn nước (dựng hoàn toàn từ bitboard)</h3>
+        <div class="flow">
+            <div class="flow-step success">1 · Mình có ô thắng ngay?<br>→ đi luôn</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step warning">2 · Đối thủ có ô thắng ngay?<br>→ bắt buộc chặn (≥ 2 ô thì đã thua)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">3 · Nước tạo ≥ 2 ô thắng?<br>→ thắng chắc</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">4 · Còn lại<br>→ tìm kiếm + đánh giá</div>
+        </div>
+    </section>
+
+    <!-- 01.8 ĐÁNH GIÁ -->
+    <section id="eval">
+        <div class="section-header">
+            <div class="icon" style="background:#e3f2fd;color:var(--info);">📊</div>
+            <div>
+                <div class="section-num">Mục 01.8</div>
+                <h2>Hàm Đánh Giá Theo Cửa Sổ</h2>
+            </div>
+        </div>
+
+        <p class="lead">Với luật tự do, một hàm đánh giá đơn giản nhưng hợp lý là: với mỗi cửa sổ 5 ô
+            <strong>chưa bị đối thủ chiếm ô nào</strong>, cộng điểm theo số quân mình đang có trong đó. Bitboard
+            tính tổng này bằng vài <code>popcount</code> thay vì duyệt 252 cửa sổ.</p>
+
+        <div class="code-block"><span class="keyword">WEIGHT</span> = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">8</span>, <span class="number">64</span>, <span class="number">512</span>]       <span class="comment"># 0..4 quân trong cửa sổ; 5 quân = đã thắng, xử lý riêng</span>
+
+<span class="keyword">def</span> <span class="fn">side_score</span>(me, opp):
+    s = <span class="number">0</span>
+    <span class="keyword">for</span> d, start <span class="keyword">in</span> LINES:
+        cnt = window_counts(me, opp, d, start)
+        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">1</span>, <span class="number">5</span>):
+            s += WEIGHT[k] * exactly(k, *cnt).bit_count()   <span class="comment"># Python ≥ 3.10</span>
+    <span class="keyword">return</span> s
+
+<span class="keyword">def</span> <span class="fn">evaluate</span>(me, opp):
+    <span class="keyword">return</span> side_score(me, opp) - side_score(opp, me)</div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Vì sao mô hình này "tự hiểu" khái niệm bị chặn</h3>
+                <p>Ba quân mở <code>_ _ X X X _ _</code> nằm trong 3 cửa sổ có 3 quân, còn
+                    <code>O X X X _ _</code> chỉ có 1. Không cần viết luật "mở/bị chặn": số cửa sổ còn sống tự
+                    phản ánh điều đó. Thử với bàn ở <a href="#demo">demo</a> để thấy bảng đếm thay đổi.</p>
+            </div>
+            <div class="card">
+                <h3>Trọng số là tham số, không phải chân lý</h3>
+                <p>Bộ <code>[0, 1, 8, 64, 512]</code> ở trên chỉ để minh hoạ. Nên tinh chỉnh bằng tự đấu
+                    (self-play) hoặc thêm hệ số tấn công/phòng thủ khác nhau tuỳ bên đang đi. Ablation A7 (<a href="#ablation">mục
+                    10.4</a>) đo ảnh hưởng của trọng số.</p>
+            </div>
+            <div class="card">
+                <h3>Phương án tra bảng theo đường</h3>
+                <p>Mỗi hàng/cột/chéo dài ≤ 11 ô có thể mã hoá thành số hệ 3 (≤ 3<sup>11</sup> = 177 147 giá trị) và
+                    tra bảng điểm tính sẵn. Mỗi nước đi chỉ làm thay đổi 4 đường, nên có thể cập nhật điểm theo kiểu
+                    tăng dần (incremental). Cách này nhanh hơn, đổi lại tốn bộ nhớ và phải viết thêm code.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 01.9 MAKE/UNMAKE + HASH -->
+    <section id="hash">
+        <div class="section-header">
+            <div class="icon" style="background:#f3e5f5;color:#8e24aa;">🔑</div>
+            <div>
+                <div class="section-num">Mục 01.9</div>
+                <h2>Đi / Lùi Nước &amp; Băm Zobrist</h2>
+            </div>
+        </div>
+
+        <p class="lead">Thuật toán tìm kiếm đi thử rồi lùi lại hàng triệu lần. Với bitboard, cả trạng thái chỉ là
+            2 số nguyên, nên đi và lùi nước đều là một phép XOR. Khoá băm Zobrist cũng cập nhật bằng XOR, phục vụ
+            bảng chuyển vị (transposition table) ở <a href="#ab-tech">mục 05.2</a>.</p>
+
+        <div class="code-block"><span class="keyword">import</span> random
+rng = random.Random(<span class="number">2026</span>)                 <span class="comment"># seed cố định → tái lập được</span>
+<span class="keyword">ZOBRIST</span> = [[rng.getrandbits(<span class="number">64</span>) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(N * N)] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">2</span>)]
+<span class="keyword">SIDE_KEY</span> = rng.getrandbits(<span class="number">64</span>)
+
+<span class="keyword">class</span> <span class="fn">Board</span>:
+    <span class="keyword">def</span> <span class="fn">__init__</span>(self):
+        self.bb = [<span class="number">0</span>, <span class="number">0</span>]       <span class="comment"># bb[0] = X, bb[1] = O</span>
+        self.side = <span class="number">0</span>
+        self.key = <span class="number">0</span>
+
+    <span class="keyword">def</span> <span class="fn">play</span>(self, i):
+        self.bb[self.side] ^= <span class="number">1</span> &lt;&lt; i
+        self.key ^= ZOBRIST[self.side][i] ^ SIDE_KEY
+        self.side ^= <span class="number">1</span>
+
+    <span class="keyword">def</span> <span class="fn">undo</span>(self, i):            <span class="comment"># đúng là play() chạy ngược: XOR tự nghịch đảo</span>
+        self.side ^= <span class="number">1</span>
+        self.key ^= ZOBRIST[self.side][i] ^ SIDE_KEY
+        self.bb[self.side] ^= <span class="number">1</span> &lt;&lt; i</div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Sao chép thay vì lùi nước</h3>
+                <p>Trạng thái chỉ gồm 2 số + 1 khoá, nên nhiều engine chọn sao chép <code>(X, O, key)</code> vào
+                    mỗi tầng đệ quy thay vì gọi <code>undo</code>. Cách này đơn giản hơn và khó sinh bug hơn.</p>
+            </div>
+            <div class="card">
+                <h3>Đối xứng bàn cờ</h3>
+                <p>Bàn vuông có 8 phép đối xứng (xoay 90°, lật). Có thể sinh chúng trên bitboard bằng bảng hoán
+                    vị 121 phần tử; dùng để rút gọn sách khai cuộc hoặc khi sinh dữ liệu huấn luyện. Không bắt buộc
+                    trong phần Bitboard.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 01.10 DEMO -->
+    <section id="demo">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">🕹️</div>
+            <div>
+                <div class="section-num">Mục 01.10</div>
+                <h2>Demo: Bitboard Chạy Thật</h2>
+            </div>
+        </div>
+
+        <p class="lead">Bấm vào ô để đặt quân (X và O đi luân phiên). Mọi thông tin bên phải được tính bằng chính
+            các công thức ở trên, viết lại bằng JavaScript <code>BigInt</code>.</p>
+
+        <div class="demo">
+            <div>
+                <div class="board" id="board"></div>
+                <div class="legend">
+                    <span style="--sw:#86efac">Ô thắng ngay của bên đang đi</span>
+                    <span style="--sw:#fecaca">Ô thắng ngay của đối thủ (phải chặn)</span>
+                    <span style="--sw:#dcfce7">Ứng viên (bán kính 2)</span>
+                    <span style="--sw:#fde047">Dãy 5 thắng</span>
+                </div>
+            </div>
+            <div class="panel">
+                <h4>Điều khiển</h4>
+                <div class="btn-row">
+                    <button class="btn ghost" id="bUndo">↶ Lùi</button>
+                    <button class="btn ghost" id="bReset">Xoá bàn</button>
+                    <button class="btn alt" id="bOpen4">Ví dụ: tứ mở</button>
+                    <button class="btn alt" id="bClosed4">Ví dụ: tứ bị chặn</button>
+                    <button class="btn" id="bWrap">Ví dụ: lỗi lọt hàng</button>
+                </div>
+                <div style="margin-top:.6rem;font-size:.84rem;color:var(--text-secondary);">
+                    <label for="aiO">Máy cầm O:</label>
+                    <select class="sel" id="aiO">
+                        <option value="none">Không (2 người chơi)</option>
+                        <option value="l1">Cấp 1 — Random</option>
+                        <option value="l2">Cấp 2 — Rule-based (P1–P7)</option>
+                    </select>
+                </div>
+                <div class="toggles" style="margin-top:.4rem;">
+                    <label><input type="checkbox" id="tIdx"> Hiện chỉ số bit</label>
+                    <label><input type="checkbox" id="tCand"> Hiện ô ứng viên</label>
+                    <label><input type="checkbox" id="tWin" checked> Hiện ô thắng ngay</label>
+                    <label><input type="checkbox" id="tNoMask"> Bỏ mặt nạ START (để thấy lỗi)</label>
+                </div>
+                <div class="status" id="status"></div>
+
+                <h4>Bitboard (hex, bit 0 ở bên phải)</h4>
+                <div style="font-size:.78rem;color:var(--text-secondary);">X</div>
+                <div class="hex" id="hexX"></div>
+                <div style="font-size:.78rem;color:var(--text-secondary);margin-top:.3rem;">O</div>
+                <div class="hex" id="hexO"></div>
+
+                <h4>Số cửa sổ 5 ô "còn sống" theo số quân</h4>
+                <div class="table-wrap" style="margin:.3rem 0;">
+                    <table class="wtable">
+                        <thead>
+                            <tr><th>Bên</th><th>1</th><th>2</th><th>3</th><th>4</th><th>Điểm</th></tr>
+                        </thead>
+                        <tbody id="wBody"></tbody>
+                    </table>
+                </div>
+                <div style="font-size:.84rem;" id="evalLine"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 01.11 BẪY -->
+    <section id="pitfalls">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">🪤</div>
+            <div>
+                <div class="section-num">Mục 01.11</div>
+                <h2>Bẫy Thường Gặp &amp; Cách Kiểm Thử</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bẫy</th>
+                        <th>Triệu chứng</th>
+                        <th>Cách tránh</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Quên mặt nạ cột khi dịch ngang/chéo</td><td>Báo thắng sai, ứng viên xuất hiện ở mép đối diện</td><td>START mask cho dãy 5; <code>NOT_COL0/NOT_COL10</code> cho phép dịch 1 bước</td></tr>
+                    <tr><td>Quên <code>&amp; FULL</code> sau <code>~</code> hoặc <code>&lt;&lt;</code></td><td>Ô "ma" có chỉ số ≥ 121; trong Python <code>~x</code> là số âm</td><td>Luôn AND với <code>FULL</code> trước khi lưu hoặc đếm</td></tr>
+                    <tr><td>Nhầm chiều dịch ↙ (d = 10)</td><td>Bỏ sót dãy chéo phụ</td><td>START ↙ là cột 4…10, không phải 0…6</td></tr>
+                    <tr><td>Chép tay hằng số hex</td><td>Sai một bit, bug khó tìm</td><td>Sinh mặt nạ bằng vòng lặp lúc khởi động</td></tr>
+                    <tr><td>Kiểm tra quá chặt kiểu "đúng 5"</td><td>Không công nhận thắng với dãy 6</td><td>Luật dự án: ≥ 5 thắng; công thức 3 phép dịch đã đúng sẵn</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="highlight info">
+            <strong>Kiểm thử đối chiếu (differential testing):</strong> viết thêm một bản
+            <code>has_five_naive</code> duyệt mảng 2D thật đơn giản, rồi sinh ngẫu nhiên hàng vạn bàn cờ và
+            khẳng định hai bản luôn cho cùng kết quả. Làm tương tự cho <code>winning_squares</code> và
+            <code>candidates</code>. Đây là cách rẻ nhất để bắt lỗi lọt hàng và lỗi mặt nạ.
+        </div>
+
+        <div class="code-block"><span class="keyword">def</span> <span class="fn">has_five_naive</span>(x):
+    on = <span class="keyword">lambda</span> r, c: inside(r) <span class="keyword">and</span> inside(c) <span class="keyword">and</span> (x &gt;&gt; (r * N + c)) &amp; <span class="number">1</span>
+    <span class="keyword">return</span> <span class="fn">any</span>(<span class="fn">all</span>(on(r + k * dr, c + k * dc) <span class="keyword">for</span> k <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">5</span>))
+               <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N)
+               <span class="keyword">for</span> dr, dc <span class="keyword">in</span> ((<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">0</span>), (<span class="number">1</span>, <span class="number">1</span>), (<span class="number">1</span>, -<span class="number">1</span>)))
+
+<span class="keyword">def</span> <span class="fn">test_has_five_matches_naive</span>():
+    rng = random.Random(<span class="number">0</span>)
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(<span class="number">20_000</span>):
+        x = rng.getrandbits(N * N) &amp; rng.getrandbits(N * N)   <span class="comment"># mật độ ~25%</span>
+        <span class="keyword">assert</span> has_five(x) == has_five_naive(x)</div>
+
+        <h3 class="sub">Tóm tắt Phần 01 — Bitboard</h3>
+        <div class="card-grid four">
+            <div class="card"><h3>Biểu diễn</h3><p>2 số 121 bit, <code>i = r·11 + c</code>, layout hàng rộng 11.</p></div>
+            <div class="card"><h3>Hướng = độ dịch</h3><p>1, 11, 12, 10, kèm mặt nạ chống lọt hàng.</p></div>
+            <div class="card"><h3>Thắng</h3><p>3 phép dịch + AND + START mask cho mỗi hướng.</p></div>
+            <div class="card"><h3>Đe doạ &amp; đánh giá</h3><p>Đếm cửa sổ 5 ô theo kiểu bit-sliced → ô thắng ngay, điểm thế cờ.</p></div>
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 02 ================= -->
+    <div class="part-banner" id="p02">
+        <div class="pb-num">Phần 02</div>
+        <div class="pb-title">Mô Hình Hoá Bài Toán &amp; API Game</div>
+        <div class="pb-desc">Đề mục 3.1 · Rubric tiêu chí 1 (10 điểm): luật, state/action/reward, câu hỏi nghiên cứu, kiểm thử engine</div>
+    </div>
+
+    <section id="game-props">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">🎲</div>
+            <div>
+                <div class="section-num">Mục 02.1</div>
+                <h2>Đặc Điểm Trò Chơi</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Thuộc tính</th><th>Giá trị cho Caro 11×11 luật tự do</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Người chơi</td><td>2 người, đi luân phiên. X đi trước, O đi sau.</td></tr>
+                    <tr><td>Quan sát</td><td><strong>Đầy đủ</strong>: cả hai bên thấy toàn bộ bàn cờ.</td></tr>
+                    <tr><td>Tính xác định</td><td><strong>Tất định</strong>: không có yếu tố ngẫu nhiên trong luật.</td></tr>
+                    <tr><td>Tổng bằng không</td><td><strong>Có</strong>: kết quả +1 / −1 / 0, một bên được thì bên kia mất đúng bấy nhiêu.</td></tr>
+                    <tr><td>Điều kiện thắng</td><td>Có ≥ 5 quân liên tiếp theo ngang, dọc hoặc chéo. Dãy bị chặn 2 đầu vẫn thắng.</td></tr>
+                    <tr><td>Điều kiện hoà</td><td>Bàn đầy (121 nước) mà không bên nào có 5 liền. X đi 61 nước, O đi 60 nước.</td></tr>
+                    <tr><td>Độ dài ván</td><td>Tối đa 121 nước.</td></tr>
+                    <tr><td>Không gian trạng thái</td><td>Cận trên 3<sup>121</sup> ≈ 5,4·10<sup>57</sup>. Chỉ tính các thế có số quân hợp lệ (#X = #O hoặc #O + 1): ≈ 4,8·10<sup>56</sup> (vẫn là cận trên vì gồm cả thế đã kết thúc từ trước).</td></tr>
+                    <tr><td>Cây trò chơi</td><td>Số chuỗi nước ≤ 121! ≈ 8,1·10<sup>200</sup>. Hệ số rẽ nhánh 121 ở nước đầu, sau đó giảm dần; nếu chỉ xét ứng viên bán kính 2 (mục 01.6) thì còn khoảng vài chục.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="highlight warning">
+            <strong>Lợi thế đi trước:</strong> Allis (1994) đã chứng minh Gomoku luật tự do trên bàn 15×15 là
+            thắng cho người đi trước. Tài liệu này <em>không</em> giả định kết quả lý thuyết nào cho bàn 11×11; nhóm
+            phải đo lợi thế đi trước bằng thực nghiệm (RQ4) và luôn chia đều lượt đi trước/đi sau trong mọi trận đấu.
+        </div>
+    </section>
+
+    <section id="mdp">
+        <div class="section-header">
+            <div class="icon" style="background:#e0f7fa;color:var(--accent);">🔁</div>
+            <div>
+                <div class="section-num">Mục 02.2</div>
+                <h2>State · Action · Transition · Reward</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Trạng thái s</h3>
+                <p><code>s = (X, O, side, history)</code>: hai bitboard 121 bit, bên đang đi
+                    (<code>0 = X</code>, <code>1 = O</code>) và danh sách nước đã đi (dùng cho
+                    <code>undo</code> và log). Khoá Zobrist (mục 01.9) đi kèm để tra bảng chuyển vị.</p>
+            </div>
+            <div class="card">
+                <h3>Hành động a</h3>
+                <p><code>a ∈ {0, …, 120}</code> là chỉ số ô. Nước hợp lệ là các bit của
+                    <code>empty = ~(X | O) &amp; FULL</code>; khi ván đã kết thúc thì không có nước hợp lệ nào.</p>
+            </div>
+            <div class="card">
+                <h3>Hàm chuyển T(s, a)</h3>
+                <p>Tất định: <code>bb[side] |= 1 &lt;&lt; a</code>, ghi <code>a</code> vào history, đổi
+                    <code>side</code>. Sau đó kiểm tra kết thúc: <code>has_five(bb[người vừa đi])</code> hoặc
+                    <code>occ == FULL</code>. Chỉ cần kiểm tra người vừa đi vì đối phương không thể vừa có 5.</p>
+            </div>
+            <div class="card">
+                <h3>Phần thưởng r</h3>
+                <p>Thưa (sparse), chỉ có ở cuối ván, <strong>tính theo góc nhìn từng người chơi</strong>: +1 thắng,
+                    −1 thua, 0 hoà, 0 ở mọi bước giữa ván. Với RL dùng hệ số chiết khấu γ = 1 vì ván có độ dài
+                    hữu hạn.</p>
+            </div>
+        </div>
+
+        <h3 class="sub">Input / output của tác tử</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Loại tác tử</th><th>Input</th><th>Output</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Random, Rule-based, Alpha-Beta, MCTS</td><td>Đối tượng <code>CaroGame</code> (bitboard + bên đang đi) và ngân sách tính toán</td><td>Một hành động hợp lệ <code>a</code></td></tr>
+                    <tr><td>Mạng policy</td><td>Tensor 4 × 11 × 11 nhìn từ góc bên đang đi (mục 07.1)</td><td>Phân phối <code>π(a | s)</code> trên 121 ô, các ô không hợp lệ bị đặt xác suất 0</td></tr>
+                    <tr><td>Mạng value</td><td>Như trên</td><td><code>v(s) ∈ [−1, 1]</code>: kết quả kỳ vọng theo góc nhìn bên đang đi</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="api">
+        <div class="section-header">
+            <div class="icon" style="background:#dcfce7;color:var(--success);">🧩</div>
+            <div>
+                <div class="section-num">Mục 02.3</div>
+                <h2>API Game Thống Nhất</h2>
+            </div>
+        </div>
+
+        <p class="lead">Đề yêu cầu một API chung: <code>reset()</code>, <code>legal_actions()</code>,
+            <code>step(action)</code>, <code>is_terminal()</code>, <code>result()</code>, <code>render()</code>,
+            <code>clone()</code>/<code>undo()</code>, và phải cấm nước đi bất hợp lệ. Mọi tác tử, arena, UI và vòng
+            huấn luyện chỉ được giao tiếp với game qua lớp này.</p>
+
+        <div class="code-block"><span class="keyword">class</span> <span class="fn">IllegalMoveError</span>(ValueError):
+    <span class="keyword">pass</span>
+
+<span class="keyword">class</span> <span class="fn">CaroGame</span>:
+    <span class="keyword">def</span> <span class="fn">__init__</span>(self):
+        self.reset()
+
+    <span class="keyword">def</span> <span class="fn">reset</span>(self):
+        self.bb = [<span class="number">0</span>, <span class="number">0</span>]          <span class="comment"># bb[0] = X, bb[1] = O</span>
+        self.side = <span class="number">0</span>
+        self.history = []
+        self.key = <span class="number">0</span>
+        self.winner = <span class="keyword">None</span>         <span class="comment"># 0 = X, 1 = O, None = chưa có</span>
+        <span class="keyword">return</span> self
+
+    <span class="keyword">def</span> <span class="fn">legal_actions</span>(self):
+        <span class="keyword">if</span> self.is_terminal():
+            <span class="keyword">return</span> []
+        <span class="keyword">return</span> <span class="fn">list</span>(iter_bits(~(self.bb[<span class="number">0</span>] | self.bb[<span class="number">1</span>]) &amp; FULL))
+
+    <span class="keyword">def</span> <span class="fn">step</span>(self, action):
+        <span class="string">"""Đi một nước. Trả (reward, done, info); reward theo góc nhìn người vừa đi."""</span>
+        <span class="keyword">if</span> self.is_terminal():
+            <span class="keyword">raise</span> IllegalMoveError(<span class="string">"ván đã kết thúc"</span>)
+        <span class="keyword">if</span> <span class="keyword">not</span> (<span class="number">0</span> &lt;= action &lt; N * N) <span class="keyword">or</span> ((self.bb[<span class="number">0</span>] | self.bb[<span class="number">1</span>]) &gt;&gt; action) &amp; <span class="number">1</span>:
+            <span class="keyword">raise</span> IllegalMoveError(<span class="string">f"nước {action} không hợp lệ"</span>)
+        mover = self.side
+        self.bb[mover] |= <span class="number">1</span> &lt;&lt; action
+        self.key ^= ZOBRIST[mover][action] ^ SIDE_KEY
+        self.history.append(action)
+        self.side ^= <span class="number">1</span>
+        <span class="keyword">if</span> has_five(self.bb[mover]):
+            self.winner = mover
+        done = self.is_terminal()
+        reward = <span class="number">1.0</span> <span class="keyword">if</span> self.winner == mover <span class="keyword">else</span> <span class="number">0.0</span>
+        <span class="keyword">return</span> reward, done, {<span class="string">"winner"</span>: self.winner}
+
+    <span class="keyword">def</span> <span class="fn">is_terminal</span>(self):
+        <span class="keyword">return</span> self.winner <span class="keyword">is not None</span> <span class="keyword">or</span> (self.bb[<span class="number">0</span>] | self.bb[<span class="number">1</span>]) == FULL
+
+    <span class="keyword">def</span> <span class="fn">result</span>(self):
+        <span class="string">"""+1 X thắng, -1 O thắng, 0 hoà, None nếu chưa kết thúc."""</span>
+        <span class="keyword">if</span> self.winner <span class="keyword">is not None</span>:
+            <span class="keyword">return</span> <span class="number">1</span> <span class="keyword">if</span> self.winner == <span class="number">0</span> <span class="keyword">else</span> -<span class="number">1</span>
+        <span class="keyword">return</span> <span class="number">0</span> <span class="keyword">if</span> self.is_terminal() <span class="keyword">else</span> <span class="keyword">None</span>
+
+    <span class="keyword">def</span> <span class="fn">undo</span>(self):
+        action = self.history.pop()
+        self.side ^= <span class="number">1</span>
+        self.key ^= ZOBRIST[self.side][action] ^ SIDE_KEY
+        self.bb[self.side] ^= <span class="number">1</span> &lt;&lt; action
+        self.winner = <span class="keyword">None</span>          <span class="comment"># thế trước đó chắc chắn chưa kết thúc</span>
+
+    <span class="keyword">def</span> <span class="fn">clone</span>(self):
+        g = CaroGame.__new__(CaroGame)
+        g.bb, g.side, g.key, g.winner = self.bb[:], self.side, self.key, self.winner
+        g.history = self.history[:]
+        <span class="keyword">return</span> g
+
+    <span class="keyword">def</span> <span class="fn">render</span>(self):
+        sym = <span class="keyword">lambda</span> i: <span class="string">"X"</span> <span class="keyword">if</span> self.bb[<span class="number">0</span>] &gt;&gt; i &amp; <span class="number">1</span> <span class="keyword">else</span> <span class="string">"O"</span> <span class="keyword">if</span> self.bb[<span class="number">1</span>] &gt;&gt; i &amp; <span class="number">1</span> <span class="keyword">else</span> <span class="string">"."</span>
+        <span class="keyword">return</span> <span class="string">"\n"</span>.join(<span class="string">" "</span>.join(sym(r * N + c) <span class="keyword">for</span> c <span class="keyword">in</span> <span class="fn">range</span>(N)) <span class="keyword">for</span> r <span class="keyword">in</span> <span class="fn">range</span>(N))</div>
+
+        <div class="highlight info">
+            <strong>Quy ước góc nhìn:</strong> <code>result()</code> luôn tính theo X (+1 là X thắng) để log dễ đọc.
+            Còn <code>step()</code>, giá trị trong cây tìm kiếm và đầu ra value của mạng đều tính theo góc nhìn
+            <em>người đang xét</em>. Nhầm dấu ở chỗ này là lỗi phổ biến nhất khi viết negamax và MCTS, nên phải
+            có test riêng (mục 02.5).
+        </div>
+    </section>
+
+    <section id="rq">
+        <div class="section-header">
+            <div class="icon" style="background:#fef9c3;color:#a16207;">❓</div>
+            <div>
+                <div class="section-num">Mục 02.4</div>
+                <h2>Câu Hỏi Nghiên Cứu</h2>
+            </div>
+        </div>
+
+        <p class="lead">Đề yêu cầu câu hỏi nghiên cứu cụ thể và trả lời bằng số liệu, không chỉ xếp hạng các cấp.
+            Các giả thuyết dưới đây là <strong>dự đoán cần kiểm chứng</strong>, không phải kết luận.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Mã</th><th>Câu hỏi</th><th>Giả thuyết</th><th>Đo bằng</th><th>Thí nghiệm</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>RQ1</strong></td><td>Trong cùng thời gian suy nghĩ mỗi nước, MCTS (UCT) có thắng nhiều hơn Alpha-Beta không?</td><td>Alpha-Beta có hàm đánh giá theo cửa sổ và luật chặn bắt buộc sẽ mạnh hơn MCTS rollout ngẫu nhiên, vì Caro có nhiều đòn chiến thuật ngắn mà rollout ngẫu nhiên khó thấy</td><td>Score + khoảng tin cậy Wilson 95%, ở 3 mức thời gian</td><td>E1, A3, A4</td></tr>
+                    <tr><td><strong>RQ2</strong></td><td>Self-play (cấp 6/8) có cải thiện tác tử học được so với mô hình bắt chước luật/chuyên gia (cấp 5) không?</td><td>Có, nhưng chỉ khi đủ số ván self-play; với ngân sách nhỏ có thể chưa vượt cấp 5</td><td>Learning curve so với các đối thủ cố định; score cấp 6/8 vs cấp 5</td><td>E2, A5</td></tr>
+                    <tr><td><strong>RQ3</strong></td><td>Cắt tỉa alpha-beta và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nguyên nước được chọn?</td><td>Số nút giảm theo cấp số khi độ sâu tăng; giá trị gốc không đổi</td><td>Số nút, thời gian, tỷ lệ chọn cùng nước</td><td>A1, A2</td></tr>
+                    <tr><td><strong>RQ4</strong></td><td>Lợi thế đi trước trên 11×11 lớn đến mức nào giữa các tác tử cùng cấp?</td><td>Người đi trước có score &gt; 0,5 và lợi thế tăng theo sức mạnh tác tử</td><td>Score của bên đi trước trong các trận tự đấu</td><td>E3</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="engine-tests">
+        <div class="section-header">
+            <div class="icon" style="background:#fee2e2;color:var(--danger);">🧪</div>
+            <div>
+                <div class="section-num">Mục 02.5</div>
+                <h2>Kiểm Thử Engine</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Nhóm test</th><th>Nội dung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Đối chiếu</td><td><code>has_five</code>, <code>winning_squares</code>, <code>candidates</code> so với bản duyệt mảng ngây thơ trên hàng vạn bàn ngẫu nhiên (mục 01.11).</td></tr>
+                    <tr><td>Điều kiện thắng</td><td>Dãy 5 theo cả 4 hướng, sát cả 4 mép bàn và 4 góc; dãy 6 vẫn thắng; dãy 5 bị chặn 2 đầu vẫn thắng; dãy giả do lọt hàng (ô 30–34) <em>không</em> thắng.</td></tr>
+                    <tr><td>Hoà</td><td>Một bàn đầy không có 5 liền (sinh một lần bằng tìm kiếm có quay lui, lưu làm fixture): <code>result() == 0</code>.</td></tr>
+                    <tr><td>Nước bất hợp lệ</td><td>Đi vào ô đã có quân, chỉ số âm hoặc ≥ 121, đi khi ván đã kết thúc → <code>IllegalMoveError</code>, trạng thái không đổi.</td></tr>
+                    <tr><td>clone / undo</td><td>Chơi ván ngẫu nhiên rồi <code>undo</code> hết → trở về bàn trống, <code>key == 0</code>. <code>clone()</code> rồi đi nước trên bản sao không làm đổi bản gốc. Khoá Zobrist cập nhật dần bằng khoá tính lại từ đầu.</td></tr>
+                    <tr><td>Góc nhìn / dấu</td><td>Một thế X thắng ngay: negamax, MCTS và value target phải cho giá trị dương với X, âm với O.</td></tr>
+                    <tr><td>Tác tử</td><td>Mọi tác tử luôn trả nước hợp lệ (1 000 ván ngẫu nhiên); cấp 2–4 luôn chọn nước thắng ngay và luôn chặn ô thắng ngay duy nhất của đối thủ.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size:.88rem;color:var(--text-secondary);">Gợi ý công cụ: <code>pytest</code> và
+            <code>hypothesis</code> (sinh bàn cờ ngẫu nhiên có shrink khi test sai). Chạy trong CI ở mỗi lần push
+            để có bằng chứng "tính đúng đắn" cho rubric tiêu chí 2.</p>
+    </section>
+
+    <!-- ================= PHẦN 03 ================= -->
+    <div class="part-banner" id="p03">
+        <div class="pb-num">Phần 03</div>
+        <div class="pb-title">Kiến Trúc Hệ Thống</div>
+        <div class="pb-desc">Rubric tiêu chí 2 (15 điểm): kiến trúc, API, tính đúng đắn, giao diện demo</div>
+    </div>
+
+    <section id="arch">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">🏗️</div>
+            <div>
+                <div class="section-num">Mục 03.1</div>
+                <h2>Các Khối Chính</h2>
+            </div>
+        </div>
+
+        <div class="flow">
+            <div class="flow-step">Engine<br>bitboard + CaroGame</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">Agents<br>cấp 1 → 8, chung interface</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step warning">Arena<br>trận đấu, giải round-robin</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Log JSONL<br>mỗi ván một dòng</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step success">Notebook<br>bảng, biểu đồ, CI</div>
+        </div>
+        <div class="flow">
+            <div class="flow-step alt">Training<br>SL · RL · self-play</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Checkpoint<br>+ config + seed</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">Agents cấp 5–8<br>nạp trọng số</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step success">UI demo<br>người–máy, máy–máy</div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Nguyên tắc phụ thuộc</h3>
+                <ul>
+                    <li><code>engine</code> không import gì khác trong dự án</li>
+                    <li><code>agents</code> chỉ dùng <code>engine</code> (và <code>nn</code> cho cấp 5–8)</li>
+                    <li><code>arena</code>, <code>ui</code>, <code>training</code> dùng agent qua interface chung, không biết bên trong agent</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Interface tác tử</h3>
+                <p>Mọi cấp đều có cùng chữ ký, nhờ đó arena và UI chỉ cần một code path và việc so sánh mới công
+                    bằng.</p>
+            </div>
+        </div>
+
+        <div class="code-block"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+<span class="keyword">from</span> typing <span class="keyword">import</span> Protocol
+
+<span class="keyword">@dataclass</span>(frozen=<span class="keyword">True</span>)
+<span class="keyword">class</span> <span class="fn">Limits</span>:
+    time_ms: int | <span class="keyword">None</span> = <span class="keyword">None</span>     <span class="comment"># chế độ A: thời gian mỗi nước</span>
+    max_depth: int | <span class="keyword">None</span> = <span class="keyword">None</span>   <span class="comment"># chế độ B: ngân sách cố định (Alpha-Beta)</span>
+    max_sims: int | <span class="keyword">None</span> = <span class="keyword">None</span>    <span class="comment"># chế độ B: số mô phỏng (MCTS / PUCT)</span>
+
+<span class="keyword">class</span> <span class="fn">Agent</span>(Protocol):
+    name: str
+    <span class="keyword">def</span> <span class="fn">reset</span>(self, seed: int) -&gt; <span class="keyword">None</span>: ...
+    <span class="keyword">def</span> <span class="fn">select_action</span>(self, game: CaroGame, limits: Limits) -&gt; int: ...
+    <span class="keyword">def</span> <span class="fn">last_stats</span>(self) -&gt; dict: ...   <span class="comment"># nodes, sims, depth, time_ms, pv, reason…</span></div>
+    </section>
+
+    <section id="repo">
+        <div class="section-header">
+            <div class="icon" style="background:#e0f7fa;color:var(--accent);">📁</div>
+            <div>
+                <div class="section-num">Mục 03.2</div>
+                <h2>Cấu Trúc Repo</h2>
+            </div>
+        </div>
+
+        <div class="code-block">CaroGame/
+├── caro/
+│   ├── engine/
+│   │   ├── bitboard.py        <span class="comment"># FULL, LINES, has_five, dilate, window_counts… (Phần 01)</span>
+│   │   ├── game.py            <span class="comment"># CaroGame, IllegalMoveError (02.3)</span>
+│   │   ├── zobrist.py
+│   │   └── symmetry.py        <span class="comment"># 8 phép đối xứng D4 cho augmentation</span>
+│   ├── agents/
+│   │   ├── base.py            <span class="comment"># Agent, Limits</span>
+│   │   ├── random_agent.py    <span class="comment"># cấp 1</span>
+│   │   ├── rule_based.py      <span class="comment"># cấp 2</span>
+│   │   ├── alphabeta.py       <span class="comment"># cấp 3</span>
+│   │   ├── mcts.py            <span class="comment"># cấp 4</span>
+│   │   ├── policy_agent.py    <span class="comment"># cấp 5 và 6 (chơi bằng mạng, không tìm kiếm)</span>
+│   │   └── puct.py            <span class="comment"># cấp 7 và 8 (MCTS + mạng)</span>
+│   ├── nn/
+│   │   ├── features.py        <span class="comment"># state → tensor 4×11×11</span>
+│   │   ├── model.py           <span class="comment"># ResNet policy-value</span>
+│   │   └── dataset.py
+│   ├── training/
+│   │   ├── gen_expert_data.py <span class="comment"># dữ liệu cho cấp 5</span>
+│   │   ├── train_sl.py
+│   │   ├── train_pg.py        <span class="comment"># cấp 6</span>
+│   │   └── alphazero_loop.py  <span class="comment"># cấp 8</span>
+│   ├── arena/
+│   │   ├── match.py
+│   │   ├── tournament.py
+│   │   ├── openings.py
+│   │   └── stats.py           <span class="comment"># Wilson, bootstrap, Elo</span>
+│   └── ui/
+│       ├── server.py          <span class="comment"># FastAPI</span>
+│       └── static/index.html
+├── configs/                   <span class="comment"># YAML cho mỗi agent, mỗi lần train, mỗi giải đấu</span>
+├── tests/
+├── runs/                      <span class="comment"># log JSONL, checkpoint (không commit file lớn)</span>
+├── notebooks/analysis.ipynb   <span class="comment"># sinh mọi bảng/hình trong báo cáo từ log thô</span>
+├── docs/engine-caro-11x11.html
+├── pyproject.toml
+└── README.md</div>
+    </section>
+
+    <section id="repro">
+        <div class="section-header">
+            <div class="icon" style="background:#f3e5f5;color:#8e24aa;">📝</div>
+            <div>
+                <div class="section-num">Mục 03.3</div>
+                <h2>Cấu Hình, Seed &amp; Log</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Mỗi lần chạy ghi lại</h3>
+                <ul>
+                    <li>Commit git, phiên bản engine, phiên bản Python / PyTorch</li>
+                    <li>File config đầy đủ (YAML) và seed</li>
+                    <li>Phần cứng: CPU, GPU, RAM</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Log một ván (một dòng JSONL)</h3>
+                <p><code>game_id, tournament_id, agent_x, agent_o, opening_id, seed, moves[], time_ms[],
+                    nodes[] / sims[], result, termination</code>. Từ log thô phải tái tạo được mọi bảng và biểu
+                    đồ trong báo cáo.</p>
+            </div>
+            <div class="card">
+                <h3>Seed</h3>
+                <p>Mỗi tác tử nhận <code>seed = hash(tournament_seed, game_id, color)</code>, nên chạy lại cùng config
+                    thì ra cùng ván (với các tác tử có giới hạn theo ngân sách cố định, không theo thời gian).</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 04 ================= -->
+    <div class="part-banner" id="p04">
+        <div class="pb-num">Phần 04</div>
+        <div class="pb-title">Cấp 1 Random &amp; Cấp 2 Rule-based</div>
+        <div class="pb-desc">Đề mục 3.2 · Bắt buộc · Rubric tiêu chí 3 (20 điểm, chung cho cấp 1–4)</div>
+    </div>
+
+    <section id="l1">
+        <div class="section-header">
+            <div class="icon" style="background:#eceff1;color:var(--text-secondary);">🎰</div>
+            <div>
+                <div class="section-num">Mục 04.1</div>
+                <h2>Cấp 1 — Random (Baseline)</h2>
+            </div>
+        </div>
+
+        <p class="lead">Chọn đều một nước trong <code>legal_actions()</code> bằng RNG có seed. Đây là mốc dưới
+            cùng; mọi tác tử khác phải thắng nó gần như tuyệt đối, nếu không là có lỗi.</p>
+        <div class="code-block"><span class="keyword">class</span> <span class="fn">RandomAgent</span>:
+    name = <span class="string">"L1-Random"</span>
+    <span class="keyword">def</span> <span class="fn">reset</span>(self, seed):
+        self.rng = random.Random(seed)
+    <span class="keyword">def</span> <span class="fn">select_action</span>(self, game, limits):
+        <span class="keyword">return</span> self.rng.choice(game.legal_actions())
+    <span class="keyword">def</span> <span class="fn">last_stats</span>(self):
+        <span class="keyword">return</span> {}</div>
+    </section>
+
+    <section id="l2">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">📋</div>
+            <div>
+                <div class="section-num">Mục 04.2</div>
+                <h2>Cấp 2 — Rule-based / Heuristic</h2>
+            </div>
+        </div>
+
+        <p class="lead">Đề yêu cầu: ưu tiên thắng ngay, chặn đối thủ, kiểm soát vị trí, và <strong>nêu rõ thứ tự
+            ưu tiên cùng xung đột giữa các luật</strong>. Mọi luật dưới đây đều tính bằng hàm bitboard ở Phần 01,
+            chỉ nhìn trước 1 nước.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Ưu tiên</th><th>Luật</th><th>Cách tính</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>P1</strong></td><td>Thắng ngay</td><td>Ô bất kỳ trong <code>winning_squares(me, opp)</code></td></tr>
+                    <tr><td><strong>P2</strong></td><td>Chặn thua ngay</td><td>Ô trong <code>winning_squares(opp, me)</code>. Nếu có ≥ 2 ô thì đã thua, chặn một ô bất kỳ.</td></tr>
+                    <tr><td><strong>P3</strong></td><td>Tạo đòn kép</td><td>Nước <code>m</code> sao cho <code>popcount(winning_squares(me | m, opp)) ≥ 2</code> (tứ mở hoặc tứ kép) → thắng chắc ở nước sau</td></tr>
+                    <tr><td><strong>P4</strong></td><td>Phá đòn kép của đối thủ</td><td>Ô <code>m</code> mà nếu đối thủ đặt vào sẽ có ≥ 2 ô thắng → chiếm ô đó trước (thường là đầu của "ba mở")</td></tr>
+                    <tr><td><strong>P5</strong></td><td>Tạo tứ (nước ép)</td><td>Nước <code>m</code> làm <code>winning_squares(me | m, opp) ≠ 0</code>; nếu nhiều, chọn nước có điểm P6 cao nhất</td></tr>
+                    <tr><td><strong>P6</strong></td><td>Điểm vị trí</td><td><code>evaluate(me | m, opp)</code> (mục 01.8): gộp cả tấn công (tăng cửa sổ của mình) và phòng thủ (giết cửa sổ của đối thủ)</td></tr>
+                    <tr><td><strong>P7</strong></td><td>Hoà điểm</td><td>Ô gần tâm hơn, sau đó chọn ngẫu nhiên theo seed</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Xung đột P3 ↔ P4</h3>
+                <p>P3 đứng trước P4: khi tới P3 thì đối thủ chắc chắn chưa có ô thắng ngay (đã qua P2), nên đòn kép
+                    của mình thắng trước khi đòn kép của đối thủ kịp thành hình.</p>
+            </div>
+            <div class="card">
+                <h3>Xung đột P4 ↔ P5</h3>
+                <p>P4 đứng trước P5: tạo tứ chỉ buộc đối thủ chặn một nước, sau đó đối thủ vẫn đi được nước tạo đòn
+                    kép. Chỉ nên tạo tứ trước khi phòng thủ nếu chuỗi tứ đó dẫn tới thắng (VCF), mà việc này cần nhìn
+                    trước nhiều nước, nên để cho cấp 3.</p>
+            </div>
+            <div class="card">
+                <h3>Hạn chế đã biết</h3>
+                <p>Chỉ nhìn 1 nước nên thua các chuỗi tứ liên tiếp (VCF) và ba-ba kép mà không nhận ra trước. Đây
+                    là ví dụ tốt để phân tích "agent mắc lỗi" trong báo cáo.</p>
+            </div>
+        </div>
+
+        <div class="highlight success">
+            <strong>Chơi thử:</strong> ở <a href="#demo">bàn demo mục 01.10</a>, chọn "Máy cầm O: Cấp 2
+            Rule-based". Sau mỗi nước, ô trạng thái ghi rõ máy đã dùng luật P nào. Bản JavaScript dùng đúng thứ tự
+            P1 → P7 ở trên.
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 05 ================= -->
+    <div class="part-banner" id="p05">
+        <div class="pb-num">Phần 05</div>
+        <div class="pb-title">Cấp 3 — Minimax / Alpha-Beta</div>
+        <div class="pb-desc">Giới hạn độ sâu · hàm lượng giá · so sánh số nút và thời gian có/không cắt tỉa</div>
+    </div>
+
+    <section id="ab-algo">
+        <div class="section-header">
+            <div class="icon" style="background:#ede7f6;color:#5e35b1;">🌳</div>
+            <div>
+                <div class="section-num">Mục 05.1</div>
+                <h2>Negamax + Alpha-Beta</h2>
+            </div>
+        </div>
+
+        <p class="lead">Vì trò chơi tổng bằng không, viết Minimax dưới dạng <strong>negamax</strong>: giá trị luôn
+            tính theo góc nhìn bên đang đi, và giá trị của con được đổi dấu khi trả lên. Cắt tỉa alpha-beta bỏ các
+            nhánh không thể làm thay đổi kết quả ở gốc.</p>
+
+        <div class="code-block">WIN = <span class="number">1_000_000</span>
+
+<span class="keyword">def</span> <span class="fn">negamax</span>(g, depth, alpha, beta, ply):
+    me, opp = g.bb[g.side], g.bb[g.side ^ <span class="number">1</span>]
+    <span class="keyword">if</span> g.winner <span class="keyword">is not None</span>:                     <span class="comment"># người vừa đi đã thắng</span>
+        <span class="keyword">return</span> -(WIN - ply)                        <span class="comment"># thua càng muộn càng tốt</span>
+    <span class="keyword">if</span> (me | opp) == FULL:
+        <span class="keyword">return</span> <span class="number">0</span>
+    <span class="keyword">if</span> winning_squares(me, opp):                 <span class="comment"># thắng ở nước tiếp theo</span>
+        <span class="keyword">return</span> WIN - ply - <span class="number">1</span>
+    <span class="keyword">if</span> depth == <span class="number">0</span>:
+        <span class="keyword">return</span> evaluate(me, opp)
+
+    tt = TT.get(g.key)
+    <span class="keyword">if</span> tt <span class="keyword">and</span> tt.depth &gt;= depth:                 <span class="comment"># kèm cờ EXACT / LOWER / UPPER</span>
+        ...
+
+    threats = winning_squares(opp, me)
+    moves = <span class="fn">list</span>(iter_bits(threats)) <span class="keyword">if</span> threats <span class="keyword">else</span> ordered_moves(g, tt)   <span class="comment"># nước bắt buộc</span>
+
+    best, best_move = -WIN, moves[<span class="number">0</span>]
+    <span class="keyword">for</span> m <span class="keyword">in</span> moves:
+        g.step(m)
+        score = -negamax(g, depth - <span class="number">1</span>, -beta, -alpha, ply + <span class="number">1</span>)
+        g.undo()
+        <span class="keyword">if</span> score &gt; best:
+            best, best_move = score, m
+        alpha = <span class="fn">max</span>(alpha, score)
+        <span class="keyword">if</span> alpha &gt;= beta:
+            <span class="keyword">break</span>                                  <span class="comment"># cắt tỉa beta</span>
+    TT.store(g.key, depth, best, alpha, beta, best_move)
+    <span class="keyword">return</span> best</div>
+
+        <div class="highlight info">
+            <strong>Iterative deepening:</strong> gọi lần lượt độ sâu 1, 2, 3… cho tới khi hết
+            <code>time_ms</code> hoặc đạt <code>max_depth</code>; trả nước tốt nhất của lần tìm trọn vẹn gần nhất. Các
+            lần tìm nông nạp sẵn bảng chuyển vị, nên nước tốt nhất được thử đầu tiên ở lần sâu hơn. Nhờ đó tổng chi
+            phí thường không lớn hơn nhiều so với chỉ tìm ở độ sâu cuối.
+        </div>
+    </section>
+
+    <section id="ab-tech">
+        <div class="section-header">
+            <div class="icon" style="background:#dcfce7;color:var(--success);">⚙️</div>
+            <div>
+                <div class="section-num">Mục 05.2</div>
+                <h2>Các Kỹ Thuật &amp; Tính Chính Xác</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Kỹ thuật</th><th>Tác dụng</th><th>Ảnh hưởng tới kết quả</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Cắt tỉa alpha-beta</td><td>Bỏ nhánh không ảnh hưởng tới gốc</td><td><strong>Chính xác</strong>: cùng giá trị gốc với minimax cùng độ sâu</td></tr>
+                    <tr><td>Nước bắt buộc (đối thủ có ô thắng ngay → chỉ xét ô chặn)</td><td>Hệ số rẽ nhánh còn 1–2 ở các thế bị ép</td><td><strong>Chính xác</strong>: mọi nước khác thua ngay</td></tr>
+                    <tr><td>Sắp xếp nước: nước từ TT → ô tạo tứ / đòn kép → killer → history → điểm nhanh</td><td>Cắt tỉa sớm hơn</td><td>Chính xác (chỉ đổi thứ tự)</td></tr>
+                    <tr><td>Bảng chuyển vị (Zobrist)</td><td>Không tính lại thế đã gặp qua thứ tự nước khác</td><td>Chính xác nếu lưu đúng cờ cận trên/dưới</td></tr>
+                    <tr><td>Giới hạn ứng viên: bán kính 2, giữ top K (vd. K = 12) theo điểm nhanh</td><td>Giảm mạnh hệ số rẽ nhánh</td><td><strong>Gần đúng</strong>: có thể bỏ sót nước hay. Phải ghi rõ trong báo cáo</td></tr>
+                    <tr><td>Mở rộng tìm kiếm tứ (VCF): ở lá, nếu còn chuỗi tứ liên tiếp thì đi tiếp</td><td>Thấy được thắng cưỡng bức sâu hơn độ sâu danh nghĩa</td><td>Chính xác cho chuỗi tứ; tăng chi phí ở lá</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="ab-exp">
+        <div class="section-header">
+            <div class="icon" style="background:#e3f2fd;color:var(--info);">⏱️</div>
+            <div>
+                <div class="section-num">Mục 05.3</div>
+                <h2>Đo Số Nút &amp; Thời Gian Có/Không Cắt Tỉa</h2>
+            </div>
+        </div>
+
+        <p class="lead">Đề yêu cầu so sánh số nút và thời gian khi có và không có cắt tỉa. Dùng một bộ cố định gồm
+            50 thế cờ giữa ván (lấy từ log giải đấu, có seed). Chạy từng cấu hình ở cùng độ sâu và ghi lại:</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Cấu hình</th><th>Độ sâu</th><th>Số nút TB</th><th>Thời gian TB (ms)</th><th>p95 (ms)</th><th>% thế chọn cùng nước với Minimax</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Minimax thuần</td><td>1 · 2 · 3</td><td>—</td><td>—</td><td>—</td><td>100% (mốc)</td></tr>
+                    <tr><td>+ Alpha-Beta</td><td>1 · 2 · 3 · 4</td><td>—</td><td>—</td><td>—</td><td>phải là 100% về giá trị</td></tr>
+                    <tr><td>+ Sắp xếp nước</td><td>1 · … · 5</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>+ TT + iterative deepening</td><td>1 · … · 6</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size:.85rem;color:var(--text-secondary);">"—" là ô nhóm điền sau khi chạy. Nếu một cấu hình có
+            cắt tỉa cho giá trị gốc khác minimax thuần ở cùng độ sâu và cùng tập ứng viên thì đó là bug, không phải
+            kết quả. Vẽ biểu đồ số nút theo độ sâu trên trục log.</p>
+    </section>
+
+    <!-- ================= PHẦN 06 ================= -->
+    <div class="part-banner" id="p06">
+        <div class="pb-num">Phần 06</div>
+        <div class="pb-title">Cấp 4 — MCTS (UCT)</div>
+        <div class="pb-desc">Selection – Expansion – Simulation – Backpropagation · khảo sát số lần mô phỏng</div>
+    </div>
+
+    <section id="mcts-algo">
+        <div class="section-header">
+            <div class="icon" style="background:#e0f7fa;color:var(--accent);">🌲</div>
+            <div>
+                <div class="section-num">Mục 06.1</div>
+                <h2>Bốn Bước Của Một Lần Mô Phỏng</h2>
+            </div>
+        </div>
+
+        <div class="flow">
+            <div class="flow-step">1 · Selection<br>đi xuống theo UCT</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">2 · Expansion<br>thêm 1 con chưa thử</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step warning">3 · Simulation<br>rollout tới cuối ván</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step success">4 · Backprop<br>cộng kết quả, đổi dấu từng tầng</div>
+        </div>
+
+        <div class="highlight">
+            <strong>Công thức UCT</strong> (chọn con ở bước 1):
+            <code>a* = argmax<sub>a</sub> [ W(a)/N(a) + c · √( ln N(cha) / N(a) ) ]</code>.
+            <code>W(a)</code> là tổng kết quả <em>theo góc nhìn người đi nước a</em>; <code>c = √2</code> theo lý
+            thuyết, nên tinh chỉnh trong khoảng 0,5–2. Nước cuối cùng được chọn là con có <code>N</code> lớn nhất
+            (ổn định hơn chọn theo <code>W/N</code>).
+        </div>
+
+        <div class="code-block"><span class="keyword">def</span> <span class="fn">mcts</span>(root_game, n_sims, c=<span class="number">1.4</span>):
+    root = Node(parent=<span class="keyword">None</span>, move=<span class="keyword">None</span>, untried=candidate_list(root_game))
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="fn">range</span>(n_sims):
+        g, node = root_game.clone(), root
+        <span class="keyword">while not</span> node.untried <span class="keyword">and</span> node.children:          <span class="comment"># 1. selection</span>
+            node = <span class="fn">max</span>(node.children, key=<span class="keyword">lambda</span> ch: ch.W / ch.N + c * math.sqrt(math.log(node.N) / ch.N))
+            g.step(node.move)
+        <span class="keyword">if</span> node.untried <span class="keyword">and not</span> g.is_terminal():           <span class="comment"># 2. expansion</span>
+            m = node.untried.pop(rng.randrange(<span class="fn">len</span>(node.untried)))
+            g.step(m)
+            node = node.add_child(m, untried=candidate_list(g))
+        z = rollout(g)                                        <span class="comment"># 3. simulation: +1 X thắng, -1 O thắng, 0 hoà</span>
+        <span class="keyword">while</span> node <span class="keyword">is not None</span>:                              <span class="comment"># 4. backpropagation</span>
+            node.N += <span class="number">1</span>
+            mover = node.mover                                <span class="comment"># người đã đi nước dẫn tới node</span>
+            node.W += z <span class="keyword">if</span> mover == <span class="number">0</span> <span class="keyword">else</span> -z
+            node = node.parent
+    <span class="keyword">return</span> <span class="fn">max</span>(root.children, key=<span class="keyword">lambda</span> ch: ch.N).move</div>
+    </section>
+
+    <section id="mcts-choice">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">🎛️</div>
+            <div>
+                <div class="section-num">Mục 06.2</div>
+                <h2>Các Lựa Chọn Thiết Kế Cho Caro</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Mở rộng chỉ trên ứng viên</h3>
+                <p>Con của một nút là các ô trong <code>candidates(…, radius=2)</code> thay vì toàn bộ ô trống, để
+                    giảm hệ số rẽ nhánh từ ~100 xuống vài chục.</p>
+            </div>
+            <div class="card">
+                <h3>Rollout: ngẫu nhiên hay có luật?</h3>
+                <p>Rollout thuần ngẫu nhiên trên Caro cho tín hiệu rất nhiễu. Bản "rollout nhẹ" ở mỗi bước: thắng
+                    ngay nếu được → chặn nếu bị đe doạ → ngẫu nhiên trong bán kính 1. Hai bản này là ablation A4.</p>
+            </div>
+            <div class="card">
+                <h3>Kiểm tra kết thúc trong rollout</h3>
+                <p>Chỉ gọi <code>has_five</code> trên bitboard của người vừa đi, nhờ đó mỗi bước rollout chỉ tốn vài
+                    phép bit. Đây là chỗ bitboard giúp MCTS nhiều nhất vì rollout chiếm phần lớn thời gian.</p>
+            </div>
+            <div class="card">
+                <h3>Tái sử dụng cây</h3>
+                <p>Sau khi đi nước và đối thủ đáp, giữ lại cây con tương ứng làm gốc mới thay vì xây lại từ đầu.
+                    Phải tắt khi đo "số mô phỏng mỗi nước" để so sánh công bằng.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="mcts-exp">
+        <div class="section-header">
+            <div class="icon" style="background:#e3f2fd;color:var(--info);">📈</div>
+            <div>
+                <div class="section-num">Mục 06.3</div>
+                <h2>Khảo Sát Số Lần Mô Phỏng</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Số mô phỏng / nước</th><th>Score vs Cấp 2</th><th>Score vs Cấp 3 (độ sâu 2)</th><th>Thời gian TB / nước</th><th>Mô phỏng / giây</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>100</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>400</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>1 600</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>6 400</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size:.85rem;color:var(--text-secondary);">Mỗi ô = 100–200 ván, có khoảng tin cậy Wilson.
+            Vẽ score theo log(số mô phỏng). Đường cong có bão hoà hay không là dữ liệu trực tiếp cho RQ1.</p>
+    </section>
+
+    <!-- ================= PHẦN 07 ================= -->
+    <div class="part-banner" id="p07">
+        <div class="pb-num">Phần 07</div>
+        <div class="pb-title">Cấp 5 — Neural Network (Học Có Giám Sát)</div>
+        <div class="pb-desc">Bắt buộc ít nhất một trong cấp 5/6 · Rubric tiêu chí 4 (15 điểm)</div>
+    </div>
+
+    <section id="nn-input">
+        <div class="section-header">
+            <div class="icon" style="background:#ede7f6;color:#5e35b1;">🧠</div>
+            <div>
+                <div class="section-num">Mục 07.1</div>
+                <h2>Mã Hoá Đầu Vào &amp; Kiến Trúc Mạng</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Tensor đầu vào 4 × 11 × 11</h3>
+                <ul>
+                    <li>Lớp 0: quân của <strong>bên đang đi</strong></li>
+                    <li>Lớp 1: quân của đối thủ</li>
+                    <li>Lớp 2: nước vừa đi (một ô = 1)</li>
+                    <li>Lớp 3: toàn 1 (giúp mạng nhận ra mép bàn khi conv có padding 0)</li>
+                </ul>
+                <p>Lấy thẳng từ bitboard: bit <code>i</code> → ô <code>(i // 11, i % 11)</code>. Nhìn từ góc bên
+                    đang đi nên một mạng dùng được cho cả X và O.</p>
+            </div>
+            <div class="card">
+                <h3>ResNet policy-value (dùng chung cho cấp 5–8)</h3>
+                <ul>
+                    <li>Thân: conv 3×3, 64 kênh + 6 khối residual (mỗi khối 2 conv 3×3 + BatchNorm + ReLU)</li>
+                    <li>Policy head: conv 1×1 → 2 kênh → FC 242 → 121 logits; ô đã có quân bị gán −∞ trước softmax</li>
+                    <li>Value head: conv 1×1 → 1 kênh → FC 121 → 64 → 1, <code>tanh</code></li>
+                    <li>≈ 0,48 triệu tham số: đủ nhỏ để huấn luyện trên CPU hoặc GPU phổ thông</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="nn-data">
+        <div class="section-header">
+            <div class="icon" style="background:#dcfce7;color:var(--success);">🗃️</div>
+            <div>
+                <div class="section-num">Mục 07.2</div>
+                <h2>Dữ Liệu &amp; Huấn Luyện</h2>
+            </div>
+        </div>
+
+        <div class="flow">
+            <div class="flow-step">Expert: Cấp 3<br>Alpha-Beta độ sâu 3–4</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">Sinh N ván<br>khai cuộc ngẫu nhiên + softmax top-k</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step warning">Chia theo ván<br>80 / 10 / 10</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">Loại trùng<br>khoá chuẩn hoá D4</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Augment ×8<br>chỉ trên tập train</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step success">Train<br>CE(policy) + MSE(value)</div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Hạng mục</th><th>Quy định</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nhãn</td><td>Mỗi thế: <code>(s, a*, z)</code>. <code>a*</code> là nước của expert, <code>z</code> là kết quả ván theo góc nhìn bên đang đi.</td></tr>
+                    <tr><td>Đa dạng hoá</td><td>2–4 nước khai cuộc ngẫu nhiên gần tâm; expert chọn ngẫu nhiên trong top-k nước theo softmax điểm (nhiệt độ T). Ghi lại k, T, seed.</td></tr>
+                    <tr><td>Chia tập</td><td><strong>Theo ván, không theo thế</strong>, để các thế liên tiếp của cùng một ván không rơi vào cả train lẫn test.</td></tr>
+                    <tr><td>Loại trùng</td><td>Khoá chuẩn hoá = min khoá Zobrist qua 8 phép đối xứng. Thế trùng giữa các tập bị loại khỏi val/test; thế trùng trong train được gộp (đếm phân phối nhãn).</td></tr>
+                    <tr><td>Loss</td><td><code>L = CE(π_expert, p) + c_v · (z − v)² + λ‖θ‖²</code>, Adam, có early stopping trên tập val.</td></tr>
+                    <tr><td>Chỉ số báo cáo</td><td>Top-1 / top-3 accuracy so với expert trên tập test, value MSE, đường cong loss train/val, và quan trọng nhất là score khi đấu với cấp 1–3.</td></tr>
+                    <tr><td>Tác tử cấp 5</td><td>Chơi bằng <code>argmax p(a|s)</code> trên các nước hợp lệ, không tìm kiếm (để tách bạch với cấp 7).</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="highlight warning">
+            <strong>Rủi ro "học lại heuristic":</strong> nhãn đến từ Alpha-Beta của chính nhóm nên mạng cấp 5 sẽ bắt
+            chước cả điểm yếu của nó, và khó vượt expert. Báo cáo phải nêu rõ nguồn nhãn và rủi ro này (đề mục 3.4).
+            Không được dùng mạng chưa huấn luyện làm bằng chứng cho cấp 5.
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 08 ================= -->
+    <div class="part-banner" id="p08">
+        <div class="pb-num">Phần 08</div>
+        <div class="pb-title">Cấp 6 — Reinforcement Learning</div>
+        <div class="pb-desc">Policy gradient tự chơi · đường cong học tập</div>
+    </div>
+
+    <section id="rl">
+        <div class="section-header">
+            <div class="icon" style="background:#fef9c3;color:#a16207;">🏋️</div>
+            <div>
+                <div class="section-num">Mục 08.1</div>
+                <h2>Chọn Phương Pháp</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Vì sao không dùng Q-learning dạng bảng</h3>
+                <p>Không gian ~10<sup>56</sup> trạng thái (mục 02.1) nên bảng Q không thể khả thi. Đề gợi ý
+                    Q-learning cho "game nhỏ"; Caro 11×11 không thuộc loại đó, nên chọn phương pháp xấp xỉ hàm.</p>
+            </div>
+            <div class="card">
+                <h3>Chọn: REINFORCE có baseline (actor-critic đơn giản)</h3>
+                <p>Dùng chính mạng policy-value của Phần 07. Policy là actor, value head là baseline.
+                    <code>∇J ≈ Σ<sub>t</sub> (z − v(s<sub>t</sub>)) ∇ log π(a<sub>t</sub>|s<sub>t</sub>)</code>,
+                    cộng entropy bonus để tránh policy sụp sớm về một nước.</p>
+            </div>
+            <div class="card">
+                <h3>Đối thủ khi tự chơi</h3>
+                <p>Đấu với một <strong>pool các checkpoint cũ</strong> (lấy mẫu ngẫu nhiên, thêm Cấp 2 với xác suất
+                    nhỏ) thay vì chỉ đấu với bản hiện tại, để giảm hiện tượng chiến lược xoay vòng và quên kiến thức cũ.</p>
+            </div>
+        </div>
+
+        <h3 class="sub">Siêu tham số phải ghi trong báo cáo (đề mục 3.4)</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Tham số</th><th>Giá trị khởi điểm gợi ý</th><th>Ghi chú</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Khởi tạo</td><td>Trọng số cấp 5 <em>hoặc</em> ngẫu nhiên</td><td>Hai lựa chọn này là ablation A5b</td></tr>
+                    <tr><td>Reward</td><td>+1 / −1 / 0 ở cuối ván, γ = 1</td><td>Theo góc nhìn người chơi (02.2)</td></tr>
+                    <tr><td>Số episode</td><td>Nhóm tự chọn theo ngân sách</td><td>Ghi tổng số ván và thời gian train</td></tr>
+                    <tr><td>Batch</td><td>64–256 ván / lần cập nhật</td><td></td></tr>
+                    <tr><td>Learning rate</td><td>1e-4 – 3e-4 (Adam)</td><td></td></tr>
+                    <tr><td>Entropy coef</td><td>0,01</td><td>Giảm dần theo thời gian</td></tr>
+                    <tr><td>Exploration</td><td>Lấy mẫu từ π với nhiệt độ T = 1, các nước ngẫu nhiên đầu ván</td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="highlight info">
+            <strong>Đường cong học tập:</strong> cứ mỗi K episode, đóng băng checkpoint và đấu 100 ván (đổi màu) với
+            3 đối thủ cố định: Cấp 1, Cấp 2, Cấp 5. Vẽ score theo số episode, có dải tin cậy. Một đường cong đi lên
+            là bằng chứng "thực sự huấn luyện" mà rubric tiêu chí 4 yêu cầu; loss đi xuống thôi là chưa đủ.
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 09 ================= -->
+    <div class="part-banner" id="p09">
+        <div class="pb-num">Phần 09</div>
+        <div class="pb-title">Cấp 7 AlphaGo-inspired &amp; Cấp 8 AlphaZero-inspired</div>
+        <div class="pb-desc">Khuyến khích · điểm cộng tối đa +10 · phải ghi rõ thành phần đã/chưa thực hiện</div>
+    </div>
+
+    <section id="puct">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">🔮</div>
+            <div>
+                <div class="section-num">Mục 09.1</div>
+                <h2>MCTS Có Mạng Dẫn Đường (PUCT)</h2>
+            </div>
+        </div>
+
+        <p class="lead">Cấp 7 và 8 thay hai điểm yếu của MCTS cấp 4: chọn nút bằng <strong>xác suất tiên nghiệm từ
+            policy</strong>, và đánh giá lá bằng <strong>value net</strong> thay vì (hoặc cùng với) rollout.</p>
+
+        <div class="highlight">
+            <strong>PUCT:</strong>
+            <code>a* = argmax<sub>a</sub> [ Q(s,a) + c<sub>puct</sub> · P(s,a) · √N(s) / (1 + N(s,a)) ]</code>,
+            với <code>P(s,a)</code> từ policy head, <code>Q</code> là giá trị trung bình theo góc nhìn bên đi ở
+            <code>s</code>. Khi một nút lá được mở rộng, mạng chạy <em>một lần</em> để cho cả <code>P</code> của
+            các con lẫn <code>v</code> của lá.
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Thành phần</th><th>AlphaGo (2016)</th><th>Cấp 7 của dự án</th><th>AlphaZero (2018)</th><th>Cấp 8 của dự án</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Policy prior</td><td>SL policy từ ván người</td><td>Mạng cấp 5 (SL từ Alpha-Beta)</td><td>Một mạng policy-value</td><td>Mạng policy-value, học từ self-play</td></tr>
+                    <tr><td>RL policy</td><td>Policy gradient self-play</td><td>Tuỳ chọn: mạng cấp 6</td><td>—</td><td>—</td></tr>
+                    <tr><td>Đánh giá lá</td><td>Trộn value net và fast rollout, λ = 0,5</td><td><code>(1 − λ) · v + λ · z<sub>rollout</sub></code>, khảo sát λ</td><td>Chỉ value net</td><td>Chỉ value net</td></tr>
+                    <tr><td>Dữ liệu</td><td>Ván chuyên gia + self-play</td><td>Ván Alpha-Beta</td><td>Chỉ self-play</td><td>Chỉ self-play (từ trọng số ngẫu nhiên)</td></tr>
+                    <tr><td>Đánh giá checkpoint</td><td>—</td><td>—</td><td>Không gating (AlphaGo Zero thì có)</td><td>Gating: đấu với bản tốt nhất, thay khi score ≥ 55%</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="highlight warning">
+            <strong>Thuật ngữ theo đề:</strong> đây là phiên bản <em>mô phỏng cảm hứng</em>, ở quy mô nhỏ hơn nhiều bậc.
+            Báo cáo không được khẳng định đã tái hiện AlphaGo/AlphaZero. Nên giữ một bảng như trên, thêm cột
+            "đã cài / chưa cài" cho từng thành phần.
+        </div>
+    </section>
+
+    <section id="az-loop">
+        <div class="section-header">
+            <div class="icon" style="background:#dcfce7;color:var(--success);">♻️</div>
+            <div>
+                <div class="section-num">Mục 09.2</div>
+                <h2>Vòng Lặp AlphaZero-inspired (Cấp 8)</h2>
+            </div>
+        </div>
+
+        <div class="flow">
+            <div class="flow-step">1 · Self-play<br>PUCT, nhiễu Dirichlet ở gốc</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">2 · Replay buffer<br>(s, π<sub>MCTS</sub>, z), augment ×8</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step warning">3 · Train<br>(z − v)² − πᵀ log p + c‖θ‖²</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step alt">4 · Gating<br>mới vs tốt nhất, 100 ván</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step success">5 · Lưu checkpoint<br>quay lại bước 1</div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Tham số self-play</th><th>Gợi ý</th><th>Lý do</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Số mô phỏng / nước</td><td>200 – 800</td><td>Đánh đổi chất lượng nhãn π với số ván sinh được</td></tr>
+                    <tr><td>Nhiễu Dirichlet ở gốc</td><td>ε = 0,25; α ≈ 0,1 – 0,3</td><td>Bài báo dùng α tỉ lệ nghịch với số nước hợp lệ điển hình (0,3 cờ vua, 0,03 cờ vây)</td></tr>
+                    <tr><td>Nhiệt độ chọn nước</td><td>τ = 1 cho ~8 nước đầu, sau đó τ → 0</td><td>Đa dạng khai cuộc nhưng chơi nghiêm túc về sau</td></tr>
+                    <tr><td>Replay buffer</td><td>N ván gần nhất (cửa sổ trượt)</td><td>Bỏ dữ liệu của các mạng quá cũ</td></tr>
+                    <tr><td>Gating</td><td>100 ván đổi màu, ngưỡng 55%</td><td>Tránh thay bằng mạng yếu hơn do nhiễu</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Ước lượng chi phí trước khi chạy</h3>
+                <p>Thời gian 1 ván ≈ số nước × số mô phỏng × thời gian 1 lần suy luận mạng. Nhóm đo thời gian suy luận
+                    thật trên máy mình rồi nhân ra để chọn số vòng lặp vừa ngân sách; khai báo CPU/GPU và tổng giờ
+                    train trong báo cáo.</p>
+            </div>
+            <div class="card">
+                <h3>Tăng tốc nếu cần</h3>
+                <ul>
+                    <li>Gom lá thành batch khi suy luận, dùng virtual loss</li>
+                    <li>Chạy nhiều tiến trình self-play song song</li>
+                    <li>Khởi động từ mạng cấp 5 (khi đó phải ghi là không còn "chỉ self-play")</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 10 ================= -->
+    <div class="part-banner" id="p10">
+        <div class="pb-num">Phần 10</div>
+        <div class="pb-title">Thiết Kế Thí Nghiệm &amp; Đo Đạc</div>
+        <div class="pb-desc">Đề mục 3.5 – 3.6 · Rubric tiêu chí 5 (15 điểm) và 6 (10 điểm)</div>
+    </div>
+
+    <section id="exp-setup">
+        <div class="section-header">
+            <div class="icon" style="background:#e3f2fd;color:var(--info);">🏟️</div>
+            <div>
+                <div class="section-num">Mục 10.1</div>
+                <h2>Giải Đấu Round-robin</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Khai cuộc cân bằng</h3>
+                <p>Tác tử tất định (Cấp 2, Cấp 3 theo độ sâu) đấu với nhau sẽ lặp lại đúng một ván. Vì vậy dùng một
+                    bộ <strong>100 khai cuộc</strong>: 2–4 nước ngẫu nhiên trong vùng 5×5 giữa bàn, chỉ giữ thế mà
+                    Alpha-Beta độ sâu 2 đánh giá gần cân bằng. Mỗi khai cuộc chơi 2 ván đổi màu → <strong>200
+                    ván/cặp</strong> (đề yêu cầu tối thiểu 100, khuyến nghị 200).</p>
+            </div>
+            <div class="card">
+                <h3>Hai chế độ ngân sách (bắt buộc)</h3>
+                <ul>
+                    <li><strong>Chế độ A, thời gian:</strong> mọi tác tử có cùng <code>time_ms</code> mỗi nước (vd. 200 ms, 1 s)</li>
+                    <li><strong>Chế độ B, ngân sách mặc định:</strong> Alpha-Beta độ sâu cố định, MCTS/PUCT số mô phỏng cố định, cấp 5/6 một lần suy luận. Ghi minh bạch trong config</li>
+                </ul>
+                <p>Không suy diễn "công bằng tính toán" chỉ vì cùng độ sâu.</p>
+            </div>
+            <div class="card">
+                <h3>Cố định môi trường</h3>
+                <p>Cùng commit engine, cùng máy, một tiến trình mỗi ván (hoặc cố định số luồng), tắt tái sử dụng cây
+                    khi đo số mô phỏng. Tác tử ngẫu nhiên chạy với nhiều seed.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="metrics">
+        <div class="section-header">
+            <div class="icon" style="background:#fef9c3;color:#a16207;">📏</div>
+            <div>
+                <div class="section-num">Mục 10.2</div>
+                <h2>Chỉ Số &amp; Khoảng Tin Cậy</h2>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Chỉ số</th><th>Định nghĩa</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Thắng / hoà / thua</td><td>Đếm từ góc nhìn tác tử hàng, tách riêng theo lượt đi trước và đi sau</td></tr>
+                    <tr><td>Score</td><td><code>(thắng + 0,5 × hoà) / tổng số ván</code></td></tr>
+                    <tr><td>Khoảng tin cậy 95%</td><td>Wilson cho tỷ lệ thắng; bootstrap (10 000 lần lấy mẫu lại theo <em>cặp ván cùng khai cuộc</em>) cho score</td></tr>
+                    <tr><td>Thời gian</td><td>Trung bình và p95 thời gian mỗi nước</td></tr>
+                    <tr><td>Chi phí tìm kiếm</td><td>Số nút (Alpha-Beta), số mô phỏng (MCTS/PUCT) mỗi nước</td></tr>
+                    <tr><td>Bộ nhớ</td><td>RAM đỉnh mỗi tiến trình; VRAM nếu có GPU</td></tr>
+                    <tr><td>Huấn luyện</td><td>Tổng thời gian, số ván/episode, phần cứng</td></tr>
+                    <tr><td>Xếp hạng tổng (tuỳ chọn)</td><td>Elo / Bradley-Terry ước lượng từ toàn bộ ma trận</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block"><span class="keyword">def</span> <span class="fn">wilson</span>(k, n, z=<span class="number">1.96</span>):
+    <span class="string">"""Khoảng tin cậy Wilson 95% cho tỷ lệ k/n."""</span>
+    p = k / n
+    den = <span class="number">1</span> + z * z / n
+    center = (p + z * z / (<span class="number">2</span> * n)) / den
+    half = z / den * math.sqrt(p * (<span class="number">1</span> - p) / n + z * z / (<span class="number">4</span> * n * n))
+    <span class="keyword">return</span> center - half, center + half
+
+<span class="comment"># Ví dụ: 120 thắng / 200 ván → (0.531, 0.665). Khoảng không chứa 0.5 → thắng có ý nghĩa ở mức 95%.</span></div>
+        <p style="font-size:.88rem;color:var(--text-secondary);">Với 200 ván, kể cả khi tỷ lệ thật là 50% thì
+            khoảng tin cậy vẫn rộng khoảng ±7 điểm phần trăm (100/200 → 0,431 – 0,569). Khác biệt nhỏ hơn mức đó
+            phải được báo cáo là "chưa phân biệt được", không phải "A mạnh hơn B".</p>
+    </section>
+
+    <section id="matrix">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">🔢</div>
+            <div>
+                <div class="section-num">Mục 10.3</div>
+                <h2>Ma Trận Đối Đầu (Mẫu)</h2>
+            </div>
+        </div>
+        <p class="lead">Mỗi ô là score của tác tử hàng khi gặp tác tử cột, kèm khoảng tin cậy. Nhóm điền sau khi chạy
+            giải; mỗi chế độ ngân sách có một ma trận riêng.</p>
+        <div class="table-wrap">
+            <table class="wtable">
+                <thead>
+                    <tr><th>Hàng vs Cột</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>L5</th><th>L6</th><th>L7</th><th>L8</th></tr>
+                </thead>
+                <tbody id="matrixBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="ablation">
+        <div class="section-header">
+            <div class="icon" style="background:#fee2e2;color:var(--danger);">🔬</div>
+            <div>
+                <div class="section-num">Mục 10.4</div>
+                <h2>Ablation &amp; Phân Tích Độ Nhạy</h2>
+            </div>
+        </div>
+
+        <p class="lead">Đề bắt buộc ít nhất 2 ablation có ý nghĩa. Danh sách dưới đây được gắn với các câu hỏi
+            nghiên cứu; nên chọn A1 và A3 làm bắt buộc, thêm các mục khác nếu còn thời gian.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Mã</th><th>Thay đổi</th><th>Giữ cố định</th><th>Đo</th><th>RQ</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="pick"><td><strong>A1</strong></td><td>Alpha-Beta: bật / tắt cắt tỉa</td><td>Độ sâu, tập ứng viên</td><td>Số nút, thời gian, giá trị gốc (phải giống nhau)</td><td>RQ3</td></tr>
+                    <tr><td><strong>A2</strong></td><td>Alpha-Beta: bật / tắt sắp xếp nước, TT</td><td>Độ sâu</td><td>Số nút, độ sâu đạt được trong 1 s</td><td>RQ3</td></tr>
+                    <tr class="pick"><td><strong>A3</strong></td><td>MCTS: 100 / 400 / 1 600 / 6 400 mô phỏng</td><td>Rollout, c</td><td>Score vs Cấp 2 và Cấp 3</td><td>RQ1</td></tr>
+                    <tr><td><strong>A4</strong></td><td>MCTS: rollout ngẫu nhiên / rollout nhẹ có luật</td><td>Số mô phỏng</td><td>Score, mô phỏng/giây</td><td>RQ1</td></tr>
+                    <tr><td><strong>A5</strong></td><td>Policy-only (cấp 5) / policy + MCTS (cấp 7)</td><td>Cùng mạng</td><td>Score, thời gian</td><td>RQ2</td></tr>
+                    <tr><td><strong>A5b</strong></td><td>RL khởi tạo từ cấp 5 / từ ngẫu nhiên</td><td>Số episode</td><td>Learning curve</td><td>RQ2</td></tr>
+                    <tr><td><strong>A6</strong></td><td>Huấn luyện có / không augmentation ×8</td><td>Dữ liệu gốc</td><td>Accuracy test, score</td><td>—</td></tr>
+                    <tr><td><strong>A7</strong></td><td>Heuristic đánh giá: trọng số mặc định / bỏ phòng thủ</td><td>Độ sâu</td><td>Score</td><td>—</td></tr>
+                    <tr><td><strong>E3</strong></td><td>Lợi thế đi trước: tự đấu từng cấp</td><td>Tác tử</td><td>Score của bên đi trước</td><td>RQ4</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="analysis">
+        <div class="section-header">
+            <div class="icon" style="background:#f3e5f5;color:#8e24aa;">🧐</div>
+            <div>
+                <div class="section-num">Mục 10.5</div>
+                <h2>Phân Tích &amp; Diễn Giải</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Trả lời câu hỏi, không chỉ xếp hạng</h3>
+                <p>Mỗi RQ có một đoạn kết luận dẫn số liệu và khoảng tin cậy cụ thể. Nếu dữ liệu không đủ để kết luận
+                    thì ghi rõ là chưa kết luận được.</p>
+            </div>
+            <div class="card">
+                <h3>Ván đấu minh hoạ</h3>
+                <p>Chọn ván theo quy tắc định trước (vd. ván có nhiều nước nhất, ván cấp cao thua cấp thấp), không
+                    chọn riêng ván thắng đẹp. Dùng chế độ replay của UI để chụp hình và chú thích nước quyết định.</p>
+            </div>
+            <div class="card">
+                <h3>Phân tích lỗi</h3>
+                <p>Tìm các nước mà Alpha-Beta độ sâu cao đánh giá là "thua ngay sau đó": đó là chỗ tác tử mắc lỗi.
+                    Thống kê lỗi theo loại: bỏ sót chặn tứ, không thấy VCF, đi xa vùng giao tranh…</p>
+            </div>
+            <div class="card">
+                <h3>Thực nghiệm ≠ tối ưu</h3>
+                <p>"Thắng 90% ván" chỉ là sức mạnh thực nghiệm trong bộ khai cuộc và ngân sách đã chọn, không phải
+                    chơi tối ưu. Kết quả không được ngoại suy sang bàn hay luật khác.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 11 ================= -->
+    <div class="part-banner" id="p11">
+        <div class="pb-num">Phần 11</div>
+        <div class="pb-title">Giao Diện &amp; Demo</div>
+        <div class="pb-desc">Người–máy, máy–máy, chọn cấp độ AI · Rubric tiêu chí 2 và 7</div>
+    </div>
+
+    <section id="ui">
+        <div class="section-header">
+            <div class="icon" style="background:#e0f7fa;color:var(--accent);">🖥️</div>
+            <div>
+                <div class="section-num">Mục 11.1</div>
+                <h2>Chức Năng</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Người – máy</h3>
+                <ul>
+                    <li>Chọn cấp 1–8, ngân sách (thời gian hoặc độ sâu/mô phỏng), cầm X hay O</li>
+                    <li>Lùi nước, ván mới, hiện nước vừa đi</li>
+                    <li>Hiện "AI đang nghĩ gì": độ sâu, số nút, PV (Alpha-Beta); bản đồ nhiệt số lượt thăm (MCTS); bản đồ nhiệt policy (cấp 5–8)</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Máy – máy</h3>
+                <ul>
+                    <li>Chọn 2 tác tử và khai cuộc, chạy tự động hoặc từng nước</li>
+                    <li>Điều chỉnh tốc độ, tạm dừng</li>
+                    <li>Mở lại một ván bất kỳ từ log JSONL của giải đấu (replay)</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Công nghệ</h3>
+                <p><strong>FastAPI</strong> bọc engine và các tác tử Python; giao diện là một trang HTML vẽ bàn cờ (như demo
+                    ở mục 01.10). Mọi tính toán AI nằm ở Python, nên UI và arena dùng đúng cùng một code. Nếu nhóm quen
+                    hơn thì có thể dùng <strong>pygame</strong>, chỉ cần giữ nguyên interface <code>Agent</code>.</p>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Endpoint</th><th>Mô tả</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>GET /agents</code></td><td>Danh sách tác tử, cấp, tham số ngân sách hỗ trợ</td></tr>
+                    <tr><td><code>POST /games</code></td><td>Tạo ván: <code>{x: "human" | agent_id, o: …, opening_id?, seed}</code></td></tr>
+                    <tr><td><code>POST /games/{id}/move</code></td><td>Người đi một nước. Trả 400 nếu nước bất hợp lệ</td></tr>
+                    <tr><td><code>POST /games/{id}/ai-move</code></td><td>Tác tử đến lượt tự đi; trả nước đi và <code>last_stats()</code></td></tr>
+                    <tr><td><code>POST /games/{id}/undo</code></td><td>Lùi nước</td></tr>
+                    <tr><td><code>GET /replays/{game_id}</code></td><td>Đọc một ván từ log</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ================= PHẦN 12 ================= -->
+    <div class="part-banner" id="p12">
+        <div class="pb-num">Phần 12</div>
+        <div class="pb-title">Kế Hoạch, Sản Phẩm Nộp &amp; Rubric</div>
+        <div class="pb-desc">Đề mục 2, 3.7, 4, 5, 6</div>
+    </div>
+
+    <section id="roadmap">
+        <div class="section-header">
+            <div class="icon" style="background:#dcfce7;color:var(--success);">🗓️</div>
+            <div>
+                <div class="section-num">Mục 12.1</div>
+                <h2>Lộ Trình Gợi Ý (8 tuần)</h2>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item"><h4>Tuần 1 · Engine</h4><p>Bitboard, CaroGame, test đối chiếu, chốt câu hỏi nghiên cứu với giảng viên.</p></div>
+            <div class="timeline-item"><h4>Tuần 2 · Cấp 1–2 + Arena</h4><p>Random, Rule-based, match/tournament, log JSONL, Wilson. Chạy giải nhỏ đầu tiên.</p></div>
+            <div class="timeline-item"><h4>Tuần 3 · Cấp 3</h4><p>Negamax, alpha-beta, iterative deepening, TT, nước bắt buộc. Thí nghiệm A1/A2.</p></div>
+            <div class="timeline-item"><h4>Tuần 4 · Cấp 4 + UI</h4><p>MCTS, A3/A4. Bản UI người–máy đầu tiên.</p></div>
+            <div class="timeline-item"><h4>Tuần 5 · Cấp 5</h4><p>Sinh dữ liệu expert, ResNet, train SL, đánh giá với cấp 1–3.</p></div>
+            <div class="timeline-item"><h4>Tuần 6 · Cấp 6 (+7)</h4><p>Policy gradient, learning curve. Nếu kịp: PUCT với mạng cấp 5 (cấp 7).</p></div>
+            <div class="timeline-item"><h4>Tuần 7 · Giải chính thức (+8)</h4><p>Round-robin 200 ván/cặp ở 2 chế độ ngân sách. Nếu kịp: vòng lặp cấp 8.</p></div>
+            <div class="timeline-item"><h4>Tuần 8 · Báo cáo</h4><p>Notebook sinh bảng/hình, báo cáo 5 chương, slide, poster, README, đóng gói ZIP.</p></div>
+        </div>
+    </section>
+
+    <section id="team">
+        <div class="section-header">
+            <div class="icon" style="background:#eef2ff;color:var(--primary);">👥</div>
+            <div>
+                <div class="section-num">Mục 12.2</div>
+                <h2>Phân Công Gợi Ý (Nhóm 4 Người)</h2>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Thành viên</th><th>Phụ trách chính</th><th>Phụ trách phụ</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>TV1</td><td>Engine bitboard, API, test, UI</td><td>README, demo</td></tr>
+                    <tr><td>TV2</td><td>Cấp 2, cấp 3 (Alpha-Beta), A1/A2</td><td>Phân tích lỗi tác tử</td></tr>
+                    <tr><td>TV3</td><td>Cấp 4 (MCTS), cấp 7–8 (PUCT, self-play)</td><td>A3/A4</td></tr>
+                    <tr><td>TV4</td><td>Cấp 5–6 (dữ liệu, mạng, train), arena &amp; thống kê</td><td>Notebook, biểu đồ</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size:.88rem;color:var(--text-secondary);">Đề yêu cầu nộp lịch sử commit, phân công và tỷ lệ
+            đóng góp của từng thành viên, nên mỗi người commit phần việc của mình bằng tài khoản riêng.</p>
+    </section>
+
+    <section id="rubric">
+        <div class="section-header">
+            <div class="icon" style="background:#fef9c3;color:#a16207;">✅</div>
+            <div>
+                <div class="section-num">Mục 12.3</div>
+                <h2>Đối Chiếu Rubric</h2>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Tiêu chí</th><th>Điểm</th><th>Bằng chứng trong dự án</th><th>Tài liệu này</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1. Xác định bài toán/game</td><td>10</td><td>Luật, MDP, RQ1–RQ4, test engine</td><td><a href="#p02">Phần 02</a></td></tr>
+                    <tr><td>2. Xây dựng hệ thống</td><td>15</td><td>Kiến trúc, API, CI xanh, UI demo</td><td><a href="#p01">01</a>, <a href="#p03">03</a>, <a href="#p11">11</a></td></tr>
+                    <tr><td>3. Tác tử tìm kiếm</td><td>20</td><td>Cấp 1–4 cài đúng, có giải thích và đo số nút/mô phỏng</td><td><a href="#p04">04</a>, <a href="#p05">05</a>, <a href="#p06">06</a></td></tr>
+                    <tr><td>4. Tác tử học được</td><td>15</td><td>Dữ liệu, đường cong loss/reward, checkpoint, learning curve</td><td><a href="#p07">07</a>, <a href="#p08">08</a></td></tr>
+                    <tr><td>5. Thiết kế đánh giá</td><td>15</td><td>Cân bằng lượt, seed, độ đo, 2 chế độ ngân sách, ablation</td><td><a href="#p10">Phần 10</a></td></tr>
+                    <tr><td>6. Kết quả &amp; thảo luận</td><td>10</td><td>Ma trận, chi phí, thống kê, nguyên nhân, hạn chế</td><td><a href="#matrix">10.3</a>, <a href="#analysis">10.5</a></td></tr>
+                    <tr><td>7. Báo cáo, slide, demo</td><td>10</td><td>Báo cáo 5 chương, slide, poster, demo ổn định</td><td><a href="#deliverables">12.4</a></td></tr>
+                    <tr><td>8. Tái lập &amp; đạo đức</td><td>5</td><td>Code, README, log, trích dẫn, đóng góp thành viên</td><td><a href="#repro">03.3</a>, <a href="#honesty">12.5</a></td></tr>
+                    <tr><td>Điểm cộng (≤ +10)</td><td>+10</td><td>Cấp 7/8 có thực nghiệm thuyết phục, tối ưu search, giải thích chiến thuật</td><td><a href="#p09">Phần 09</a></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="deliverables">
+        <div class="section-header">
+            <div class="icon" style="background:#e0f7fa;color:var(--accent);">📦</div>
+            <div>
+                <div class="section-num">Mục 12.4</div>
+                <h2>Sản Phẩm Nộp &amp; Cấu Trúc Báo Cáo</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Báo cáo 5 chương → nguồn nội dung</h3>
+                <ul>
+                    <li><strong>Ch.1 Giới thiệu:</strong> 01.1, 02.1, 02.4 (RQ), phạm vi cấp đã làm</li>
+                    <li><strong>Ch.2 Cơ sở lý thuyết:</strong> Minimax/Alpha-Beta, MCTS/UCT, policy/value, RL, AlphaGo vs AlphaZero (09.1)</li>
+                    <li><strong>Ch.3 Phương pháp:</strong> Phần 01–09</li>
+                    <li><strong>Ch.4 Thực nghiệm:</strong> Phần 10 (điền số liệu thật)</li>
+                    <li><strong>Ch.5 Kết luận:</strong> trả lời RQ, hạn chế, hướng mở rộng</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Checklist</h3>
+                <ul>
+                    <li>Báo cáo, slide, poster</li>
+                    <li>Demo chơi được, chọn được cấp AI</li>
+                    <li>Mã nguồn Python, config, <code>pyproject.toml</code>, test tự động</li>
+                    <li>Checkpoint (nếu dung lượng cho phép), log thi đấu thô</li>
+                    <li>Notebook sinh bảng/hình, README (cài đặt, train, evaluate, demo)</li>
+                    <li>File <code>NhomXX_TenGame_TTNTNC_HoTen_MaSV.zip</code> + link GitHub</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="honesty">
+        <div class="section-header">
+            <div class="icon" style="background:#fee2e2;color:var(--danger);">⚖️</div>
+            <div>
+                <div class="section-num">Mục 12.5</div>
+                <h2>Trung Thực Học Thuật &amp; Tài Liệu Tham Khảo</h2>
+            </div>
+        </div>
+
+        <div class="highlight warning">
+            <strong>Quy định của đề (mục 5):</strong> trích dẫn rõ mọi nguồn tham khảo (sách, repo, công cụ AI); tách
+            phần tự cài đặt với phần kế thừa; không báo cáo kết quả chưa chạy; không chọn riêng ván thắng để minh hoạ;
+            lưu đủ log và mã sinh biểu đồ; kết quả ngoại suy sang game khác chỉ là giả thuyết.
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Tài liệu</th><th>Dùng cho</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Mark Liu, <em>AlphaGo Simplified: Rule-Based AI and Deep Learning in Everyday Games</em>, CRC Press</td><td>Ch. 1–8: rule-based, Minimax, MCTS · Ch. 9–15: NN, RL · Ch. 16–21: AlphaGo/AlphaZero</td></tr>
+                    <tr><td>Russell &amp; Norvig, <em>Artificial Intelligence: A Modern Approach</em> (2021)</td><td>Tác tử, tìm kiếm đối kháng, alpha-beta</td></tr>
+                    <tr><td>Sutton &amp; Barto, <em>Reinforcement Learning: An Introduction</em> (2018)</td><td>MDP, policy gradient, REINFORCE có baseline</td></tr>
+                    <tr><td>Silver et al., "Mastering the game of Go with deep neural networks and tree search", <em>Nature</em> (2016)</td><td>Cấp 7</td></tr>
+                    <tr><td>Silver et al., "Mastering the game of Go without human knowledge", <em>Nature</em> (2017); "A general reinforcement learning algorithm that masters chess, shogi, and Go through self-play", <em>Science</em> (2018)</td><td>Cấp 8, PUCT, Dirichlet, gating</td></tr>
+                    <tr><td>Kocsis &amp; Szepesvári, "Bandit based Monte-Carlo Planning", ECML (2006)</td><td>UCT, cấp 4</td></tr>
+                    <tr><td>L. V. Allis, <em>Searching for Solutions in Games and Artificial Intelligence</em>, PhD thesis (1994)</td><td>Gomoku tự do 15×15, threat-space search</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Engine Caro 11×11</strong></p>
+        <p>Luật tự do: 5 quân liên tiếp là thắng, không luật chặn 2 đầu</p>
+        <p style="margin-top:.5rem;">Đề tài cuối kỳ Trí tuệ nhân tạo nâng cao · Xây dựng và đánh giá Game AI đa cấp độ</p>
+    </footer>
+
+    <script>
+        // Giữ hero không bị nav (có thể cao hơn 56px) che mất
+        (function () {
+            function fixNavOffset() {
+                var nav = document.querySelector('nav');
+                var hero = document.querySelector('.hero');
+                if (nav && hero) hero.style.marginTop = nav.offsetHeight + 'px';
+            }
+            window.addEventListener('load', fixNavOffset);
+            window.addEventListener('resize', fixNavOffset);
+            fixNavOffset();
+        })();
+    </script>
+
+    <script>
+        // ===== Bitboard core — cùng công thức với code Python trong tài liệu =====
+        const N = 11, CELLS = N * N;
+        const FULL = (1n << BigInt(CELLS)) - 1n;
+        const B = i => 1n << BigInt(i);
+        const inside = v => v >= 0 && v < N;
+
+        function maskOf(pred) {
+            let m = 0n;
+            for (let r = 0; r < N; r++)
+                for (let c = 0; c < N; c++)
+                    if (pred(r, c)) m |= B(r * N + c);
+            return m;
+        }
+
+        const NOT_COL0 = FULL & ~maskOf((r, c) => c === 0);
+        const NOT_COL10 = FULL & ~maskOf((r, c) => c === N - 1);
+
+        const LINES = [
+            { name: 'Ngang →', dr: 0, dc: 1 },
+            { name: 'Dọc ↓', dr: 1, dc: 0 },
+            { name: 'Chéo ↘', dr: 1, dc: 1 },
+            { name: 'Chéo ↙', dr: 1, dc: -1 },
+        ].map(L => {
+            const d = L.dr * N + L.dc;
+            return { ...L, d, bd: BigInt(d), start: maskOf((r, c) => inside(r + 4 * L.dr) && inside(c + 4 * L.dc)) };
+        });
+
+        const lowIndex = b => (b & -b).toString(2).length - 1;
+        function popcount(b) {
+            let n = 0;
+            while (b) { b &= b - 1n; n++; }
+            return n;
+        }
+        function* iterBits(b) {
+            while (b) {
+                const low = b & -b;
+                yield low.toString(2).length - 1;
+                b ^= low;
+            }
+        }
+
+        // Trả { line, start } của dãy 5 đầu tiên tìm được, hoặc null
+        function findFive(x, useMask) {
+            for (const L of LINES) {
+                let t = x & (x >> L.bd);
+                t &= t >> (2n * L.bd);
+                t &= x >> (4n * L.bd);
+                t &= useMask ? L.start : FULL;
+                if (t) return { line: L, start: lowIndex(t) };
+            }
+            return null;
+        }
+
+        function dilate(x) {
+            const v = x | (x << BigInt(N)) | (x >> BigInt(N));
+            const h = v | ((v << 1n) & NOT_COL0) | ((v >> 1n) & NOT_COL10);
+            return h & FULL;
+        }
+
+        function candidates(X, O, radius = 2) {
+            const occ = X | O;
+            if (!occ) return B((N >> 1) * N + (N >> 1));
+            let area = occ;
+            for (let k = 0; k < radius; k++) area = dilate(area);
+            return area & ~occ & FULL;
+        }
+
+        function windowCounts(me, opp, L) {
+            let free = L.start;
+            for (let k = 0n; k < 5n; k++) free &= ~(opp >> (k * L.bd));
+            let c0 = 0n, c1 = 0n, c2 = 0n;
+            for (let k = 0n; k < 5n; k++) {
+                const p = (me >> (k * L.bd)) & free;
+                const carry = c0 & p; c0 ^= p;
+                const carry2 = c1 & carry; c1 ^= carry;
+                c2 |= carry2;
+            }
+            return { c0, c1, c2, free };
+        }
+
+        function exactly(k, { c0, c1, c2, free }) {
+            let m = free;
+            m &= (k & 1) ? c0 : ~c0;
+            m &= (k & 2) ? c1 : ~c1;
+            m &= (k & 4) ? c2 : ~c2;
+            return m;
+        }
+
+        function winningSquares(me, opp) {
+            const empty = ~(me | opp) & FULL;
+            let res = 0n;
+            for (const L of LINES) {
+                const w4 = exactly(4, windowCounts(me, opp, L));
+                for (let j = 0n; j < 5n; j++) res |= (w4 << (j * L.bd)) & empty;
+            }
+            return res;
+        }
+
+        const WEIGHT = [0, 1, 8, 64, 512];
+        function windowTable(me, opp) {
+            const counts = [0, 0, 0, 0, 0];
+            for (const L of LINES) {
+                const wc = windowCounts(me, opp, L);
+                for (let k = 1; k <= 4; k++) counts[k] += popcount(exactly(k, wc));
+            }
+            const score = counts.reduce((s, n, k) => s + WEIGHT[k] * n, 0);
+            return { counts, score };
+        }
+
+        // ===== Hình minh hoạ tĩnh =====
+        function renderMini(el, cls, opts = {}) {
+            el.innerHTML = '';
+            if (opts.small) el.classList.add('small');
+            for (let i = 0; i < CELLS; i++) {
+                const d = document.createElement('div');
+                const c = cls(i);
+                if (c) d.className = c;
+                d.textContent = opts.label ? opts.label(i) : i;
+                el.appendChild(d);
+            }
+        }
+
+        const CENTER = 60;
+        const NEIGH = new Set([-12, -11, -10, -1, 1, 10, 11, 12].map(o => CENTER + o));
+        renderMini(document.getElementById('figIndex'),
+            i => i === CENTER ? 'center' : NEIGH.has(i) ? 'hl' : '');
+
+        const starts = document.getElementById('figStarts');
+        for (const L of LINES) {
+            const fig = document.createElement('figure');
+            fig.className = 'mini-fig';
+            fig.style.flex = '1 1 200px';
+            fig.style.maxWidth = '250px';
+            const g = document.createElement('div');
+            g.className = 'mini';
+            renderMini(g, i => (L.start >> BigInt(i)) & 1n ? 'on' : '', { small: true });
+            const cap = document.createElement('figcaption');
+            cap.innerHTML = `${L.name} · d = ${L.d} · ${popcount(L.start)} ô đầu = ${popcount(L.start)} cửa sổ`;
+            fig.append(g, cap);
+            starts.appendChild(fig);
+        }
+
+        const WRAP = new Set([30, 31, 32, 33, 34]);
+        renderMini(document.getElementById('figWrap'), i => WRAP.has(i) ? 'bad' : '',
+            { label: i => WRAP.has(i) ? i : '' });
+
+        // ===== Demo tương tác =====
+        const boardEl = document.getElementById('board');
+        const cells = [];
+        for (let i = 0; i < CELLS; i++) {
+            const b = document.createElement('button');
+            b.className = 'cell';
+            b.setAttribute('aria-label', `Ô ${i} (hàng ${Math.floor(i / N)}, cột ${i % N})`);
+            b.addEventListener('click', () => play(i));
+            boardEl.appendChild(b);
+            cells.push(b);
+        }
+
+        let history = [];
+        const $ = id => document.getElementById(id);
+
+        function state() {
+            let X = 0n, O = 0n;
+            history.forEach((i, k) => { if (k % 2 === 0) X |= B(i); else O |= B(i); });
+            return { X, O, side: history.length % 2 };
+        }
+
+        function winnerOf(X, O, useMask) {
+            const fx = findFive(X, useMask);
+            if (fx) return { who: 'X', ...fx };
+            const fo = findFive(O, useMask);
+            if (fo) return { who: 'O', ...fo };
+            return null;
+        }
+
+        // ===== AI cấp 1 & 2 (mục 04.1, 04.2) =====
+        let aiNote = '';
+        const aiMode = () => $('aiO').value;
+        const centerDist = i => Math.max(Math.abs(Math.floor(i / N) - (N >> 1)), Math.abs(i % N - (N >> 1)));
+        const evalAfter = (me, opp, m) => {
+            const me2 = me | B(m);
+            return windowTable(me2, opp).score - windowTable(opp, me2).score;
+        };
+
+        // P7: điểm cao nhất → gần tâm hơn → ngẫu nhiên
+        function pickBest(list, score = () => 0) {
+            let best = [], bs = -Infinity, bd = Infinity;
+            for (const m of list) {
+                const s = score(m), d = centerDist(m);
+                if (s > bs || (s === bs && d < bd)) { best = [m]; bs = s; bd = d; }
+                else if (s === bs && d === bd) best.push(m);
+            }
+            return best[Math.floor(Math.random() * best.length)];
+        }
+
+        function ruleBased(me, opp) {
+            const w = winningSquares(me, opp);
+            if (w) return { m: pickBest([...iterBits(w)]), r: 'P1 · thắng ngay' };
+            const b = winningSquares(opp, me);
+            if (b) return {
+                m: pickBest([...iterBits(b)]),
+                r: popcount(b) >= 2 ? 'P2 · chặn, nhưng đối thủ có ≥ 2 ô thắng nên đã thua' : 'P2 · chặn thua ngay'
+            };
+            const cand = [...iterBits(candidates(me, opp))];
+            const score = m => evalAfter(me, opp, m);
+            const p3 = cand.filter(m => popcount(winningSquares(me | B(m), opp)) >= 2);
+            if (p3.length) return { m: pickBest(p3, score), r: 'P3 · tạo đòn kép (≥ 2 ô thắng)' };
+            const p4 = cand.filter(m => popcount(winningSquares(opp | B(m), me)) >= 2);
+            if (p4.length) return { m: pickBest(p4, score), r: 'P4 · chiếm ô mà đối thủ đi vào sẽ có đòn kép' };
+            const p5 = cand.filter(m => winningSquares(me | B(m), opp));
+            if (p5.length) return { m: pickBest(p5, score), r: 'P5 · tạo tứ (nước ép)' };
+            return { m: pickBest(cand, score), r: 'P6 · điểm vị trí cao nhất (P7 khi hoà điểm)' };
+        }
+
+        function randomMove(X, O) {
+            const empty = [...iterBits(~(X | O) & FULL)];
+            return { m: empty[Math.floor(Math.random() * empty.length)], r: 'chọn ngẫu nhiên đều' };
+        }
+
+        function isOver(X, O) {
+            return !!winnerOf(X, O, !$('tNoMask').checked) || (X | O) === FULL;
+        }
+
+        function maybeAI() {
+            const mode = aiMode();
+            const { X, O, side } = state();
+            if (mode === 'none' || side !== 1 || isOver(X, O)) return;
+            setTimeout(() => {
+                const s = state();
+                if (aiMode() !== mode || s.side !== 1 || isOver(s.X, s.O)) return;
+                const t0 = performance.now();
+                const { m, r } = mode === 'l1' ? randomMove(s.X, s.O) : ruleBased(s.O, s.X);
+                const ms = (performance.now() - t0).toFixed(1);
+                history.push(m);
+                aiNote = `Máy (${mode === 'l1' ? 'Cấp 1' : 'Cấp 2'}) đi ô ${m} — ${r} · ${ms} ms`;
+                render();
+            }, 200);
+        }
+
+        function play(i) {
+            const { X, O, side } = state();
+            if (((X | O) >> BigInt(i)) & 1n) return;
+            if (isOver(X, O)) return;
+            if (aiMode() !== 'none' && side === 1) return;   // đang chờ máy đi
+            history.push(i);
+            aiNote = '';
+            render();
+            maybeAI();
+        }
+
+        function loadPreset(moves) {
+            history = moves.slice();
+            aiNote = '';
+            render();
+            maybeAI();
+        }
+
+        $('bUndo').onclick = () => {
+            history.pop();
+            if (aiMode() !== 'none' && history.length % 2 === 1) history.pop();   // lùi cả nước của máy
+            aiNote = '';
+            render();
+        };
+        $('aiO').addEventListener('change', () => { aiNote = ''; render(); maybeAI(); });
+        $('bReset').onclick = () => loadPreset([]);
+        // Tứ mở: X ở hàng 5 cột 3..6, hai đầu (57, 62) trống
+        $('bOpen4').onclick = () => loadPreset([58, 48, 59, 70, 60, 27, 61]);
+        // Tứ bị chặn: O chiếm 57, chỉ còn 62
+        $('bClosed4').onclick = () => loadPreset([58, 57, 59, 48, 60, 70, 61]);
+        // X ở 30..34: chỉ số liên tiếp nhưng lọt từ hàng 2 sang hàng 3
+        $('bWrap').onclick = () => loadPreset([30, 56, 31, 64, 32, 100, 33, 108, 34]);
+        ['tIdx', 'tCand', 'tWin', 'tNoMask'].forEach(id => $(id).addEventListener('change', render));
+
+        const hex = b => b.toString(16).padStart(31, '0').replace(/(.{4})(?=.)/g, '$1 ');
+
+        function render() {
+            const { X, O, side } = state();
+            const useMask = !$('tNoMask').checked;
+            const win = winnerOf(X, O, useMask);
+            const trueWin = winnerOf(X, O, true);
+            const me = side === 0 ? X : O, opp = side === 0 ? O : X;
+            const sideName = side === 0 ? 'X' : 'O', oppName = side === 0 ? 'O' : 'X';
+
+            const winCells = new Set();
+            if (win) for (let k = 0; k < 5; k++) winCells.add(win.start + k * win.line.d);
+
+            const showWin = $('tWin').checked && !win;
+            const wMe = showWin ? winningSquares(me, opp) : 0n;
+            const wOpp = showWin ? winningSquares(opp, me) : 0n;
+            const cand = $('tCand').checked && !win ? candidates(X, O) : 0n;
+            const showIdx = $('tIdx').checked;
+            const last = history[history.length - 1];
+
+            for (let i = 0; i < CELLS; i++) {
+                const bi = BigInt(i);
+                const cls = ['cell'];
+                let mark = '';
+                if ((X >> bi) & 1n) { cls.push('x'); mark = 'X'; }
+                else if ((O >> bi) & 1n) { cls.push('o'); mark = 'O'; }
+                const a = (wMe >> bi) & 1n, b = (wOpp >> bi) & 1n;
+                if (a && b) cls.push('wboth');
+                else if (a) cls.push('wme');
+                else if (b) cls.push('wopp');
+                else if ((cand >> bi) & 1n) cls.push('cand');
+                if (winCells.has(i)) cls.push('win');
+                if (i === last) cls.push('last');
+                cells[i].className = cls.join(' ');
+                cells[i].innerHTML = (showIdx ? `<span class="idx">${i}</span>` : '') + mark;
+            }
+
+            $('hexX').textContent = '0x' + hex(X) + `  · popcount = ${popcount(X)}`;
+            $('hexO').textContent = '0x' + hex(O) + `  · popcount = ${popcount(O)}`;
+
+            const st = $('status');
+            st.className = 'status';
+            if (win && !trueWin) {
+                st.classList.add('bug');
+                st.innerHTML = `<strong>Báo thắng SAI:</strong> không có mặt nạ START, engine thấy ${win.who} có 5 bit liên tiếp
+                    (${win.line.name}, bắt đầu ở bit ${win.start}) nhưng các ô này lọt sang hàng khác. Bỏ chọn
+                    "Bỏ mặt nạ START" để engine tính đúng.`;
+            } else if (win) {
+                st.classList.add('win');
+                st.innerHTML = `<strong>${win.who} thắng</strong> · ${win.line.name}, từ bit ${win.start}
+                    (hàng ${Math.floor(win.start / N)}, cột ${win.start % N}).`;
+            } else if (!(X | O)) {
+                st.innerHTML = `Bàn trống. <strong>X</strong> đi trước.`;
+            } else if ((X | O) === FULL) {
+                st.innerHTML = `<strong>Hoà</strong>: <code>occ == FULL</code>.`;
+            } else {
+                const nMe = popcount(winningSquares(me, opp)), nOpp = popcount(winningSquares(opp, me));
+                let msg = `Lượt <strong>${sideName}</strong>. `;
+                if (nMe) msg += `${sideName} có ${nMe} ô thắng ngay → đi vào đó là thắng.`;
+                else if (nOpp >= 2) msg += `${oppName} có ${nOpp} ô thắng ngay → ${sideName} không chặn hết được (thua ở nước sau).`;
+                else if (nOpp === 1) msg += `${oppName} có 1 ô thắng ngay → ${sideName} bắt buộc phải chặn.`;
+                else msg += `Chưa bên nào có ô thắng ngay.`;
+                msg += ` Ứng viên bán kính 2: ${popcount(candidates(X, O))} ô.`;
+                st.innerHTML = msg;
+            }
+
+            if (aiNote) st.innerHTML += `<br><span style="font-size:.84rem;">🤖 ${aiNote}</span>`;
+
+            const tx = windowTable(X, O), to = windowTable(O, X);
+            $('wBody').innerHTML = [['X', tx], ['O', to]].map(([n, t]) =>
+                `<tr><td><strong>${n}</strong></td>${t.counts.slice(1).map(v => `<td>${v}</td>`).join('')}<td>${t.score}</td></tr>`
+            ).join('');
+            $('evalLine').innerHTML = `<code>evaluate(X, O) = ${tx.score} − ${to.score} = <strong>${tx.score - to.score}</strong></code>
+                (dương: X có lợi). Trọng số [0, 1, 8, 64, 512].`;
+        }
+
+        render();
+
+        // ===== Ma trận đối đầu mẫu (mục 10.3) =====
+        (function () {
+            const names = ['L1 Random', 'L2 Rule', 'L3 αβ', 'L4 MCTS', 'L5 SL', 'L6 RL', 'L7 AG-ins', 'L8 AZ-ins'];
+            $('matrixBody').innerHTML = names.map((n, r) =>
+                `<tr><td><strong>${n}</strong></td>${names.map((_, c) => `<td>${r === c ? '×' : '—'}</td>`).join('')}</tr>`
+            ).join('');
+        })();
+    </script>
+</body>
+
+</html>

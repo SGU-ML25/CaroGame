@@ -1,0 +1,9 @@
+# Benchmark trên bộ thế cờ cố định (A1, A2): không đấu, chỉ đo số nút / thời gian
+experiment:
+  kind: bench
+bench:
+  positions:
+    count: 50
+    source: runs/openings/midgame_positions_v1.json   # lấy từ log giải đấu, có seed
+    seed: 11
+  repeat: 3                 # lặp để lấy trung vị thời gian

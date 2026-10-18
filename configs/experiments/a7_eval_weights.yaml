@@ -1,0 +1,6 @@
+# A7 — Heuristic đánh giá: trọng số mặc định / bỏ phòng thủ. Giữ: độ sâu
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {name: a7_eval_weights}
+agents:
+  - {from: agents/l3_alphabeta, id: AB-default,    params: {eval_weights: default}}
+  - {from: agents/l3_alphabeta, id: AB-no-defense, params: {eval_weights: no_defense}}

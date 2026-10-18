@@ -1,0 +1,8 @@
+# A4 — MCTS rollout ngẫu nhiên / rollout nhẹ có luật. Giữ: số mô phỏng
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {name: a4_rollout, rq: [RQ1]}
+arena: {pairs: challengers_vs_baselines}
+baselines: [agents/l2_rule, agents/l3_alphabeta]
+agents:
+  - {from: agents/l4_mcts, id: MCTS-random, params: {rollout: random}}
+  - {from: agents/l4_mcts, id: MCTS-light,  params: {rollout: light}}

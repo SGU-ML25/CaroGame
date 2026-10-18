@@ -1,0 +1,14 @@
+# Sinh dữ liệu chuyên gia cho cấp 5 (mục 07.2)
+defaults: [base]
+experiment: {kind: datagen, name: expert_data}
+datagen:
+  expert: {from: agents/l3_alphabeta, params: {}}
+  expert_depth: 3
+  games: 20000
+  opening_plies: [2, 4]
+  top_k: 3
+  temperature: 0.5          # softmax trên điểm top-k
+  split: [0.8, 0.1, 0.1]    # chia THEO VÁN
+  dedup: d4_canonical       # khoá chuẩn hoá = min Zobrist qua 8 phép đối xứng
+  out: runs/data/expert_v1
+  workers: 8

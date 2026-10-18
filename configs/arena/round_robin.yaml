@@ -1,0 +1,20 @@
+# Giải round-robin (mục 10.1–10.2)
+experiment:
+  kind: tournament
+arena:
+  format: round_robin
+  games_per_pair: 200       # mỗi khai cuộc chơi 2 lần, đổi màu
+  swap_colors: true
+  max_plies: 121
+  workers: 4
+  openings:
+    count: 100
+    plies: [2, 4]           # 2–4 nước ngẫu nhiên
+    region: 5               # trong vùng 5×5 giữa bàn
+    seed: 7
+    file: runs/openings/openings_v1.json   # sinh một lần, mọi giải dùng chung
+  stats:
+    ci: wilson
+    confidence: 0.95
+    bootstrap: 1000
+    elo: true

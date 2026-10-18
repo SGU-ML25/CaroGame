@@ -1,0 +1,8 @@
+id: L4-MCTS
+level: 4
+kind: mcts
+params:
+  c_uct: 1.4
+  rollout: random           # A4: random | light (thắng ngay → chặn → ngẫu nhiên bán kính 1)
+  rollout_radius: 1
+  candidate_radius: 2

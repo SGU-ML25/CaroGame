@@ -1,0 +1,6 @@
+# Kiểm tra nhanh: L1 vs L2 vài ván
+defaults: [base, budgets/mode_b_fixed, arena/smoke]
+experiment: {name: smoke, description: "Kiểm tra pipeline arena + log"}
+agents:
+  - agents/l1_random
+  - agents/l2_rule

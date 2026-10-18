@@ -1,0 +1,11 @@
+# Giải nhỏ để kiểm tra pipeline (vài giây)
+experiment:
+  kind: tournament
+arena:
+  format: round_robin
+  games_per_pair: 10
+  swap_colors: true
+  max_plies: 121
+  workers: 1
+  openings: {count: 5, plies: [2, 2], region: 5, seed: 7, file: null}
+  stats: {ci: wilson, confidence: 0.95, bootstrap: 0, elo: false}

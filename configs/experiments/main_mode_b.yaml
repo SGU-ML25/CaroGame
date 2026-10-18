@@ -1,0 +1,5 @@
+# Giải chính thức — chế độ B (ngân sách cố định)
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {name: main_mode_b, rq: [RQ1, RQ2, RQ4]}
+agents: [agents/l1_random, agents/l2_rule, agents/l3_alphabeta, agents/l4_mcts,
+         agents/l5_policy_sl, agents/l6_policy_rl, agents/l7_puct, agents/l8_alphazero]

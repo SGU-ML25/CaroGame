@@ -1,0 +1,10 @@
+# A3 — MCTS 100 / 400 / 1600 / 6400 mô phỏng vs cấp 2 và cấp 3
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {name: a3_mcts_sims, rq: [RQ1]}
+arena: {pairs: challengers_vs_baselines}
+baselines: [agents/l2_rule, agents/l3_alphabeta]
+agents:
+  - {from: agents/l4_mcts, id: MCTS-100,  budget: {max_sims: 100}}
+  - {from: agents/l4_mcts, id: MCTS-400,  budget: {max_sims: 400}}
+  - {from: agents/l4_mcts, id: MCTS-1600, budget: {max_sims: 1600}}
+  - {from: agents/l4_mcts, id: MCTS-6400, budget: {max_sims: 6400}}

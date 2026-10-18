@@ -1,0 +1,7 @@
+id: L2-Rule
+level: 2
+kind: rule_based
+params:
+  priorities: [P1, P2, P3, P4, P5, P6, P7]   # thứ tự ưu tiên (mục 04.2)
+  radius: 2
+  eval_weights: default

@@ -1,0 +1,6 @@
+# E3 — Lợi thế đi trước: mỗi cấp tự đấu với chính nó
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {name: e3_first_move, rq: [RQ4]}
+arena: {pairs: self_play}
+agents: [agents/l1_random, agents/l2_rule, agents/l3_alphabeta, agents/l4_mcts,
+         agents/l5_policy_sl, agents/l6_policy_rl, agents/l7_puct, agents/l8_alphazero]

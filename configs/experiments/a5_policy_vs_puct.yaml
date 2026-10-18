@@ -1,0 +1,4 @@
+# A5 — Policy-only (cấp 5) vs policy + MCTS (cấp 7), cùng một mạng
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {name: a5_policy_vs_puct, rq: [RQ2]}
+agents: [agents/l5_policy_sl, agents/l7_puct, agents/l2_rule, agents/l3_alphabeta]

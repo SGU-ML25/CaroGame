@@ -1,0 +1,8 @@
+# ResNet policy-value dùng chung cho cấp 5–8 (mục 07.1), ≈ 0,48 triệu tham số
+model:
+  arch: resnet_pv
+  in_planes: 4              # quân mình, quân đối thủ, nước vừa đi, toàn 1
+  channels: 64
+  blocks: 6
+  policy_head: {conv_out: 2, fc_out: 121}
+  value_head: {conv_out: 1, fc_hidden: 64}

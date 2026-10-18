@@ -1,0 +1,17 @@
+# Học có giám sát — cấp 5 (mục 07.2)
+defaults: [base, model/resnet_small]
+experiment: {kind: train, name: sl_policy, rq: [RQ2]}
+data:
+  dir: runs/data/expert_v1
+  augment_x8: true          # A6, chỉ trên tập train
+train:
+  optimizer: adam
+  lr: 1.0e-3
+  weight_decay: 1.0e-4      # λ‖θ‖²
+  batch_size: 256
+  epochs: 30
+  value_coef: 1.0           # c_v
+  early_stopping: {metric: val_loss, patience: 5}
+  eval_every: 1             # epoch
+  eval_vs: [agents/l1_random, agents/l2_rule, agents/l3_alphabeta]
+  eval_games: 100

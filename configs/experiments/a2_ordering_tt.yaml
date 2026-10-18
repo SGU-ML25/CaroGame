@@ -1,0 +1,7 @@
+# A2 — Alpha-Beta bật / tắt sắp xếp nước và TT. Đo: số nút, độ sâu đạt được trong 1 s
+defaults: [base, budgets/mode_a_time, arena/bench_positions]
+experiment: {name: a2_ordering_tt, rq: [RQ3]}
+agents:
+  - {from: agents/l3_alphabeta, id: AB-plain,    params: {move_ordering: false, tt: false}}
+  - {from: agents/l3_alphabeta, id: AB-order,    params: {move_ordering: true,  tt: false}}
+  - {from: agents/l3_alphabeta, id: AB-order-tt, params: {move_ordering: true,  tt: true}}
