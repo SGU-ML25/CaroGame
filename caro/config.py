@@ -144,6 +144,7 @@ def load_config(name: str, overrides: list[str] | tuple[str, ...] = (), root: Pa
             resolved = _resolve_agent(refs, root, budget)
         set_path(cfg, dotted.split("."), resolved)
 
+    _check_model_refs(cfg, root)
     if not isinstance(cfg.get("seed"), int):
         raise ConfigError("thiếu 'seed' kiểu int")
     return cfg
@@ -153,6 +154,30 @@ def project_path(path: str | Path) -> Path:
     """Đường dẫn tương đối trong config luôn tính từ gốc dự án, không phụ thuộc thư mục đang đứng."""
     path = Path(path)
     return path if path.is_absolute() else PROJECT_ROOT / path
+
+
+def load_manifest(root: Path | str = CONFIG_ROOT) -> dict:
+    """configs/models.yaml: tên model → {file, revision} trên Hugging Face."""
+    path = Path(root) / "models.yaml"
+    if not path.is_file():
+        return {"models": {}}
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    data.setdefault("models", {})
+    return data
+
+
+def _check_model_refs(cfg: dict, root: Path) -> None:
+    """Mọi chuỗi "model:<tên>" trong config phải có trong models.yaml (chỉ kiểm tra, không tải)."""
+    names = load_manifest(root)["models"]
+    stack: list[Any] = [cfg]
+    while stack:
+        node = stack.pop()
+        if isinstance(node, dict):
+            stack.extend(node.values())
+        elif isinstance(node, list):
+            stack.extend(node)
+        elif isinstance(node, str) and node.startswith("model:") and node[6:] not in names:
+            raise ConfigError(f"'{node}' không có trong configs/models.yaml (có: {sorted(names)})")
 
 
 def config_hash(cfg: dict) -> str:

@@ -2,7 +2,7 @@
 defaults: [base, model/resnet_small]
 experiment: {kind: train, name: pg_policy, rq: [RQ2]}
 train:
-  init: runs/train/sl_policy/latest/checkpoints/best.pt   # A5b: đường dẫn | random
+  init: model:l5             # A5b: model:<tên> | đường dẫn .pt | random
   episodes: 50000
   batch_games: 128
   optimizer: adam

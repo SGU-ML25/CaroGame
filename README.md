@@ -6,10 +6,13 @@ Engine dùng bitboard; tác tử từ cấp 1 (ngẫu nhiên) đến cấp 8 (Al
 Tài liệu thiết kế: [`docs/engine-caro-11x11.html`](docs/engine-caro-11x11.html) ·
 lộ trình học bitboard: [`docs/lo-trinh-hoc-bitboard.html`](docs/lo-trinh-hoc-bitboard.html)
 
+**Hướng dẫn sử dụng đầy đủ (cài đặt, config, log, Hugging Face, quy trình nhóm, các phần sắp làm):
+[`docs/HUONG_DAN.md`](docs/HUONG_DAN.md)**
+
 ## Cài đặt
 
 ```bash
-uv sync --group dev              # numpy, pyyaml, pytest, ruff
+uv sync --group dev              # numpy, pyyaml, huggingface_hub, pytest, ruff
 uv sync --group dev --extra nn   # thêm PyTorch cho cấp 5–8
 uv run pytest
 ```
@@ -20,6 +23,7 @@ uv run pytest
 caro/
 ├── config.py      # nạp config tập trung (defaults → file → override)
 ├── runlog.py      # thư mục run, meta, log chữ, JSONL, seed
+├── hub.py         # tải / đẩy model Hugging Face theo configs/models.yaml
 ├── engine/        # bitboard, CaroGame, Zobrist, đối xứng D4
 ├── agents/        # cấp 1–8, chung interface Agent
 ├── nn/            # đặc trưng 4×11×11, ResNet policy-value
@@ -38,6 +42,7 @@ docs/
 ```
 configs/
 ├── base.yaml            # seed, engine, đường dẫn run, cấu hình log, checkpoint
+├── models.yaml          # con trỏ model trên Hugging Face (tên → file + revision)
 ├── budgets/             # mode_a_time (cùng ms/nước) · mode_b_fixed (độ sâu / số mô phỏng cố định)
 ├── agents/              # l1_random … l8_alphazero — tham số mặc định của từng cấp
 ├── arena/               # round_robin (200 ván/cặp, 100 khai cuộc) · smoke · bench_positions
@@ -102,6 +107,50 @@ tuỳ chọn theo nước: `time_ms, nodes, sims` (tắt bằng `log.per_move_st
 `result` luôn theo góc nhìn X (+1 X thắng, −1 O thắng, 0 hoà).
 
 Seed của từng tác tử trong từng ván: `derive_seed(cfg["seed"], game_id, color)` — ổn định giữa các lần chạy.
+
+## Model trên Hugging Face
+
+Trọng số **chỉ** nằm trên Hugging Face; GitHub giữ `configs/models.yaml` ghim đúng commit của từng model.
+Config tham chiếu bằng `model:<tên>`, nên checkout commit GitHub nào là chạy đúng model của commit đó.
+
+```yaml
+# configs/models.yaml
+repo: caro-11x11-team/caro-models
+models:
+  l5: {file: l5/best.pt, revision: 3f2a9c1e…}
+```
+
+| Trong config | Nghĩa |
+|---|---|
+| `checkpoint: model:l5` | Tải bản đã ghim trong `models.yaml` (mặc định cho cấp 5–8) |
+| `checkpoint: hf://org/repo/l5/best.pt@rev` | Tải trực tiếp một bản bất kỳ để thử |
+| `checkpoint: runs/train/sl_policy/latest/checkpoints/best.pt` | File cục bộ, vừa train xong chưa push |
+
+**Lần đầu (mỗi thành viên)**
+
+1. Trưởng nhóm tạo Organization trên huggingface.co, mời thành viên với vai trò *write*,
+   sửa `repo:` trong `configs/models.yaml`, rồi chạy `uv run caro-hub init --private` (bỏ `--private` nếu public).
+2. Mỗi người tạo token **fine-grained** của riêng mình (quyền ghi repo của organization), rồi:
+   ```bash
+   cp .env.example .env    # dán token vào HF_TOKEN=…  (.env không bao giờ được commit)
+   ```
+
+**Người chạy model** — không cần làm gì thêm: lần đầu nạp `model:l5` sẽ tự tải về
+`~/.cache/huggingface`, các lần sau dùng cache. Tải trước cho cả bộ: `uv run caro-hub pull`.
+
+**Người train**
+
+```bash
+uv run caro-hub push l5 runs/train/sl_policy/latest      # hoặc --pr để mở PR bên HF
+git add configs/models.yaml && git commit -m "model: l5 từ run …"
+```
+
+`push` đẩy `best.pt` + `config.yaml` của run + `card.json` (git commit, hash config, seed, kết quả)
+trong **một** commit HF, rồi tự ghi commit hash mới vào `models.yaml`. Commit file đó lên GitHub
+là cả nhóm dùng bản mới. Xem tình trạng: `uv run caro-hub status`.
+
+GitHub Actions: đặt `HF_TOKEN` trong Environment hoặc Repository secrets; biến môi trường có sẵn
+được ưu tiên hơn `.env`.
 
 ## Thực nghiệm
 

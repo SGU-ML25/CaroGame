@@ -7,3 +7,6 @@ __pycache__/
 # log và checkpoint: chỉ giữ cấu trúc thư mục
 runs/*
 !runs/.gitkeep
+
+# bí mật
+.env

@@ -2,7 +2,7 @@ id: L8-AlphaZero
 level: 8
 kind: puct
 params:
-  checkpoint: runs/train/alphazero/latest/checkpoints/best.pt
+  checkpoint: model:l8
   c_puct: 1.5
   leaf_eval: value
   dirichlet: null

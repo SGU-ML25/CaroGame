@@ -2,5 +2,5 @@ id: L5-PolicySL
 level: 5
 kind: policy
 params:
-  checkpoint: runs/train/sl_policy/latest/checkpoints/best.pt
+  checkpoint: model:l5
   temperature: 0            # 0 = argmax, không tìm kiếm

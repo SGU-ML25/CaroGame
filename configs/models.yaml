@@ -1,0 +1,14 @@
+# Con trỏ model: file nặng nằm trên Hugging Face, GitHub chỉ giữ file này.
+# Config tác tử / huấn luyện tham chiếu bằng "model:<tên>", ví dụ checkpoint: model:l5
+#
+# revision là commit hash bên HF → checkout commit GitHub nào là có đúng model đã dùng ở đó.
+# Không sửa tay: `caro-hub push <tên> <thư mục run>` tự cập nhật dòng tương ứng.
+# Giữ mỗi model trên MỘT dòng dạng {…} để lệnh push sửa được.
+
+repo: caro-11x11-team/caro-models   # đổi thành <organization>/<repo> của nhóm
+repo_type: model
+
+models:
+  l5: {file: l5/best.pt, revision: null}   # SL policy-value (cấp 5, cấp 7 dùng chung)
+  l6: {file: l6/best.pt, revision: null}   # REINFORCE (cấp 6)
+  l8: {file: l8/best.pt, revision: null}   # AlphaZero-inspired (cấp 8)
