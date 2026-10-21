@@ -118,6 +118,13 @@ def _resolve_agent(entry: Any, root: Path, budget: dict) -> dict:
     return agent
 
 
+def resolve_agent(entry: Any, budget: dict | None = None, root: Path | str = CONFIG_ROOT) -> dict:
+    """Giải một tham chiếu tác tử đứng riêng ("agents/l1_random" hoặc {from: ...}) — dùng ở UI, notebook."""
+    agent = _resolve_agent(entry, Path(root), budget or {})
+    _check_model_refs(agent, Path(root))
+    return agent
+
+
 def load_config(name: str, overrides: list[str] | tuple[str, ...] = (), root: Path | str = CONFIG_ROOT) -> dict:
     root = Path(root)
     cfg = _compose(name, root)
