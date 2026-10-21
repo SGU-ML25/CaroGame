@@ -20,10 +20,11 @@ Tài liệu liên quan:
 | Config tập trung `configs/` + `caro/config.py` | ✅ | 31 file YAML, lệnh `caro-config` |
 | Thư mục run, meta, log JSONL `caro/runlog.py` | ✅ | |
 | Model trên Hugging Face `caro/hub.py` | ✅ | lệnh `caro-hub`; cần organization + token |
-| Test `tests/` | ✅ | 96 test |
+| Test `tests/` | ✅ | 112 test |
 | Engine bitboard `caro/engine/` | ✅ | Python thuần, stride 11; test đối chiếu với bản duyệt mảng |
 | Notebook thử engine `notebooks/engine_playground.ipynb` | ✅ | Minh hoạ từng tính năng + bàn cờ bấm được |
-| Tác tử cấp 1–8 `caro/agents/` | 🚧 | Phần 04–09 |
+| Interface tác tử + cấp 1 `caro/agents/` | ✅ | `Agent`, `Limits`, `Deadline`, `REGISTRY`, `make_agent`, `RandomAgent` |
+| Tác tử cấp 2–8 `caro/agents/` | 🚧 | Phần 04–09 |
 | Mạng nơ-ron `caro/nn/`, huấn luyện `caro/training/` | 🚧 | Phần 07–09 |
 | Arena, giải đấu, thống kê `caro/arena/` | 🚧 | Phần 10 |
 | UI `caro/ui/` | 🚧 | Phần 11 |
@@ -52,7 +53,7 @@ git clone <url-repo-github> CaroGame
 cd CaroGame
 uv sync --group dev              # tạo .venv/, cài numpy, pyyaml, huggingface_hub, pytest, ruff
 uv sync --group dev --extra nn   # thêm PyTorch — chỉ khi làm cấp 5–8
-uv run pytest                    # phải thấy "96 passed"
+uv run pytest                    # phải thấy "112 passed"
 ```
 
 `uv.lock` khoá chính xác phiên bản mọi thư viện → cả nhóm có môi trường giống hệt nhau.
@@ -84,7 +85,7 @@ CaroGame/
 │   ├── runlog.py      ✅  thư mục run, meta.json, log chữ, JSONL, derive_seed
 │   ├── hub.py         ✅  model trên Hugging Face
 │   ├── engine/        ✅  bitboard.py, game.py, zobrist.py, symmetry.py
-│   ├── agents/        🚧  base.py, random_agent.py … puct.py
+│   ├── agents/        ✅  base.py, random_agent.py · 🚧 rule_agent.py … puct.py
 │   ├── nn/            🚧  features.py, model.py, dataset.py
 │   ├── training/      🚧  gen_expert_data.py, train_sl.py, train_pg.py, alphazero_loop.py
 │   ├── arena/         🚧  match.py, tournament.py, openings.py, stats.py
@@ -360,24 +361,44 @@ Thứ tự theo lộ trình ở Phần 12 của tài liệu thiết kế. Mỗi 
 Thử engine bằng tay: `uv sync --group dev --extra analysis` rồi
 `uv run jupyter lab notebooks/engine_playground.ipynb` (hoặc mở trong VS Code, chọn kernel `.venv`).
 
-### 7.2 Tác tử (tuần 2–6)
+### 7.2 Tác tử (tuần 2–6) — interface ✅, cấp 2–8 🚧
 
-Mọi tác tử theo interface ở mục 03.2 của tài liệu thiết kế:
+Mọi tác tử theo interface ở mục 03.2 của tài liệu thiết kế (`caro/agents/base.py`):
 
 ```python
 class Agent(Protocol):
     name: str
+    limits: Limits                         # ngân sách mặc định lấy từ config
     def reset(self, seed: int) -> None: ...
     def select_action(self, game, limits: Limits) -> int: ...
-    def last_stats(self) -> dict: ...      # nodes, sims, depth, time_ms, pv, reason…
+    def last_stats(self) -> dict: ...      # nodes, sims, depth, time_ms, pv, score, reason, visits, policy, value
+```
+
+- `Limits(mode, time_ms, max_depth, max_sims)` dựng từ khoá `limits` của config đã ghép; sai kiểu / sai khoá → lỗi ngay.
+  `None` = không giới hạn theo tiêu chí đó.
+- `limits.deadline(margin_ms)` trả `Deadline` — gọi đầu `select_action`, kiểm tra `deadline.expired()` trong vòng lặp tìm kiếm
+  (chế độ A); không có `time_ms` thì không bao giờ hết giờ.
+- Khoá `last_stats()` chuẩn nằm ở `caro.agents.STATS_KEYS`; chỉ ghi khoá tác tử có.
+
+Dùng tác tử:
+
+```python
+from caro.agents import make_agent
+
+agent = make_agent("agents/l1_random")       # hoặc một mục trong cfg["agents"] sau load_config
+agent.reset(derive_seed(cfg["seed"], game_id, "X"))
+a = agent.select_action(game, agent.limits)
 ```
 
 Thêm một tác tử:
 
-1. Viết lớp trong `caro/agents/<tên>.py`.
-2. Đăng ký `kind` → lớp trong một bảng duy nhất (dự kiến `caro/agents/__init__.py: REGISTRY`),
-   hàm `make_agent(agent_cfg)` dựng tác tử từ config đã ghép (`params` → tham số khởi tạo, `limits` → `Limits`).
-3. Tạo `configs/agents/<tên>.yaml`.
+1. Viết lớp trong `caro/agents/<tên>.py`, kế thừa `BaseAgent` (có sẵn `name`, `limits`, `self.rng` có seed,
+   `self._stats`). `__init__` nhận đúng các khoá trong `params` làm tham số từ khoá, cộng `name`, `limits`
+   (chuyển cho `super().__init__`).
+2. Thêm một dòng `"<kind>": "caro.agents.<tên>:<Lớp>"` vào `REGISTRY` trong `caro/agents/__init__.py`.
+   Lớp chỉ được import khi dùng, nên cấp 1–4 không kéo theo torch.
+3. Tạo `configs/agents/<tên>.yaml` với cùng `kind`. `tests/test_agents.py` tự dựng thử mọi config có `kind` đã đăng ký;
+   tham số trong `params` mà `__init__` không nhận → `ConfigError`.
 4. Tác tử cấp 5–8 nạp trọng số bằng `caro.hub.resolve_checkpoint(params["checkpoint"])` — không tự xử lý đường dẫn.
 
 ### 7.3 Arena và thống kê (tuần 2)
