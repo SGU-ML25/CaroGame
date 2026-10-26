@@ -20,6 +20,7 @@ from caro.config import ConfigError, resolve_agent
 # kind (trong configs/agents/*.yaml) → "module:Lớp"
 REGISTRY: dict[str, str] = {
     "random": "caro.agents.random_agent:RandomAgent",
+    "rule_based": "caro.agents.rule_agent:RuleAgent", 
 }
 
 
