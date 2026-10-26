@@ -21,6 +21,7 @@ from caro.config import ConfigError, resolve_agent
 REGISTRY: dict[str, str] = {
     "random": "caro.agents.random_agent:RandomAgent",
     "rule_based": "caro.agents.rule_agent:RuleAgent", 
+    "alphabeta": "caro.agents.alphabeta:AlphaBetaAgent",
 }
 
 
