@@ -4,6 +4,9 @@
 $pdf_mode = 1;
 $pdflatex = 'xelatex -synctex=1 -interaction=nonstopmode -file-line-error %O %S';
 $out_dir = 'build';
+# Luôn build vào build/: bỏ -outdir/-auxdir trên dòng lệnh (recipe mặc định của LaTeX Workshop
+# truyền -outdir=<thư mục main.tex> khi VS Code không đọc được .vscode/settings.json).
+@ARGV = grep { !/^--?(?:out|aux)(?:dir|-directory)=/ } @ARGV;
 $bibtex_use = 1.5;
 
 # --- Tên file PDF ---------------------------------------------------------------
