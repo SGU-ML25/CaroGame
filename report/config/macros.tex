@@ -1,0 +1,159 @@
+% Macro, màu sắc, thiết lập listings / hyperref / header.
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\hypersetup{
+  urlcolor=blue, linkcolor=black, citecolor=black, colorlinks=true,
+  pdftitle={\TenDeTai}, pdfauthor={\TenKhoa, \TenTruong},
+}
+
+% --- Mã nguồn: listings chỉ dựng bảng ký tự cho mã 0--255. Chữ tiếng Việt có dấu (mã > 255) bị in
+% ngay trong khi chữ ASCII còn nằm trong bộ đệm, làm đảo thứ tự ("hoặc" thành "ặhoc"). Hook dưới đây
+% đăng ký các chữ đó là chữ cái của listings, giống cách listings tự làm với a--z. ---
+\makeatletter
+\def\lst@VNletters{258,259,272,273,296,297,360,361,416,417,431,432,7840,7841,7842,7843,7844,7845,7846,7847,7848,7849,7850,7851,7852,7853,7854,7855,7856,7857,7858,7859,7860,7861,7862,7863,7864,7865,7866,7867,7868,7869,7870,7871,7872,7873,7874,7875,7876,7877,7878,7879,7880,7881,7882,7883,7884,7885,7886,7887,7888,7889,7890,7891,7892,7893,7894,7895,7896,7897,7898,7899,7900,7901,7902,7903,7904,7905,7906,7907,7908,7909,7910,7911,7912,7913,7914,7915,7916,7917,7918,7919,7920,7921,7922,7923,7924,7925,7926,7927,7928,7929,9472,9474,9492,9500}
+\lst@AddToHook{SelectCharTable}{%
+  \@for\lst@vn:=\lst@VNletters\do{%
+    \catcode\lst@vn=\active
+    \begingroup\lccode`\~=\lst@vn\relax\lccode`\/=\lst@vn\relax
+    \lowercase{\endgroup\def~{\lst@ProcessLetter/}}}}
+\makeatother
+
+\lstset{
+  frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\fontsize{10.5}{12.6}\selectfont\ttfamily}, % code/listing: 10.5pt
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3,
+  numbersep=5pt,
+  escapeinside={(*@}{@*)},
+  captionpos=t
+}
+
+% --- Kiểu cho mã LaTeX (dùng trong tài liệu hướng dẫn): \begin{lstlisting}[style=latex] ---
+\lstdefinestyle{latex}{language=[LaTeX]TeX, numbers=none, backgroundcolor=\color{gray!8},
+  texcsstyle=*\color{blue}, moretexcs={includegraphics,subcaption,caption,label,ref,cite,toprule,midrule,bottomrule,
+  multicolumn,rowcolor,cellcolor,num,SI,eqref,goiy,chualam,chuatrienkhai,lstinputlisting,url,href,textcite,
+  autoref,cline,addplot,draw,node,STATE,IF,ELSE,ENDIF,FOR,ENDFOR,RETURN,REQUIRE,ENSURE,WHILE,ENDWHILE}}
+
+% --- Định lý / định nghĩa / ví dụ (amsthm), đánh số theo chương ---
+\theoremstyle{plain}
+\newtheorem{dinhly}{Định lý}[chapter]
+\theoremstyle{definition}
+\newtheorem{dinhnghia}{Định nghĩa}[chapter]
+\newtheorem{vidu}{Ví dụ}[chapter]
+\theoremstyle{remark}
+\newtheorem*{nhanxet}{Nhận xét}
+
+% --- Tên tiếng Việt cho khung thuật toán ---
+\floatname{algorithm}{Thuật toán}
+\renewcommand{\algorithmicrequire}{\textbf{Đầu vào:}}
+\renewcommand{\algorithmicensure}{\textbf{Đầu ra:}}
+
+% --- Đánh số "Đoạn mã N.M" cho lstlisting, theo chương, giống Bảng/Hình ---
+% (listings tự đặt lại số theo chương khi lớp tài liệu có \thechapter)
+\renewcommand{\lstlistingname}{Đoạn mã}
+\renewcommand{\lstlistlistingname}{Danh sách đoạn mã}
+
+% --- Hộp ghi chú cho phần chưa triển khai ---
+\newcommand{\chuatrienkhai}[1]{%
+  \begin{mdframed}[backgroundcolor=yellow!15, linecolor=orange, linewidth=1pt]
+    \textbf{Chưa triển khai.} #1
+  \end{mdframed}}
+
+% --- Ghi chú ngắn cho nội dung sẽ bổ sung ở các tuần sau ---
+% --- Gợi ý nội dung cần viết trong sườn bài (xoá khi viết xong mục) ---
+% Ở bản nộp (\BanNoptrue trong metadata.tex) cả hai báo lỗi để không nộp sót.
+\ifBanNop
+  \newcommand{\chualam}[1]{\PackageError{baocao}{Bản nộp còn \string\chualam{#1}}{Viết xong rồi xoá lệnh này.}}
+  \newcommand{\goiy}[1]{\PackageError{baocao}{Bản nộp còn \string\goiy{#1}}{Viết xong mục rồi xoá lệnh này.}}
+\else
+  \newcommand{\chualam}[1]{\textit{(Chưa làm --- #1)}}
+  \newcommand{\goiy}[1]{{\color{gray}\itshape [Cần viết: #1]}\par}
+\fi
+
+% --- Dấu mờ "BẢN NHÁP" trên mọi trang khi chưa bật \BanNoptrue ---
+\ifBanNop\else
+  \AddToHook{shipout/background}{%
+    \put(0.5\paperwidth,-0.5\paperheight){\makebox(0,0){\rotatebox{45}{%
+      \fontsize{90}{90}\selectfont\bfseries\color{gray!12}BẢN NHÁP}}}}
+\fi
+
+% --- Logo: bỏ qua êm nếu chưa có file figures/logoITSGU.png ---
+\newcommand{\logo}[1]{\IfFileExists{figures/logoITSGU.png}%
+  {\includegraphics[#1]{figures/logoITSGU.png}}{}}
+
+% --- Header / footer ---
+\setlength{\headheight}{40pt}
+\renewcommand{\headrule}{\vskip 2pt\hrule height 0.4pt\vskip 0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{%
+  \begin{tabular}{rl}
+    \begin{picture}(25,15)(0,0)
+      \put(0,-8){\logo{width=8mm,height=8mm}}
+    \end{picture} &
+    \begin{tabular}[c]{l}
+      \normalfont\fontsize{11}{13}\selectfont \TenTruong \\ \TenKhoa % header: 11pt
+    \end{tabular}
+  \end{tabular}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+% Trang mở đầu chương dùng cùng kiểu header
+\fancypagestyle{plain}{\pagestyle{fancy}}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% --- Tiêu đề chương: căn giữa, in hoa, đậm, một dòng "CHƯƠNG N. TÊN" ---
+\makeatletter
+\def\@makechapterhead#1{%
+  {\parindent\z@ \centering \normalfont\fontsize{17}{20}\selectfont\bfseries % tiêu đề chương: 17pt
+   \MakeUppercase{\@chapapp\ \thechapter.\ #1}\par\nobreak
+   \vskip 18\p@}}
+\def\@makeschapterhead#1{%
+  {\parindent\z@ \centering \normalfont\fontsize{17}{20}\selectfont\bfseries % tiêu đề chương: 17pt
+   \MakeUppercase{#1}\par\nobreak
+   \vskip 18\p@}}
+\makeatother
+
+% --- \texttt cho phép xuống dòng sau / _ . để tên file không tràn lề ---
+\let\oldtexttt\texttt
+\ExplSyntaxOn
+\tl_new:N \l__tt_break_tl
+\RenewDocumentCommand{\texttt}{m}
+  {
+    \tl_set:Nn \l__tt_break_tl {#1}
+    \tl_replace_all:Nnn \l__tt_break_tl { \_ } { \_ \allowbreak }
+    \tl_replace_all:Nnn \l__tt_break_tl { / } { / \allowbreak }
+    \tl_replace_all:Nnn \l__tt_break_tl { . } { . \allowbreak }
+    \tl_replace_all:Nnn \l__tt_break_tl { - } { - \allowbreak }
+    \exp_args:NV \oldtexttt \l__tt_break_tl
+  }
+\ExplSyntaxOff
+\emergencystretch=2em
+
+% --- Từ khoá tiếng Việt cho mã giả (algorithmic) ---
+\renewcommand{\algorithmicif}{\textbf{nếu}}
+\renewcommand{\algorithmicthen}{\textbf{thì}}
+\renewcommand{\algorithmicelse}{\textbf{ngược lại}}
+\renewcommand{\algorithmicend}{\textbf{hết}}
+\renewcommand{\algorithmicfor}{\textbf{với}}
+\renewcommand{\algorithmicdo}{\textbf{làm}}
+\renewcommand{\algorithmicwhile}{\textbf{trong khi}}
+\renewcommand{\algorithmicreturn}{\textbf{trả về}}
+
+% --- Tên lệnh LaTeX trong bảng / chú thích: \cmd{goiy\{...\}} → \goiy{...} ---
+\newcommand{\cmd}[1]{\texttt{\textbackslash #1}}

@@ -1,0 +1,34 @@
+\chapter{Giới thiệu}
+\label{ch:gioi-thieu}
+% Đề mục 4: Bối cảnh; game, luật và ý nghĩa; mục tiêu, câu hỏi nghiên cứu; phạm vi; sản phẩm.
+% Nguồn nội dung: tài liệu thiết kế 01.1, 02.1, 02.4.
+
+\section{Bối cảnh}
+\goiy{game AI như môi trường thử nghiệm cho tìm kiếm, học sâu, học tăng cường}
+
+\section{Trò chơi Caro 11×11}
+\subsection{Luật chơi}
+\goiy{bàn 11×11, X đi trước, thắng khi có $\ge 5$ quân liền (dãy 6 vẫn thắng, không luật chặn 2 đầu), hoà khi đầy bàn}
+\subsection{Đặc điểm trò chơi}
+\goiy{hai người, quan sát đầy đủ, xác định, tổng bằng không, điều kiện hoà; độ phức tạp không gian trạng thái}
+\subsection{Ý nghĩa}
+\goiy{vì sao bàn 11×11 phù hợp: vừa thanh ghi 128 bit, đủ phức tạp cho cấp 1--8}
+
+\section{Mục tiêu}
+\goiy{8 cấp tác tử, giải đấu công bằng, UI người--máy / máy--máy, tái lập được}
+
+\section{Câu hỏi nghiên cứu}
+\label{sec:rq}
+\goiy{bảng RQ1--RQ4: câu hỏi, giả thuyết (dự đoán, chưa phải kết luận), độ đo, thí nghiệm}
+\begin{itemize}
+  \item \textbf{RQ1}: Cùng thời gian/nước, MCTS (UCT) có thắng nhiều hơn Alpha-Beta không? (E1, A3, A4)
+  \item \textbf{RQ2}: Self-play (cấp 6/8) có cải thiện so với mô hình bắt chước chuyên gia (cấp 5) không? (E2, A5, A5b)
+  \item \textbf{RQ3}: Cắt tỉa alpha-beta và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nước được chọn? (A1, A2)
+  \item \textbf{RQ4}: Lợi thế đi trước trên 11×11 lớn đến mức nào? (E3)
+\end{itemize}
+
+\section{Phạm vi}
+\goiy{các cấp đã làm / không làm; luật rút gọn (nếu có); phần tự cài đặt và phần kế thừa thư viện}
+
+\section{Sản phẩm}
+\goiy{mã nguồn, config, test, checkpoint trên Hugging Face, log giải đấu, notebook, UI demo, slide, poster}

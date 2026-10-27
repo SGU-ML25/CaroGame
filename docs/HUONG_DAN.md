@@ -29,6 +29,7 @@ Tài liệu liên quan:
 | Arena, giải đấu, thống kê `caro/arena/` | 🚧 | Phần 10 |
 | UI `caro/ui/` | 🚧 | Phần 11 |
 | CI GitHub Actions | 🚧 | mục 9 bên dưới |
+| Báo cáo LaTeX `report/` | ✅ khung · 🚧 nội dung | Sườn 5 chương theo đề, build bằng `latexmk` (mục 7.7) |
 
 ---
 
@@ -94,6 +95,7 @@ CaroGame/
 ├── tests/             ✅
 ├── runs/                  log mọi lần chạy — commit lên GitHub (trừ checkpoint, mục 4.3)
 ├── notebooks/             engine_playground.ipynb ✅ (thử engine) · analysis.ipynb 🚧 (bảng/biểu đồ báo cáo)
+├── report/            ✅  báo cáo LaTeX: khung xong, nội dung 🚧 (mục 7.7)
 └── docs/
 ```
 
@@ -454,6 +456,26 @@ uv run uvicorn caro.ui.server:app --reload       # http://127.0.0.1:8000
 
 Endpoint theo Phần 11: tạo ván người–máy / máy–máy, xem lại ván từ `games.jsonl`.
 
+### 7.7 Báo cáo LaTeX (tuần 1–8) — khung ✅, nội dung 🚧
+
+`report/` là báo cáo cuối kỳ viết bằng LaTeX (XeLaTeX + latexmk). Hướng dẫn đầy đủ — cài đặt, cấu hình,
+quy ước, lỗi thường gặp: [`report/README.md`](../report/README.md).
+
+```bash
+sudo dnf install latexmk biber texlive-scheme-medium texlive-babel-vietnamese   # Fedora; hệ khác: report/README.md mục 2
+cd report && latexmk          # build/main.pdf + bản "Nhóm XX - Caro 11x11 - TTNTNC.pdf" cạnh main.tex
+```
+
+- Sườn 5 chương theo mục 4 của đề: `chapters/01-gioi-thieu.tex` … `05-ket-luan.tex`. Mỗi mục có dòng
+  `\goiy{...}` ghi việc cần viết — viết xong mục nào thì xoá dòng đó. Phụ lục: nhật ký tuần, phân công và
+  tỷ lệ đóng góp, đối chiếu rubric, hướng dẫn tái lập, trung thực học thuật.
+- Thông tin nhóm, GVHD, MSSV, tên file PDF: chỉ sửa `report/config/metadata.tex`.
+- Mỗi người viết phần mình phụ trách (bảng phân công issue #24), mỗi câu một dòng để dễ trộn khi PR.
+- Số liệu, bảng, biểu đồ lấy từ notebook phân tích (mục 7.5), lưu ảnh vào `report/figures/`; không gõ số tay.
+- Trước khi nộp: đổi `\BanNopfalse` thành `\BanNoptrue` trong `metadata.tex` — bỏ dấu mờ “BẢN NHÁP”, và build
+  sẽ báo lỗi nếu còn sót `\goiy` / `\chualam`.
+- Không commit `report/build/` và PDF (đã có `report/.gitignore`).
+
 ---
 
 ## 8. Checklist
@@ -472,6 +494,7 @@ Endpoint theo Phần 11: tạo ván người–máy / máy–máy, xem lại vá
 - [ ] Bảng/biểu đồ sinh lại được từ log bằng notebook
 - [ ] Tag cùng tên bên GitHub và Hugging Face (vd. `v1.0`); giảng viên có quyền đọc repo model
 - [ ] Trích dẫn nguồn và công cụ AI đã dùng (mục 12 tài liệu thiết kế)
+- [ ] Báo cáo build sạch với `\BanNoptrue` (mục 7.7), số liệu khớp log đã commit
 
 ---
 

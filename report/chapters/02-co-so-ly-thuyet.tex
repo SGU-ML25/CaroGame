@@ -1,0 +1,35 @@
+\chapter{Cơ sở lý thuyết và công trình liên quan}
+\label{ch:ly-thuyet}
+% Đề mục 4: Tác tử trò chơi; Minimax, Alpha-Beta, MCTS/UCT; policy/value networks; RL và self-play;
+% phân biệt AlphaGo-inspired, AlphaZero-inspired.
+
+\section{Tác tử trò chơi và mô hình hoá bài toán}
+\goiy{tác tử thông minh, trò chơi đối kháng hai người, MDP / trò chơi tổng bằng không~\cite{russell2021aima}}
+
+\section{Minimax và Alpha-Beta}
+\subsection{Minimax và Negamax}
+\goiy{định nghĩa, giới hạn độ sâu, hàm lượng giá}
+\subsection{Cắt tỉa Alpha-Beta}
+\goiy{nguyên lý, độ phức tạp tốt nhất / xấu nhất, ảnh hưởng của thứ tự nước~\cite{knuth1975alphabeta}}
+\subsection{Các kỹ thuật bổ trợ}
+\goiy{iterative deepening, bảng chuyển vị (Zobrist), sắp xếp nước}
+
+\section{Tìm kiếm cây Monte Carlo (MCTS/UCT)}
+\goiy{4 bước Selection--Expansion--Simulation--Backpropagation; công thức UCT~\cite{kocsis2006uct,browne2012mcts}}
+
+\section{Mạng policy và value}
+\goiy{mạng tích chập / ResNet cho trò chơi bàn cờ; học có giám sát từ dữ liệu chuyên gia}
+
+\section{Học tăng cường và self-play}
+\goiy{policy gradient, REINFORCE có baseline~\cite{sutton2018rl}; self-play}
+
+\section{AlphaGo và AlphaZero}
+\subsection{AlphaGo}
+\goiy{policy SL, policy RL, value net, MCTS có mạng dẫn đường~\cite{silver2016alphago}}
+\subsection{AlphaZero}
+\goiy{mạng policy-value chung, PUCT, nhiễu Dirichlet, vòng lặp self-play~\cite{silver2017alphagozero,silver2018alphazero}}
+\subsection{Phân biệt ``inspired'' với hệ thống gốc}
+\goiy{bảng thành phần đã / chưa hiện thực ở cấp 7--8}
+
+\section{Công trình liên quan}
+\goiy{Gomoku đã được giải; các engine / repo tham khảo~\cite{liu2024alphago}}

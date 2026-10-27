@@ -1,0 +1,17 @@
+\chapter{Hướng dẫn tái lập}
+\label{app:tai-lap}
+
+\section{Cài đặt}
+\goiy{\texttt{uv sync --group dev}, extra \texttt{nn}, \texttt{uv run pytest}}
+
+\section{Chạy giải đấu và thí nghiệm}
+\goiy{lệnh cho từng file \texttt{configs/experiments/*.yaml}}
+
+\section{Huấn luyện}
+\goiy{sinh dữ liệu chuyên gia, train SL, train PG, vòng lặp AlphaZero; tải checkpoint bằng \texttt{caro-hub}}
+
+\section{Sinh bảng và hình}
+\goiy{notebook phân tích, đường dẫn log thô}
+
+\section{Demo}
+\goiy{\texttt{uv run uvicorn caro.ui.server:app}}

@@ -1,0 +1,48 @@
+% Biên dịch: latexmk (XeLaTeX), xem latexmkrc. Trong VS Code: lưu file để tự build.
+% Cấu trúc 5 chương theo mục 4 của đề (docs/TTNTNC_De_tai_cuoi_ky_Game_AI.pdf).
+\documentclass[12pt,a4paper]{report}
+
+\input{config/preamble}
+
+\title{\TenDeTai}
+\author{}
+\date{}
+
+% Chỉ biên dịch chương đang viết cho nhanh: bỏ dấu % ở dòng dưới và sửa danh sách.
+%\includeonly{chapters/03-phuong-phap}
+
+\begin{document}
+
+\input{frontmatter/cover}
+
+% Thứ tự phần đầu theo quy ước báo cáo ở trường; bỏ dòng nào môn không yêu cầu.
+\pagenumbering{roman}
+\input{frontmatter/nhan-xet-gv}
+\input{frontmatter/loi-cam-on}
+{\linespread{1}\selectfont
+  \tableofcontents
+  \listoffigures
+  \listoftables
+  \lstlistoflistings}
+\input{frontmatter/tu-viet-tat}
+\clearpage
+\pagenumbering{arabic}
+
+\input{frontmatter/loi-mo-dau}
+
+\include{chapters/01-gioi-thieu}
+\include{chapters/02-co-so-ly-thuyet}
+\include{chapters/03-phuong-phap}
+\include{chapters/04-thuc-nghiem}
+\include{chapters/05-ket-luan}
+
+\printbibliography[heading=bibintoc, title={Tài liệu tham khảo}]
+
+\appendix
+\include{appendices/a-nhat-ky-tuan}
+\include{appendices/b-phan-cong}
+\include{appendices/c-doi-chieu-rubric}
+\include{appendices/d-tai-lap}
+\include{appendices/e-trung-thuc}
+
+\end{document}

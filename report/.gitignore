@@ -1,0 +1,24 @@
+# Thư mục build của latexmk (out_dir trong latexmkrc): aux, log, bbl, pdf...
+build/
+
+# File trung gian nếu biên dịch không qua latexmkrc (gọi xelatex trực tiếp)
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.lol
+*.xdv
+*-SAVE-ERROR
+main.pdf
+
+# PDF đặt tên theo \TenFilePDF (xuất cạnh main.tex). Xoá dòng dưới nếu muốn commit bản PDF.
+/*.pdf

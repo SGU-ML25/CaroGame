@@ -1,0 +1,10 @@
+{
+  // LaTeX Workshop cho báo cáo trong report/. VS Code chỉ đọc .vscode ở gốc workspace,
+  // nên report/.vscode/settings.json chỉ có tác dụng khi mở riêng thư mục report/.
+  // Recipe "latexmk (latexmkrc)" chạy `latexmk main.tex` không kèm -outdir, để latexmkrc
+  // quyết định: file trung gian và PDF vào report/build/, bản PDF đặt tên chép cạnh main.tex.
+  "latex-workshop.latex.recipe.default": "latexmk (latexmkrc)",
+  "latex-workshop.latex.outDir": "%DIR%/build",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab"
+}
