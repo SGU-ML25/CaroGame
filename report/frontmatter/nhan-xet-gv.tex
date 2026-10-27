@@ -1,0 +1,20 @@
+% Trang để giảng viên viết tay nhận xét. Bỏ \input trong main.tex nếu môn không yêu cầu.
+\chapter*{Nhận xét của giảng viên}
+\addcontentsline{toc}{chapter}{Nhận xét của giảng viên}
+
+{\setlength{\parindent}{0pt}
+\foreach \i in {1,...,14}{\dotfill\par\vspace{0.3cm}}
+
+\vfill
+\begin{minipage}[t]{0.38\textwidth}
+  \textbf{Điểm:} \dotfill
+\end{minipage}\hfill
+\begin{minipage}[t]{0.55\textwidth}
+  \centering
+  \textit{TP. Hồ Chí Minh, ngày \ldots{} tháng \ldots{} năm 20\ldots}\\[2pt]
+  \textbf{Giảng viên}\\
+  \textit{(Ký và ghi rõ họ tên)}\\[2.2cm]
+  \GVHD
+\end{minipage}
+\par}
+\clearpage

@@ -1,0 +1,68 @@
+\chapter{Phương pháp và thiết kế hệ thống}
+\label{ch:phuong-phap}
+% Đề mục 4: Biểu diễn game/state/action/reward; kiến trúc engine, agent, UI; thuật toán từng cấp;
+% dữ liệu, quy trình train và thiết kế giải đấu công bằng. Nguồn: tài liệu thiết kế Phần 01--09.
+
+\section{Mô hình hoá trò chơi}
+\subsection{Trạng thái, hành động, hàm chuyển, phần thưởng}
+\goiy{state $s$, action $a \in \{0,\dots,120\}$, $T(s,a)$, reward theo góc nhìn người chơi}
+\subsection{Input / output của tác tử}
+\goiy{input: bàn cờ + bên đi; output: nước đi, phân phối xác suất, giá trị trạng thái}
+
+\section{Kiến trúc hệ thống}
+\subsection{Các khối chính và nguyên tắc phụ thuộc}
+\goiy{sơ đồ engine $\rightarrow$ agents $\rightarrow$ arena / training / UI}
+\subsection{Cấu hình, seed và log}
+\goiy{\texttt{configs/}, \texttt{load\_config}, \texttt{derive\_seed}, thư mục \texttt{runs/}, JSONL}
+
+\section{Engine bitboard}
+\subsection{Biểu diễn bitboard}
+\goiy{stride 11, mặt nạ START, dịch bit = đi theo hướng}
+\subsection{Kiểm tra thắng, sinh nước ứng viên, đếm cửa sổ 5 ô}
+\goiy{3 phép dịch, giãn nở, ô thắng ngay}
+\subsection{API game thống nhất}
+\goiy{\texttt{reset}, \texttt{legal\_actions}, \texttt{step}, \texttt{is\_terminal}, \texttt{result}, \texttt{render}, \texttt{clone}/\texttt{undo}; Zobrist; đối xứng}
+\subsection{Kiểm thử engine}
+\goiy{đối chiếu với bản duyệt mảng, ca biên, hoà, nước bất hợp lệ}
+
+\section{Interface tác tử}
+\goiy{\texttt{Agent}, \texttt{Limits}, \texttt{Deadline}, \texttt{REGISTRY}, \texttt{make\_agent}, khoá \texttt{last\_stats()}}
+
+\section{Thuật toán từng cấp}
+\subsection{Cấp 1 --- Random}
+\goiy{baseline, chọn đều có seed}
+\subsection{Cấp 2 --- Rule-based (P1--P7)}
+\goiy{thứ tự ưu tiên, xung đột luật P3$\leftrightarrow$P4, P4$\leftrightarrow$P5, hạn chế}
+\subsection{Cấp 3 --- Negamax Alpha-Beta}
+\goiy{hàm đánh giá theo cửa sổ, iterative deepening, TT, sắp xếp nước}
+\subsection{Cấp 4 --- MCTS (UCT)}
+\goiy{mở rộng trên ứng viên, kiểu rollout, kiểm tra kết thúc, tái sử dụng cây}
+\subsection{Cấp 5 --- Mạng policy học có giám sát}
+\goiy{tensor 4×11×11, ResNet policy-value}
+\subsection{Cấp 6 --- REINFORCE có baseline}
+\goiy{vì sao không dùng Q-learning dạng bảng; đối thủ khi tự chơi}
+\subsection{Cấp 7 --- PUCT với mạng cấp 5 (AlphaGo-inspired)}
+\goiy{công thức PUCT, prior từ policy}
+\subsection{Cấp 8 --- Vòng lặp AlphaZero-inspired}
+\goiy{self-play, cập nhật lặp, đối đầu checkpoint (gating)}
+
+\section{Dữ liệu và quy trình huấn luyện}
+\subsection{Sinh dữ liệu chuyên gia}
+\goiy{số ván, cách ghi nhãn, loại trùng, tách train/val/test theo ván, nguy cơ học lại heuristic}
+\subsection{Huấn luyện có giám sát và học tăng cường}
+\goiy{loss, reward, số episode, exploration, siêu tham số, augmentation ×8}
+\subsection{Checkpoint và tài nguyên}
+\goiy{seed, checkpoint trên Hugging Face, CPU/GPU và thời gian huấn luyện}
+
+\section{Thiết kế giải đấu công bằng}
+\subsection{Round-robin và khai cuộc cân bằng}
+\goiy{$\ge$ 100 ván/cặp, chia đều đi trước/đi sau, nhiều seed}
+\subsection{Hai chế độ ngân sách}
+\goiy{chế độ A: thời gian/nước; chế độ B: độ sâu / số mô phỏng cố định}
+\subsection{Độ đo và khoảng tin cậy}
+\goiy{score $=(\text{thắng}+0{,}5\times\text{hoà})/\text{tổng}$, thời gian trung bình, p95, số nút/mô phỏng, Wilson, bootstrap, Elo}
+\subsection{Ablation}
+\goiy{bảng A1--A7, E3: thay đổi, giữ cố định, độ đo, RQ}
+
+\section{Giao diện người dùng}
+\goiy{FastAPI backend, frontend; người--máy, máy--máy, replay, ``AI đang nghĩ gì''}

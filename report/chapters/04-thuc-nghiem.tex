@@ -1,0 +1,46 @@
+\chapter{Thực nghiệm, kết quả và thảo luận}
+\label{ch:thuc-nghiem}
+% Đề mục 4: Môi trường chạy; ma trận đối đầu; win/draw/loss; độ trễ/chi phí; learning curves;
+% ablations; minh họa ván cờ, phân tích thất bại. Chỉ ghi số liệu đã chạy thật (đề mục 5).
+
+\section{Môi trường thực nghiệm}
+\goiy{phần cứng, phiên bản Python/thư viện, commit, config dùng cho từng giải (lấy từ \texttt{meta.json})}
+
+\section{Giải đấu chính}
+\subsection{Ma trận đối đầu --- chế độ A (thời gian/nước)}
+\goiy{ma trận score + khoảng tin cậy Wilson 95\% (\texttt{experiments/main\_mode\_a})}
+\subsection{Ma trận đối đầu --- chế độ B (ngân sách cố định)}
+\goiy{\texttt{experiments/main\_mode\_b}}
+\subsection{Thắng / hoà / thua và xếp hạng Elo}
+\goiy{bảng W/D/L, Elo có bootstrap}
+
+\section{Chi phí tính toán}
+\goiy{thời gian trung bình/nước, p95, số nút, số mô phỏng, RAM/VRAM}
+
+\section{Huấn luyện}
+\subsection{Cấp 5 --- học có giám sát}
+\goiy{loss, accuracy train/val/test}
+\subsection{Cấp 6 và cấp 8 --- learning curve}
+\goiy{score theo số episode / vòng lặp so với đối thủ cố định}
+
+\section{Ablation và phân tích độ nhạy}
+\subsection{A1, A2 --- cắt tỉa, sắp xếp nước, TT}
+\goiy{số nút, thời gian, tỷ lệ chọn cùng nước}
+\subsection{A3, A4 --- số mô phỏng và kiểu rollout của MCTS}
+\goiy{score theo số mô phỏng, mô phỏng/giây}
+\subsection{A5, A5b --- policy-only so với policy + MCTS; khởi tạo RL}
+\subsection{A6, A7 --- augmentation, trọng số hàm đánh giá}
+\subsection{E3 --- lợi thế đi trước}
+\goiy{score của bên đi trước khi tự đấu từng cấp}
+
+\section{Trả lời câu hỏi nghiên cứu}
+\goiy{mỗi RQ một đoạn dẫn số liệu và khoảng tin cậy; không đủ dữ liệu thì ghi ``chưa kết luận được''}
+
+\section{Ván đấu minh hoạ}
+\goiy{chọn ván theo quy tắc định trước (không chọn riêng ván thắng); ảnh replay từ UI, chú thích nước quyết định}
+
+\section{Phân tích lỗi}
+\goiy{thống kê lỗi theo loại: bỏ sót chặn tứ, không thấy VCF, đi xa vùng giao tranh\ldots}
+
+\section{Thảo luận}
+\goiy{chất lượng nước đi so với độ phức tạp suy luận; sức mạnh thực nghiệm $\neq$ tối ưu đã chứng minh}

@@ -1,0 +1,7 @@
+{
+  // LaTeX Workshop: build bằng latexmk + latexmkrc, file trung gian và PDF vào build/
+  "latex-workshop.latex.outDir": "%DIR%/build",
+  "latex-workshop.latex.recipe.default": "latexmk (latexmkrc)",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab"
+}

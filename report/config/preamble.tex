@@ -1,0 +1,78 @@
+% Preamble dùng chung. Biên dịch bằng XeLaTeX (xem latexmkrc).
+
+% --- Ngôn ngữ và phông chữ (Unicode, không cần hack cho tiếng Việt) ---
+\usepackage{fontspec}
+\usepackage[vietnamese]{babel}
+% Chọn font đầu tiên có trên máy: Times New Roman (msttcore-fonts) → Liberation (cùng kích thước,
+% có sẵn trên đa số Linux) → TeX Gyre (có trong TeX Live đầy đủ / Overleaf, nạp theo tên file)
+% → Latin Modern (mặc định của fontspec, luôn có). Font thực sự được dùng in ra log: tìm "Font chính:".
+\newcommand{\chonfont}[4]{% #1 lệnh \set...font, #2 font ưu tiên, #3 font dự phòng, #4 tên file TeX Gyre
+  \IfFontExistsTF{#2}{#1{#2}\typeout{Font chính: #2}}{%
+    \IfFontExistsTF{#3}{#1{#3}\typeout{Font chính: #3 (thiếu #2)}}{%
+      \IfFontExistsTF{#4-regular.otf}{%
+        #1{#4}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+               ItalicFont=*-italic, BoldItalicFont=*-bolditalic]%
+        \typeout{Font chính: #4 (thiếu #2 và #3)}}{%
+        \typeout{Font chính: Latin Modern (thiếu #2, #3, #4)}}}}}
+\chonfont{\setmainfont}{Times New Roman}{Liberation Serif}{texgyretermes}
+\chonfont{\setsansfont}{Arial}{Liberation Sans}{texgyreheros}
+\chonfont{\setmonofont}{Courier New}{Liberation Mono}{texgyrecursor}
+
+% --- Cỡ chữ cố định theo bảng quy ước báo cáo/luận văn ---
+% Thân bài 13pt · Mục lớn (section) 14pt · Mục con (subsection) 13pt đậm
+% · Chú thích/footnote 10-12pt. Chương và header/listing đặt trực tiếp
+% bằng \fontsize tại nơi dùng (xem macros.tex).
+\makeatletter
+\renewcommand\normalsize{\@setfontsize\normalsize{13}{15.6}} % thân bài: 13pt
+\renewcommand\small{\@setfontsize\small{12}{14.4}}           % chú thích bảng/hình: 12pt
+\renewcommand\footnotesize{\@setfontsize\footnotesize{10}{12}} % footnote: 10pt
+\renewcommand\large{\@setfontsize\large{13}{15.6}}           % tiêu đề mục con (subsection): 13pt
+\renewcommand\Large{\@setfontsize\Large{14}{16.8}}           % tiêu đề mục lớn (section): 14pt
+\makeatother
+\linespread{1.3}  % giãn dòng khoảng 1.5 (chuẩn báo cáo/luận văn)
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{3pt}
+
+% --- Bố cục: lề trái rộng hơn để đóng gáy ---
+\usepackage[a4paper, left=3cm, right=2cm, top=2.5cm, bottom=2.5cm,
+            headheight=40pt, headsep=1.0cm]{geometry}
+\usepackage{fancyhdr}
+
+% --- Toán, bảng, hình ---
+\usepackage{amsmath}
+\usepackage{amsthm}     % môi trường định lý / định nghĩa (khai báo ở macros.tex)
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}  % font toán OpenType, chạy mọi cỡ chữ
+\usepackage{booktabs, array, tabularx}
+\usepackage{graphicx, float, caption}
+\usepackage{subcaption}  % nhiều hình con trong một figure
+\graphicspath{{figures/}} % \includegraphics tìm ảnh trong figures/
+\captionsetup{font=small} % chú thích bảng/hình: 12pt (dùng cỡ \small đã đặt lại ở trên)
+\usepackage{xcolor}
+\usepackage{colortbl}    % tô màu hàng / ô của bảng
+\usepackage{longtable}   % bảng dài tự ngắt trang
+\usepackage{siunitx}     % số và đơn vị: \num{}, \SI{}{}, cột S căn theo dấu thập phân
+\sisetup{output-decimal-marker={,}, group-separator={.}, group-minimum-digits=4}
+\usepackage{algorithm, algorithmic} % khung thuật toán + mã giả
+\usepackage{enumerate}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+% --- Mã nguồn ---
+\usepackage{listings}
+
+% --- Trích dẫn ---
+%% Ghi chú: biblatex khuyến nghị csquotes, nhưng máy chạy lại không cài gói này;
+%% thiếu nó chỉ sinh cảnh báo, không ảnh hưởng nội dung.
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex}
+\addbibresource{references.bib}
+% biblatex không hỗ trợ tiếng Việt: ánh xạ sang tiếng Anh để các chuỗi
+% "In:", "et al.", "and" hiện đúng thay vì rơi vào định nghĩa dự phòng hỏng.
+\DeclareLanguageMapping{vietnamese}{english}
+
+% --- Siêu liên kết (nạp sau cùng) ---
+\usepackage{hyperref}
+
+\input{config/metadata}
+\input{config/macros}

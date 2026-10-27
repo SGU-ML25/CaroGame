@@ -12,6 +12,8 @@ lộ trình học bitboard: [`docs/lo-trinh-hoc-bitboard.html`](docs/lo-trinh-ho
 **Hướng dẫn sử dụng đầy đủ (cài đặt, config, log, Hugging Face, quy trình nhóm, các phần sắp làm):
 [`docs/HUONG_DAN.md`](docs/HUONG_DAN.md)**
 
+Báo cáo LaTeX: [`report/`](report/) — cách build và viết ở [`report/README.md`](report/README.md).
+
 ## Cài đặt
 
 ```bash
@@ -37,6 +39,7 @@ configs/           # MỌI tham số thực nghiệm nằm ở đây
 tests/
 runs/              # log mọi lần chạy — commit lên GitHub (checkpoint thì lên Hugging Face)
 notebooks/         # sinh bảng / biểu đồ từ log thô
+report/            # báo cáo LaTeX (XeLaTeX + latexmk), xem report/README.md
 docs/
 ```
 

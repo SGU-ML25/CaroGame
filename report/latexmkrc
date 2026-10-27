@@ -1,0 +1,32 @@
+# Build bằng XeLaTeX; file trung gian và PDF nằm trong build/
+# Cờ -pdf (VS Code / LaTeX Workshop) ép latexmk gọi $pdflatex, nên trỏ
+# $pdflatex sang xelatex để luôn dùng đúng engine dù bị gọi kiểu nào.
+$pdf_mode = 1;
+$pdflatex = 'xelatex -synctex=1 -interaction=nonstopmode -file-line-error %O %S';
+$out_dir = 'build';
+$bibtex_use = 1.5;
+
+# --- Tên file PDF ---------------------------------------------------------------
+# PDF luôn được build ra build/main.pdf (giữ tên main để VS Code / SyncTeX hoạt động).
+# Sau mỗi lần chạy latexmk, bản PDF được chép thành "<tên>.pdf" cạnh main.tex,
+# với <tên> lấy từ \TenFilePDF trong config/metadata.tex. Để trống thì không chép.
+END {
+  my $src = ($out_dir || '.') . '/main.pdf';
+  my $ten = '';
+  if (open(my $fh, '<', 'config/metadata.tex')) {
+    while (<$fh>) { $ten = $1 if /^\s*\\newcommand\{\\TenFilePDF\}\{([^}]*)\}/; }
+    close $fh;
+  }
+  $ten =~ s/^\s+|\s+$//g;
+  $ten =~ s{[/\\:*?"<>|]}{-}g;                 # bỏ ký tự cấm trong tên file
+  if ($ten ne '' && -f $src) {
+    my $dst = "$ten.pdf";
+    if (!-f $dst || -M $src < -M $dst) {       # chỉ chép khi PDF mới hơn
+      require File::Copy; require Encode;
+      my $hien = Encode::decode('UTF-8', $dst);  # đầu ra của latexmk đã mã hoá UTF-8
+      File::Copy::copy($src, $dst)
+        ? print "Latexmk: đã chép PDF thành '$hien'\n"
+        : warn "Latexmk: không chép được PDF thành '$hien': $!\n";
+    }
+  }
+}
