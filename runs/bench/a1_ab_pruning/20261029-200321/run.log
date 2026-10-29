@@ -1,0 +1,111 @@
+2026-10-29 20:03:22 INFO    run bench/a1_ab_pruning/20261029-200321 — config experiments/a1_ab_pruning, seed 2026
+2026-10-29 20:03:22 INFO    bench 50 thế × 3 lần × 2 tác tử
+2026-10-29 20:03:51 INFO      thế   0 | AB-prune        | nodes_med=  93739 | time_med=8868.6 ms | move=69 | score=-55
+2026-10-29 20:05:01 INFO      thế   0 | AB-full         | nodes_med= 615897 | time_med=22250.7 ms | move=69 | score=-55
+2026-10-29 20:05:08 INFO      thế   1 | AB-prune        | nodes_med=  68591 | time_med=2280.0 ms | move=15 | score=104
+2026-10-29 20:06:25 INFO      thế   1 | AB-full         | nodes_med= 803379 | time_med=26171.2 ms | move=15 | score=104
+2026-10-29 20:06:34 INFO      thế   2 | AB-prune        | nodes_med=  88693 | time_med=3128.4 ms | move=116 | score=186
+2026-10-29 20:08:47 INFO      thế   2 | AB-full         | nodes_med=1118532 | time_med=42474.9 ms | move=116 | score=186
+2026-10-29 20:08:49 INFO      thế   3 | AB-prune        | nodes_med=  16611 | time_med= 523.8 ms | move=52 | score=444
+2026-10-29 20:10:10 INFO      thế   3 | AB-full         | nodes_med= 623101 | time_med=28074.8 ms | move=52 | score=444
+2026-10-29 20:10:12 INFO      thế   4 | AB-prune        | nodes_med=  17789 | time_med= 952.5 ms | move=36 | score=761
+2026-10-29 20:11:48 INFO      thế   4 | AB-full         | nodes_med= 751583 | time_med=34605.3 ms | move=36 | score=761
+2026-10-29 20:11:52 INFO      thế   5 | AB-prune        | nodes_med=  39589 | time_med=1255.2 ms | move=67 | score=157
+2026-10-29 20:13:05 INFO      thế   5 | AB-full         | nodes_med= 779393 | time_med=24380.5 ms | move=67 | score=157
+2026-10-29 20:13:56 INFO      thế   6 | AB-prune        | nodes_med= 305177 | time_med=9384.7 ms | move=49 | score=200
+2026-10-29 20:14:43 INFO      thế   6 | AB-full         | nodes_med= 503920 | time_med=15629.3 ms | move=49 | score=200
+2026-10-29 20:14:43 INFO      thế   7 | AB-prune        | nodes_med=     95 | time_med=   3.4 ms | move=24 | score=999999
+2026-10-29 20:14:43 INFO      thế   7 | AB-full         | nodes_med=     95 | time_med=   5.0 ms | move=24 | score=999999
+2026-10-29 20:14:51 INFO      thế   8 | AB-prune        | nodes_med=  89224 | time_med=2727.4 ms | move=51 | score=29
+2026-10-29 20:16:42 INFO      thế   8 | AB-full         | nodes_med=1193714 | time_med=36605.8 ms | move=51 | score=29
+2026-10-29 20:16:47 INFO      thế   9 | AB-prune        | nodes_med=  40009 | time_med=1425.9 ms | move=62 | score=636
+2026-10-29 20:18:13 INFO      thế   9 | AB-full         | nodes_med= 888747 | time_med=28290.2 ms | move=62 | score=636
+2026-10-29 20:18:17 INFO      thế  10 | AB-prune        | nodes_med=  38153 | time_med=1291.0 ms | move=30 | score=110
+2026-10-29 20:19:32 INFO      thế  10 | AB-full         | nodes_med= 796925 | time_med=25076.0 ms | move=30 | score=110
+2026-10-29 20:19:35 INFO      thế  11 | AB-prune        | nodes_med=  31989 | time_med= 987.0 ms | move=36 | score=521
+2026-10-29 20:21:43 INFO      thế  11 | AB-full         | nodes_med=1092557 | time_med=44999.0 ms | move=36 | score=521
+2026-10-29 20:21:44 INFO      thế  12 | AB-prune        | nodes_med=  10637 | time_med= 409.6 ms | move=65 | score=999997
+2026-10-29 20:23:45 INFO      thế  12 | AB-full         | nodes_med=1019142 | time_med=37840.2 ms | move=65 | score=999997
+2026-10-29 20:23:46 INFO      thế  13 | AB-prune        | nodes_med=     99 | time_med=   3.8 ms | move=107 | score=999999
+2026-10-29 20:23:46 INFO      thế  13 | AB-full         | nodes_med=     99 | time_med=   3.5 ms | move=107 | score=999999
+2026-10-29 20:23:52 INFO      thế  14 | AB-prune        | nodes_med=  58419 | time_med=1990.4 ms | move=58 | score=151
+2026-10-29 20:26:14 INFO      thế  14 | AB-full         | nodes_med=1032754 | time_med=49059.4 ms | move=58 | score=151
+2026-10-29 20:26:26 INFO      thế  15 | AB-prune        | nodes_med= 127077 | time_med=4163.8 ms | move=40 | score=557
+2026-10-29 20:28:03 INFO      thế  15 | AB-full         | nodes_med=1004423 | time_med=32100.8 ms | move=40 | score=557
+2026-10-29 20:28:05 INFO      thế  16 | AB-prune        | nodes_med=  14662 | time_med= 474.9 ms | move=43 | score=192
+2026-10-29 20:28:45 INFO      thế  16 | AB-full         | nodes_med= 425501 | time_med=13157.9 ms | move=43 | score=192
+2026-10-29 20:28:46 INFO      thế  17 | AB-prune        | nodes_med=  10529 | time_med= 328.9 ms | move=49 | score=999997
+2026-10-29 20:30:27 INFO      thế  17 | AB-full         | nodes_med=1014150 | time_med=33146.7 ms | move=49 | score=999997
+2026-10-29 20:30:32 INFO      thế  18 | AB-prune        | nodes_med=  49223 | time_med=1577.5 ms | move=58 | score=144
+2026-10-29 20:32:01 INFO      thế  18 | AB-full         | nodes_med= 946902 | time_med=29346.9 ms | move=58 | score=144
+2026-10-29 20:32:12 INFO      thế  19 | AB-prune        | nodes_med= 125527 | time_med=3870.2 ms | move=73 | score=163
+2026-10-29 20:33:39 INFO      thế  19 | AB-full         | nodes_med= 901496 | time_med=29245.8 ms | move=73 | score=163
+2026-10-29 20:33:43 INFO      thế  20 | AB-prune        | nodes_med=  39054 | time_med=1191.7 ms | move=72 | score=222
+2026-10-29 20:34:36 INFO      thế  20 | AB-full         | nodes_med= 570005 | time_med=17750.9 ms | move=72 | score=222
+2026-10-29 20:34:39 INFO      thế  21 | AB-prune        | nodes_med=  36343 | time_med=1129.3 ms | move=94 | score=1287
+2026-10-29 20:39:53 INFO      thế  21 | AB-full         | nodes_med= 966785 | time_med=31889.6 ms | move=94 | score=1287
+2026-10-29 20:40:04 INFO      thế  22 | AB-prune        | nodes_med= 112471 | time_med=3729.1 ms | move=57 | score=163
+2026-10-29 20:41:43 INFO      thế  22 | AB-full         | nodes_med=1003142 | time_med=33124.1 ms | move=57 | score=163
+2026-10-29 20:41:44 INFO      thế  23 | AB-prune        | nodes_med=   7052 | time_med= 232.8 ms | move=81 | score=999997
+2026-10-29 20:42:40 INFO      thế  23 | AB-full         | nodes_med= 560665 | time_med=18553.0 ms | move=81 | score=999997
+2026-10-29 20:42:43 INFO      thế  24 | AB-prune        | nodes_med=  33341 | time_med=1056.2 ms | move=43 | score=264
+2026-10-29 20:44:10 INFO      thế  24 | AB-full         | nodes_med= 922281 | time_med=29212.4 ms | move=43 | score=264
+2026-10-29 20:44:17 INFO      thế  25 | AB-prune        | nodes_med=  74323 | time_med=2257.3 ms | move=27 | score=55
+2026-10-29 20:45:54 INFO      thế  25 | AB-full         | nodes_med=1014711 | time_med=31560.3 ms | move=27 | score=55
+2026-10-29 20:45:56 INFO      thế  26 | AB-prune        | nodes_med=   9399 | time_med= 359.1 ms | move=77 | score=999997
+2026-10-29 20:47:17 INFO      thế  26 | AB-full         | nodes_med= 787199 | time_med=25641.1 ms | move=77 | score=999997
+2026-10-29 20:47:19 INFO      thế  27 | AB-prune        | nodes_med=  19223 | time_med= 655.4 ms | move=85 | score=627
+2026-10-29 20:48:39 INFO      thế  27 | AB-full         | nodes_med= 783796 | time_med=25914.4 ms | move=85 | score=627
+2026-10-29 20:48:43 INFO      thế  28 | AB-prune        | nodes_med=  42179 | time_med=1298.3 ms | move=70 | score=532
+2026-10-29 20:49:48 INFO      thế  28 | AB-full         | nodes_med= 680629 | time_med=21682.5 ms | move=70 | score=532
+2026-10-29 20:49:58 INFO      thế  29 | AB-prune        | nodes_med= 100942 | time_med=3109.1 ms | move=105 | score=116
+2026-10-29 20:51:04 INFO      thế  29 | AB-full         | nodes_med= 702020 | time_med=22181.9 ms | move=105 | score=116
+2026-10-29 20:51:06 INFO      thế  30 | AB-prune        | nodes_med=  10233 | time_med= 357.7 ms | move=80 | score=999997
+2026-10-29 20:52:42 INFO      thế  30 | AB-full         | nodes_med= 968618 | time_med=32718.2 ms | move=80 | score=999997
+2026-10-29 20:52:52 INFO      thế  31 | AB-prune        | nodes_med= 106708 | time_med=3263.8 ms | move=73 | score=92
+2026-10-29 20:53:50 INFO      thế  31 | AB-full         | nodes_med= 587875 | time_med=19340.5 ms | move=73 | score=92
+2026-10-29 20:53:51 INFO      thế  32 | AB-prune        | nodes_med=   9701 | time_med= 367.9 ms | move=80 | score=999997
+2026-10-29 20:55:19 INFO      thế  32 | AB-full         | nodes_med= 900992 | time_med=29697.8 ms | move=80 | score=999997
+2026-10-29 20:55:21 INFO      thế  33 | AB-prune        | nodes_med=  21288 | time_med= 668.9 ms | move=4 | score=568
+2026-10-29 20:56:53 INFO      thế  33 | AB-full         | nodes_med= 965712 | time_med=31041.3 ms | move=4 | score=568
+2026-10-29 20:56:58 INFO      thế  34 | AB-prune        | nodes_med=  53316 | time_med=1805.4 ms | move=36 | score=154
+2026-10-29 20:58:35 INFO      thế  34 | AB-full         | nodes_med=1038533 | time_med=31959.4 ms | move=36 | score=154
+2026-10-29 20:58:51 INFO      thế  35 | AB-prune        | nodes_med= 171719 | time_med=5445.2 ms | move=103 | score=-173
+2026-10-29 21:00:01 INFO      thế  35 | AB-full         | nodes_med= 743504 | time_med=22911.8 ms | move=103 | score=-173
+2026-10-29 21:00:03 INFO      thế  36 | AB-prune        | nodes_med=  25285 | time_med= 855.1 ms | move=48 | score=502
+2026-10-29 21:01:35 INFO      thế  36 | AB-full         | nodes_med= 909441 | time_med=28036.6 ms | move=48 | score=502
+2026-10-29 21:02:56 INFO      thế  37 | AB-prune        | nodes_med=  68319 | time_med=2689.9 ms | move=47 | score=23
+2026-10-29 21:04:16 INFO      thế  37 | AB-full         | nodes_med= 801055 | time_med=26219.1 ms | move=47 | score=23
+2026-10-29 21:04:17 INFO      thế  38 | AB-prune        | nodes_med=   9299 | time_med= 314.3 ms | move=64 | score=999997
+2026-10-29 21:05:44 INFO      thế  38 | AB-full         | nodes_med= 843157 | time_med=26339.7 ms | move=64 | score=999997
+2026-10-29 21:05:49 INFO      thế  39 | AB-prune        | nodes_med=  53293 | time_med=1739.9 ms | move=38 | score=79
+2026-10-29 21:07:09 INFO      thế  39 | AB-full         | nodes_med= 835350 | time_med=26812.2 ms | move=38 | score=79
+2026-10-29 21:07:11 INFO      thế  40 | AB-prune        | nodes_med=  18388 | time_med= 668.4 ms | move=50 | score=884
+2026-10-29 21:08:19 INFO      thế  40 | AB-full         | nodes_med= 677084 | time_med=22804.8 ms | move=50 | score=884
+2026-10-29 21:08:31 INFO      thế  41 | AB-prune        | nodes_med= 119967 | time_med=4166.0 ms | move=70 | score=315
+2026-10-29 21:10:01 INFO      thế  41 | AB-full         | nodes_med= 921319 | time_med=29523.3 ms | move=70 | score=315
+2026-10-29 21:10:12 INFO      thế  42 | AB-prune        | nodes_med= 119495 | time_med=3715.0 ms | move=49 | score=55
+2026-10-29 21:11:19 INFO      thế  42 | AB-full         | nodes_med= 696208 | time_med=22299.7 ms | move=49 | score=55
+2026-10-29 21:11:19 INFO      thế  43 | AB-prune        | nodes_med=     98 | time_med=   2.9 ms | move=92 | score=999999
+2026-10-29 21:11:19 INFO      thế  43 | AB-full         | nodes_med=     98 | time_med=   5.9 ms | move=92 | score=999999
+2026-10-29 21:11:22 INFO      thế  44 | AB-prune        | nodes_med=  35209 | time_med=1090.8 ms | move=37 | score=21
+2026-10-29 21:12:32 INFO      thế  44 | AB-full         | nodes_med= 761805 | time_med=23487.5 ms | move=37 | score=21
+2026-10-29 21:12:38 INFO      thế  45 | AB-prune        | nodes_med=  57691 | time_med=1757.4 ms | move=69 | score=171
+2026-10-29 21:13:48 INFO      thế  45 | AB-full         | nodes_med= 739199 | time_med=22894.4 ms | move=69 | score=171
+2026-10-29 21:13:50 INFO      thế  46 | AB-prune        | nodes_med=  22451 | time_med= 712.0 ms | move=48 | score=593
+2026-10-29 21:15:03 INFO      thế  46 | AB-full         | nodes_med= 788719 | time_med=24115.1 ms | move=48 | score=593
+2026-10-29 21:15:14 INFO      thế  47 | AB-prune        | nodes_med= 116650 | time_med=3590.8 ms | move=105 | score=653
+2026-10-29 21:16:42 INFO      thế  47 | AB-full         | nodes_med= 948947 | time_med=29366.6 ms | move=105 | score=653
+2026-10-29 21:16:45 INFO      thế  48 | AB-prune        | nodes_med=  29019 | time_med= 884.5 ms | move=69 | score=507
+2026-10-29 21:18:18 INFO      thế  48 | AB-full         | nodes_med=1004170 | time_med=31040.5 ms | move=69 | score=507
+2026-10-29 21:18:25 INFO      thế  49 | AB-prune        | nodes_med=  40247 | time_med=1372.2 ms | move=38 | score=101
+2026-10-29 21:21:53 INFO      thế  49 | AB-full         | nodes_med= 745960 | time_med=23909.2 ms | move=38 | score=101
+2026-10-29 21:21:53 INFO    
+======================================================================
+2026-10-29 21:21:53 INFO    Agent            nodes_med   time_med   time_p95 %same_move
+2026-10-29 21:21:53 INFO    AB-prune             39322    1273.1 ms    5445.2 ms
+2026-10-29 21:21:53 INFO    AB-full             802217   26576.0 ms   42474.9 ms
+2026-10-29 21:21:53 INFO    
+Giá trị gốc trùng nhau: 50/50 (100.0%)
+2026-10-29 21:21:53 INFO    ✅ Giá trị gốc trùng 100%% — nhất quán
+2026-10-29 21:21:54 INFO    kết thúc: ok sau 4711.0 s

@@ -1,0 +1,77 @@
+project: caro-11x11
+seed: 2026
+device: auto
+engine:
+  size: 11
+  win_length: 5
+  layout: stride11
+experiment:
+  kind: bench
+  name: a1_ab_pruning
+  description: ''
+  rq:
+  - RQ3
+  config: experiments/a1_ab_pruning
+run:
+  root: runs
+  tag: null
+  index: runs/index.jsonl
+log:
+  level: INFO
+  console: true
+  file: run.log
+  games: games.jsonl
+  metrics: metrics.jsonl
+  per_move_stats: true
+  flush_every: 1
+checkpoint:
+  dir: checkpoints
+  keep_last: 5
+budget:
+  mode: fixed
+  time_ms: null
+  max_depth: 3
+  max_sims: 800
+bench:
+  positions:
+    count: 50
+    source: runs/openings/midgame_positions_v1.json
+    seed: 11
+  repeat: 3
+agents:
+- id: AB-prune
+  level: 3
+  kind: alphabeta
+  params:
+    pruning: true
+    move_ordering: false
+    tt: false
+    tt_size_mb: 64
+    iterative_deepening: true
+    forced_moves: true
+    radius: 2
+    eval_weights: default
+  source: agents/l3_alphabeta
+  limits:
+    mode: fixed
+    time_ms: null
+    max_depth: 3
+    max_sims: 800
+- id: AB-full
+  level: 3
+  kind: alphabeta
+  params:
+    pruning: false
+    move_ordering: false
+    tt: false
+    tt_size_mb: 64
+    iterative_deepening: true
+    forced_moves: true
+    radius: 2
+    eval_weights: default
+  source: agents/l3_alphabeta
+  limits:
+    mode: fixed
+    time_ms: null
+    max_depth: 3
+    max_sims: 800
