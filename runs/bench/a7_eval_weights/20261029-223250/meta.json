@@ -1,0 +1,33 @@
+{
+  "started": "2026-10-29T22:32:50",
+  "argv": [
+    "H:\\HK1_2026-2027\\AI nâng cao\\CaroGame\\CaroGame\\caro\\arena\\bench.py",
+    "experiments/a7_eval_weights",
+    "bench.positions.count=10",
+    "bench.repeat=1",
+    "budget.max_depth=2",
+    "experiment.kind=bench"
+  ],
+  "seed": 2026,
+  "config_hash": "bd342f383e72",
+  "git": {
+    "commit": "044a80f253d8e0ab30ae1ccc6657ef5e6346a8f1",
+    "dirty": true
+  },
+  "python": "3.13.3",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.2.6",
+    "pyyaml": "6.0.2",
+    "torch": null,
+    "fastapi": null
+  },
+  "hardware": {
+    "host": "LAPTOP-9AGC97Q4",
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+    "cpu_count": 4,
+    "ram_gb": null,
+    "gpu": null
+  }
+}
