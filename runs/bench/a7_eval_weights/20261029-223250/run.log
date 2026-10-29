@@ -1,0 +1,31 @@
+2026-10-29 22:32:51 INFO    run bench/a7_eval_weights/20261029-223250 — config experiments/a7_eval_weights, seed 2026
+2026-10-29 22:32:51 INFO    bench 10 thế × 1 lần × 2 tác tử
+2026-10-29 22:32:54 INFO      thế   0 | AB-default      | nodes_med=    338 | time_med=2197.6 ms | move=69 | score=-226
+2026-10-29 22:32:55 INFO      thế   0 | AB-no-defense   | nodes_med=    638 | time_med=1130.4 ms | move=60 | score=96
+2026-10-29 22:32:56 INFO      thế   1 | AB-default      | nodes_med=    460 | time_med=1315.6 ms | move=93 | score=-96
+2026-10-29 22:32:58 INFO      thế   1 | AB-no-defense   | nodes_med=    687 | time_med=2358.0 ms | move=38 | score=66
+2026-10-29 22:33:01 INFO      thế   2 | AB-default      | nodes_med=    516 | time_med=2760.2 ms | move=69 | score=-6
+2026-10-29 22:33:02 INFO      thế   2 | AB-no-defense   | nodes_med=    833 | time_med=1297.9 ms | move=47 | score=93
+2026-10-29 22:33:03 INFO      thế   3 | AB-default      | nodes_med=    341 | time_med= 919.4 ms | move=52 | score=-67
+2026-10-29 22:33:04 INFO      thế   3 | AB-no-defense   | nodes_med=    338 | time_med= 430.2 ms | move=52 | score=108
+2026-10-29 22:33:04 INFO      thế   4 | AB-default      | nodes_med=    358 | time_med= 466.1 ms | move=36 | score=108
+2026-10-29 22:33:05 INFO      thế   4 | AB-no-defense   | nodes_med=    358 | time_med= 456.8 ms | move=36 | score=223
+2026-10-29 22:33:05 INFO      thế   5 | AB-default      | nodes_med=    361 | time_med= 483.6 ms | move=67 | score=-133
+2026-10-29 22:33:06 INFO      thế   5 | AB-no-defense   | nodes_med=    913 | time_med= 488.1 ms | move=67 | score=90
+2026-10-29 22:33:06 INFO      thế   6 | AB-default      | nodes_med=    371 | time_med= 337.6 ms | move=61 | score=12
+2026-10-29 22:33:06 INFO      thế   6 | AB-no-defense   | nodes_med=    371 | time_med= 328.1 ms | move=61 | score=66
+2026-10-29 22:33:06 INFO      thế   7 | AB-default      | nodes_med=     95 | time_med=   5.0 ms | move=24 | score=999999
+2026-10-29 22:33:06 INFO      thế   7 | AB-no-defense   | nodes_med=     95 | time_med=   7.1 ms | move=24 | score=999999
+2026-10-29 22:33:07 INFO      thế   8 | AB-default      | nodes_med=    527 | time_med= 626.1 ms | move=51 | score=-113
+2026-10-29 22:33:08 INFO      thế   8 | AB-no-defense   | nodes_med=    712 | time_med= 609.3 ms | move=15 | score=61
+2026-10-29 22:33:08 INFO      thế   9 | AB-default      | nodes_med=    383 | time_med= 530.2 ms | move=17 | score=63
+2026-10-29 22:33:09 INFO      thế   9 | AB-no-defense   | nodes_med=    522 | time_med= 730.4 ms | move=65 | score=162
+2026-10-29 22:33:09 INFO    
+======================================================================
+2026-10-29 22:33:09 INFO    Agent            nodes_med   time_med   time_p95 %same_move
+2026-10-29 22:33:09 INFO    AB-default             366     578.2 ms    2760.2 ms
+2026-10-29 22:33:09 INFO    AB-no-defense          580     548.7 ms    2358.0 ms
+2026-10-29 22:33:09 INFO    
+Giá trị gốc trùng nhau: 1/10 (10.0%)
+2026-10-29 22:33:09 WARNING ⚠️  Giá trị gốc KHÁC NHAU → có thể là bug!
+2026-10-29 22:33:09 INFO    kết thúc: ok sau 17.5 s
