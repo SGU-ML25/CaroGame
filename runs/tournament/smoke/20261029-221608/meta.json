@@ -1,0 +1,29 @@
+{
+  "started": "2026-10-29T22:16:08",
+  "argv": [
+    "C:\\Users\\ASUS VIVOBOOK\\CaroGame\\caro\\arena\\tournament.py",
+    "experiments/smoke"
+  ],
+  "seed": 2026,
+  "config_hash": "8f0d1f32175f",
+  "git": {
+    "commit": "de667c8ed48607d8a0077fa9807961fa809d087b",
+    "dirty": true
+  },
+  "python": "3.13.1",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": null,
+    "fastapi": null
+  },
+  "hardware": {
+    "host": "NhuY",
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "cpu_count": 16,
+    "ram_gb": null,
+    "gpu": null
+  }
+}
