@@ -1,0 +1,24 @@
+{
+  "status": "ok",
+  "ended": "2026-10-29T21:21:53",
+  "duration_s": 4711.037,
+  "games": 0,
+  "metrics": 50,
+  "agents": [
+    "AB-prune",
+    "AB-full",
+    "consistency_pct"
+  ],
+  "n_positions": 50,
+  "AB-prune": {
+    "nodes_median": 39322,
+    "time_ms_median": 1273.1,
+    "time_ms_p95": 5445.2
+  },
+  "AB-full": {
+    "nodes_median": 802217,
+    "time_ms_median": 26576.0,
+    "time_ms_p95": 42474.9
+  },
+  "consistency_pct": 100.0
+}
