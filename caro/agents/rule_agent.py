@@ -38,7 +38,7 @@ class RuleAgent(BaseAgent):
         radius       -- bán kính Chebyshev cho candidates() (mặc định 2)
         priorities   -- danh sách luật được bật, ví dụ ["P1","P2","P6","P7"]
                         (mặc định bật hết P1→P7)
-        eval_weights -- dict "0"→w0 … "4"→w4 ghi đè WEIGHT của bitboard
+        eval_weights -- "default" hoặc dict "0"→w0 … "4"→w4 ghi đè WEIGHT của bitboard
     """
 
     def __init__(
@@ -47,7 +47,7 @@ class RuleAgent(BaseAgent):
         limits: Limits | None = None,
         radius: int = 2,
         priorities: list[str] | None = None,
-        eval_weights: dict | None = None,
+        eval_weights: str | dict | None = "default",
     ) -> None:
         super().__init__(name=name, limits=limits)
         self.radius = radius
@@ -55,8 +55,11 @@ class RuleAgent(BaseAgent):
 
         # Ghi đè WEIGHT theo index nếu config truyền vào
         base = list(WEIGHT)
-        for k, v in (eval_weights or {}).items():
-            base[int(k)] = v
+        if isinstance(eval_weights, dict):
+            for k, v in eval_weights.items():
+                base[int(k)] = v
+        elif eval_weights not in (None, "default"):
+            raise ValueError(f"eval_weights không hợp lệ: {eval_weights!r}")
         self._weight: tuple[int, ...] = tuple(base)
 
     # ------------------------------------------------------------------

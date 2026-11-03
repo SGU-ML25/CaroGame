@@ -27,7 +27,7 @@ Tài liệu liên quan:
 | Tác tử cấp 2–8 `caro/agents/` | 🚧 | Phần 04–09 |
 | Mạng nơ-ron `caro/nn/`, huấn luyện `caro/training/` | 🚧 | Phần 07–09 |
 | Arena, giải đấu, thống kê `caro/arena/` | 🚧 | Phần 10 |
-| UI `caro/ui/` | 🚧 | Phần 11 |
+| UI `caro/ui/` | ✅ | FastAPI + trang web: người–máy, máy–máy, xem lại (mục 7.6); cấp chưa cài hiện "chưa cài" |
 | CI GitHub Actions | 🚧 | mục 9 bên dưới |
 | Báo cáo LaTeX `report/` | ✅ khung · 🚧 nội dung | Sườn 5 chương theo đề, build bằng `latexmk` (mục 7.7) |
 
@@ -90,7 +90,7 @@ CaroGame/
 │   ├── nn/            🚧  features.py, model.py, dataset.py
 │   ├── training/      🚧  gen_expert_data.py, train_sl.py, train_pg.py, alphazero_loop.py
 │   ├── arena/         🚧  match.py, tournament.py, openings.py, stats.py
-│   └── ui/            🚧  server.py, static/
+│   └── ui/            ✅  server.py, static/
 ├── configs/           ✅  MỌI tham số nằm ở đây (mục 3)
 ├── tests/             ✅
 ├── runs/                  log mọi lần chạy — commit lên GitHub (trừ checkpoint, mục 4.3)
@@ -447,14 +447,29 @@ Trong vòng lặp: `run.log_metric(...)` mỗi epoch/iteration; checkpoint lưu 
 sinh **mọi** bảng và biểu đồ trong báo cáo. Không chép số tay vào báo cáo.
 Cài thêm: `uv sync --group dev --extra analysis`.
 
-### 7.6 UI (tuần 7)
+### 7.6 UI ✅
 
 ```bash
-uv sync --extra ui --extra nn
+uv sync --group dev --extra ui            # thêm --extra nn khi có cấp 5–8
 uv run uvicorn caro.ui.server:app --reload       # http://127.0.0.1:8000
 ```
 
-Endpoint theo Phần 11: tạo ván người–máy / máy–máy, xem lại ván từ `games.jsonl`.
+Trang web có 3 chế độ: người–máy (chọn cấp, cầm X/O, ngân sách, lùi nước), máy–máy (khai cuộc, chạy / tạm dừng /
+từng nước, tốc độ) và xem lại ván từ `runs/**/games.jsonl`. Khung "AI đang nghĩ gì" đọc `last_stats()`: luật (cấp 2);
+độ sâu, số nút, PV (Alpha-Beta); bản đồ nhiệt `visits` (MCTS) và `policy` (cấp 5–8) tự hiện khi tác tử trả các khoá đó.
+
+| Endpoint | Việc |
+|---|---|
+| `GET /agents` · `GET /budgets` · `GET /openings` | Tác tử theo `configs/agents/`, ngân sách mặc định, khai cuộc của arena |
+| `POST /games` | `{x, o, seed, budget?, opening_id? \| opening_plies?}`; `x`, `o` là `"human"` hoặc id tác tử |
+| `GET /games/{id}` | Trạng thái bàn, lượt, kết quả, dãy thắng, stats từng nước |
+| `POST /games/{id}/move` | `{action}`; nước bất hợp lệ → 400, sai lượt → 409 |
+| `POST /games/{id}/ai-move` | Tác tử đến lượt đi (trong thread pool), trả nước + `last_stats` |
+| `POST /games/{id}/undo` | Ván người–máy lùi về lượt người chơi; `?plies=n` để lùi đúng n nước |
+| `GET /replays` · `GET /replays/{game_id}` | Danh sách / một ván từ log; `game_id` trùng giữa các giải thì thêm `run_id` hoặc `tournament_id` |
+
+Tác tử mới tự hiện trên UI khi `kind` có trong `REGISTRY`. Nếu nó dùng ngân sách, thêm `kind` vào `BUDGET_KEYS`
+trong `caro/ui/server.py` để trang hiện đúng ô nhập. Ván đang chơi chỉ nằm trong bộ nhớ server.
 
 ### 7.7 Báo cáo LaTeX (tuần 1–8) — khung ✅, nội dung 🚧
 

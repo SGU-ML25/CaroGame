@@ -17,7 +17,7 @@ import sys
 from caro.agents.alphabeta import AlphaBetaAgent
 from caro.agents.base import Limits
 from caro.agents.rule_agent import RuleAgent
-from caro.engine import CaroGame, X, O
+from caro.engine import CaroGame, O, X
 
 AB_LIMITS   = Limits(mode="fixed", max_depth=3)
 RULE_LIMITS = Limits(mode="fixed", max_depth=1)
@@ -99,10 +99,10 @@ def run(n_games: int, seed: int, depth: int, verbose: bool) -> None:
     if lo > 0.5:
         print(f"  ✅ PASS — khoảng Wilson [{lo*100:.1f}%, {hi*100:.1f}%] không chứa 50%")
     elif hi < 0.5:
-        print(f"  ❌ FAIL — AB thua RuleAgent rõ rệt")
+        print("  ❌ FAIL — AB thua RuleAgent rõ rệt")
         sys.exit(1)
     else:
-        print(f"  ⚠️  CHƯA RÕ — khoảng Wilson chứa 50%, cần thêm ván hoặc tăng depth")
+        print("  ⚠️  CHƯA RÕ — khoảng Wilson chứa 50%, cần thêm ván hoặc tăng depth")
         sys.exit(1)
 
 

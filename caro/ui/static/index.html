@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Caro 11×11</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Caro 11×11</h1>
+    <nav class="tabs" role="tablist" aria-label="Chế độ">
+      <button role="tab" data-mode="pve" aria-selected="true">Người – máy</button>
+      <button role="tab" data-mode="eve" aria-selected="false">Máy – máy</button>
+      <button role="tab" data-mode="replay" aria-selected="false">Xem lại</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="board-area">
+      <p id="status" class="status" aria-live="polite">Đang tải…</p>
+      <div class="board-frame">
+        <div id="cols" class="cols" aria-hidden="true"></div>
+        <div id="rows" class="rows" aria-hidden="true"></div>
+        <div id="board" class="board" role="grid" aria-label="Bàn cờ 11×11"></div>
+      </div>
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+
+    <aside class="side">
+      <!-- Người – máy -->
+      <section id="panel-pve" class="card">
+        <h2>Ván người – máy</h2>
+        <label class="field">Tác tử <select id="pve-agent"></select></label>
+        <div class="field">
+          <span>Bạn cầm</span>
+          <div class="segmented">
+            <label><input type="radio" name="pve-side" value="X" checked> X (đi trước)</label>
+            <label><input type="radio" name="pve-side" value="O"> O (đi sau)</label>
+          </div>
+        </div>
+        <div class="budget" data-agents="pve-agent"></div>
+        <label class="field">Seed <input id="pve-seed" type="number" min="0" step="1"></label>
+        <div class="actions">
+          <button id="pve-new" class="primary">Ván mới</button>
+          <button id="pve-undo">Lùi nước</button>
+        </div>
+      </section>
+
+      <!-- Máy – máy -->
+      <section id="panel-eve" class="card" hidden>
+        <h2>Ván máy – máy</h2>
+        <label class="field">Bên X <select id="eve-x"></select></label>
+        <label class="field">Bên O <select id="eve-o"></select></label>
+        <label class="field">Khai cuộc <select id="eve-opening"></select></label>
+        <div class="budget" data-agents="eve-x eve-o"></div>
+        <label class="field">Seed <input id="eve-seed" type="number" min="0" step="1"></label>
+        <label class="field">Chờ giữa hai nước <span><input id="eve-speed" type="range" min="0" max="2000" step="100" value="400"> <output id="eve-speed-out"></output></span></label>
+        <div class="actions">
+          <button id="eve-new" class="primary">Ván mới</button>
+          <button id="eve-run">Chạy</button>
+          <button id="eve-step">Từng nước</button>
+        </div>
+      </section>
+
+      <!-- Xem lại -->
+      <section id="panel-replay" class="card" hidden>
+        <h2>Xem lại từ log giải đấu</h2>
+        <label class="field">Lọc <input id="replay-q" type="search" placeholder="Tên tác tử hoặc mã giải"></label>
+        <ul id="replay-list" class="replay-list"></ul>
+        <div id="replay-controls" hidden>
+          <input id="replay-ply" type="range" min="0" value="0" aria-label="Nước đang xem">
+          <div class="actions">
+            <button id="replay-prev" aria-label="Nước trước">←</button>
+            <button id="replay-play" class="primary">Phát</button>
+            <button id="replay-next" aria-label="Nước sau">→</button>
+          </div>
+          <label class="field">Chờ giữa hai nước <span><input id="replay-speed" type="range" min="100" max="2000" step="100" value="600"> <output id="replay-speed-out"></output></span></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>AI đang nghĩ gì</h2>
+        <dl id="thinking" class="stats"></dl>
+        <div id="heat-field" class="field" hidden>
+          <label for="heat">Bản đồ nhiệt</label>
+          <select id="heat"></select>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Các nước đã đi</h2>
+        <ol id="moves" class="moves"></ol>
+      </section>
+    </aside>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

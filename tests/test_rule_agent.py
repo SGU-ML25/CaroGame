@@ -3,13 +3,12 @@
 Chạy: pytest tests/test_rule_agent.py -v
 """
 from __future__ import annotations
-import pytest
+
 from unittest.mock import MagicMock
 
-from caro.engine.bitboard import bit, index
 from caro.agents.base import Limits
 from caro.agents.rule_agent import RuleAgent, _makes_four
-
+from caro.engine.bitboard import bit, index
 
 # ---------------------------------------------------------------------------
 # Helper
@@ -116,7 +115,7 @@ class TestP4BlockDouble:
         opp = place((5,2),(5,3),(5,4),(2,5),(3,5),(4,5))
         me  = place((0,0))
         agent = RuleAgent(limits=LIMITS)
-        move = agent.select_action(make_game(me, opp), LIMITS)
+        agent.select_action(make_game(me, opp), LIMITS)
         assert agent.last_stats()["reason"] == "P4_block_double_attack"
         # (5,5) là 1 trong các ô kích hoạt P4; không assert move cụ thể vì
         # P4 có thể chọn ô chặn hợp lệ khác trước (5,5) trong danh sách candidates)
