@@ -9,22 +9,31 @@ $out_dir = 'build';
 @ARGV = grep { !/^--?(?:out|aux)(?:dir|-directory)=/ } @ARGV;
 $bibtex_use = 1.5;
 
+# Thư mục có hai tài liệu: main.tex (báo cáo) và proposal.tex. Gọi `latexmk` không kèm tên file
+# chỉ build báo cáo; proposal build bằng `latexmk proposal.tex` (cả hai dùng chung build/).
+@default_files = ('main.tex');
+
 # --- Tên file PDF ---------------------------------------------------------------
-# PDF luôn được build ra build/main.pdf (giữ tên main để VS Code / SyncTeX hoạt động).
-# Sau mỗi lần chạy latexmk, bản PDF được chép thành "<tên>.pdf" cạnh main.tex,
-# với <tên> lấy từ \TenFilePDF trong config/metadata.tex. Để trống thì không chép.
+# PDF luôn được build ra build/<tài liệu>.pdf (giữ tên gốc để VS Code / SyncTeX hoạt động).
+# Sau mỗi lần chạy latexmk, bản PDF mới được chép thành "<tên>.pdf" cạnh file .tex, với <tên> lấy từ
+# \TenFilePDF (main) hoặc \TenFilePDFProposal (proposal) trong config/metadata.tex. Để trống thì không chép.
 END {
-  my $src = ($out_dir || '.') . '/main.pdf';
-  my $ten = '';
+  my %lenh = (main => 'TenFilePDF', proposal => 'TenFilePDFProposal');
+  my $metadata = '';
   if (open(my $fh, '<', 'config/metadata.tex')) {
-    while (<$fh>) { $ten = $1 if /^\s*\\newcommand\{\\TenFilePDF\}\{([^}]*)\}/; }
+    local $/;
+    $metadata = <$fh>;
     close $fh;
   }
-  $ten =~ s/^\s+|\s+$//g;
-  $ten =~ s{[/\\:*?"<>|]}{-}g;                 # bỏ ký tự cấm trong tên file
-  if ($ten ne '' && -f $src) {
+  for my $tai_lieu (sort keys %lenh) {
+    my $src = ($out_dir || '.') . "/$tai_lieu.pdf";
+    my ($ten) = $metadata =~ /^\s*\\newcommand\{\\$lenh{$tai_lieu}\}\{([^}]*)\}/m;
+    $ten //= '';
+    $ten =~ s/^\s+|\s+$//g;
+    $ten =~ s{[/\\:*?"<>|]}{-}g;                 # bỏ ký tự cấm trong tên file
+    next unless $ten ne '' && -f $src;
     my $dst = "$ten.pdf";
-    if (!-f $dst || -M $src < -M $dst) {       # chỉ chép khi PDF mới hơn
+    if (!-f $dst || -M $src < -M $dst) {         # chỉ chép khi PDF mới hơn
       require File::Copy; require Encode;
       my $hien = Encode::decode('UTF-8', $dst);  # đầu ra của latexmk đã mã hoá UTF-8
       File::Copy::copy($src, $dst)

@@ -16,7 +16,11 @@ ui = ["fastapi>=0.110", "uvicorn>=0.29"]   # demo người–máy
 analysis = ["pandas>=2.2", "matplotlib>=3.8", "jupyter>=1.0"]
 
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.5"]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
 
 [project.scripts]
 caro-config = "caro.config:main"

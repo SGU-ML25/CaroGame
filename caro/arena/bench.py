@@ -11,14 +11,12 @@ from __future__ import annotations
 import json
 import statistics
 import sys
-from pathlib import Path
 from typing import Any
 
 from caro.agents import make_agent
 from caro.config import load_config, project_path
 from caro.engine import CaroGame
-from caro.runlog import Run, derive_seed
-
+from caro.runlog import Run
 
 # ---------------------------------------------------------------------------
 # Sinh / nạp thế cờ giữa ván
