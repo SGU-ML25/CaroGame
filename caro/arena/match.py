@@ -1,9 +1,10 @@
 import time
 from typing import Any
 
-from caro.engine.game import CaroGame
 from caro.agents.base import Agent
+from caro.engine.game import CaroGame
 from caro.runlog import derive_seed
+
 
 def play_match(
     agent_x: Agent,

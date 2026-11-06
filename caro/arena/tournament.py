@@ -1,14 +1,16 @@
 import argparse
+import concurrent.futures
 import json
 import os
-import concurrent.futures
 from pathlib import Path
+
+from caro.agents import make_agent
+from caro.arena.match import play_match
 
 # Các module của dự án
 from caro.config import load_config
 from caro.runlog import Run
-from caro.agents import make_agent
-from caro.arena.match import play_match
+
 
 def worker_play(match_info):
     """Hàm chạy vòng đời 1 ván cờ độc lập trên một tiến trình (worker)."""
