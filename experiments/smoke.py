@@ -14,7 +14,7 @@ from collections import Counter
 from caro.agents.base import Limits
 from caro.agents.random_agent import RandomAgent
 from caro.agents.rule_agent import RuleAgent
-from caro.engine import CaroGame, X, O
+from caro.engine import CaroGame, O, X
 
 LIMITS = Limits(mode="fixed", max_depth=1)
 

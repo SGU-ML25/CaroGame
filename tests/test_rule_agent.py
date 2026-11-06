@@ -3,13 +3,12 @@
 Chạy: pytest tests/test_rule_agent.py -v
 """
 from __future__ import annotations
-import pytest
+
 from unittest.mock import MagicMock
 
-from caro.engine.bitboard import bit, index
 from caro.agents.base import Limits
 from caro.agents.rule_agent import RuleAgent, _makes_four
-
+from caro.engine.bitboard import bit, index
 
 # ---------------------------------------------------------------------------
 # Helper

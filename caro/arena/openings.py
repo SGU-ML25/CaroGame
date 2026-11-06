@@ -1,7 +1,8 @@
+import argparse
 import json
 import random
-import argparse
 from pathlib import Path
+
 
 def generate_openings(num_openings=100):
     openings = []

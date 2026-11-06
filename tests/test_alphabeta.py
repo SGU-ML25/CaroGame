@@ -4,7 +4,6 @@ Chạy: pytest tests/test_alphabeta.py -v
 """
 from __future__ import annotations
 
-import pytest
 from caro.agents.alphabeta import AlphaBetaAgent
 from caro.agents.base import Limits
 from caro.engine import CaroGame
