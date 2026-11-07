@@ -23,8 +23,8 @@ Tài liệu liên quan:
 | Test `tests/` | ✅ | 112 test |
 | Engine bitboard `caro/engine/` | ✅ | Python thuần, stride 11; test đối chiếu với bản duyệt mảng |
 | Notebook thử engine `notebooks/engine_playground.ipynb` | ✅ | Minh hoạ từng tính năng + bàn cờ bấm được |
-| Interface tác tử + cấp 1 `caro/agents/` | ✅ | `Agent`, `Limits`, `Deadline`, `REGISTRY`, `make_agent`, `RandomAgent` |
-| Tác tử cấp 2–8 `caro/agents/` | 🚧 | Phần 04–09 |
+| Interface tác tử + cấp 1–4 `caro/agents/` | ✅ | `RandomAgent`, `RuleAgent`, `AlphaBetaAgent`, `MCTSAgent` |
+| Tác tử cấp 5–8 `caro/agents/` | 🚧 | Phần 07–09 |
 | Mạng nơ-ron `caro/nn/`, huấn luyện `caro/training/` | 🚧 | Phần 07–09 |
 | Arena, giải đấu, thống kê `caro/arena/` | 🚧 | Phần 10 |
 | UI `caro/ui/` | ✅ | FastAPI + trang web: người–máy, máy–máy, xem lại (mục 7.6); cấp chưa cài hiện "chưa cài" |
@@ -363,7 +363,7 @@ Thứ tự theo lộ trình ở Phần 12 của tài liệu thiết kế. Mỗi 
 Thử engine bằng tay: `uv sync --group dev --extra analysis` rồi
 `uv run jupyter lab notebooks/engine_playground.ipynb` (hoặc mở trong VS Code, chọn kernel `.venv`).
 
-### 7.2 Tác tử (tuần 2–6) — interface ✅, cấp 2–8 🚧
+### 7.2 Tác tử (tuần 2–6) — cấp 1–4 ✅, cấp 5–8 🚧
 
 Mọi tác tử theo interface ở mục 03.2 của tài liệu thiết kế (`caro/agents/base.py`):
 
