@@ -23,7 +23,7 @@ import pytest
 
 from caro.agents import make_agent
 from caro.agents.base import Limits
-from caro.agents.mcts import MCTSAgent, first_winning_square, rollout_fast
+from caro.agents.mcts import DEFAULT_MAX_SIMS, MCTSAgent, first_winning_square, rollout_fast
 from caro.agents.random_agent import RandomAgent
 from caro.engine import CaroGame
 from caro.engine.bitboard import candidates, index, iter_bits
@@ -131,6 +131,15 @@ class TestBudgets:
         game.step(60)
         agent.select_action(game, Limits(mode="fixed", max_sims=120))
         assert agent.last_stats()["sims"] == 120
+
+    def test_empty_limits_does_not_loop_forever(self):
+        """Limits() rỗng (không max_sims, không time_ms) phải dừng theo mặc định."""
+        agent = MCTSAgent()
+        agent.reset(0)
+        game = CaroGame()
+        game.step(60)
+        agent.select_action(game, Limits())
+        assert agent.last_stats()["sims"] == DEFAULT_MAX_SIMS
 
     def test_time_mode_respects_deadline(self):
         agent = MCTSAgent()

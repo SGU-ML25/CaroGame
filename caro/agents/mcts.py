@@ -31,6 +31,10 @@ from caro.engine.bitboard import (
     candidates as bb_candidates,
 )
 
+# Khi cả `limits` truyền vào lẫn `self.limits` đều không đặt max_sims/time_ms thì vẫn phải dừng.
+# 1600 là mốc chuẩn của thực nghiệm A3 (100 / 400 / 1600 / 6400 mô phỏng).
+DEFAULT_MAX_SIMS = 1600
+
 
 def pick_random_bit(b: int, count: int, rng: random.Random) -> int:
     """Chọn ngẫu nhiên 1 bit 1 từ bitmask b có đúng count bit 1."""
@@ -145,6 +149,9 @@ class MCTSAgent(BaseAgent):
         rollout_radius   -- bán kính cho bước ngẫu nhiên trong rollout (mặc định 1)
         candidate_radius -- bán kính cho các ứng viên mở rộng nút (mặc định 2)
         reuse_tree       -- cờ bật/tắt tái sử dụng cây giữa các nước (mặc định False)
+
+    Nếu cả `limits` truyền vào lẫn `self.limits` đều không có max_sims và time_ms, tác tử dừng
+    sau DEFAULT_MAX_SIMS mô phỏng thay vì lặp vô hạn.
     """
 
     def __init__(
@@ -201,6 +208,9 @@ class MCTSAgent(BaseAgent):
         deadline = limits.deadline(margin_ms=5.0)
         mode = limits.mode
         max_sims = limits.max_sims if limits.max_sims is not None else self.limits.max_sims
+        if max_sims is None and limits.time_ms is None:
+            # Không có tiêu chí dừng nào (vd. Limits() rỗng) — dùng mặc định thay vì lặp vô hạn.
+            max_sims = DEFAULT_MAX_SIMS
 
         root = self._locate_root(game)
         if root is None:
