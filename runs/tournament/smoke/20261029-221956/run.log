@@ -1,0 +1,4 @@
+2026-10-29 22:19:56 INFO    run tournament/smoke/20261029-221956 — config experiments/smoke, seed 2026
+2026-10-29 22:19:56 INFO    Bắt đầu giải đấu: 200 ván cờ, dùng 1 workers song song.
+2026-10-29 22:19:56 INFO    Bảng điểm chung cuộc: {'L1-A': 110.0, 'L1-B': 90.0}
+2026-10-29 22:19:56 INFO    kết thúc: ok sau 0.4 s

@@ -1,0 +1,73 @@
+project: caro-11x11
+seed: 2026
+device: auto
+engine:
+  size: 11
+  win_length: 5
+  layout: stride11
+experiment:
+  kind: tournament
+  name: smoke
+  description: Kiểm tra pipeline arena + log
+  rq: []
+  config: experiments/smoke
+run:
+  root: runs
+  tag: null
+  index: runs/index.jsonl
+log:
+  level: INFO
+  console: true
+  file: run.log
+  games: games.jsonl
+  metrics: metrics.jsonl
+  per_move_stats: true
+  flush_every: 1
+checkpoint:
+  dir: checkpoints
+  keep_last: 5
+budget:
+  mode: fixed
+  time_ms: null
+  max_depth: 4
+  max_sims: 800
+arena:
+  format: round_robin
+  games_per_pair: 10
+  swap_colors: true
+  max_plies: 121
+  workers: 1
+  openings:
+    count: 5
+    plies:
+    - 2
+    - 2
+    region: 5
+    seed: 7
+    file: null
+  stats:
+    ci: wilson
+    confidence: 0.95
+    bootstrap: 0
+    elo: false
+agents:
+- id: L1-A
+  level: 1
+  kind: random
+  params: {}
+  source: agents/l1_random
+  limits:
+    mode: fixed
+    time_ms: null
+    max_depth: 4
+    max_sims: 800
+- id: L1-B
+  level: 1
+  kind: random
+  params: {}
+  source: agents/l1_random
+  limits:
+    mode: fixed
+    time_ms: null
+    max_depth: 4
+    max_sims: 800
