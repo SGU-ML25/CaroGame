@@ -77,7 +77,7 @@ def _bench_one(agent: Any, moves: list[int], limits: Any, repeat: int) -> dict:
         agent.reset(0)
         action = agent.select_action(game, limits)
         stats = agent.last_stats()
-        nodes_list.append(stats.get("nodes", 0))
+        nodes_list.append(stats.get("nodes") if "nodes" in stats else stats.get("sims", 0))
         time_list.append(stats.get("time_ms", 0.0))
         best_move_list.append(action)
         score_list.append(stats.get("score", 0))
