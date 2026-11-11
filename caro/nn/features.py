@@ -1,39 +1,45 @@
+from __future__ import annotations
+
 import numpy as np
 import torch
 
+from caro.engine.game import CaroGame, N, X
 
-def board_to_tensor(game_state):
+
+def board_to_tensor(game_state: CaroGame) -> torch.Tensor:
     """
-    Chuyển đổi trạng thái bàn cờ thành tensor 4x11x11 từ góc nhìn bên đang đi.
-    Các lớp:
-      0: Quân của người chơi hiện tại (mình)
-      1: Quân của đối thủ
-      2: Vị trí nước vừa đi (last move)
-      3: Lớp hằng số toàn 1
+    Chuyển đổi trạng thái CaroGame thành tensor đặc trưng đầu vào cho mô hình Neural Network.
+    Kích thước trả về: (4, 11, 11) hoặc (4, N, N)
+    Các kênh (channels):
+        0: Quân cờ của người chơi hiện tại (Me)
+        1: Quân cờ của đối thủ (Opponent)
+        2: Hằng số 1 nếu là lượt của X, toàn 0 nếu là lượt của O (hoặc ngược lại tùy quy ước)
+        3: Lịch sử nước đi hoặc bias khác
     """
-    # Kích thước bàn cờ Caro 11x11
-    board_size = 11
-    tensor = np.zeros((4, board_size, board_size), dtype=np.float32)
+    # Lấy thông tin lượt đi hiện tại từ thuộc tính 'side' của CaroGame
+    current_side = game_state.side
     
-    current_player = game_state.current_player
-    opponent = 3 - current_player # Giả định ký hiệu player là 1 và 2
+    # Tạo tensor 4 x N x N
+    tensor = np.zeros((4, N, N), dtype=np.float32)
     
-    # 1. Điền lớp quân mình và quân đối thủ từ board
-    board = game_state.board
-    tensor[0] = (board == current_player).astype(np.float32)
-    tensor[1] = (board == opponent).astype(np.float32)
+    x_bb, o_bb = game_state.bb
     
-    # 2. Lớp nước vừa đi
-    if hasattr(game_state, 'last_move') and game_state.last_move:
-        r, c = game_state.last_move
-        if 0 <= r < board_size and 0 <= c < board_size:
-            tensor[2, r, c] = 1.0
-            
-    # 3. Lớp toàn 1
-    tensor[3] = 1.0
+    # Xác định bitboard của bản thân (Me) và đối thủ (Opponent)
+    me_bb = x_bb if current_side == X else o_bb
+    opp_bb = o_bb if current_side == X else x_bb
+    
+    for r in range(N):
+        for c in range(N):
+            idx = r * N + c
+            if (me_bb >> idx) & 1:
+                tensor[0, r, c] = 1.0
+            if (opp_bb >> idx) & 1:
+                tensor[1, r, c] = 1.0
+                
+    # Kênh thứ 3 lưu thông tin lượt đi (1.0 nếu X đi, 0.0 nếu O đi)
+    if current_side == X:
+        tensor[2, :, :] = 1.0
+        
+    # Kênh thứ 4 có thể dùng cho bias tổng quát hoặc để trống (mặc định 0.0)
     
     return torch.tensor(tensor, dtype=torch.float32)
-
-def batch_board_to_tensor(game_states):
-    """Batch hoá cho nhiều trạng thái."""
-    return torch.stack([board_to_tensor(state) for state in game_states])
