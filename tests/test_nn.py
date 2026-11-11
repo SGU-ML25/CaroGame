@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 
 from caro.agents.policy_agent import PolicyAgent
 from caro.nn.features import board_to_tensor
@@ -8,7 +7,7 @@ from caro.nn.model import CaroResNet
 
 class MockGameState:
     def __init__(self):
-        self.side = 0  # 0 cho X, 1 cho O (tương thích với board_to_tensor)
+        self.side = 0  # 0 cho X, 1 cho O
         self.bb = (0, 0)  # tuple chứa bitboard (me_bb, opp_bb) giả lập
         
         # Thêm các thuộc tính hỗ trợ cho các bài test board numpy & legal moves
