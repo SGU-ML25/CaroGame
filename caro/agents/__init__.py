@@ -22,6 +22,7 @@ REGISTRY: dict[str, str] = {
     "random": "caro.agents.random_agent:RandomAgent",
     "rule_based": "caro.agents.rule_agent:RuleAgent", 
     "alphabeta": "caro.agents.alphabeta:AlphaBetaAgent",
+    "mcts": "caro.agents.mcts:MCTSAgent",
 }
 
 
