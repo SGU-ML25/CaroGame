@@ -1,0 +1,86 @@
+% Sinh bởi report/scripts/ve_hinh_gioi_thieu.py, không sửa tay.
+\definecolor{gtX}{HTML}{1E293B}
+\definecolor{gtO}{HTML}{C81E1E}
+\definecolor{gtThang}{HTML}{1B7F4B}
+\definecolor{gtVang}{HTML}{FDE68A}
+\definecolor{gtNhiet}{HTML}{4A90C8}
+\begin{tikzpicture}[x=.3cm, y=.3cm]
+\begin{scope}[shift={(0,0)}]
+\node[anchor=south, font=\footnotesize\bfseries, align=center] at (3.5,.1) {Ngang};
+\node[anchor=north, font=\footnotesize, align=center] at (3.5,-7.1) {77 cửa sổ};
+\draw[gray!55, line width=.3pt, step=1] (0,0) grid (7,-7); \draw[gray!90] (0,0) rectangle (7,-7);
+\fill[gtX] (1.5,-3.5) circle (.36);
+\fill[gtX] (2.5,-3.5) circle (.36);
+\fill[gtX] (3.5,-3.5) circle (.36);
+\fill[gtX] (4.5,-3.5) circle (.36);
+\fill[gtX] (5.5,-3.5) circle (.36);
+\end{scope}
+\begin{scope}[shift={(10,0)}]
+\node[anchor=south, font=\footnotesize\bfseries, align=center] at (3.5,.1) {Dọc};
+\node[anchor=north, font=\footnotesize, align=center] at (3.5,-7.1) {77 cửa sổ};
+\draw[gray!55, line width=.3pt, step=1] (0,0) grid (7,-7); \draw[gray!90] (0,0) rectangle (7,-7);
+\fill[gtX] (3.5,-1.5) circle (.36);
+\fill[gtX] (3.5,-2.5) circle (.36);
+\fill[gtX] (3.5,-3.5) circle (.36);
+\fill[gtX] (3.5,-4.5) circle (.36);
+\fill[gtX] (3.5,-5.5) circle (.36);
+\end{scope}
+\begin{scope}[shift={(20,0)}]
+\node[anchor=south, font=\footnotesize\bfseries, align=center] at (3.5,.1) {Chéo xuống phải};
+\node[anchor=north, font=\footnotesize, align=center] at (3.5,-7.1) {49 cửa sổ};
+\draw[gray!55, line width=.3pt, step=1] (0,0) grid (7,-7); \draw[gray!90] (0,0) rectangle (7,-7);
+\fill[gtX] (1.5,-1.5) circle (.36);
+\fill[gtX] (2.5,-2.5) circle (.36);
+\fill[gtX] (3.5,-3.5) circle (.36);
+\fill[gtX] (4.5,-4.5) circle (.36);
+\fill[gtX] (5.5,-5.5) circle (.36);
+\end{scope}
+\begin{scope}[shift={(30,0)}]
+\node[anchor=south, font=\footnotesize\bfseries, align=center] at (3.5,.1) {Chéo xuống trái};
+\node[anchor=north, font=\footnotesize, align=center] at (3.5,-7.1) {49 cửa sổ};
+\draw[gray!55, line width=.3pt, step=1] (0,0) grid (7,-7); \draw[gray!90] (0,0) rectangle (7,-7);
+\fill[gtX] (5.5,-1.5) circle (.36);
+\fill[gtX] (4.5,-2.5) circle (.36);
+\fill[gtX] (3.5,-3.5) circle (.36);
+\fill[gtX] (2.5,-4.5) circle (.36);
+\fill[gtX] (1.5,-5.5) circle (.36);
+\end{scope}
+\begin{scope}[shift={(4,-13)}]
+\node[anchor=south, font=\footnotesize\bfseries, align=center] at (3.5,.1) {Tứ bị chặn};
+\node[anchor=north, font=\footnotesize, align=center] at (3.5,-7.1) {1 ô thắng:\\đối thủ phải chặn};
+\draw[gray!55, line width=.3pt, step=1] (0,0) grid (7,-7); \draw[gray!90] (0,0) rectangle (7,-7);
+\fill[gtX] (1.5,-3.5) circle (.36);
+\fill[gtX] (2.5,-3.5) circle (.36);
+\fill[gtX] (3.5,-3.5) circle (.36);
+\fill[gtX] (4.5,-3.5) circle (.36);
+\fill[gtO] (0.5,-3.5) circle (.36);
+\draw[gtThang, line width=1pt] (5.5,-3.5) circle (.34);\fill[gtThang] (5.5,-3.5) circle (.1);
+\end{scope}
+\begin{scope}[shift={(15,-13)}]
+\node[anchor=south, font=\footnotesize\bfseries, align=center] at (3.5,.1) {Tứ mở};
+\node[anchor=north, font=\footnotesize, align=center] at (3.5,-7.1) {2 ô thắng:\\không chặn nổi};
+\draw[gray!55, line width=.3pt, step=1] (0,0) grid (7,-7); \draw[gray!90] (0,0) rectangle (7,-7);
+\fill[gtX] (1.5,-3.5) circle (.36);
+\fill[gtX] (2.5,-3.5) circle (.36);
+\fill[gtX] (3.5,-3.5) circle (.36);
+\fill[gtX] (4.5,-3.5) circle (.36);
+\draw[gtThang, line width=1pt] (0.5,-3.5) circle (.34);\fill[gtThang] (0.5,-3.5) circle (.1);
+\draw[gtThang, line width=1pt] (5.5,-3.5) circle (.34);\fill[gtThang] (5.5,-3.5) circle (.1);
+\end{scope}
+\begin{scope}[shift={(26,-13)}]
+\node[anchor=south, font=\footnotesize\bfseries, align=center] at (3.5,.1) {Tứ kép};
+\node[anchor=north, font=\footnotesize, align=center] at (3.5,-7.1) {2 ô thắng:\\không chặn nổi};
+\draw[gray!55, line width=.3pt, step=1] (0,0) grid (7,-7); \draw[gray!90] (0,0) rectangle (7,-7);
+\fill[gtX] (1.5,-3.5) circle (.36);
+\fill[gtX] (2.5,-3.5) circle (.36);
+\fill[gtX] (3.5,-3.5) circle (.36);
+\fill[gtX] (4.5,-3.5) circle (.36);
+\fill[gtX] (4.5,-1.5) circle (.36);
+\fill[gtX] (4.5,-2.5) circle (.36);
+\fill[gtX] (4.5,-4.5) circle (.36);
+\fill[gtO] (0.5,-3.5) circle (.36);
+\fill[gtO] (4.5,-0.5) circle (.36);
+\draw[gtThang, line width=1pt] (5.5,-3.5) circle (.34);\fill[gtThang] (5.5,-3.5) circle (.1);
+\draw[gtThang, line width=1pt] (4.5,-5.5) circle (.34);\fill[gtThang] (4.5,-5.5) circle (.1);
+\end{scope}
+\end{tikzpicture}

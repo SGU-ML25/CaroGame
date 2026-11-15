@@ -2,34 +2,392 @@
 \label{ch:ly-thuyet}
 % Đề mục 4: Tác tử trò chơi; Minimax, Alpha-Beta, MCTS/UCT; policy/value networks; RL và self-play;
 % phân biệt AlphaGo-inspired, AlphaZero-inspired.
+% TRƯỚC KHI NỘP: cập nhật cột trạng thái ở Bảng tab:lt-inspired.
+
+Chương này trình bày nền tảng lý thuyết của tám cấp tác tử. Ở đây chỉ nêu nguyên lý, giả định và tính chất của từng phương pháp; cách hiện thực và tham số cụ thể trong dự án nằm ở Chương~\ref{ch:phuong-phap}.
 
 \section{Tác tử trò chơi và mô hình hoá bài toán}
-\goiy{tác tử thông minh, trò chơi đối kháng hai người, MDP / trò chơi tổng bằng không~\cite{russell2021aima}}
+\label{sec:lt-tac-tu}
+Theo Russell và Norvig \cite{russell2021aima}, \emph{tác tử} là thực thể nhận thông tin từ môi trường và hành động lên môi trường đó; tác tử hợp lý chọn hành động được kỳ vọng tối đa hoá thước đo hiệu năng. Trong trò chơi, thông tin nhận được là thế cờ, hành động là nước đi, và thước đo là kết quả ván. Vì một tác tử thực tế có giới hạn về thời gian, câu hỏi không chỉ là nước nào tốt nhất, mà còn là nước tốt nhất tìm được trong ngân sách cho phép.
+
+\begin{dinhnghia}[Trò chơi tuần tự tất định]
+\label{dn:tro-choi}
+Trò chơi hai người có thông tin đầy đủ, tất định gồm tập trạng thái $S$ với trạng thái đầu $s_0$; hàm $\text{Player}(s)$ cho biết bên đến lượt; tập nước hợp lệ $\text{Legal}(s)$; hàm chuyển $T(s, a)$; điều kiện kết thúc $\text{Terminal}(s)$; và hàm kết quả $u(s, p)$ cho người chơi $p$ tại trạng thái kết thúc. Trò chơi có tổng bằng không nếu $u(s, p) + u(s, \bar{p}) = 0$ với mọi trạng thái kết thúc $s$, trong đó $\bar{p}$ là đối thủ của $p$.
+\end{dinhnghia}
+
+Caro thuộc đúng lớp này (Mục~\ref{sec:gt-dac-diem}). Với trò chơi hữu hạn như vậy, quy nạp ngược từ các trạng thái kết thúc cho thấy mỗi trạng thái có một giá trị xác định khi cả hai bên chơi tối ưu \cite{russell2021aima}. Giá trị ở $s_0$ cho biết bản chất lý thuyết của trò chơi: bên đi trước thắng, hoà, hay bên đi sau thắng.
+
+Với Caro luật tự do, lập luận \emph{đánh cắp chiến lược} loại được khả năng thứ ba. Giả sử O có chiến lược chắc thắng. X có thể đánh một nước bất kỳ rồi giả vờ là người đi sau và áp dụng đúng chiến lược đó. Quân thừa không bao giờ gây hại, vì ở luật này có thêm quân không làm mất dãy thắng; nếu chiến lược yêu cầu đi vào ô đã có quân thừa thì X lại đánh một nước bất kỳ khác. Khi đó X cũng chắc thắng, mâu thuẫn. Vậy O không thể có chiến lược chắc thắng. Lập luận này không cho biết X thắng hay hoà trên bàn 11×11, cũng không cho biết lợi thế đó thể hiện bao nhiêu với tác tử có giới hạn; đó là lý do RQ4 cần đo bằng thực nghiệm.
+
+Các tác tử học được dùng thêm một mô hình nữa là \emph{quá trình quyết định Markov} (MDP) \cite{sutton2018rl}. Từ góc nhìn một người chơi, nếu cố định đối thủ thì trò chơi trở thành một MDP với đối thủ là một phần của môi trường. Khi đối thủ cũng thay đổi trong quá trình học, môi trường không còn dừng, và đây là khó khăn riêng của self-play (Mục~\ref{sec:lt-self-play}).
+
+Các phương pháp trong chương có thể so sánh theo hai câu hỏi: \emph{chọn nhánh nào để xét} và \emph{chấm một thế cờ bằng gì} (Bảng~\ref{tab:lt-tong-quan}). Các cấp khác nhau chủ yếu ở cách trả lời hai câu hỏi đó, và nguồn gốc tri thức chuyển dần từ con người sang dữ liệu.
+
+\begin{table}[!htb]
+  \centering\small
+  \caption{Tám cấp tác tử nhìn theo hai câu hỏi cốt lõi của tìm kiếm.}
+  \label{tab:lt-tong-quan}
+  \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Cấp} & \textbf{Chọn nhánh} & \textbf{Chấm thế cờ} & \textbf{Nguồn tri thức} \\
+    \midrule
+    1 Random & Ngẫu nhiên, không tìm kiếm & Không có & Chỉ luật chơi \\
+    2 Rule-based & Luật ưu tiên, nhìn 1 nước & Điểm mẫu quân & Con người \\
+    3 Alpha-Beta & Duyệt có hệ thống đến độ sâu giới hạn & Hàm lượng giá & Con người \\
+    4 MCTS & Cân bằng khai thác và khám phá theo UCT & Kết quả rollout & Luật chơi, mô phỏng \\
+    5 Policy SL & Mạng chọn trực tiếp & Không tìm kiếm & Dữ liệu từ chuyên gia \\
+    6 REINFORCE & Mạng chọn trực tiếp & Không tìm kiếm & Tự chơi \\
+    7 PUCT & Tiên nghiệm từ mạng cấp 5 & Value, có thể trộn rollout & Dữ liệu chuyên gia, tìm kiếm \\
+    8 Self-play & Tiên nghiệm từ mạng tự học & Value & Tự chơi, tìm kiếm \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \section{Minimax và Alpha-Beta}
+\label{sec:lt-minimax}
+
 \subsection{Minimax và Negamax}
-\goiy{định nghĩa, giới hạn độ sâu, hàm lượng giá}
+\label{sec:lt-negamax}
+Minimax định nghĩa giá trị của trạng thái bằng quy nạp ngược: bên MAX chọn con có giá trị lớn nhất, bên MIN chọn con có giá trị nhỏ nhất \cite{russell2021aima}. Trong trò chơi tổng bằng không, điều tốt cho một bên chính là điều xấu cho bên kia, nên công thức rút gọn được thành một dạng duy nhất gọi là \emph{Negamax}, trong đó giá trị luôn được tính theo góc nhìn bên đang đi:
+\begin{equation}
+  V(s) =
+  \begin{cases}
+    u(s, \text{Player}(s)) & \text{nếu } s \text{ là trạng thái kết thúc}, \\
+    \max\limits_{a \in \text{Legal}(s)} \big[ -V(T(s, a)) \big] & \text{ngược lại}.
+  \end{cases}
+  \label{eq:negamax}
+\end{equation}
+
+Duyệt đến hết ván là không khả thi: với hệ số rẽ nhánh $b$ và độ sâu $d$, chi phí thời gian là $O(b^d)$. Vì vậy tìm kiếm dừng ở độ sâu giới hạn và dùng \emph{hàm lượng giá} $\text{Eval}(s)$ để ước lượng giá trị tại lá:
+\begin{equation}
+  V_d(s) =
+  \begin{cases}
+    u(s, \text{Player}(s)) & \text{nếu } s \text{ kết thúc}, \\
+    \text{Eval}(s) & \text{nếu } d = 0, \\
+    \max\limits_{a \in \text{Legal}(s)} \big[ -V_{d-1}(T(s, a)) \big] & \text{ngược lại}.
+  \end{cases}
+\end{equation}
+
+Khi đó giá trị tìm được chỉ tốt bằng hàm lượng giá và độ sâu. Có hai hệ quả cần lưu ý. Thứ nhất là \emph{hiệu ứng chân trời}: tác tử không thấy được đòn nằm ngay sau độ sâu giới hạn, và có thể đánh giá sai một thế đang căng thẳng, chẳng hạn khi còn nhiều nước ép chưa giải quyết. Thứ hai, kết quả là sức mạnh theo cấu hình, không phải chơi tối ưu.
+
+Hàm lượng giá cho trò chơi dạng Caro thường là tổ hợp tuyến tính của các đặc trưng, nói cách khác $\text{Eval}(s) = \sum_k w_k f_k(s)$, với $f_k$ là số lượng một mẫu quân nào đó và $w_k$ là trọng số. Các trọng số viết tay chứa giả định của người thiết kế về độ quan trọng của từng mẫu, và đó cũng là điểm thí nghiệm A7 khảo sát.
+
 \subsection{Cắt tỉa Alpha-Beta}
-\goiy{nguyên lý, độ phức tạp tốt nhất / xấu nhất, ảnh hưởng của thứ tự nước~\cite{knuth1975alphabeta}}
+\label{sec:lt-alpha-beta}
+Cắt tỉa Alpha-Beta dựa trên nhận xét: nhiều nhánh không thể làm thay đổi giá trị ở gốc nên không cần duyệt \cite{knuth1975alphabeta}. Thuật toán giữ một cửa sổ $[\alpha, \beta]$, trong đó $\alpha$ là giá trị tốt nhất mà bên đang đi đã đảm bảo được, còn $\beta$ là giá trị mà đối thủ sẽ không để bên đang đi vượt qua. Ngay khi một nước cho giá trị từ $\beta$ trở lên, đối thủ sẽ không bao giờ đi vào nhánh này, nên các nước còn lại bị bỏ qua. Thuật toán~\ref{alg:negamax} viết ở dạng Negamax; mỗi lần đi xuống, cửa sổ được đổi dấu và đảo vị trí thành $[-\beta, -\alpha]$.
+
+\begin{algorithm}[!htb]
+  \caption{Negamax với cắt tỉa Alpha-Beta}
+  \label{alg:negamax}
+  \begin{algorithmic}[1]
+    \REQUIRE trạng thái $s$, độ sâu còn lại $d$, cửa sổ $[\alpha, \beta]$
+    \ENSURE giá trị của $s$ theo góc nhìn bên đang đi
+    \IF{$s$ kết thúc}
+      \RETURN $u(s, \text{Player}(s))$
+    \ENDIF
+    \IF{$d = 0$}
+      \RETURN $\text{Eval}(s)$
+    \ENDIF
+    \STATE $\mathit{best} \leftarrow -\infty$
+    \FOR{mỗi $a \in \text{Legal}(s)$ theo thứ tự đã sắp}
+      \STATE $v \leftarrow -\text{Negamax}(T(s, a),\ d - 1,\ -\beta,\ -\alpha)$
+      \STATE $\mathit{best} \leftarrow \max(\mathit{best}, v)$; \quad $\alpha \leftarrow \max(\alpha, v)$
+      \IF{$\alpha \ge \beta$}
+        \STATE dừng vòng lặp \COMMENT{cắt tỉa}
+      \ENDIF
+    \ENDFOR
+    \RETURN $\mathit{best}$
+  \end{algorithmic}
+\end{algorithm}
+
+Hình~\ref{fig:lt-cat-tia} minh hoạ trên một cây nhỏ. Sau khi nhánh trái cho giá trị 3, MAX đã đảm bảo được ít nhất 3. Ở nhánh giữa, lá đầu tiên có giá trị 2 nên MIN sẽ chọn giá trị không quá 2, tức nhánh này chắc chắn tệ hơn với MAX. Hai lá còn lại của nhánh giữa không ảnh hưởng đến kết quả và bị bỏ qua, dù giá trị thực của chúng là bao nhiêu. Tổng cộng chỉ cần duyệt 7 trong 9 lá mà giá trị gốc vẫn là 3.
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}[
+      x=1cm, y=1cm,
+      nut/.style={circle, draw=black, minimum size=7mm, inner sep=0pt, font=\small},
+      la/.style={rectangle, draw=black, minimum size=6mm, inner sep=0pt, font=\small},
+      bo/.style={rectangle, draw=gray!70, dashed, text=gray!80, minimum size=6mm, inner sep=0pt, font=\small}]
+    \node[nut, fill=blue!12] (g) at (7,0) {3};
+    \node[nut] (a) at (2,-1.5) {3};
+    \node[nut] (b) at (7,-1.5) {$\le$2};
+    \node[nut] (c) at (12,-1.5) {2};
+    \foreach \t/\x/\v/\cha/\kieu in {a1/.8/3/a/la, a2/2/12/a/la, a3/3.2/8/a/la, b1/5.8/2/b/la, b2/7/4/b/bo, b3/8.2/6/b/bo, c1/10.8/14/c/la, c2/12/5/c/la, c3/13.2/2/c/la}
+      {\node[\kieu] (\t) at (\x,-3) {\v};}
+    \draw (g) -- (a); \draw (g) -- (b); \draw (g) -- (c);
+    \draw (a) -- (a1); \draw (a) -- (a2); \draw (a) -- (a3);
+    \draw (b) -- (b1); \draw[gray!70, dashed] (b) -- (b2); \draw[gray!70, dashed] (b) -- (b3);
+    \draw (c) -- (c1); \draw (c) -- (c2); \draw (c) -- (c3);
+    \node[anchor=east, font=\small] at (.2,0) {MAX};
+    \node[anchor=east, font=\small] at (.2,-1.5) {MIN};
+    \node[anchor=east, font=\small] at (.2,-3) {Lá};
+    \draw[red!70!black, thick] (6.75,-2.25) -- (7.25,-2.05);
+    \draw[red!70!black, thick] (7.45,-2.3) -- (7.95,-2.1);
+  \end{tikzpicture}
+  \caption{Cắt tỉa Alpha-Beta trên cây hai tầng. Hai lá nét đứt ở nhánh giữa không được duyệt vì nhánh này đã chắc chắn không tốt hơn giá trị 3 mà MAX đã đảm bảo.}
+  \label{fig:lt-cat-tia}
+\end{figure}
+
+\begin{dinhly}[Tính đúng đắn]
+\label{dl:alpha-beta}
+Gọi với cửa sổ đầy đủ $[-\infty, +\infty]$ tại gốc, Alpha-Beta trả về đúng giá trị của Minimax có cùng độ sâu, cùng tập nước và cùng hàm lượng giá \cite{knuth1975alphabeta}.
+\end{dinhly}
+
+Định lý~\ref{dl:alpha-beta} cho một phép kiểm tra cài đặt hữu ích: bật và tắt cắt tỉa phải cho cùng giá trị gốc. Phép kiểm tra này chính là một phần của thí nghiệm A1. Lưu ý rằng khi có nhiều nước cùng giá trị, nước được chọn có thể khác nhau tuỳ cách duyệt dù giá trị gốc không đổi.
+
+Hiệu quả của cắt tỉa phụ thuộc mạnh vào thứ tự duyệt. Trong trường hợp xấu nhất không có nhánh nào bị cắt và chi phí vẫn là $b^d$. Với thứ tự tối ưu, Knuth và Moore \cite{knuth1975alphabeta} chỉ ra số lá phải duyệt là
+\begin{equation}
+  b^{\lceil d/2 \rceil} + b^{\lfloor d/2 \rfloor} - 1,
+  \label{eq:knuth-moore}
+\end{equation}
+gần với việc tăng gấp đôi độ sâu tìm được trong cùng chi phí. Ví dụ với $b = 70$ và $d = 4$, số lá giảm từ khoảng $2{,}4 \cdot 10^{7}$ xuống \num{9799}. Đây là cận lý thuyết với thứ tự hoàn hảo, không phải dự đoán cho tác tử thực tế, vì thứ tự thực không thể hoàn hảo và hệ số rẽ nhánh thay đổi theo thế cờ.
+
 \subsection{Các kỹ thuật bổ trợ}
-\goiy{iterative deepening, bảng chuyển vị (Zobrist), sắp xếp nước}
+\label{sec:lt-bo-tro}
+Vì thứ tự duyệt quyết định hiệu quả, các kỹ thuật dưới đây chủ yếu nhằm tìm nước tốt sớm hơn hoặc tránh tính lại:
+\begin{itemize}
+  \item \textbf{Iterative deepening:} tìm lần lượt ở độ sâu $1, 2, 3, \dots$ cho đến khi hết thời gian, rồi trả về kết quả của độ sâu đã hoàn thành sâu nhất. Chi phí các vòng nông thường nhỏ so với vòng cuối vì cây tăng theo cấp số nhân, còn kết quả của chúng giúp sắp xếp nước cho vòng sau. Kỹ thuật này biến tìm kiếm độ sâu cố định thành thuật toán dùng được với ngân sách thời gian.
+  \item \textbf{Bảng chuyển vị (TT):} cùng một thế cờ có thể đạt được qua nhiều thứ tự nước, nên kết quả được lưu lại theo khoá của thế cờ. Vì cắt tỉa làm một số giá trị chỉ là cận, mỗi mục phải ghi kèm loại giá trị (chính xác, cận dưới, cận trên) và độ sâu đã tìm.
+  \item \textbf{Băm Zobrist \cite{zobrist1970}:} mỗi cặp (ô, quân) được gán một số ngẫu nhiên, khoá của thế cờ là XOR của các số ứng với các quân trên bàn. Vì XOR là phép tự nghịch đảo, đặt hay gỡ một quân chỉ tốn một phép XOR. Hai thế khác nhau vẫn có thể trùng khoá với xác suất rất nhỏ; đây là sai số được chấp nhận.
+  \item \textbf{Sắp xếp nước:} ngoài nước tốt nhất từ TT, thuật toán có thể ưu tiên \emph{killer move}, là nước từng gây cắt tỉa ở cùng độ sâu, và \emph{history heuristic} \cite{schaeffer1989history}, là điểm tích luỹ cho những nước thường gây cắt tỉa. Sắp xếp càng công phu thì mỗi nút càng đắt, nên ít nút hơn chưa chắc đã tìm được sâu hơn trong cùng thời gian. Vì thế thí nghiệm A2 phải đo cả hai.
+  \item \textbf{Giới hạn ứng viên:} chỉ xét ô gần quân đã có. Khác với cắt tỉa Alpha-Beta, đây là \emph{cắt tỉa tiến} có thể loại nhầm nước tốt, nên giá trị tìm được không còn đảm bảo là giá trị trên toàn bộ tập nước hợp lệ.
+\end{itemize}
+
+Việc kết hợp TT với giới hạn độ sâu cũng có thể làm giá trị phụ thuộc vào thứ tự duyệt, vì một mục tìm ở độ sâu lớn hơn có thể được dùng lại. Do đó, Định lý~\ref{dl:alpha-beta} áp dụng trực tiếp cho bản không dùng TT.
 
 \section{Tìm kiếm cây Monte Carlo (MCTS/UCT)}
-\goiy{4 bước Selection--Expansion--Simulation--Backpropagation; công thức UCT~\cite{kocsis2006uct,browne2012mcts}}
+\label{sec:lt-mcts}
+Alpha-Beta cần một hàm lượng giá đủ tốt, trong khi không phải lúc nào cũng có sẵn. Tìm kiếm cây Monte Carlo (MCTS) đi theo hướng khác: ước lượng giá trị của một nước bằng kết quả trung bình của các ván mô phỏng, đồng thời dần dần dành nhiều mô phỏng hơn cho nhánh có triển vọng \cite{coulom2006mcts,browne2012mcts}. Mỗi lần lặp gồm bốn bước (Hình~\ref{fig:lt-mcts}):
+\begin{enumerate}
+  \item \textbf{Selection:} từ gốc, đi xuống theo một quy tắc chọn con đến khi gặp nút chưa mở rộng hết.
+  \item \textbf{Expansion:} thêm một nút con ứng với một nước chưa thử.
+  \item \textbf{Simulation:} từ nút mới, chơi đến hết ván theo một chính sách rollout nhanh.
+  \item \textbf{Backpropagation:} cộng kết quả vào thống kê $(N, W)$ của mọi nút trên đường đi, với kết quả được đổi góc nhìn ở mỗi tầng.
+\end{enumerate}
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}[
+      x=1cm, y=1cm,
+      n/.style={circle, draw=black, fill=white, minimum size=3.2mm, inner sep=0pt},
+      hl/.style={n, fill=blue!35},
+      moi/.style={n, fill=orange!60},
+      duong/.style={line width=1.2pt, blue!70!black},
+      nguoc/.style={-{Latex[length=1.8mm]}, line width=1pt, green!45!black}]
+    \newcommand{\cay}{%
+      \draw (0,0) -- (-.7,-.8); \draw (0,0) -- (.7,-.8);
+      \draw (-.7,-.8) -- (-1.1,-1.6); \draw (-.7,-.8) -- (-.3,-1.6);
+      \draw (.7,-.8) -- (.7,-1.6);
+    }
+    \newcommand{\nutcay}{%
+      \node[n] at (0,0) {}; \node[n] at (-.7,-.8) {}; \node[n] at (.7,-.8) {};
+      \node[n] at (-1.1,-1.6) {}; \node[n] at (-.3,-1.6) {}; \node[n] at (.7,-1.6) {};
+    }
+    \begin{scope}[shift={(0,0)}]
+      \cay \draw[duong] (0,0) -- (.7,-.8) -- (.7,-1.6); \nutcay
+      \node[hl] at (0,0) {}; \node[hl] at (.7,-.8) {}; \node[hl] at (.7,-1.6) {};
+      \node[font=\small\bfseries] at (0,.55) {Selection};
+    \end{scope}
+    \begin{scope}[shift={(4,0)}]
+      \cay \draw[duong] (0,0) -- (.7,-.8) -- (.7,-1.6); \draw[orange!80!black, thick] (.7,-1.6) -- (.7,-2.4); \nutcay
+      \node[hl] at (0,0) {}; \node[hl] at (.7,-.8) {}; \node[hl] at (.7,-1.6) {}; \node[moi] at (.7,-2.4) {};
+      \node[font=\small\bfseries] at (0,.55) {Expansion};
+    \end{scope}
+    \begin{scope}[shift={(8,0)}]
+      \cay \draw[orange!80!black, thick] (.7,-1.6) -- (.7,-2.4);
+      \draw[dashed] (.7,-2.4) -- (.45,-2.75) -- (.85,-3.1) -- (.6,-3.45); \nutcay
+      \node[moi] at (.7,-2.4) {};
+      \node[draw, fill=gray!25, font=\scriptsize, inner sep=1.5pt] at (.6,-3.65) {$+1$};
+      \node[font=\small\bfseries] at (0,.55) {Simulation};
+    \end{scope}
+    \begin{scope}[shift={(12,0)}]
+      \cay \draw[orange!80!black, thick] (.7,-1.6) -- (.7,-2.4); \nutcay
+      \node[moi] at (.7,-2.4) {};
+      \draw[nguoc] (.95,-2.3) -- (.95,-1.7); \draw[nguoc] (.95,-1.5) -- (.95,-.9); \draw[nguoc] (.82,-.62) -- (.2,.02);
+      \node[font=\small\bfseries] at (0,.55) {Backpropagation};
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Bốn bước của một lần lặp MCTS. Nút xanh là đường đi được chọn, nút cam là nút mới thêm, nét đứt là rollout đến hết ván, mũi tên xanh lục là cập nhật thống kê ngược về gốc.}
+  \label{fig:lt-mcts}
+\end{figure}
+
+Quy tắc chọn con phải giải quyết mâu thuẫn giữa \emph{khai thác} nước đang có kết quả tốt và \emph{khám phá} nước còn ít thử. Bài toán này tương ứng với bài toán multi-armed bandit, với quy tắc UCB1 \cite{auer2002ucb}. Kocsis và Szepesvári \cite{kocsis2006uct} áp dụng nó cho từng nút trong cây, tạo ra UCT:
+\begin{equation}
+  \text{UCT}(a) = \frac{W(a)}{N(a)} + c \sqrt{\frac{\ln N(\text{cha})}{N(a)}},
+  \label{eq:uct}
+\end{equation}
+trong đó $W(a)/N(a)$ là kết quả trung bình theo góc nhìn bên chọn nước tại nút cha, còn số hạng thứ hai lớn khi nước $a$ còn ít được thử. Với phần thưởng trong $[0, 1]$, công thức UCB1 gốc ứng với $c = \sqrt{2}$; trong thực tế $c$ là một siêu tham số. Sau khi hết ngân sách, nước được chọn thường là nước có số lượt thăm lớn nhất vì đây là ước lượng ổn định hơn giá trị trung bình.
+
+Kocsis và Szepesvári đã chứng minh UCT hội tụ về giá trị Minimax khi số mô phỏng tiến tới vô hạn \cite{kocsis2006uct}. Tuy nhiên, kết quả tiệm cận này không cho biết chất lượng ở ngân sách thực tế. MCTS có ưu điểm là không cần hàm lượng giá và có thể dừng bất cứ lúc nào. Điểm yếu của nó là các đòn ngắn dễ bị bỏ sót khi rollout không đủ thông minh: chỉ một đường đáp trả chính xác trong hàng chục nước cũng khó được mô phỏng ngẫu nhiên tìm thấy. Vì vậy, rollout có luật có thể tốt hơn trên mỗi mô phỏng nhưng lại tốn nhiều thời gian hơn, và đây là đánh đổi mà thí nghiệm A4 khảo sát. Bảng~\ref{tab:lt-ab-mcts} tóm tắt khác biệt giữa hai phương pháp, cũng là cơ sở của giả thuyết RQ1.
+
+\begin{table}[!htb]
+  \centering\small
+  \caption{So sánh Alpha-Beta và MCTS ở mức nguyên lý.}
+  \label{tab:lt-ab-mcts}
+  \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Tiêu chí} & \textbf{Alpha-Beta} & \textbf{MCTS (UCT)} \\
+    \midrule
+    Tri thức cần có & Hàm lượng giá, thứ tự nước & Luật chơi; rollout có thể thêm luật \\
+    Hình dạng cây & Theo độ sâu, đồng đều hơn & Không đối xứng, tập trung vào nhánh triển vọng \\
+    Giá trị tại nút & Giá trị Minimax theo $\text{Eval}$ & Trung bình kết quả mô phỏng \\
+    Ngân sách & Độ sâu, hoặc thời gian qua iterative deepening & Số mô phỏng hoặc thời gian, dừng lúc nào cũng được \\
+    Đảm bảo lý thuyết & Trùng Minimax ở độ sâu đã chọn & Hội tụ tiệm cận về Minimax \\
+    Điểm yếu & Hiệu ứng chân trời, phụ thuộc $\text{Eval}$ & Bỏ sót đòn ngắn, phụ thuộc rollout \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \section{Mạng policy và value}
-\goiy{mạng tích chập / ResNet cho trò chơi bàn cờ; học có giám sát từ dữ liệu chuyên gia}
+\label{sec:lt-mang}
+Tri thức của cấp 2--4 được viết tay hoặc lấy từ mô phỏng. Cách khác là học trực tiếp hai hàm từ dữ liệu: \emph{mạng policy} $p_\theta(a \mid s)$ cho phân phối xác suất trên các nước đi, tức là gợi ý nước nên xét; và \emph{mạng value} $v_\theta(s) \in [-1, 1]$ dự đoán kết quả cuối ván theo góc nhìn bên đang đi, tức là thay cho hàm lượng giá.
+
+\textbf{Mạng tích chập.} Bàn cờ có cấu trúc không gian giống ảnh: mẫu quân có tính cục bộ và ý nghĩa gần như không đổi khi tịnh tiến. Mạng tích chập khai thác tính chất này bằng bộ lọc cục bộ dùng chung trọng số, nên số tham số nhỏ hơn nhiều so với mạng kết nối đầy đủ. Đầu vào được mã hoá thành nhiều lớp nhị phân, ví dụ một lớp cho quân mình, một lớp cho quân đối thủ. Xếp nhiều tầng làm vùng nhìn tăng dần, nhờ đó mạng có thể kết hợp các mẫu ở xa nhau.
+
+\textbf{Mạng phần dư.} Khi mạng sâu hơn, việc tối ưu trở nên khó khăn. He và cộng sự \cite{he2016resnet} đề xuất kết nối tắt để mỗi khối chỉ cần học phần sai khác so với đầu vào:
+\begin{equation}
+  \mathbf{y} = \mathcal{F}(\mathbf{x}, \theta) + \mathbf{x}.
+\end{equation}
+Một thân mạng phần dư dùng chung có thể gắn hai đầu ra, policy và value. AlphaGo Zero dùng kiến trúc như vậy \cite{silver2017alphagozero}. Việc dùng chung thân mạng buộc các đặc trưng phải có ích cho cả hai nhiệm vụ và giảm chi phí suy luận.
+
+\textbf{Che nước bất hợp lệ.} Đầu ra policy có một phần tử cho mỗi ô, nhưng ô đã có quân không được chọn. Với điểm thô $\ell_a$ trước softmax, phân phối chỉ được tính trên các nước hợp lệ:
+\begin{equation}
+  p_\theta(a \mid s) = \frac{\exp(\ell_a)}{\sum_{a' \in \text{Legal}(s)} \exp(\ell_{a'})}, \qquad a \in \text{Legal}(s).
+\end{equation}
+
+\textbf{Học có giám sát.} Từ các mẫu $(s, a^*, z)$, với $a^*$ là nước của chuyên gia và $z$ là kết quả cuối ván theo góc nhìn bên đi ở $s$, mạng được huấn luyện bằng hàm mất mát gộp
+\begin{equation}
+  L(\theta) = -\log p_\theta(a^* \mid s) + c_v \big( z - v_\theta(s) \big)^2 + \lambda \| \theta \|^2.
+  \label{eq:sl-loss}
+\end{equation}
+Có ba vấn đề phương pháp cần lưu ý:
+\begin{itemize}
+  \item \textbf{Rò rỉ dữ liệu:} các thế cờ trong cùng một ván rất giống nhau và chung nhãn kết quả $z$, nên chia tập theo từng thế sẽ làm độ chính xác bị thổi phồng. Vì vậy đề bài yêu cầu tách tập theo ván.
+  \item \textbf{Đối xứng:} bàn vuông có 8 phép đối xứng (nhóm $D_4$). Biến đổi đồng thời bàn cờ và nhãn nước đi tạo ra thêm mẫu hợp lệ. Ngược lại, tích chập không tự có tính bất biến với phép xoay, nên mạng phải học từ dữ liệu.
+  \item \textbf{Nguồn nhãn:} mạng chỉ bắt chước được tác tử sinh ra dữ liệu, kể cả điểm yếu của nó. Độ chính xác cao trên nhãn cũng không có nghĩa là chơi mạnh, vì một sai lầm ở thế then chốt có thể quyết định ván đấu. Do đó độ đo cuối cùng vẫn phải là đối đầu.
+\end{itemize}
 
 \section{Học tăng cường và self-play}
-\goiy{policy gradient, REINFORCE có baseline~\cite{sutton2018rl}; self-play}
+\label{sec:lt-self-play}
+
+\subsection{MDP và cách tiếp cận dựa trên giá trị}
+Trong học tăng cường, tác tử học từ phần thưởng thay vì nhãn. Mục tiêu là chính sách $\pi$ tối đa hoá kỳ vọng của lợi tức $G_t = \sum_{k \ge 0} \gamma^k r_{t+k+1}$ \cite{sutton2018rl}. Trong Caro, phần thưởng thưa, chỉ có ở cuối ván; ván có độ dài hữu hạn nên có thể dùng $\gamma = 1$, khi đó $G_t = z$ là kết quả ván theo góc nhìn người đi nước $t$. Do đó, nước tốt ở đầu ván chỉ nhận được phản hồi sau hàng chục nước, gây khó khăn trong việc xác định nước nào thực sự có công.
+
+Một hướng cơ bản là Q-learning, cập nhật giá trị hành động theo
+\begin{equation}
+  Q(s, a) \leftarrow Q(s, a) + \eta \big[ r + \gamma \max_{a'} Q(s', a') - Q(s, a) \big].
+\end{equation}
+Dạng bảng của Q-learning cần lưu một giá trị cho mỗi cặp trạng thái, hành động; với khoảng $10^{56}$ trạng thái (Mục~\ref{sec:gt-dac-diem}) điều này không khả thi, và đề bài cũng chỉ gợi ý nó cho trò chơi nhỏ. Vì vậy, đề tài dùng xấp xỉ hàm bằng mạng nơ-ron.
+
+\subsection{Policy gradient và REINFORCE có baseline}
+Policy gradient tối ưu trực tiếp tham số của chính sách. Theo REINFORCE của Williams \cite{williams1992reinforce}, gradient của lợi tức kỳ vọng $J(\theta)$ ước lượng được từ các ván đã chơi:
+\begin{equation}
+  \nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} \Big[ \sum_t G_t \nabla_\theta \log \pi_\theta(a_t \mid s_t) \Big].
+\end{equation}
+Về trực giác, nước đi trong ván thắng được tăng xác suất, nước đi trong ván thua bị giảm xác suất. Ước lượng này không thiên lệch nhưng có phương sai lớn, vì cả ván chỉ nhận một tín hiệu $\pm 1$. Có thể giảm phương sai bằng cách trừ một \emph{baseline} $b(s_t)$ chỉ phụ thuộc trạng thái \cite{sutton2018rl}:
+\begin{equation}
+  \nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} \Big[ \sum_t \big( G_t - b(s_t) \big) \nabla_\theta \log \pi_\theta(a_t \mid s_t) \Big].
+  \label{eq:reinforce}
+\end{equation}
+Baseline không làm thay đổi kỳ vọng, vì với mọi $s$,
+\begin{equation}
+  \sum_a \pi_\theta(a \mid s)\, b(s)\, \nabla_\theta \log \pi_\theta(a \mid s) = b(s) \nabla_\theta \sum_a \pi_\theta(a \mid s) = b(s) \nabla_\theta 1 = 0.
+\end{equation}
+Lựa chọn tự nhiên là $b(s) = v_\theta(s)$, chính là đầu value của mạng. Khi đó $z - v_\theta(s)$ cho biết kết quả tốt hơn hay kém hơn so với kỳ vọng. Ngoài ra, thêm \emph{entropy bonus} $\beta H(\pi_\theta(\cdot \mid s))$ vào mục tiêu giúp chính sách không sớm hội tụ về một nước duy nhất.
+
+\subsection{Self-play}
+Self-play sinh dữ liệu bằng cách cho tác tử đấu với chính nó hoặc phiên bản cũ. Đối thủ mạnh lên cùng với người học, nên về nguyên tắc không cần nguồn dữ liệu bên ngoài. Phương pháp này có các khó khăn riêng:
+\begin{itemize}
+  \item \textbf{Môi trường không dừng:} đối thủ thay đổi liên tục nên các đảm bảo của MDP cố định không còn áp dụng trực tiếp.
+  \item \textbf{Chiến lược xoay vòng:} tác tử có thể học thắng phiên bản hiện tại nhưng quên cách thắng phiên bản cũ, tương tự oẳn tù tì. Đấu với một \emph{pool} gồm cả các checkpoint cũ giúp giảm hiện tượng này.
+  \item \textbf{Đo tiến bộ:} điểm trước chính đối thủ đang thay đổi không cho biết tác tử có mạnh lên hay không. Learning curve vì vậy phải đo trước đối thủ cố định.
+  \item \textbf{Chi phí:} Caro có phần thưởng thưa nên có thể cần rất nhiều ván, là lý do giả thuyết RQ2 có điều kiện về ngân sách.
+\end{itemize}
 
 \section{AlphaGo và AlphaZero}
+\label{sec:lt-alpha}
+Các hệ thống này đưa mạng policy và value vào MCTS để giải quyết hai giới hạn của MCTS thuần: cây rộng và rollout yếu. Mạng policy thu hẹp bề rộng, còn mạng value giảm độ sâu cần mô phỏng.
+
 \subsection{AlphaGo}
-\goiy{policy SL, policy RL, value net, MCTS có mạng dẫn đường~\cite{silver2016alphago}}
+\label{sec:lt-alphago}
+AlphaGo \cite{silver2016alphago} là chương trình đầu tiên đánh bại kỳ thủ cờ vây chuyên nghiệp trên bàn đầy đủ, với tỷ số 5--0 trước Fan Hui. Quy trình của nó gồm các thành phần sau:
+\begin{enumerate}
+  \item \textbf{Policy SL:} học có giám sát từ khoảng 30 triệu thế cờ của kỳ thủ con người.
+  \item \textbf{Fast rollout:} một policy tuyến tính đơn giản, nhanh hơn nhiều, dùng cho mô phỏng.
+  \item \textbf{Policy RL:} tiếp tục từ policy SL, cải thiện bằng policy gradient qua tự chơi với các phiên bản cũ.
+  \item \textbf{Value:} học dự đoán kết quả từ các thế cờ của ván do policy RL tự chơi.
+  \item \textbf{Tìm kiếm:} MCTS có mạng dẫn đường, dùng policy SL làm tiên nghiệm và đánh giá lá bằng cách trộn value với kết quả rollout $z_L$:
+  \begin{equation}
+    V(s_L) = (1 - \lambda) v_\theta(s_L) + \lambda z_L, \qquad \lambda = 0{,}5.
+    \label{eq:tron-la}
+  \end{equation}
+\end{enumerate}
+
 \subsection{AlphaZero}
-\goiy{mạng policy-value chung, PUCT, nhiễu Dirichlet, vòng lặp self-play~\cite{silver2017alphagozero,silver2018alphazero}}
+\label{sec:lt-alphazero}
+AlphaGo Zero \cite{silver2017alphagozero} bỏ dữ liệu của người và bỏ rollout, chỉ dùng một mạng policy-value học từ self-play, bắt đầu từ trọng số ngẫu nhiên. AlphaZero \cite{silver2018alphazero} tổng quát hoá cách làm đó cho cờ vua, shogi và cờ vây. Việc chọn nút trong tìm kiếm dùng công thức thuộc họ PUCT, bắt nguồn từ công trình của Rosin \cite{rosin2011puct}:
+\begin{equation}
+  a^* = \arg\max_a \left[ Q(s, a) + c_{\text{puct}} \, P(s, a) \, \frac{\sqrt{\sum_b N(s, b)}}{1 + N(s, a)} \right].
+  \label{eq:puct}
+\end{equation}
+Mỗi khi mở rộng một lá, mạng chạy một lần để cho cả tiên nghiệm $P$ của các con và giá trị $v$ của lá, không cần mô phỏng đến hết ván. Thay vì đo khám phá bằng $\ln N$ như UCT, PUCT nhân với $P(s, a)$ nên nước mà mạng tin tưởng sẽ được thăm sớm hơn.
+
+Vòng lặp huấn luyện (Hình~\ref{fig:lt-vong-lap}) dùng chính tìm kiếm làm người thầy. Từ mỗi thế cờ, số lượt thăm tạo ra phân phối $\pi(a \mid s) \propto N(s, a)^{1/\tau}$, thường tốt hơn policy thô của mạng. Mạng được cập nhật để bắt chước $\pi$ và dự đoán kết quả $z$:
+\begin{equation}
+  L(\theta) = \big( z - v_\theta(s) \big)^2 - \pi^{\top} \log p_\theta(s) + c \| \theta \|^2.
+  \label{eq:az-loss}
+\end{equation}
+Để self-play đủ đa dạng, nhiễu Dirichlet được trộn vào tiên nghiệm ở gốc: $P(s_0, a) \leftarrow (1 - \varepsilon) P(s_0, a) + \varepsilon \eta_a$ với $\eta \sim \text{Dir}(\alpha)$. Bài báo dùng $\varepsilon = 0{,}25$ và chọn $\alpha$ theo tỷ lệ nghịch với số nước hợp lệ điển hình, ví dụ $0{,}3$ cho cờ vua và $0{,}03$ cho cờ vây \cite{silver2018alphazero}. Nhiệt độ $\tau$ được giữ cao ở các nước đầu để đa dạng khai cuộc rồi giảm dần.
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}[
+      khoi/.style={draw=blue!60!black, fill=blue!7, rounded corners=2pt, align=center, font=\footnotesize, text width=2.45cm, minimum height=15mm},
+      mui/.style={-{Latex[length=2mm]}, blue!60!black}, node distance=5mm]
+    \node[khoi] (a) {\textbf{Self-play}\\PUCT, nhiễu Dirichlet ở gốc};
+    \node[khoi, right=of a] (b) {\textbf{Bộ đệm}\\mẫu $(s, \pi, z)$};
+    \node[khoi, right=of b] (c) {\textbf{Huấn luyện}\\tối thiểu hoá (\ref{eq:az-loss})};
+    \node[khoi, right=of c] (d) {\textbf{Đánh giá}\\so với bản tốt nhất (nếu có gating)};
+    \draw[mui] (a) -- (b); \draw[mui] (b) -- (c); \draw[mui] (c) -- (d);
+    \draw[mui] (d.south) -- ++(0,-5mm) -| node[pos=.25, below, font=\footnotesize] {checkpoint mới sinh dữ liệu cho vòng sau} (a.south);
+  \end{tikzpicture}
+  \caption{Vòng lặp self-play kiểu AlphaZero. AlphaGo Zero có bước gating; AlphaZero bỏ bước này và cập nhật liên tục.}
+  \label{fig:lt-vong-lap}
+\end{figure}
+
+AlphaGo Zero chỉ thay mạng tốt nhất khi mạng mới đạt tỷ lệ thắng từ 55\% qua 400 ván \cite{silver2017alphagozero}; AlphaZero bỏ bước này và dùng luôn mạng mới nhất \cite{silver2018alphazero}. Đây là khác biệt nhỏ nhưng dễ bị nhầm khi nói về ``AlphaZero''.
+
 \subsection{Phân biệt ``inspired'' với hệ thống gốc}
-\goiy{bảng thành phần đã / chưa hiện thực ở cấp 7--8}
+\label{sec:lt-inspired}
+Đề bài lưu ý cấp 7--8 chỉ là phiên bản mô phỏng cảm hứng. Có hai loại khác biệt: khác về cấu trúc, được ghi trong Bảng~\ref{tab:lt-inspired}, và khác về quy mô. Về quy mô, AlphaZero dùng hàng nghìn bộ tăng tốc TPU cho self-play và hàng trăm nghìn bước huấn luyện \cite{silver2018alphazero}. Trong khi đó, Cấp 8 được cấu hình 50 vòng lặp, mỗi vòng 200 ván và \num{1000} bước huấn luyện, trên phần cứng phổ thông. Vì vậy, kết quả của cấp 7--8 không phản ánh năng lực của các hệ thống gốc, và ngược lại, thành tích của hệ thống gốc không phải là cơ sở để dự đoán cấp 7--8 sẽ mạnh nhất.
+
+\begin{table}[!htb]
+  \centering\small
+  \caption{Thành phần của hệ thống gốc và của cấp 7--8, theo cấu hình trong \texttt{configs/}. Trạng thái tại ngày 04/11/2026.}
+  \label{tab:lt-inspired}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{.14\textwidth} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X l@{}}
+    \toprule
+    \textbf{Thành phần} & \textbf{AlphaGo} & \textbf{Cấp 7} & \textbf{AlphaZero} & \textbf{Cấp 8} & \textbf{Trạng thái} \\
+    \midrule
+    Tiên nghiệm & Policy SL từ ván người & Mạng cấp 5, học từ Alpha-Beta & Mạng policy-value & Mạng policy-value & Chưa cài \\
+    Policy RL & Có & Tuỳ chọn mạng cấp 6 & Không tách riêng & Không tách riêng & Chưa cài \\
+    Đánh giá lá & Value và rollout, $\lambda = 0{,}5$ & Value và rollout, khảo sát $\lambda$ & Chỉ value & Chỉ value & Chưa cài \\
+    Dữ liệu & Ván người, self-play & Ván Alpha-Beta & Chỉ self-play & Chỉ self-play, khởi tạo ngẫu nhiên & Chưa cài \\
+    Nhiễu gốc & Không & Không khi thi đấu & Dirichlet & Dirichlet $\alpha = 0{,}3$, $\varepsilon = 0{,}25$ & Chưa cài \\
+    Chọn checkpoint & Không có vòng lặp này & Không có & Không gating & Gating 100 ván, ngưỡng 55\% & Chưa cài \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \section{Công trình liên quan}
-\goiy{Gomoku đã được giải; các engine / repo tham khảo~\cite{liu2024alphago}}
+\label{sec:lt-lien-quan}
+\textbf{Lời giải lý thuyết.} Allis và cộng sự đã giải Gomoku trên bàn 15×15, chứng minh bên đi trước thắng, bằng các kỹ thuật \emph{threat-space search} và \emph{proof-number search} \cite{allis1994,allis1996gomoku}. Threat-space search khai thác đúng đặc điểm nêu ở Mục~\ref{sec:gt-y-nghia}: chuỗi nước ép thu hẹp mạnh cây tìm kiếm vì đối thủ gần như không có lựa chọn. Kết quả đó là về lời giải cho một bàn cụ thể, trong khi đề tài này đo sức mạnh thực nghiệm của các tác tử có giới hạn trên bàn 11×11 và không tìm lời giải.
+
+\textbf{Engine thi đấu.} Gomocup là giải đấu thường niên dành cho AI Gomoku. Rapfi, đoạt chức vô địch Gomocup 2024, kết hợp tìm kiếm Alpha-Beta với một mạng nơ-ron nhỏ được chưng cất thành bảng tra theo mẫu quân và cập nhật tăng dần, giúp giảm mạnh chi phí suy luận \cite{jin2025rapfi}. Hướng này cho thấy với Gomoku, tìm kiếm chiều sâu kết hợp đánh giá học được vẫn có sức cạnh tranh cao; đây là lý do để không mặc định MCTS sẽ tốt hơn Alpha-Beta khi trả lời RQ1. Lưu ý rằng các kết quả này đạt được với những engine được tối ưu cao, nên không so trực tiếp được với tác tử Python của nhóm.
+
+\textbf{Áp dụng hướng AlphaGo vào Gomoku.} Xie và cộng sự \cite{xie2018alphagomoku} điều chỉnh AlphaGo cho Gomoku luật tự do với học theo giáo trình, thêm cơ chế riêng để xử lý tính bất đối xứng giữa hai bên và tính thiển cận của mạng trong trò chơi này. Các tác giả báo cáo hệ thống đạt trình độ người chơi sau hai ngày huấn luyện trên một GPU. Kết quả đó gợi ý rằng một ngân sách nhỏ có thể tạo ra tác tử dùng được, nhưng cũng cho thấy phiên bản AlphaGo không được điều chỉnh có thể gặp khó khăn với Gomoku.
+
+\textbf{Tài liệu nhập môn.} Sách của Liu \cite{liu2024alphago}, do đề bài giới thiệu, trình bày con đường từ tác tử luật, Minimax, MCTS đến mạng nơ-ron, học tăng cường và các phiên bản rút gọn của AlphaGo, AlphaZero trên các trò chơi nhỏ. Trình tự tám cấp của đề bài tương ứng với con đường này.
+
+\textbf{Khác biệt của đề tài.} Đề tài không đặt mục tiêu vượt các engine thi đấu hay đóng góp lý thuyết mới. Trọng tâm là đặt nhiều lớp phương pháp lên cùng một engine, cùng giao diện và cùng giải đấu có kiểm soát ngân sách, để đo tác dụng của từng thành phần bằng thí nghiệm phân tích thành phần và khoảng tin cậy. Những so sánh này được thiết kế ở Chương~\ref{ch:phuong-phap} và báo cáo ở Chương~\ref{ch:thuc-nghiem}.

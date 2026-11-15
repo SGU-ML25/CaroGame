@@ -12,13 +12,15 @@ from typing import Any
 from caro.agents.base import BaseAgent, Limits
 from caro.engine import CaroGame
 from caro.engine.bitboard import (
+    CELLS,
+    FULL,
     LINES,
     WEIGHT,
+    WIN,
     evaluate,
     exactly,
     has_five,
     iter_bits,
-    popcount,
     side_score,
     window_counts,
     winning_squares,
@@ -45,17 +47,67 @@ UPPER = 2   # beta cut  — giá trị thực ≤ value (upper bound)
 # Helper: phát hiện tứ và đòn kép
 # ---------------------------------------------------------------------------
 
-def _makes_four(me: int, opp: int) -> bool:
-    """me có ít nhất 1 cửa sổ 4 quân sống không?"""
+def _threat_info(me: int, opp: int) -> tuple[int, bool, dict[int, int], list[tuple]]:
+    """Tính một lượt cho cả nút những gì cần biết về đe doạ của 'me'.
+
+    Trả (wins, has_four, gain, counts):
+        wins     -- các ô thắng ngay của me, giống winning_squares(me, opp)
+        has_four -- me có cửa sổ sống đúng 4 quân không
+        gain     -- ô m -> các ô thắng ngay MỚI nếu me đi m. Mỗi cửa sổ sống đúng 3 quân có đúng
+                    2 ô trống a, b: đi a thì b thành ô thắng và ngược lại
+        counts   -- kết quả window_counts của 4 hướng, để dùng lại khi chấm điểm vị trí
+
+    Nhờ đó winning_squares(me | 1 << m, opp) = (wins bỏ m) | gain[m] với mọi ô trống m,
+    không phải đếm lại cửa sổ cho từng ứng viên.
+    """
+    empty = ~(me | opp) & FULL
+    wins = 0
+    has_four = False
+    gain: dict[int, int] = {}
+    counts = []
     for d, start in LINES:
-        if exactly(4, *window_counts(me, opp, d, start)):
-            return True
-    return False
+        cnt = window_counts(me, opp, d, start)
+        counts.append(cnt)
+        w4 = exactly(4, *cnt)
+        if w4:
+            has_four = True
+            for j in range(WIN):
+                wins |= (w4 << (j * d)) & empty
+        for s in iter_bits(exactly(3, *cnt)):
+            a, b = (i for i in range(s, s + WIN * d, d) if not (me >> i) & 1)
+            gain[a] = gain.get(a, 0) | (1 << b)
+            gain[b] = gain.get(b, 0) | (1 << a)
+    return wins, has_four, gain, counts
 
 
-def _double_attack(me: int, opp: int) -> bool:
-    """me có ≥2 ô thắng ngay (đòn kép) không?"""
-    return popcount(winning_squares(me, opp)) >= 2
+# ô -> với mỗi hướng, các ô đầu của những cửa sổ chứa ô đó
+_WINDOWS_AT: tuple[tuple[int, ...], ...] = tuple(
+    tuple(
+        sum(1 << (m - j * d) for j in range(WIN) if m - j * d >= 0 and (start >> (m - j * d)) & 1)
+        for d, start in LINES
+    )
+    for m in range(CELLS)
+)
+
+
+def _position_terms(
+    counts: list[tuple], weight: tuple[int, ...],
+) -> tuple[int, list[tuple[int, int, int]]]:
+    """Chuẩn bị tính side_score sau một nước: trả (điểm hiện tại, [(hướng, cửa sổ k quân, chênh lệch)])."""
+    base = 0
+    terms = []
+    for i, cnt in enumerate(counts):
+        for k in range(WIN):
+            windows = exactly(k, *cnt)
+            if not windows:
+                continue
+            # side_score không tính cửa sổ 0 quân và 5 quân
+            before = weight[k] if k else 0
+            after = weight[k + 1] if k + 1 < WIN else 0
+            base += before * windows.bit_count()
+            if after != before:
+                terms.append((i, windows, after - before))
+    return base, terms
 
 
 # ---------------------------------------------------------------------------
@@ -354,7 +406,7 @@ class AlphaBetaAgent(BaseAgent):
     def _order_moves(
         self, moves: list[int], me: int, opp: int, key: int, ply: int,
     ) -> list[int]:
-        if not self.move_ordering:
+        if not self.move_ordering or len(moves) == 1:
             return moves
 
         tt_move = -1
@@ -363,28 +415,40 @@ class AlphaBetaAgent(BaseAgent):
             if entry is not None:
                 tt_move = entry[3]
 
+        # Thông tin chiến thuật tính một lượt cho cả nút; thứ tự thu được giống hệt việc đi thử
+        # từng ứng viên rồi gọi has_five / winning_squares / side_score (tests/test_alphabeta.py).
+        my_wins, my_four, my_gain, my_counts = _threat_info(me, opp)
+        opp_wins, _, opp_gain, _ = _threat_info(opp, me)
+        killer = self._killer[ply] if ply < len(self._killer) else (-1, -1)
+        history = self._history
+        position = None              # chỉ tính khi có ứng viên cần điểm vị trí
+
         scores: list[tuple[int, int]] = []
         for m in moves:
             bit_m = 1 << m
-            fm = me | bit_m
             if m == tt_move:
                 s = 10_000_000
-            elif has_five(fm):
+            elif bit_m & my_wins:
                 s = 9_500_000
-            elif _double_attack(fm, opp):
+            elif (my_wins | my_gain.get(m, 0)).bit_count() >= 2:
                 s = 9_000_000
-            elif _makes_four(fm, opp):
+            elif my_four or m in my_gain:
                 s = 8_000_000
-            elif _double_attack(opp | bit_m, me):
+            elif ((opp_wins & ~bit_m) | opp_gain.get(m, 0)).bit_count() >= 2:
                 s = 7_000_000
-            elif ply < len(self._killer) and m == self._killer[ply][0]:
+            elif m == killer[0]:
                 s = 6_000_000
-            elif ply < len(self._killer) and m == self._killer[ply][1]:
+            elif m == killer[1]:
                 s = 5_000_000
-            elif m in self._history:
-                s = 1_000_000 + self._history[m]
+            elif m in history:
+                s = 1_000_000 + history[m]
             else:
-                s = side_score(fm, opp, self._weight)
+                if position is None:
+                    position = _position_terms(my_counts, self._weight)
+                at = _WINDOWS_AT[m]
+                s = position[0]
+                for i, windows, delta in position[1]:
+                    s += delta * (windows & at[i]).bit_count()
             scores.append((s, m))
 
         scores.sort(reverse=True)

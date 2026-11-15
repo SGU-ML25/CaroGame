@@ -1,0 +1,115 @@
+% Sinh tự động bởi report/scripts/ve_hinh_bitboard.py, đừng sửa tay.
+\definecolor{bbX}{HTML}{1F4E8C}
+\definecolor{bbO}{HTML}{C8553D}
+\definecolor{bbKq}{HTML}{2E8B57}
+\definecolor{bbSai}{HTML}{D7263D}
+\definecolor{bbMat}{HTML}{DCE8F5}
+\definecolor{bbVang}{HTML}{FBE7A1}
+\definecolor{bbXam}{HTML}{BDBDBD}
+\definecolor{bbNhat}{HTML}{9CC3E6}
+\begin{tikzpicture}
+\begin{scope}[shift={(0.000,0.000)}]
+\fill[bbNhat] (0.310,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.860,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbVang] (0.620,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbVang] (0.930,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbVang] (1.240,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbVang] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {X, ngang};
+\end{scope}
+\begin{scope}[shift={(4.060,0.000)}]
+\fill[bbNhat] (1.550,-0.310) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-0.620) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-0.930) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.860,-1.550) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {X, dọc};
+\end{scope}
+\begin{scope}[shift={(8.120,0.000)}]
+\fill[bbNhat] (0.310,-0.310) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (0.620,-0.310) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (0.620,-0.620) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (0.930,-0.620) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (0.930,-0.930) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.240,-0.930) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.240,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.860,-1.550) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {X, chéo $\searrow$};
+\end{scope}
+\begin{scope}[shift={(12.180,0.000)}]
+\fill[bbNhat] (3.100,-0.310) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (2.790,-0.620) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (2.480,-0.930) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (2.170,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.860,-1.550) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {X, chéo $\swarrow$};
+\end{scope}
+\begin{scope}[shift={(0.000,-4.210)}]
+\fill[bbNhat] (0.620,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (0.930,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.240,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.860,-1.240) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {O, ngang};
+\end{scope}
+\begin{scope}[shift={(4.060,-4.210)}]
+\fill[bbNhat] (1.860,0.000) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {O, dọc};
+\end{scope}
+\begin{scope}[shift={(8.120,-4.210)}]
+\fill[bbNhat] (0.620,0.000) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (0.930,-0.310) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.240,-0.620) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.550,-0.930) rectangle ++(0.310,-0.310);
+\fill[bbNhat] (1.860,-1.240) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {O, chéo $\searrow$};
+\end{scope}
+\begin{scope}[shift={(12.180,-4.210)}]
+\fill[bbNhat] (3.100,0.000) rectangle ++(0.310,-0.310);
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (1.705,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.705) {X};
+\node[inner sep=0,font=\fontsize{7}{7}\selectfont\bfseries] at (2.015,-1.395) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {O, chéo $\swarrow$};
+\end{scope}
+\end{tikzpicture}

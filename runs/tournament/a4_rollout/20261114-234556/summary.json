@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "ended": "2026-11-14T23:54:42",
+  "duration_s": 526.073,
+  "games": 800,
+  "metrics": 1,
+  "score": {
+    "L2-Rule": 400.0,
+    "MCTS-random": 0.0,
+    "L3-AlphaBeta": 400.0,
+    "MCTS-light": 0.0
+  },
+  "n_openings": 100,
+  "planned_games": 800,
+  "failed_games": 0,
+  "workers": 4
+}

@@ -341,6 +341,8 @@ function refreshBudget(container) {
 }
 
 function readBudget(container) {
+  // Tác tử không dùng ngân sách thì ô chọn chế độ bị ẩn nhưng vẫn giữ lựa chọn cũ: không gửi lựa chọn đó đi.
+  if (container.querySelector(".budget-mode").hidden) return { mode: "fixed" };
   const mode = container.querySelector('input[type="radio"]:checked').value;
   const budget = { mode };
   for (const label of container.querySelectorAll("[data-key]")) {

@@ -22,6 +22,17 @@ uv sync --group dev --extra nn   # thêm PyTorch cho cấp 5–8
 uv run pytest
 ```
 
+## Chạy giao diện web
+
+```bash
+uv sync --group dev --extra ui            # thêm --extra nn khi có cấp 5–8
+uv run uvicorn caro.ui.server:app         # mở http://127.0.0.1:8000
+```
+
+Khi sửa code, thêm `--reload` để server tự khởi động lại; đổi cổng bằng `--port 8001`.
+Trang web có chế độ người–máy, máy–máy và xem lại ván từ log; cấp chưa cài được ghi rõ trên trang.
+Chi tiết ở [`docs/HUONG_DAN.md`](docs/HUONG_DAN.md) mục 7.6.
+
 ## Cấu trúc
 
 ```

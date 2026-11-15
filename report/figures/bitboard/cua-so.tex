@@ -1,0 +1,55 @@
+% Sinh tự động bởi report/scripts/ve_hinh_bitboard.py, đừng sửa tay.
+\definecolor{bbX}{HTML}{1F4E8C}
+\definecolor{bbO}{HTML}{C8553D}
+\definecolor{bbKq}{HTML}{2E8B57}
+\definecolor{bbSai}{HTML}{D7263D}
+\definecolor{bbMat}{HTML}{DCE8F5}
+\definecolor{bbVang}{HTML}{FBE7A1}
+\definecolor{bbXam}{HTML}{BDBDBD}
+\definecolor{bbNhat}{HTML}{9CC3E6}
+\begin{tikzpicture}
+\node[font=\scriptsize,gray] at (0.310,.18) {0};
+\fill[bbX] (0.620,0) rectangle ++(0.620,-0.620);
+\node[text=white,font=\footnotesize\bfseries] at (0.930,-0.310) {X};
+\node[font=\scriptsize,gray] at (0.930,.18) {1};
+\fill[bbX] (1.240,0) rectangle ++(0.620,-0.620);
+\node[text=white,font=\footnotesize\bfseries] at (1.550,-0.310) {X};
+\node[font=\scriptsize,gray] at (1.550,.18) {2};
+\node[font=\scriptsize,gray] at (2.170,.18) {3};
+\fill[bbX] (2.480,0) rectangle ++(0.620,-0.620);
+\node[text=white,font=\footnotesize\bfseries] at (2.790,-0.310) {X};
+\node[font=\scriptsize,gray] at (2.790,.18) {4};
+\fill[bbX] (3.100,0) rectangle ++(0.620,-0.620);
+\node[text=white,font=\footnotesize\bfseries] at (3.410,-0.310) {X};
+\node[font=\scriptsize,gray] at (3.410,.18) {5};
+\node[font=\scriptsize,gray] at (4.030,.18) {6};
+\fill[bbO] (4.340,0) rectangle ++(0.620,-0.620);
+\node[text=white,font=\footnotesize\bfseries] at (4.650,-0.310) {O};
+\node[font=\scriptsize,gray] at (4.650,.18) {7};
+\node[font=\scriptsize,gray] at (5.270,.18) {8};
+\node[font=\scriptsize,gray] at (5.890,.18) {9};
+\node[font=\scriptsize,gray] at (6.510,.18) {10};
+\draw[gray!70,line width=.3pt] (0,0) grid[step=0.62] (6.820,-0.620);
+\node[anchor=east,font=\footnotesize] at (-.12,-0.310) {Hàng 5};
+\fill[bbNhat] (0.030,-0.780) rectangle ++(3.040,-0.360);
+\node[text=black,font=\scriptsize] at (1.550,-0.960) {3 quân X};
+\node[anchor=east,font=\scriptsize] at (-.12,-0.960) {bắt đầu ở cột 0};
+\fill[bbKq] (0.650,-1.210) rectangle ++(3.040,-0.360);
+\node[text=white,font=\scriptsize] at (2.170,-1.390) {4 quân X};
+\node[anchor=east,font=\scriptsize] at (-.12,-1.390) {bắt đầu ở cột 1};
+\fill[bbNhat] (1.270,-1.640) rectangle ++(3.040,-0.360);
+\node[text=black,font=\scriptsize] at (2.790,-1.820) {3 quân X};
+\node[anchor=east,font=\scriptsize] at (-.12,-1.820) {bắt đầu ở cột 2};
+\fill[bbXam] (1.890,-2.070) rectangle ++(3.040,-0.360);
+\node[text=black,font=\scriptsize] at (3.410,-2.250) {chứa O: loại};
+\node[anchor=east,font=\scriptsize] at (-.12,-2.250) {bắt đầu ở cột 3};
+\fill[bbXam] (2.510,-2.500) rectangle ++(3.040,-0.360);
+\node[text=black,font=\scriptsize] at (4.030,-2.680) {chứa O: loại};
+\node[anchor=east,font=\scriptsize] at (-.12,-2.680) {bắt đầu ở cột 4};
+\fill[bbXam] (3.130,-2.930) rectangle ++(3.040,-0.360);
+\node[text=black,font=\scriptsize] at (4.650,-3.110) {chứa O: loại};
+\node[anchor=east,font=\scriptsize] at (-.12,-3.110) {bắt đầu ở cột 5};
+\fill[bbXam] (3.750,-3.360) rectangle ++(3.040,-0.360);
+\node[text=black,font=\scriptsize] at (5.270,-3.540) {chứa O: loại};
+\node[anchor=east,font=\scriptsize] at (-.12,-3.540) {bắt đầu ở cột 6};
+\end{tikzpicture}

@@ -26,6 +26,7 @@ from caro.engine.bitboard import (
     has_five,
     iter_bits,
     window_counts,
+    winning_squares,
 )
 from caro.engine.bitboard import (
     candidates as bb_candidates,
@@ -149,6 +150,8 @@ class MCTSAgent(BaseAgent):
         rollout_radius   -- bán kính cho bước ngẫu nhiên trong rollout (mặc định 1)
         candidate_radius -- bán kính cho các ứng viên mở rộng nút (mặc định 2)
         reuse_tree       -- cờ bật/tắt tái sử dụng cây giữa các nước (mặc định False)
+        root_tactics     -- ở gốc: thắng ngay nếu có, chặn ô thắng của đối thủ nếu có (mặc định False;
+                            sửa lỗi 'bỏ sót chặn năm' thấy ở phân tích lỗi A3/A4)
 
     Nếu cả `limits` truyền vào lẫn `self.limits` đều không có max_sims và time_ms, tác tử dừng
     sau DEFAULT_MAX_SIMS mô phỏng thay vì lặp vô hạn.
@@ -163,6 +166,7 @@ class MCTSAgent(BaseAgent):
         rollout_radius: int = 1,
         candidate_radius: int = 2,
         reuse_tree: bool = False,
+        root_tactics: bool = False,
     ) -> None:
         super().__init__(name=name, limits=limits)
         self.c_uct = c_uct
@@ -172,6 +176,7 @@ class MCTSAgent(BaseAgent):
         self.rollout_radius = rollout_radius
         self.candidate_radius = candidate_radius
         self.reuse_tree = reuse_tree
+        self.root_tactics = root_tactics
 
         self._root: MCTSNode | None = None
         self._stats: dict[str, Any] = {}
@@ -205,6 +210,30 @@ class MCTSAgent(BaseAgent):
             return -1
 
         t0 = time.perf_counter()
+        restrict: list[int] | None = None
+        if self.root_tactics:
+            me, opp = game.me_opp()
+            forced = first_winning_square(me, opp)
+            if forced is None:
+                forced = first_winning_square(opp, me)
+            if forced is None:
+                # Đi tạo >=2 ô thắng (tứ hở / đòn kép) thì đối thủ không chặn nổi -> đi luôn.
+                # Ngược lại, nếu đối thủ có nước tạo >=2 ô thắng thì chỉ xét những ô đó (chặn ba hở).
+                empty = ~(me | opp) & FULL
+                threats = []
+                for m in iter_bits(bb_candidates(me, opp, self.candidate_radius) or empty):
+                    if winning_squares(me | 1 << m, opp).bit_count() >= 2:
+                        forced = m
+                        break
+                    if winning_squares(opp | 1 << m, me).bit_count() >= 2:
+                        threats.append(m)
+                if forced is None and threats:
+                    restrict = threats
+            if forced is not None:
+                self._root = None
+                self._stats = {"sims": 0, "time_ms": round((time.perf_counter() - t0) * 1000, 2),
+                               "visits": {}, "pv": [forced]}
+                return forced
         deadline = limits.deadline(margin_ms=5.0)
         mode = limits.mode
         max_sims = limits.max_sims if limits.max_sims is not None else self.limits.max_sims
@@ -221,6 +250,8 @@ class MCTSAgent(BaseAgent):
                 untried=candidate_moves(game, self.candidate_radius),
                 key=game.key,
             )
+            if restrict is not None:
+                root.untried = restrict
 
         sims = 0
         c_uct = self.c_uct

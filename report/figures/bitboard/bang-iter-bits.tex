@@ -1,0 +1,10 @@
+% Sinh tự động bởi report/scripts/ve_hinh_bitboard.py, đừng sửa tay.
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$b$ & $-b$ (bù 2, 8 bit thấp) & $low = b \mathbin{\&} -b$ & \textbf{Chỉ số} & $b \oplus low$ \\
+\midrule
+\texttt{01101000} & \texttt{10011000} & \texttt{00001000} & 3 & \texttt{01100000} \\
+\texttt{01100000} & \texttt{10100000} & \texttt{00100000} & 5 & \texttt{01000000} \\
+\texttt{01000000} & \texttt{11000000} & \texttt{01000000} & 6 & \texttt{00000000} \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,29 @@
+{
+  "started": "2026-11-14T23:45:56",
+  "argv": [
+    "/mnt/data/1_Projects/AAI/CaroGame/.venv/lib/python3.13/site-packages/ipykernel_launcher.py",
+    "--f=/run/user/1000/jupyter/runtime/kernel-v39d6fdbf046415d73c411aba9419532c6801bd510.json"
+  ],
+  "seed": 2026,
+  "config_hash": "cf3150a23881",
+  "git": {
+    "commit": "27d65252646a887209b2b255f299984900051fbd",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.2.15-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  }
+}
