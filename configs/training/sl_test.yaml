@@ -1,0 +1,19 @@
+seed: 42
+epochs: 2
+value_weight: 1.0
+
+engine:
+  size: 11
+  win_length: 5
+  layout: "stride11"
+
+experiment:
+  kind: train
+  name: sl_policy_no_aug
+
+data:
+  augment_x8: true
+
+model:
+  num_channels: 64
+  num_blocks: 2

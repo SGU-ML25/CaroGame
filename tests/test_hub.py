@@ -19,7 +19,7 @@ models:
 
 @pytest.fixture
 def root(tmp_path):
-    (tmp_path / "models.yaml").write_text(MANIFEST)
+    (tmp_path / "models.yaml").write_text(MANIFEST, encoding="utf-8")
     return tmp_path
 
 
@@ -70,9 +70,9 @@ def test_push_uploads_card_and_pins(root, tmp_path, monkeypatch):
     run = tmp_path / "run1"
     (run / "checkpoints").mkdir(parents=True)
     (run / "checkpoints" / "best.pt").write_bytes(b"weights")
-    (run / "config.yaml").write_text("seed: 1\n")
-    (run / "meta.json").write_text(json.dumps({"seed": 1, "config_hash": "h", "git": {"commit": "g", "dirty": False}}))
-    (run / "summary.json").write_text(json.dumps({"status": "ok"}))
+    (run / "config.yaml").write_text("seed: 1\n", encoding="utf-8")
+    (run / "meta.json").write_text(json.dumps({"seed": 1, "config_hash": "h", "git": {"commit": "g", "dirty": False}}), encoding="utf-8")
+    (run / "summary.json").write_text(json.dumps({"status": "ok"}), encoding="utf-8")
 
     seen = {}
 
@@ -96,7 +96,7 @@ def test_push_requires_checkpoint(root, tmp_path):
 
 def test_dotenv_does_not_override(tmp_path, monkeypatch):
     env = tmp_path / ".env"
-    env.write_text("# chú thích\nCARO_A='1'\nCARO_B=2\nCARO_EMPTY=\n")
+    env.write_text("# chú thích\nCARO_A='1'\nCARO_B=2\nCARO_EMPTY=\n", encoding="utf-8")
     monkeypatch.setenv("CARO_B", "giữ")
     monkeypatch.delenv("CARO_A", raising=False)
     hub.load_dotenv(env)
@@ -104,8 +104,8 @@ def test_dotenv_does_not_override(tmp_path, monkeypatch):
 
 
 def test_config_rejects_unknown_model(tmp_path):
-    (tmp_path / "models.yaml").write_text(MANIFEST)
-    (tmp_path / "x.yaml").write_text("seed: 1\nfoo: {checkpoint: model:l9}\n")
+    (tmp_path / "models.yaml").write_text(MANIFEST, encoding="utf-8")
+    (tmp_path / "x.yaml").write_text("seed: 1\nfoo: {checkpoint: model:l9}\n", encoding="utf-8")
     with pytest.raises(ConfigError, match="model:l9"):
         load_config("x", root=tmp_path)
 
