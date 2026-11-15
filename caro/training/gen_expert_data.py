@@ -227,7 +227,7 @@ def main():
                             f"| {samples} mẫu | vừa hoàn thành ván {game_id}",
                             flush=True,
                         )
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     print(
                         f"Lỗi ở ván {game_id}: {type(e).__name__}: {e}",
                         flush=True,
