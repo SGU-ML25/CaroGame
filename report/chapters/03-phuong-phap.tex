@@ -16,29 +16,534 @@
 \goiy{\texttt{configs/}, \texttt{load\_config}, \texttt{derive\_seed}, thư mục \texttt{runs/}, JSONL}
 
 \section{Engine bitboard}
+\label{sec:engine}
+Mọi tác tử, từ luật cứng đến tìm kiếm cây, đều phải hỏi engine hàng nghìn lần mỗi nước: đã có ai thắng chưa, nên xét những ô nào, ô nào thắng ngay, thế cờ đang tốt cho bên nào. Engine trong \texttt{caro/engine/} trả lời các câu hỏi đó bằng phép toán bit trên số nguyên thay vì duyệt mảng hai chiều. Mục này trình bày từng phép tính kèm ví dụ cụ thể. Toàn bộ hình và bảng số liệu trong mục được sinh từ chính code của engine bằng \texttt{report/scripts/ve\_hinh\_bitboard.py}, nên khớp với kết quả chạy thật.
+
 \subsection{Biểu diễn bitboard}
-\goiy{stride 11, mặt nạ START, dịch bit = đi theo hướng}
+\label{sec:bb-bieu-dien}
+
+\subsubsection{Từ ô cờ sang bit}
+Quân của mỗi bên được lưu trong một số nguyên 121 bit, bit bằng 1 nghĩa là ô đó có quân của bên ấy. Ô ở hàng $r$, cột $c$ (đánh số từ 0) ứng với bit
+\begin{equation}
+  i = 11r + c, \qquad r = \lfloor i / 11 \rfloor, \quad c = i \bmod 11.
+  \label{eq:chi-so}
+\end{equation}
+Hình~\ref{fig:chi-so}a cho thấy chỉ số của cả bàn: bit 0 ở góc trên trái, bit 120 ở góc dưới phải, ô trung tâm $(5, 5)$ là bit 60. Với thế cờ ở Hình~\ref{fig:chi-so}b, X có các ô $(4,4)$, $(5,5)$, $(5,6)$ nên có các bit 48, 60, 61; hai số nguyên tương ứng nằm ở Bảng~\ref{tab:bb-vi-du}.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/chi-so}
+  \caption{Đánh số 121 ô thành 121 bit và thế cờ dùng làm ví dụ.}
+  \label{fig:chi-so}
+\end{figure}
+
+\begin{table}[H]
+  \centering\small
+  \caption{Hai bitboard của thế cờ ở Hình~\ref{fig:chi-so}b.}
+  \label{tab:bb-vi-du}
+  \input{figures/bitboard/bang-bieu-dien}
+\end{table}
+
+Các thao tác cơ bản chỉ cần một phép bit, với \texttt{FULL} $= 2^{121} - 1$:
+\begin{itemize}
+  \item Đặt quân vào ô $i$: $x \leftarrow x \mid (1 \ll i)$.
+  \item Hỏi ô $i$ có quân không: $(x \gg i) \mathbin{\&} 1$.
+  \item Các ô đã có quân: $x \mid o$. Các ô trống: $\lnot(x \mid o) \mathbin{\&} \texttt{FULL}$.
+\end{itemize}
+Phép AND với \texttt{FULL} là cần thiết vì số nguyên Python không giới hạn độ dài: $\lnot y$ cho ra số âm, về mặt logic có vô số bit 1 ở phía cao. Bản C++/Rust có thể dùng kiểu \texttt{u128} với cùng công thức, chỉ còn 7 bit cao thừa.
+
+\subsubsection{Liệt kê các bit 1}
+Hàm \texttt{iter\_bits} biến bitboard thành danh sách ô theo thứ tự tăng dần. Trong biểu diễn bù 2, $-b$ đảo mọi bit phía trên bit 1 thấp nhất và giữ nguyên bit đó, nên $b \mathbin{\&} -b$ tách đúng bit này ra. Bảng~\ref{tab:iter-bits} chạy thử với $b = 104 = 1101000_2$: ba vòng lặp cho ba chỉ số 3, 5, 6. Số vòng lặp bằng số bit 1, không phụ thuộc kích thước bàn.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Các bước của \texttt{iter\_bits} với $b = 104$.}
+  \label{tab:iter-bits}
+  \input{figures/bitboard/bang-iter-bits}
+\end{table}
+
+\subsubsection{Dịch bit là đi theo một hướng}
+Theo công thức~\eqref{eq:chi-so}, đi một bước $(\Delta r, \Delta c)$ làm chỉ số tăng $d = 11\Delta r + \Delta c$. Vì vậy bốn hướng của bàn cờ ứng với bốn độ dịch (Bảng~\ref{tab:huong}). Bốn hướng này đủ để xét mọi dãy, vì chiều ngược lại chỉ là cùng một dãy nhìn từ đầu kia.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Bốn hướng và độ dịch tương ứng.}
+  \label{tab:huong}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    \textbf{Hướng} & $(\Delta r, \Delta c)$ & \textbf{Độ dịch} $d$ & \textbf{Từ ô 60 tới ô} \\
+    \midrule
+    Ngang $\rightarrow$ & $(0, 1)$ & 1 & 61 \\
+    Dọc $\downarrow$ & $(1, 0)$ & 11 & 71 \\
+    Chéo $\searrow$ & $(1, 1)$ & 12 & 72 \\
+    Chéo $\swarrow$ & $(1, -1)$ & 10 & 70 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Tính chất mà mọi thuật toán phía sau dựa vào là:
+\begin{equation}
+  \text{bit } i \text{ của } (x \gg d) \;=\; \text{bit } (i + d) \text{ của } x.
+  \label{eq:dich}
+\end{equation}
+Nghĩa là $x \gg d$ trả lời cùng lúc cho cả 121 ô câu hỏi ``đi một bước theo hướng $d$ có gặp quân không?''. Trên hình, cả bàn trượt ngược hướng $d$ một bước (Hình~\ref{fig:dich-bit}).
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/dich-bit}
+  \caption{Tác dụng của phép dịch lên ba quân $(5,5)$, $(3,0)$, $(7,10)$. Ô đỏ là kết quả lọt hàng.}
+  \label{fig:dich-bit}
+\end{figure}
+
+Các ô đỏ trong Hình~\ref{fig:dich-bit} cho thấy cái bẫy của cách xếp này. Mỗi hàng rộng đúng 11 bit, không có cột đệm, nên quân ở mép bàn có thể ``lọt'' sang hàng khác. Chẳng hạn $x \gg 1$ đưa quân $(3, 0)$, bit 33, về bit 32, tức ô $(2, 10)$ ở cuối hàng trên, dù hai ô này không kề nhau trên bàn. Tương tự, $x \gg 10$ đưa quân $(7, 10)$, bit 87, về bit 77, tức ô $(7, 0)$ ở đầu cùng hàng.
+
+\subsubsection{Mặt nạ START}
+Để loại kết quả lọt hàng, mỗi hướng có một mặt nạ gồm những ô được phép là ô đầu của một dãy 5 nằm trọn trong bàn:
+\begin{equation}
+  \mathrm{START}_d = \{(r, c) : 0 \le r + 4\Delta r \le 10 \;\text{ và }\; 0 \le c + 4\Delta c \le 10\}.
+  \label{eq:start}
+\end{equation}
+Áp dụng công thức ta có ô đầu dãy ngang phải có $c \le 6$, dãy dọc có $r \le 6$, chéo $\searrow$ có $r \le 6, c \le 6$, chéo $\swarrow$ có $r \le 6, c \ge 4$. Số ô lần lượt là $11 \times 7 = 77$, $7 \times 11 = 77$, $7 \times 7 = 49$ và $49$, nên cả bàn có đúng 252 cửa sổ 5 ô (Hình~\ref{fig:start}). Các mặt nạ được sinh bằng vòng lặp khi nạp module, không chép tay hằng số.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/start}
+  \caption{Bốn mặt nạ START (nền xanh nhạt). Ô xanh đậm là một dãy 5 mẫu của từng hướng, bắt đầu từ một ô thuộc mặt nạ và kết thúc sát mép.}
+  \label{fig:start}
+\end{figure}
+
 \subsection{Kiểm tra thắng, sinh nước ứng viên, đếm cửa sổ 5 ô}
-\goiy{3 phép dịch, giãn nở, ô thắng ngay}
+\label{sec:bb-thuat-toan}
+
+\subsubsection{Kiểm tra thắng bằng 3 phép dịch}
+Bên có bitboard $x$ thắng khi tồn tại hướng $d$ và ô $i \in \mathrm{START}_d$ sao cho năm bit $x_i, x_{i+d}, x_{i+2d}, x_{i+3d}, x_{i+4d}$ đều bằng 1. Hàm \texttt{has\_five} tính điều kiện này cho mọi ô cùng lúc qua ba bước, mỗi bước dùng~\eqref{eq:dich}:
+\begin{align}
+  t_1 &= x \mathbin{\&} (x \gg d)     && \text{bit } i \text{ bật} \iff x_i, x_{i+d} \text{ đều bật (2 ô liền)}, \\
+  t_2 &= t_1 \mathbin{\&} (t_1 \gg 2d) && \text{bit } i \text{ bật} \iff x_i, \dots, x_{i+3d} \text{ đều bật (4 ô liền)}, \\
+  t_3 &= t_2 \mathbin{\&} (x \gg 4d)   && \text{bit } i \text{ bật} \iff x_i, \dots, x_{i+4d} \text{ đều bật (5 ô liền)}.
+\end{align}
+Bước 2 nối hai cặp lại: cặp bắt đầu ở $i$ và cặp bắt đầu ở $i + 2d$ tạo thành dãy 4. Cuối cùng nếu $t_3 \mathbin{\&} \mathrm{START}_d \ne 0$ thì có dãy 5.
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[caption={Kiểm tra thắng trong caro/engine/bitboard.py.}, label={lst:has-five}, numbers=none]
+def has_five(x: int) -> bool:
+    for d, start in LINES:
+        t = x & (x >> d)             # cặp 2
+        t &= t >> (2 * d)            # dãy 4
+        t &= x >> (4 * d)            # dãy 5
+        if t & start:
+            return True
+    return False
+\end{lstlisting}
+\end{minipage}
+
+\begin{vidu}[Dãy 5 thật theo đường chéo]
+Xét $x$ gồm năm quân chéo $(2,2)$, $(3,3)$, $(4,4)$, $(5,5)$, $(6,6)$ và ba quân nhiễu $(2,8)$, $(7,1)$, $(9,6)$, tức tập bit $\{24, 30, 36, 48,$ $60, 72, 78, 105\}$. Hai hướng ngang và dọc cho kết quả 0. Đến hướng $d = 12$ (Hình~\ref{fig:has-five}):
+\begin{itemize}
+  \item $x \gg 12$ trừ 12 vào mọi chỉ số, được $\{12, 18, 24, 36, 48, 60, 66, 93\}$. Giao với $x$ cho $t_1 = \{24, 36, 48, 60\}$. Năm quân liền nhau tạo ra bốn cặp, còn quân nhiễu bị loại hết.
+  \item $t_1 \gg 24 = \{0, 12, 24, 36\}$. Giao với $t_1$ cho $t_2 = \{24, 36\}$, là hai điểm đầu của dãy 4.
+  \item $x \gg 48 = \{0, 12, 24, 30, 57\}$. Giao với $t_2$ cho $t_3 = \{24\}$.
+  \item Bit 24 là ô $(2, 2)$, thoả $r \le 6, c \le 6$ nên thuộc $\mathrm{START}_{\searrow}$. Hàm trả về \texttt{True}, và bit còn lại cho biết luôn ô đầu của dãy.
+\end{itemize}
+\end{vidu}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/has-five}
+  \caption{Các bước của \texttt{has\_five} với $d = 12$. Ô xanh nhạt là kết quả phép dịch, ô xanh đậm là kết quả phép AND, số trong ô là chỉ số bit. Ô xanh lá là bit 24 còn lại sau khi lọc qua mặt nạ.}
+  \label{fig:has-five}
+\end{figure}
+
+Luật ``từ 5 quân trở lên'' được xử lý tự nhiên: dãy 6 quân cho $t_3$ có hai bit, vẫn khác 0. Quân chặn hai đầu không tham gia vào phép tính nên dãy bị chặn vẫn thắng, đúng với luật của đề tài. Chi phí là 3 phép dịch và 4 phép AND cho mỗi hướng, tối đa 12 phép dịch cho cả bàn, không phụ thuộc số quân.
+
+\begin{vidu}[Dãy 5 giả do lọt hàng]
+Năm quân $(2,8)$, $(2,9)$, $(2,10)$, $(3,0)$, $(3,1)$ có các bit 30--34 liên tiếp nên với $d = 1$ ba bước trên vẫn cho $t_3 = \{30\}$. Nhưng bit 30 là ô $(2, 8)$, có $c = 8 > 6$, không thuộc $\mathrm{START}_{\text{ngang}}$, nên kết quả bị loại. Trường hợp chéo cũng tương tự: các bit $8, 20, 32, 44, 56$ cách đều 12 cho $t_3 = \{8\}$, là ô $(0, 8)$ có $c = 8 > 6$, cũng bị loại (Hình~\ref{fig:lot-hang}).
+\end{vidu}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/lot-hang}
+  \caption{Hai dãy 5 giả (hàng trên: ngang, hàng dưới: chéo $\searrow$). Bit của $t_3$ nằm ngoài mặt nạ nên phép AND cho 0.}
+  \label{fig:lot-hang}
+\end{figure}
+
+Chỉ cần lọc một lần ở cuối dù các bước giữa có thể chứa bit lọt hàng. Lý do: bit $i$ của $t_3$ luôn có nghĩa là năm chỉ số $i, \dots, i + 4d$ đều có quân, và nếu $i \in \mathrm{START}_d$ thì theo~\eqref{eq:start} năm chỉ số đó chính là năm ô thẳng hàng trên bàn.
+
+\subsubsection{Sinh nước ứng viên bằng giãn nở}
+Bàn có tới 121 ô nhưng nước đi hợp lý thường nằm gần quân đã có. Hàm \texttt{candidates} giới hạn nước xét vào các ô trống cách quân gần nhất không quá \texttt{radius} ô theo khoảng cách Chebyshev (tính cả đường chéo). Nền tảng là phép giãn nở \texttt{dilate}, thêm 8 ô lân cận của mọi quân, gồm một bước giãn theo chiều dọc rồi một bước giãn theo chiều ngang:
+\begin{align}
+  v &= x \mid (x \ll 11) \mid (x \gg 11), \\
+  h &= v \mid \bigl((v \ll 1) \mathbin{\&} \texttt{NOT\_COL0}\bigr) \mid \bigl((v \gg 1) \mathbin{\&} \texttt{NOT\_COL10}\bigr).
+\end{align}
+Kết quả là $h \mathbin{\&} \texttt{FULL}$, trong đó AND với \texttt{FULL} bỏ các bit vượt quá bit 120 do $x \ll 11$ sinh ra. Giãn dọc trước rồi giãn ngang trên kết quả đó sẽ tạo ra cả 4 ô chéo mà không cần phép dịch riêng.
+
+Ở đây phải lọc ngay từng phép dịch ngang chứ không thể đợi đến cuối như \texttt{has\_five}, vì kết quả được dùng trực tiếp: sau $v \ll 1$, mọi bit nằm ở cột 0 đều đến từ cột 10 của hàng trên nên chắc chắn sai, và \texttt{NOT\_COL0} xoá các bit này. Với $v \gg 1$, các bit rơi vào cột 10 bị \texttt{NOT\_COL10} xoá theo cách tương tự.
+
+\begin{vidu}[Quân sát mép]
+Với $x$ gồm hai quân $(3, 10)$ và $(7, 0)$ (Hình~\ref{fig:gian-no}), bước dọc cho $v$ gồm 6 ô: $(2..4, 10)$, tức cột 10 của các hàng 2 đến 4, và $(6..8, 0)$. Phép $v \ll 1$ đẩy $(2..4, 10)$ sang $(3..5, 0)$, đây là ba ô đỏ sai và bị \texttt{NOT\_COL0} xoá; còn ba ô $(6..8, 1)$ đúng được giữ. Phép $v \gg 1$ ngược lại giữ $(2..4, 9)$ và xoá ba ô đỏ $(5..7, 10)$. Kết quả có 12 ô, mỗi quân một khối $3 \times 2$ nằm gọn ở mép của nó.
+\end{vidu}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/gian-no}
+  \caption{Các bước của \texttt{dilate} với hai quân sát mép. Ô đỏ là bit lọt hàng bị mặt nạ cột xoá. Hình $(v \gg 1)$ sau khi lọc được lược bớt vì tương tự $(v \ll 1)$.}
+  \label{fig:gian-no}
+\end{figure}
+
+Hàm \texttt{candidates} gọi \texttt{dilate} đúng \texttt{radius} lần trên tập quân rồi bỏ các ô đã có quân:
+\begin{equation}
+  \mathrm{candidates} = \mathrm{dilate}^{\,\text{radius}}(x \mid o) \mathbin{\&} \lnot(x \mid o) \mathbin{\&} \texttt{FULL}.
+\end{equation}
+Mỗi lần gọi đã cắt về bàn nên lỗi lọt hàng không tích luỹ. Khi bàn trống, hàm trả về ô trung tâm (bit 60). Với thế cờ ở Hình~\ref{fig:chi-so}b và \texttt{radius} $= 2$, số ô lần lượt là 23 sau lần giãn đầu, 47 sau lần giãn thứ hai; bỏ 5 ô đã có quân còn 42 ứng viên, so với 116 ô trống hợp lệ (Hình~\ref{fig:ung-vien}). Tác tử tìm kiếm nhờ đó giảm hệ số rẽ nhánh ở thế cờ đầu ván.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/ung-vien}
+  \caption{Sinh ứng viên với \texttt{radius} $= 2$ từ thế cờ ở Hình~\ref{fig:chi-so}b.}
+  \label{fig:ung-vien}
+\end{figure}
+
+\subsubsection{Đếm quân trong mọi cửa sổ 5 ô}
+\label{sec:bb-cua-so}
+Cửa sổ là 5 ô liên tiếp theo một hướng, xác định bởi ô đầu $i \in \mathrm{START}_d$ và độ dịch $d$. Cửa sổ \emph{còn sống} với một bên nếu không chứa quân đối thủ, vì chỉ những cửa sổ này mới có thể trở thành dãy 5 của bên đó. Hàm \texttt{window\_counts} đếm số quân của \texttt{me} trong mọi cửa sổ sống của một hướng cùng lúc, mỗi bit $i$ đại diện cho cửa sổ bắt đầu ở ô $i$:
+
+\textbf{Bước 1: lọc cửa sổ sống.} Cửa sổ $i$ bị loại nếu ô thứ $k$ của nó có quân đối thủ, tức bit $i$ của $o \gg kd$ bật:
+\begin{equation}
+  \mathit{free} = \mathrm{START}_d \mathbin{\&} \bigwedge_{k=0}^{4} \lnot(o \gg kd).
+\end{equation}
+
+\textbf{Bước 2: lấy quân ở vị trí thứ $k$.} Bit $i$ của $p_k$ bật khi ô thứ $k$ của cửa sổ $i$ có quân \texttt{me}:
+\begin{equation}
+  p_k = (\mathit{me} \gg kd) \mathbin{\&} \mathit{free}, \qquad k = 0, \dots, 4.
+\end{equation}
+
+\textbf{Bước 3: cộng song song.} Mỗi cửa sổ có một bộ đếm 3 bit, nhưng các bit này không nằm cạnh nhau: bit thấp của mọi bộ đếm gom vào số $c_0$, bit giữa vào $c_1$, bit cao vào $c_2$ (kỹ thuật \emph{bit-sliced}). Cộng $p_k$ vào bộ đếm chính là phép cộng nhị phân có nhớ, thực hiện một lần cho tất cả cửa sổ:
+\begin{align}
+  \mathit{carry} &= c_0 \mathbin{\&} p_k, & c_0 &\leftarrow c_0 \oplus p_k, \\
+  \mathit{carry2} &= c_1 \mathbin{\&} \mathit{carry}, & c_1 &\leftarrow c_1 \oplus \mathit{carry}, \\
+  & & c_2 &\leftarrow c_2 \mid \mathit{carry2}.
+\end{align}
+Giá trị lớn nhất là $5 = 101_2$ nên 3 bit không bao giờ tràn.
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[caption={Đếm cửa sổ song song trong caro/engine/bitboard.py.}, label={lst:window-counts}, numbers=none]
+def window_counts(me, opp, d, start):
+    free = start
+    for k in range(WIN):
+        free &= ~(opp >> (k * d))
+    c0 = c1 = c2 = 0
+    for k in range(WIN):
+        p = (me >> (k * d)) & free
+        carry = c0 & p
+        c0 ^= p
+        carry2 = c1 & carry
+        c1 ^= carry
+        c2 |= carry2                 # tối đa 5 = 101b, không tràn
+    return c0, c1, c2, free
+\end{lstlisting}
+\end{minipage}
+
+\begin{vidu}[Đếm theo hàng ngang]
+\label{vd:cua-so}
+Xét hàng 5 có dạng \texttt{.XX.XX.O...}, tức X ở các cột 1, 2, 4, 5 và O ở cột 7. Hàng này có 7 cửa sổ ngang, bắt đầu ở các cột 0--6 (Hình~\ref{fig:cua-so}). Quân O ở cột 7 nằm trong các cửa sổ bắt đầu từ cột 3 đến 6, nên $\mathit{free}$ chỉ còn các cột 0, 1, 2, viết theo thứ tự cột từ trái sang phải là \texttt{1110000}.
+
+Bảng~\ref{tab:cong} ghi lại 5 vòng lặp. Đọc theo cột dọc ở dòng cuối sẽ có từng bộ đếm: cửa sổ cột 0 có $c_2 c_1 c_0 = 011_2 = 3$, cửa sổ cột 1 có $100_2 = 4$, cửa sổ cột 2 có $011_2 = 3$, khớp với cách đếm trực tiếp trên hình. Chú ý vòng $k = 4$ của cửa sổ cột 1: bộ đếm đang là 3 cộng thêm 1, nhớ lan qua cả $c_0$ và $c_1$ nên bật $c_2$.
+\end{vidu}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/cua-so}
+  \caption{Bảy cửa sổ ngang của hàng 5. Cửa sổ màu xanh lá có 4 quân X và 1 ô trống; các cửa sổ xám chứa quân O nên đã bị loại.}
+  \label{fig:cua-so}
+\end{figure}
+
+\begin{table}[H]
+  \centering\small
+  \caption{Các vòng cộng của \texttt{window\_counts} cho hàng 5, giá trị sau mỗi vòng. Mỗi chuỗi 7 ký tự là bit của 7 cửa sổ, cột 0 ở bên trái (không phải thứ tự viết số nhị phân thông thường).}
+  \label{tab:cong}
+  \input{figures/bitboard/bang-cong}
+\end{table}
+
+Từ các bộ đếm, hàm \texttt{exactly} lấy tập cửa sổ có đúng $k$ quân bằng cách so khớp từng bit của $k$, lấy $c_j$ khi bit $j$ của $k$ bật và $\lnot c_j$ khi tắt:
+\begin{equation}
+  \mathrm{exactly}(k) = \mathit{free} \mathbin{\&} (\pm c_0) \mathbin{\&} (\pm c_1) \mathbin{\&} (\pm c_2).
+\end{equation}
+Ví dụ, $k = 4 = 100_2$ cho $\mathit{free} \mathbin{\&} \lnot c_0 \mathbin{\&} \lnot c_1 \mathbin{\&} c_2$ và ở hàng trên kết quả là \texttt{0100000} (cửa sổ cột 1); $k = 3 = 011_2$ cho \texttt{1010000} (cửa sổ cột 0 và 2).
+
+\subsubsection{Tìm ô thắng ngay}
+\label{sec:engine-o-thang}
+Ô thắng ngay của \texttt{me} là ô trống mà đặt vào sẽ có 5 quân liền. Một cửa sổ sống có đúng 4 quân thì ô còn lại không phải quân mình, cũng không phải quân đối thủ, nên chắc chắn trống và chính là ô thắng. Đặt $w_4^{(d)} = \mathrm{exactly}(4)$ theo hướng $d$; bit của nó nằm ở ô đầu cửa sổ, cần chuyển về vị trí thật của ô trống bằng cách thử cả 5 vị trí $j$ trong cửa sổ:
+\begin{equation}
+  \mathrm{res} = \bigvee_{d} \bigvee_{j=0}^{4} \bigl((w_4^{(d)} \ll jd) \mathbin{\&} \mathit{empty}\bigr).
+\end{equation}
+Phép $\ll jd$ không thể lọt hàng vì $w_4^{(d)} \subseteq \mathrm{START}_d$. Với cửa sổ cột 1 ở Ví dụ~\ref{vd:cua-so}, Bảng~\ref{tab:o-thang} cho thấy trong 5 lần dịch chỉ lần $j = 2$ rơi vào ô trống, là ô $(5, 3)$.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Đưa cửa sổ $w_4$ (bit 56) về ô trống bên trong nó, với $d = 1$.}
+  \label{tab:o-thang}
+  \input{figures/bitboard/bang-o-thang}
+\end{table}
+
+Hình~\ref{fig:o-thang} ghép hàng 5 của ví dụ với một chuỗi chéo $\swarrow$ gồm 4 quân X $(1,7)$, $(2,6)$, $(3,5)$, $(4,4)$ trên cùng một bàn. Theo hướng chéo có hai cửa sổ 4 quân, bắt đầu ở $(0,8)$ và $(1,7)$, cho hai ô $(0,8)$ và $(5,3)$. Hướng ngang cũng cho $(5,3)$; phép OR gộp hai kết quả nên ô này chỉ xuất hiện một lần. Bên X có 2 ô thắng ngay, là \emph{đòn kép}: O đang đến lượt, không có ô thắng ngay nào và chỉ chặn được một trong hai ô. Tác tử cấp 2 và cấp 3 nhận biết đòn kép đúng bằng phép kiểm tra \texttt{popcount(winning\_squares(me, opp)) >= 2}.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/o-thang}
+  \caption{Tìm ô thắng ngay trên cả bàn. Ô vàng là ô đầu của cửa sổ có 4 quân, nền xanh nhạt là quân X; ô xanh lá là kết quả: bit 8 và bit 58.}
+  \label{fig:o-thang}
+\end{figure}
+
+\subsubsection{Hàm đánh giá theo cửa sổ}
+Hàm \texttt{evaluate} chấm thế cờ bằng số cửa sổ sống của mỗi bên, cửa sổ càng nhiều quân càng có giá trị. Gọi $n_k^{(d)}$ là số bit 1 của $\mathrm{exactly}(k)$ theo hướng $d$ và $w = (w_1, w_2, w_3, w_4) = (1, 8, 64, 512)$:
+\begin{align}
+  \mathrm{score}(\mathit{me}, \mathit{opp}) &= \sum_{d} \sum_{k=1}^{4} w_k\, n_k^{(d)}, \\
+  \mathrm{evaluate}(\mathit{me}, \mathit{opp}) &= \mathrm{score}(\mathit{me}, \mathit{opp}) - \mathrm{score}(\mathit{opp}, \mathit{me}).
+\end{align}
+Khái niệm ``bị chặn'' không cần mã riêng: cửa sổ chứa quân đối thủ đơn giản là không được tính, nên ba quân mở hai đầu nằm trong nhiều cửa sổ sống hơn ba quân bị chặn một đầu. Hàm có tính phản đối xứng $\mathrm{evaluate}(a, b) = -\mathrm{evaluate}(b, a)$, phù hợp với Negamax ở Cấp 3.
+
+\begin{vidu}[Tính tay điểm thế cờ]
+Xét X ở $(5,5), (5,6)$ và O ở $(4,6)$ (Hình~\ref{fig:danh-gia}, Bảng~\ref{tab:danh-gia}).
+
+\emph{X theo hướng ngang.} Hàng 5 không có O nên cả 7 cửa sổ đều sống. Cửa sổ bắt đầu ở cột 2, 3, 4, 5 chứa cả hai quân; cửa sổ cột 1 và cột 6 chứa một quân; cửa sổ cột 0 không chứa quân nào. Vậy điểm là $2 \times 1 + 4 \times 8 = 34$.
+
+\emph{X theo hướng dọc.} Cột 5 không có O, quân $(5,5)$ nằm trong 5 cửa sổ sống (bắt đầu từ hàng 1 đến 5). Ở cột 6, quân O tại hàng 4 loại mọi cửa sổ đi qua nó, nên quân $(5,6)$ chỉ còn 1 cửa sổ sống bắt đầu từ hàng 5. Tổng cộng 6 cửa sổ một quân, được 6 điểm.
+
+\emph{O theo hướng dọc.} Ngược lại, quân X ở $(5,6)$ chặn quân O từ phía dưới, chỉ còn cửa sổ từ hàng 0 đến hàng 4, được 1 điểm.
+
+Cộng đủ bốn hướng, X được 56 và O được 12, nên $\mathrm{evaluate}(X, O) = 44$ và theo góc nhìn O là $-44$.
+\end{vidu}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/danh-gia}
+  \caption{Ô đầu của các cửa sổ sống theo từng bên và từng hướng: xanh nhạt là cửa sổ có 1 quân, vàng là cửa sổ có 2 quân. Chữ X, O là vị trí quân.}
+  \label{fig:danh-gia}
+\end{figure}
+
+\begin{table}[H]
+  \centering\small
+  \caption{Số cửa sổ sống và điểm của từng bên trong ví dụ, $n_k$ là số cửa sổ có đúng $k$ quân.}
+  \label{tab:danh-gia}
+  \input{figures/bitboard/bang-danh-gia}
+\end{table}
+
+\subsubsection{Chi phí tính toán}
+Bảng~\ref{tab:chi-phi} đếm số phép dịch theo code, tính cả phép dịch 0 bit ở vòng $k = 0$. Mọi hàm đều có chi phí cố định, trong khi bản duyệt mảng phải đi qua 252 cửa sổ, mỗi cửa sổ 5 ô, tức tới \num{1260} lần truy cập ô cho một lượt kiểm tra. Trên Python, số 121 bit chiếm vài ``chữ số'' nội bộ nên mỗi phép bit không phải một lệnh máy duy nhất, nhưng số bước vẫn là hằng số.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Số phép dịch của các hàm chính trên cả bàn.}
+  \label{tab:chi-phi}
+  \begin{tabular}{@{}lrl@{}}
+    \toprule
+    \textbf{Hàm} & \textbf{Phép dịch} & \textbf{Cách tính} \\
+    \midrule
+    \texttt{has\_five} & $\le 12$ & 3 phép $\times$ 4 hướng, dừng sớm khi thấy dãy 5 \\
+    \texttt{dilate} & 4 & 2 phép dọc, 2 phép ngang \\
+    \texttt{candidates} (\texttt{radius} $= 2$) & 8 & 2 lần \texttt{dilate} \\
+    \texttt{window\_counts} & 10 & 5 phép cho $\mathit{free}$, 5 phép cho $p_k$ (một hướng) \\
+    \texttt{winning\_squares} & 60 & $(10 + 5) \times$ 4 hướng \\
+    \texttt{evaluate} & 80 & $10 \times$ 4 hướng $\times$ 2 bên \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \subsection{API game thống nhất}
-\goiy{\texttt{reset}, \texttt{legal\_actions}, \texttt{step}, \texttt{is\_terminal}, \texttt{result}, \texttt{render}, \texttt{clone}/\texttt{undo}; Zobrist; đối xứng}
+\label{sec:bb-api}
+Lớp \texttt{CaroGame} trong \texttt{caro/engine/game.py} bọc các hàm trên thành API chung cho tác tử, arena và giao diện (Bảng~\ref{tab:api}). Nước đi luôn là chỉ số ô từ 0 đến 120. Có hai quy ước góc nhìn cần phân biệt: \texttt{result()} luôn tính theo X, còn phần thưởng của \texttt{step()} tính theo người vừa đi.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Các phương thức chính của \texttt{CaroGame}.}
+  \label{tab:api}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    \textbf{Phương thức} & \textbf{Ý nghĩa} \\
+    \midrule
+    \texttt{reset()} & Về bàn trống, X đi trước. \\
+    \texttt{legal\_actions()} & Danh sách ô trống theo thứ tự tăng dần; rỗng khi ván đã kết thúc. \\
+    \texttt{step(a)} & Đi nước $a$, trả \texttt{(reward, done, info)}. Phần thưởng là 1 nếu người vừa đi thắng, ngược lại là 0. \\
+    \texttt{is\_terminal()} & Có người thắng hoặc bàn đã đầy. \\
+    \texttt{result()} & $+1$ nếu X thắng, $-1$ nếu O thắng, 0 nếu hoà, \texttt{None} nếu chưa xong. \\
+    \texttt{termination()} & \texttt{"five"}, \texttt{"full"} hoặc \texttt{None}; ghi vào log ván. \\
+    \texttt{undo()} & Lùi một nước và trả lại nước vừa lùi. \\
+    \texttt{clone()} & Tạo bản sao độc lập, dùng khi cần giữ nguyên thế cờ gốc. \\
+    \texttt{me\_opp()} & Cặp bitboard (bên đến lượt, đối thủ), đầu vào cho các hàm ở mục~\ref{sec:bb-thuat-toan}. \\
+    \texttt{render()} & Chuỗi văn bản của bàn cờ, dùng để gỡ lỗi. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection{Các bước trong \texttt{step}}
+\begin{enumerate}
+  \item Từ chối nếu ván đã kết thúc, hoặc $a$ không phải số nguyên, nằm ngoài $[0, 120]$, hay ô đã có quân. Khi đó \texttt{IllegalMoveError} được ném ra và trạng thái không đổi.
+  \item Đặt quân: $\mathrm{bb}[\text{bên}] \leftarrow \mathrm{bb}[\text{bên}] \mid (1 \ll a)$.
+  \item Cập nhật khoá Zobrist, thêm $a$ vào lịch sử và đổi lượt.
+  \item Gọi \texttt{has\_five} trên bitboard của người vừa đi. Không cần kiểm tra bên kia vì một nước đi chỉ thêm quân cho người đi.
+  \item Ván kết thúc nếu có người thắng hoặc $\mathrm{bb}[X] \mid \mathrm{bb}[O] = \texttt{FULL}$ (hoà).
+\end{enumerate}
+
+Đoạn mã~\ref{lst:api} chạy một ván ngắn. Mọi giá trị trong chú thích đều được script sinh hình kiểm tra lại mỗi lần chạy.
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[caption={Một ván X thắng bằng API của CaroGame.}, label={lst:api}, numbers=none]
+g = CaroGame()
+for a in (60, 0, 61, 1, 62, 2, 63, 3):  # X: 60..63, O: 0..3
+    g.step(a)                           # (0.0, False, {'winner': None})
+g.step(64)                              # (1.0, True, {'winner': 0}): X có 5 quân
+g.result()                              # 1
+g.termination()                         # 'five'
+g.legal_actions()                       # []
+g.undo()                                # 64; g.result() trở lại None
+\end{lstlisting}
+\end{minipage}
+
+\subsubsection{Băm Zobrist}
+Bảng chuyển vị của Alpha-Beta cần khoá ngắn để tra thế cờ. Theo phương pháp của Zobrist~\cite{zobrist1970}, engine sinh trước $2 \times 121$ số ngẫu nhiên 64 bit $Z[\text{bên}][i]$ và một số \texttt{SIDE\_KEY} cho lượt đi, với seed cố định 2026 nên khoá giống nhau giữa các lần chạy và các máy. Khoá của thế cờ là
+\begin{equation}
+  h = \bigoplus_{i \in X} Z[X][i] \;\oplus\; \bigoplus_{i \in O} Z[O][i] \;\oplus\; (\texttt{SIDE\_KEY} \text{ nếu O đến lượt}).
+\end{equation}
+Khoá này không cần tính lại từ đầu. Do $a \oplus a = 0$, mỗi nước đi và mỗi lần lùi đều chỉ cần cùng một phép cập nhật:
+\begin{equation}
+  h \leftarrow h \oplus Z[\text{bên}][a] \oplus \texttt{SIDE\_KEY}.
+\end{equation}
+
+Bảng~\ref{tab:zobrist} là ví dụ với \texttt{SIDE\_KEY} $=$ \input{figures/bitboard/side-key}. Sau nước thứ nhất, khoá bằng $Z[X][60] \oplus \texttt{SIDE\_KEY}$; sau nước thứ hai, \texttt{SIDE\_KEY} bị XOR hai lần nên tự triệt tiêu. Vì XOR có tính giao hoán, cùng thế cờ đạt được theo thứ tự khác cũng có cùng khoá: chuỗi nước $48, 50, 60, 61$ cũng cho \texttt{0x8e2e7e9437d55fb1}, giúp bảng chuyển vị nhận ra các nhánh hội tụ.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Khoá Zobrist qua 4 nước $60, 61, 48, 50$.}
+  \label{tab:zobrist}
+  \input{figures/bitboard/bang-zobrist}
+\end{table}
+
+\subsubsection{Đối xứng của bàn cờ}
+Bàn vuông có 8 phép đối xứng (nhóm $D_4$) và luật chơi không đổi qua các phép này. Module \texttt{symmetry} tính sẵn bảng hoán vị \texttt{PERMS[k][i]}, là ô mà ô $i$ chuyển tới dưới phép $k$. Chẳng hạn phép xoay 90° là $(r, c) \mapsto (c, 10 - r)$, đưa ô 13 $= (1, 2)$ thành $(2, 9) =$ ô 31 (Bảng~\ref{tab:doi-xung}). Biến đổi một bitboard là đi qua từng bit 1 và tra bảng, nên chi phí tỉ lệ với số quân, khác với các hàm chi phí hằng ở trên.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Ảnh của ô 13 qua 8 phép đối xứng.}
+  \label{tab:doi-xung}
+  \input{figures/bitboard/bang-doi-xung}
+\end{table}
+
+Các phép này phục vụ hai việc cho phần học máy: nhân dữ liệu huấn luyện lên 8 lần, và loại trùng bằng \emph{khoá chuẩn hoá}, là giá trị nhỏ nhất trong 8 khoá Zobrist của 8 ảnh. Như vậy mọi thế đối xứng với nhau cho cùng một khoá. Ở Hình~\ref{fig:doi-xung}, khoá nhỏ nhất rơi vào phép 6.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/bitboard/doi-xung}
+  \caption{Một thế cờ qua 8 phép đối xứng; dưới mỗi bàn là 8 chữ số hexa đầu của khoá Zobrist, chữ đậm là khoá nhỏ nhất.}
+  \label{fig:doi-xung}
+\end{figure}
+
 \subsection{Kiểm thử engine}
-\goiy{đối chiếu với bản duyệt mảng, ca biên, hoà, nước bất hợp lệ}
+\label{sec:bb-kiem-thu}
+Lỗi bitboard thường chỉ lộ ở mép bàn, nên ngoài các ca dựng tay, nhóm viết thêm bản tham chiếu \texttt{tests/naive.py}: duyệt mảng trực tiếp trên danh sách 252 cửa sổ, chậm nhưng dễ thấy là đúng. Mỗi hàm bitboard được đối chiếu với bản này trên các thế cờ ngẫu nhiên có seed cố định ở nhiều mật độ quân khác nhau (Bảng~\ref{tab:kiem-thu}).
+
+\begin{table}[H]
+  \centering\small
+  \caption{Các nhóm kiểm thử chính của engine.}
+  \label{tab:kiem-thu}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    \textbf{Đối tượng} & \textbf{Cách kiểm tra} \\
+    \midrule
+    \texttt{has\_five} & Cả 252 dãy 5 phải thắng và bỏ bất kỳ quân nào thì không còn thắng; dãy 6, cả hàng, dãy bị chặn hai đầu; 4 ca lọt hàng dựng tay; \num{4000} lần đối chiếu với bản duyệt mảng ở 5 mật độ quân. \\
+    \texttt{dilate}, \texttt{candidates} & \texttt{dilate} đúng với từng ô trong 121 ô; 450 thế \texttt{candidates} đối chiếu với bản duyệt mảng ở bán kính 1, 2, 3; bàn trống; quân ở mép phải. \\
+    \texttt{winning\_squares} & 600 lần đối chiếu; các mẫu tứ mở, tứ bị chặn, tứ có lỗ. \\
+    \texttt{evaluate} & 80 thế đối chiếu \texttt{side\_score} và kiểm tra tính phản đối xứng; ba quân mở phải hơn ba quân bị chặn. \\
+    \texttt{CaroGame} & X thắng, O thắng ($-1$), hoà trên bàn đầy dựng sẵn không có 5 liền; 7 giá trị nước đi sai để trạng thái không đổi; 100 ván ngẫu nhiên kiểm tra tính nhất quán. \\
+    Zobrist, \texttt{undo} & Khoá cập nhật dần bằng khoá tính lại từ đầu; thế cờ đạt theo thứ tự khác có cùng khoá; lùi hết về bàn trống; lùi sau khi thắng mở lại ván. \\
+    Đối xứng & 8 phép là các song ánh khác nhau; phép nghịch đúng; \texttt{has\_five} và \texttt{winning\_squares} không đổi qua đối xứng; khoá chuẩn hoá giống nhau trên cả 8 ảnh. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Ba file \texttt{test\_bitboard.py}, \texttt{test\_game.py} và \texttt{test\_symmetry.py} gồm 57 test (lần lượt 33, 20 và 4), và cả 57 test đều đạt khi chạy ngày 04/11/2026 trên commit \texttt{9c501f8}. Bộ test cũng là một phần của CI trong \texttt{.github/workflows/ci.yml}.
 
 \section{Interface tác tử}
-\goiy{\texttt{Agent}, \texttt{Limits}, \texttt{Deadline}, \texttt{REGISTRY}, \texttt{make\_agent}, khoá \texttt{last\_stats()}}
+Mọi tác tử cấp 1--8 chỉ giao tiếp với arena, huấn luyện và giao diện qua một giao thức chung \texttt{Agent} trong \texttt{caro/agents/base.py}, gồm ba phương thức:
+\begin{itemize}
+  \item \texttt{reset(seed)}: khởi tạo lại bộ sinh số ngẫu nhiên và xoá trạng thái (bảng chuyển vị, cây tìm kiếm\ldots) trước mỗi ván;
+  \item \texttt{select\_action(game, limits)}: trả chỉ số ô $a \in \{0,\dots,120\}$ của nước đi (trả $-1$ nếu ván đã kết thúc);
+  \item \texttt{last\_stats()}: trả từ điển thống kê của nước vừa đi.
+\end{itemize}
+Lớp \texttt{BaseAgent} cài sẵn phần chung (tên, ngân sách mặc định, RNG có seed, \texttt{last\_stats}), các cấp chỉ cần cài \texttt{select\_action}.
+
+\paragraph{Ngân sách mỗi nước.}
+Lớp \texttt{Limits} (bất biến) gồm \texttt{mode} $\in$ \{\texttt{time}, \texttt{fixed}\} cùng ba giới hạn \texttt{time\_ms}, \texttt{max\_depth}, \texttt{max\_sims}; giá trị \texttt{None} nghĩa là tác tử tự chọn mặc định. Chế độ \texttt{time} bắt buộc có \texttt{time\_ms} (chế độ A), chế độ \texttt{fixed} dùng độ sâu hoặc số mô phỏng cố định (chế độ B). Lớp \texttt{Deadline} được tạo ngay khi vào \texttt{select\_action}, và vòng tìm kiếm gọi \texttt{expired()} để biết lúc dừng; có thể trừ một biên an toàn (10\,ms cho Alpha-Beta, 5\,ms cho MCTS).
+
+\paragraph{Đăng ký và dựng tác tử.}
+Bảng \texttt{REGISTRY} ánh xạ \texttt{kind} trong file YAML sang lớp cài đặt (\texttt{random}, \texttt{rule\_based}, \texttt{alphabeta}, \texttt{mcts}). Hàm \texttt{make\_agent} đọc config đã ghép, chuyển \texttt{params} thành tham số khởi tạo, \texttt{limits} thành \texttt{Limits}, \texttt{id} thành tên, và báo lỗi nếu có tham số lạ. Lớp chỉ được import khi cần nên cấp 1--4 không kéo theo PyTorch.
+
+\paragraph{Khoá thống kê chuẩn.}
+\texttt{last\_stats()} chỉ ghi các khoá tác tử có, theo tên cố định để arena và giao diện đọc thống nhất: \texttt{nodes}, \texttt{sims}, \texttt{depth}, \texttt{time\_ms}, \texttt{pv}, \texttt{score}, \texttt{reason}, \texttt{visits}, \texttt{policy}, \texttt{value}.
 
 \section{Thuật toán từng cấp}
 \subsection{Cấp 1 --- Random}
-\goiy{baseline, chọn đều có seed}
+Cấp 1 (\texttt{random\_agent.py}) chọn đều ngẫu nhiên trong các nước hợp lệ bằng RNG có seed của \texttt{BaseAgent}. Đây là mốc dưới cùng: mọi tác tử khác phải thắng gần như tuyệt đối, nếu không thì có lỗi trong tác tử hoặc trong engine.
 \subsection{Cấp 2 --- Rule-based (P1--P7)}
-\goiy{thứ tự ưu tiên, xung đột luật P3$\leftrightarrow$P4, P4$\leftrightarrow$P5, hạn chế}
+Cấp 2 (\texttt{rule\_agent.py}, \texttt{kind: rule\_based}) nhìn trước đúng một nước. Tập ứng viên là các ô trống trong bán kính Chebyshev \texttt{radius} $=2$ quanh quân đã đặt; luật đầu tiên áp dụng được sẽ quyết định nước đi và được ghi vào khoá \texttt{reason} của \texttt{last\_stats()}:
+\begin{enumerate}
+  \item[\textbf{P1}] \textbf{Thắng ngay:} đặt vào ô thuộc \texttt{winning\_squares(me, opp)}.
+  \item[\textbf{P2}] \textbf{Chặn thua:} đối thủ có ô thắng ngay thì chiếm ô đó.
+  \item[\textbf{P3}] \textbf{Tạo đòn kép:} nước đi tạo từ hai ô thắng trở lên, đối thủ không chặn hết được trong một nước.
+  \item[\textbf{P4}] \textbf{Phá đòn kép của đối thủ:} chặn một trong các ô thắng nếu đối thủ đã có từ hai ô, hoặc chiếm ô mà nếu đối thủ đặt vào sẽ thành đòn kép.
+  \item[\textbf{P5}] \textbf{Tạo tứ:} nước tạo cửa sổ 5 ô có đúng 4 quân; nhiều nước thì lấy nước có \texttt{evaluate} cao nhất.
+  \item[\textbf{P6}] \textbf{Đánh giá chung:} chọn nước có điểm \texttt{evaluate} cao nhất theo bộ trọng số.
+  \item[\textbf{P7}] \textbf{Hoà điểm:} ưu tiên gần tâm (khoảng cách Manhattan tới ô $(5,5)$), còn hoà thì chọn ngẫu nhiên theo seed.
+\end{enumerate}
+Thứ tự này giải quyết các xung đột giữa luật: tự tạo đòn kép (P3) đứng trước phá đòn kép của đối thủ (P4), vì thế nếu cả hai cùng có thì bên mình ra đòn trước; phá đòn kép (P4) đứng trước tạo tứ (P5) vì tứ chưa thắng ngay còn đòn kép của đối thủ thì thắng chắc. Danh sách luật bật (\texttt{priorities}) và trọng số (\texttt{eval\_weights}) đều cấu hình được để làm ablation A7. Hạn chế của cấp 2 là chỉ nhìn một nước nên không thấy chuỗi tấn công dài (VCF) và dễ bị đòn kép hình thành từ hai nước trở lên.
 \subsection{Cấp 3 --- Negamax Alpha-Beta}
-\goiy{hàm đánh giá theo cửa sổ, iterative deepening, TT, sắp xếp nước}
+Cấp 3 (\texttt{alphabeta.py}, \texttt{kind: alphabeta}) hiện thực Negamax với cắt tỉa Alpha-Beta theo Mục~\ref{sec:lt-alpha-beta}. Điểm thắng là $\text{WIN\_SCORE}=10^6$ trừ đi số ply, nhờ vậy tác tử ưu tiên thắng nhanh và kéo dài khi sắp thua. Nút lá được chấm bằng hàm \texttt{evaluate} theo cửa sổ 5 ô của engine (Mục~\ref{sec:lt-bo-tro}), và nước đi ứng viên lấy từ \texttt{candidates} bán kính 2. Các thành phần, mỗi thành phần có công tắc riêng trong config để phục vụ ablation A1, A2, A7:
+\begin{itemize}
+  \item \textbf{Iterative deepening} (\texttt{iterative\_deepening}): tìm lần lượt độ sâu $1,2,\dots$ đến \texttt{max\_depth} (mặc định 6); dừng khi hết giờ hoặc khi đã thấy thắng ép buộc, và đưa nước tốt nhất của độ sâu trước lên đầu danh sách. Kết quả của độ sâu dở dang bị bỏ.
+  \item \textbf{Cắt tỉa} (\texttt{pruning}, A1): tắt thì duyệt đầy đủ minimax để đo hiệu quả của cắt tỉa.
+  \item \textbf{Bảng chuyển vị} (\texttt{tt}, A2): bảng băm theo khoá Zobrist, mỗi mục lưu (giá trị, độ sâu, cờ, nước tốt nhất) với cờ \texttt{EXACT}/\texttt{LOWER}/\texttt{UPPER} theo cận alpha--beta; thay thế kiểu replace-always, kích thước \texttt{tt\_size\_mb} (64\,MB mặc định). Không ghi bảng khi đã hết giờ để tránh lưu giá trị chưa trọn vẹn.
+  \item \textbf{Nước bắt buộc} (\texttt{forced\_moves}): nếu có ô thắng ngay thì chỉ xét các ô đó; nếu không, mà đối thủ có ô thắng thì chỉ xét các ô chặn.
+  \item \textbf{Sắp xếp nước} (\texttt{move\_ordering}, A2) theo thứ tự ưu tiên giảm dần: nước của bảng chuyển vị, thắng ngay, tạo đòn kép, tạo tứ, chặn đòn kép của đối thủ, hai nước \emph{killer} của ply đó, điểm \emph{history} (cộng $\text{depth}^2$ khi nước gây cắt tỉa), và cuối cùng là điểm vị trí tính gia tăng. Thông tin đe doạ của cả nút được tính một lần bằng \texttt{\_threat\_info} thay vì đi thử từng ứng viên; \texttt{tests/test\_alphabeta.py} kiểm tra thứ tự này trùng với cách đi thử.
+  \item \textbf{Trọng số đánh giá} (\texttt{eval\_weights}, A7): \texttt{default}, \texttt{no\_defense} (chỉ tính điểm quân mình) hoặc bảng trọng số tuỳ ý.
+\end{itemize}
+Ngoài vai trò đối thủ, cấp 3 còn có phương thức \texttt{scored\_moves(game, limits, top\_k)} trả top-$k$ nước kèm điểm, dùng làm \emph{expert} sinh dữ liệu cho cấp 5. \texttt{last\_stats()} trả \texttt{nodes}, \texttt{depth}, \texttt{time\_ms}, \texttt{pv} và \texttt{score}.
 \subsection{Cấp 4 --- MCTS (UCT)}
-\goiy{mở rộng trên ứng viên, kiểu rollout, kiểm tra kết thúc, tái sử dụng cây}
+Cấp 4 (\texttt{caro/agents/mcts.py}, \texttt{kind: mcts}) hiện thực thuật toán Tìm kiếm cây Monte Carlo với công thức UCT theo Mục~\ref{sec:lt-mcts}.
+Mỗi lần lặp mô phỏng thực hiện đủ bốn bước:
+\begin{enumerate}
+  \item \textbf{Selection:} từ gốc, đi xuống cây theo công thức UCT: $\text{UCT}(a) = \frac{W(a)}{N(a)} + c \sqrt{\frac{\ln N(\text{cha})}{N(a)}}$, với hệ số $c = 1{,}4$ cấu hình từ file \texttt{l4\_mcts.yaml}. Nước đi cuối cùng khi hết ngân sách được chọn theo con có số lượt thăm $N$ lớn nhất (kết hợp $W$ để giải hoà).
+  \item \textbf{Expansion:} tập con của một nút được thu hẹp trong danh sách ô ứng viên $\text{candidates}(\text{radius}=2)$ thay vì toàn bộ 121 ô trống. Ở mỗi lần mở rộng, thuật toán chọn ngẫu nhiên một nước chưa thử từ danh sách ứng viên này.
+  \item \textbf{Simulation (Rollout):} từ nút mới, ván được mô phỏng đến trạng thái kết thúc theo một trong hai chính sách:
+  \begin{itemize}
+    \item \texttt{random}: chọn ngẫu nhiên đồng đều trong các ô ứng viên bán kính \texttt{rollout\_radius} (mặc định 1).
+    \item \texttt{light}: ưu tiên thắng ngay nếu có ô thắng $\text{winning\_squares}(\text{me}, \text{opp})$, sau đó chặn thua ngay nếu đối thủ có ô thắng, và chỉ chọn ngẫu nhiên trong bán kính 1 khi không có đe doạ trực tiếp.
+  \end{itemize}
+  Để đạt tốc độ cao, kết thúc rollout chỉ kiểm tra \texttt{has\_five} trên bitboard của người vừa đi qua các phép dịch bit.
+  \item \textbf{Backpropagation:} thống kê $(N, W)$ được cập nhật ngược từ nút lá về gốc, với $W$ tích luỹ theo góc nhìn của người đã đi nước dẫn tới từng nút ($+1$ khi bên đó thắng, $-1$ khi thua, $0$ khi hoà).
+\end{enumerate}
+Tác tử hỗ trợ dừng theo số mô phỏng cố định \texttt{max\_sims} (chế độ B) hoặc theo thời gian \texttt{time\_ms} thông qua lớp \texttt{Deadline} (chế độ A).
+Cơ chế tái sử dụng cây con (\texttt{reuse\_tree}) cho phép giữ lại nhánh tương ứng với nước đi của đối thủ làm gốc mới cho lượt tiếp theo; cờ này mặc định tắt để đảm bảo đo lường số mô phỏng công bằng giữa các thực nghiệm.
+Hàm \texttt{last\_stats()} trả về số mô phỏng \texttt{sims}, thời gian chạy \texttt{time\_ms}, bản đồ số lượt thăm \texttt{visits} cho từng ô phục vụ vẽ heatmap trên giao diện web, điểm số ước lượng \texttt{score} và biến chính \texttt{pv}.
+Thực nghiệm đo tốc độ trên máy đạt khoảng \num{6400} mô phỏng/giây với rollout ngẫu nhiên và khoảng \num{1600} mô phỏng/giây với rollout nhẹ.
+\subsubsection{Xử lý chiến thuật ở gốc (\texttt{root\_tactics})}
+\label{sec:root-tactics}
+UCT thuần chỉ biết một nước đi tốt hay xấu qua tỷ lệ thắng của các ván mô phỏng. Với Caro, nhiều nước đi \emph{bắt buộc}: nếu đối thủ sắp có năm quân liền thì chỉ một vài ô cứu được ván. Tuỳ chọn \texttt{root\_tactics} (mặc định \texttt{False}, tham số của \texttt{MCTSAgent}, cấu hình mẫu \texttt{configs/agents/l4\_mcts\_tactics.yaml}) thêm một bước kiểm tra chiến thuật \emph{trước} vòng lặp mô phỏng, chỉ dùng các phép tìm ô thắng của engine (Mục~\ref{sec:engine-o-thang}). Gọi $S(x, y)$ là tập ô thắng ngay của bên $x$ khi đối thủ là $y$, và $\text{me}$, $\text{opp}$ là hai bitboard. Theo thứ tự ưu tiên:
+\begin{enumerate}
+  \item \textbf{Thắng ngay:} nếu $S(\text{me}, \text{opp}) \neq \emptyset$, đi một ô thắng.
+  \item \textbf{Chặn năm:} nếu $S(\text{opp}, \text{me}) \neq \emptyset$, đi vào ô đó. Nếu có từ hai ô thắng thì ván đã thua nên nước nào cũng như nhau, nhưng thuật toán vẫn chọn một ô thắng của đối thủ.
+  \item \textbf{Tạo đòn kép:} nếu có ô $m$ với $|S(\text{me} \cup \{m\}, \text{opp})| \geq 2$ (tứ hở hoặc hai tứ cùng lúc) thì đi $m$, vì đối thủ chỉ chặn được một ô.
+  \item \textbf{Chặn ba hở / đòn kép của đối thủ:} nếu có ô $m$ với $|S(\text{opp} \cup \{m\}, \text{me})| \geq 2$ thì \emph{thu hẹp} tập nước chưa thử ở gốc về đúng các ô $m$ như vậy (các ô mà nếu đối thủ đi vào sẽ tạo đòn kép; chiếm một ô như vậy là cách ngăn mà code kiểm tra được), rồi để MCTS chọn trong tập nhỏ này.
+\end{enumerate}
+Bước 1--3 trả nước đi ngay, không tốn mô phỏng; bước 4 giữ nguyên MCTS nhưng gốc chỉ còn vài nước ứng viên nên toàn bộ ngân sách dồn vào đó. Chi phí là vài lần gọi \texttt{winning\_squares} trên các ô ứng viên, không đáng kể so với hàng trăm mô phỏng. Cờ này không đụng đến cây bên dưới gốc, nên các thực nghiệm A3/A4 (tắt cờ) vẫn tái lập nguyên vẹn.
+
 \subsection{Cấp 5 --- Mạng policy học có giám sát}
-\goiy{tensor 4×11×11, ResNet policy-value}
+Cấp 5 dùng mạng \texttt{CaroResNet} (\texttt{caro/nn/model.py}) hai đầu policy--value, nhận đầu vào là tensor $4\times 11\times 11$ do \texttt{board\_to\_tensor} (\texttt{caro/nn/features.py}) dựng từ góc nhìn của bên đang đi: kênh 0 là quân của mình, kênh 1 là quân đối thủ, kênh 2 là hằng số 1 nếu đến lượt X (0 nếu O), kênh 3 dành sẵn và hiện bằng 0.
+
+Thân mạng gồm một tích chập $3\times3$ kèm BatchNorm và ReLU, tiếp theo là các khối residual (mỗi khối hai tích chập $3\times 3$, BatchNorm và cộng tắt), mặc định 64 kênh và 6 khối, có thể đổi qua config (\texttt{configs/model/resnet\_small.yaml}). Hai đầu ra:
+\begin{itemize}
+  \item \textbf{Đầu policy:} tích chập $1\times1$ xuống 2 kênh, BatchNorm, ReLU, rồi tầng tuyến tính ra 121 logit. Các ô đã có quân bị che bằng $-\infty$ trước softmax nên xác suất chỉ rơi vào ô hợp lệ.
+  \item \textbf{Đầu value:} tích chập $1\times1$ xuống 1 kênh, hai tầng tuyến tính (121$\to$32$\to$1) và \texttt{tanh}, cho $v(s)\in[-1,1]$ theo góc nhìn bên đi.
+\end{itemize}
+\texttt{PolicyAgent} (\texttt{caro/agents/policy\_agent.py}) bọc mạng này làm tác tử chơi không tìm kiếm: chọn nước có logit lớn nhất ($\arg\max$, tương ứng nhiệt độ 0) trong các ô hợp lệ, đồng thời giữ phân phối policy và giá trị value để giao diện vẽ heatmap qua \texttt{last\_stats()}.
 \subsection{Cấp 6 --- REINFORCE có baseline}
 \goiy{vì sao không dùng Q-learning dạng bảng; đối thủ khi tự chơi}
 \subsection{Cấp 7 --- PUCT với mạng cấp 5 (AlphaGo-inspired)}

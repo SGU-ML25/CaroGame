@@ -41,7 +41,7 @@
 \newenvironment{gon}{\begin{itemize}\setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}}{\end{itemize}}
 
 % Bàn cờ TikZ: ô (r, c) có tâm tại (c+.5, -(r+.5))
-\newcommand{\luoi}[1]{\draw[gray!55, line width=.3pt] (0,0) grid (#1,-#1); \draw[gray!90] (0,0) rectangle (#1,-#1);}
+\newcommand{\luoi}[1]{\draw[gray!55, line width=.3pt, step=1] (0,0) grid (#1,-#1); \draw[gray!90] (0,0) rectangle (#1,-#1);}
 \newcommand{\chuX}[2]{\node[text=quanx, font=\bfseries] at (#2+.5,-#1-.5) {X};}
 \newcommand{\chuO}[2]{\node[text=quano, font=\bfseries] at (#2+.5,-#1-.5) {O};}
 \newcommand{\toO}[2]{\fill[ovang] (#2,-#1) rectangle ++(1,-1);}
@@ -98,7 +98,7 @@
 
 Hệ thống gồm: (1) Game Engine tự cài đặt bằng bitboard, mỗi bên là một số nguyên 121 bit, kiểm tra thắng chỉ tốn 3 phép dịch bit cho mỗi hướng; (2) giao diện web FastAPI phục vụ thi đấu người--máy, máy--máy, xem lại ván từ log và hiển thị ``AI đang nghĩ gì''; (3) khung giải đấu vòng tròn 200 ván/cặp từ 100 khai cuộc có đổi màu, hai chế độ ngân sách tính toán, khoảng tin cậy Wilson 95\%, cùng config, seed và log đủ để chạy lại mọi kết quả.
 
-Nghiên cứu trả lời định lượng 4 câu hỏi: \textit{(1) cùng thời gian mỗi nước, MCTS có thắng nhiều hơn Alpha-Beta không; (2) self-play có cải thiện tác tử học được so với mô hình bắt chước chuyên gia không; (3) cắt tỉa và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nguyên giá trị tìm kiếm; (4) lợi thế đi trước trên bàn 11×11 lớn đến mức nào.}
+Nghiên cứu trả lời định lượng 4 câu hỏi: \textit{(1) cùng thời gian mỗi nước, MCTS có thắng nhiều hơn Alpha-Beta không; (2) self-play có cải thiện tác tử học được so với mô hình bắt chước chuyên gia không; (3) cắt tỉa và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nguyên giá trị tìm kiếm; (4) lợi thế đi trước trên bàn 11×11 lớn đến mức nào.} Đến nay nhóm đã có kết quả sơ bộ cho RQ3 (mục~\ref{sec:sobo}); giải đấu chính chưa được chạy.
 
 % ============================== 1 ==============================
 \section{GIỚI THIỆU VÀ LÀM RÕ ĐỀ TÀI}
@@ -185,10 +185,10 @@ Bắt buộc: engine, giao diện, tác tử cấp 1--4, tối thiểu một tá
 \section{MỤC TIÊU VÀ CÂU HỎI NGHIÊN CỨU}
 
 \subsection{Phân cấp mục tiêu nghiên cứu}
-Nhóm cấu trúc thành 3 \textbf{mục tiêu chiến lược}, liên kết kỹ thuật nền tảng, thuật toán và phương pháp đánh giá. Các ngưỡng ở cột cuối là chỉ tiêu đặt ra trước khi chạy, chưa phải kết quả.
+Nhóm cấu trúc thành 3 \textbf{mục tiêu chiến lược}, liên kết kỹ thuật nền tảng, thuật toán và phương pháp đánh giá. Các ngưỡng ở cột cuối là chỉ tiêu đặt ra trước khi chạy; những kết quả đã có nằm ở mục~\ref{sec:sobo}.
 
 {\small\setlength{\LTpre}{4pt}\setlength{\LTpost}{4pt}
-\begin{longtable}{@{}p{.2\textwidth} p{.39\textwidth} p{.36\textwidth}@{}}
+\begin{longtable}{@{}p{.17\textwidth} p{.37\textwidth} p{.41\textwidth}@{}}
   \toprule
   \textbf{Mục tiêu cấp 1} & \textbf{Mục tiêu cấp 2 (nhiệm vụ)} & \textbf{Tiêu chí hoàn thành} \\
   \midrule\endhead
@@ -391,23 +391,62 @@ Vì hàng rộng đúng 11 không có cột đệm, phép dịch có thể ``l�
   \end{tabularx}
 \end{table}
 
+\subsection{Kết quả sơ bộ đã có (A1, A2, A7)}
+\label{sec:sobo}
+Bảng~\ref{tab:sobo} tổng hợp từ log thô trong \texttt{runs/bench/}, chạy bằng \texttt{caro/arena/bench.py} và \texttt{notebooks/analysis.ipynb}. Các thí nghiệm này đo trên bộ thế cờ cố định, chưa phải đấu giải.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Kết quả sơ bộ, lấy trung vị theo thế cờ.}
+  \label{tab:sobo}
+  \begin{tabularx}{\textwidth}{@{}l X l r r@{}}
+    \toprule
+    \textbf{Mã} & \textbf{Cấu hình} & \textbf{Biến thể} & \textbf{Số nút} & \textbf{Thời gian (ms)} \\
+    \midrule
+    A1 & Độ sâu 3; 50 thế; lặp 3 lần & Có cắt tỉa & \num{39322} & \num{1273} \\
+       &                             & Không cắt tỉa & \num{802217} & \num{26576} \\
+    \midrule
+    A2 & \num{1000} ms mỗi nước; 10 thế; 1 lần & Không sắp xếp, không TT & \num{9106} & 990 \\
+       &                                       & Có sắp xếp nước & 372 & 995 \\
+       &                                       & Có sắp xếp nước và TT & 486 & 995 \\
+    \midrule
+    A7 & Độ sâu 2; 10 thế; 1 lần & Trọng số mặc định & 366 & 578 \\
+       &                         & Bỏ phòng thủ & 580 & 549 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.82\textwidth]{../docs/figures/a1_nodes_log.png}
+  \caption{A1: số nút theo từng thế cờ trên trục log, độ sâu 3. Có ba thế chỉ tốn khoảng 100 nút ở cả hai cấu hình.}
+  \label{fig:a1}
+\end{figure}
+
+\begin{gon}
+  \item \textbf{A1 ủng hộ giả thuyết RQ3 ở độ sâu 3:} cắt tỉa giảm khoảng 95\% số nút và thời gian theo trung vị (trung bình giảm 14,1 lần), đạt chỉ tiêu $\ge 70\%$, và giá trị gốc trùng ở cả 50/50 thế.
+  \item \textbf{A2 chưa kết luận được:} mọi biến thể đều dùng hết khoảng 1 giây, nên ít nút hơn không có nghĩa là cắt tỉa tốt hơn. Bản có sắp xếp chỉ thăm khoảng 550 nút/giây so với \num{13767} nút/giây của bản không sắp xếp, tức mỗi nút đắt hơn nhiều. Log chưa ghi độ sâu đạt được, là độ đo chính của A2, nên nhóm sẽ chạy lại có ghi độ sâu và thêm so sánh ở độ sâu cố định.
+  \item \textbf{A7 chưa trả lời được câu hỏi chính:} điểm gốc khác nhau ở 9/10 thế là điều bình thường vì hai bản dùng hàm lượng giá khác nhau. Độ đo chính là score, cần giải đấu để đo.
+  \item \textbf{Hạn chế:} các thế cờ sinh từ ván ngẫu nhiên dài 10--20 nước, A2 và A7 chỉ có 10 thế, và A1, A7 được chạy khi code chưa commit. Vì vậy đây chỉ là số liệu sơ bộ; các thí nghiệm sẽ được chạy lại từ code đã commit khi Cấp 3 ổn định.
+\end{gon}
+
 % ============================== 6 ==============================
 \section{KẾ HOẠCH THỰC HIỆN VÀ PHÂN CÔNG}
 
 \subsection{Phân công nhiệm vụ}
-Nhóm 4 thành viên phân công theo issue \#24 trên GitHub. Mỗi người commit bằng tài khoản riêng, mỗi việc một nhánh và Pull Request có ít nhất một người xem. Tỷ lệ đóng góp được tổng hợp từ lịch sử GitHub và công bố trong báo cáo cuối kỳ.
+Nhóm có 3 thành viên, phân công dựa trên issue \#24 trên GitHub. Issue này lập khi dự kiến 4 người nên dùng nhãn TV1--TV4; Bảng~\ref{tab:phan-cong} ghi rõ thành viên phụ trách từng nhãn. Mỗi người commit bằng tài khoản riêng, mỗi việc một nhánh và Pull Request có ít nhất một người xem. Tỷ lệ đóng góp được tổng hợp từ lịch sử GitHub và công bố trong báo cáo cuối kỳ.
 
 \begin{table}[H]
   \centering\small
   \caption{Phân công theo issue trên GitHub.}
-  \begin{tabularx}{\textwidth}{@{}l X X l@{}}
+  \label{tab:phan-cong}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{.17\textwidth} X X l@{}}
     \toprule
-    \textbf{TV} & \textbf{Phụ trách chính} & \textbf{Sản phẩm bàn giao} & \textbf{Issue} \\
+    \textbf{Thành viên} & \textbf{Phụ trách chính} & \textbf{Sản phẩm bàn giao} & \textbf{Issue} \\
     \midrule
-    TV1 & Engine bitboard, interface tác tử, CI, giao diện; phụ: README, kịch bản demo & \texttt{engine/}, \texttt{agents/base.py}, \texttt{ui/}, CI, README & \#4--\#8 \\
-    TV2 & Cấp 2, Cấp 3; thí nghiệm A1, A2, A7; phân tích lỗi tác tử & \texttt{rule\_agent}, \texttt{alphabeta}, kết quả A1, A2, A7 & \#9--\#12 \\
-    TV3 & Cấp 4, Cấp 7, Cấp 8; thí nghiệm A3, A4, A5 & \texttt{mcts}, \texttt{puct}, vòng lặp self-play, kết quả A3--A5 & \#13--\#16 \\
-    TV4 & Arena, thống kê, mạng nơ-ron, Cấp 5, Cấp 6; giải chính thức, A5b, A6, E3; notebook & \texttt{arena/}, \texttt{nn/}, \texttt{training/}, checkpoint, log giải, notebook & \#17--\#23 \\
+    Huỳnh Thanh Tiến (TV1, TV3) & Engine bitboard, interface tác tử, CI, giao diện; Cấp 4, Cấp 7, Cấp 8; thí nghiệm A3, A4, A5; phụ: README, kịch bản demo & \texttt{engine/}, \texttt{agents/base.py}, \texttt{ui/}, CI, README; \texttt{mcts}, \texttt{puct}, vòng lặp self-play, kết quả A3--A5 & \#4--\#8, \#13--\#16 \\
+    Võ Thị Như Ý (TV2) & Cấp 2, Cấp 3; thí nghiệm A1, A2, A7; phân tích lỗi tác tử & \texttt{rule\_agent}, \texttt{alphabeta}, kết quả A1, A2, A7 & \#9--\#12 \\
+    Đặng Ngọc Như Ý (TV4) & Arena, thống kê, mạng nơ-ron, Cấp 5, Cấp 6; giải chính thức, A5b, A6, E3; notebook & \texttt{arena/}, \texttt{nn/}, \texttt{training/}, checkpoint, log giải, notebook & \#17--\#23 \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -416,7 +455,7 @@ Nhóm 4 thành viên phân công theo issue \#24 trên GitHub. Mỗi người co
 \begin{figure}[H]
   \centering
   \begin{tikzpicture}[
-      tuan/.style={draw=#1, fill=#1!10, rounded corners=2pt, align=left, font=\footnotesize, text width=3.55cm, minimum height=20mm, anchor=north west, inner sep=4pt}]
+      tuan/.style={draw=#1, fill=#1!10, rounded corners=2pt, align=left, font=\footnotesize, text width=3.55cm, minimum height=22mm, anchor=north west, inner sep=4pt}]
     \def\dx{4.15} \def\dy{2.35}
     \node[tuan=luc]      at (0,0)        {\textbf{Tuần 1}\\Engine bitboard, CaroGame, test đối chiếu};
     \node[tuan=cam]      at (\dx,0)      {\textbf{Tuần 2}\\Interface, cấp 1--2, arena, thống kê, CI};
@@ -432,15 +471,15 @@ Nhóm 4 thành viên phân công theo issue \#24 trên GitHub. Mỗi người co
   \label{fig:lotrinh}
 \end{figure}
 
-\textbf{Hiện trạng tại ngày 04/11/2026.} \textit{Đã có:} engine bitboard, config tập trung, log thực nghiệm, tích hợp Hugging Face, tác tử cấp 1--3 và giao diện web (cấp chưa cài được ghi rõ ``chưa cài'' trên trang), cùng bộ test tự động. \textit{Chưa có:} arena và thống kê, Cấp 4, mạng nơ-ron và huấn luyện; do đó chưa có số liệu giải đấu hay ablation nào, và proposal này không báo cáo kết quả.
+\textbf{Hiện trạng tại ngày 04/11/2026.} \textit{Đã có:} engine bitboard, config tập trung, log thực nghiệm, tích hợp Hugging Face, tác tử cấp 1--3, giao diện web (cấp chưa cài được ghi rõ ``chưa cài'' trên trang), CI cùng bộ test tự động, khung đo trên thế cờ cố định và kết quả sơ bộ A1, A2, A7 (mục~\ref{sec:sobo}). \textit{Chưa có:} giải round-robin và thống kê (đang phát triển trên nhánh riêng, chưa vào nhánh chính), Cấp 4, mạng nơ-ron và huấn luyện; do đó chưa có ma trận đối đầu nào.
 
 \subsection{Quản trị rủi ro kỹ thuật}
 \begin{gon}
-  \item \textbf{R1 (Python chậm với tìm kiếm và rollout):} tính toán bằng phép bit trên số nguyên; khi cần, chuyển phần lõi sang C++/Rust với \texttt{u128} mà không đổi công thức.
+  \item \textbf{R1 (Python chậm với tìm kiếm và rollout):} tính toán bằng phép bit trên số nguyên. Riêng Cấp 3, profile cho thấy phần lớn thời gian nằm ở bước sắp xếp nước (\texttt{\_order\_moves}), nên nhóm sẽ tính thông tin chiến thuật một lượt cho mỗi nút thay vì cho từng ô rồi chạy lại A2. Khi cần, chuyển phần lõi sang C++/Rust với \texttt{u128} mà không đổi công thức.
   \item \textbf{R2 (Giải chế độ A kéo dài):} với \num{5600} ván và giả sử khoảng 40 nước mỗi ván ở \num{1000} ms mỗi nước, tổng thời gian tuần tự cỡ 62 giờ. Nhóm chạy thử bằng cấu hình smoke để đo độ dài ván thật, chạy song song có cố định số luồng, và bắt đầu trước hạn; nếu thiếu thời gian thì giảm về 100 ván/cặp, mức tối thiểu của đề.
   \item \textbf{R3 (Mạng học lại heuristic, quá khớp):} tách tập theo ván, loại trùng, tăng cường đối xứng; so sánh với self-play ở RQ2 và báo cáo rõ nguồn nhãn.
   \item \textbf{R4 (Ngân sách huấn luyện không đủ cho Cấp 7--8):} đây là phần khuyến khích, làm sau khi cấp 1--6 ổn định; suy luận theo lô và virtual loss để tăng tốc; phần chưa làm được ghi rõ ở Bảng~\ref{tab:alpha}.
-  \item \textbf{R5 (Phụ thuộc chéo giữa các thành viên):} arena (\#17) và mạng (\#19) là đầu vào của nhiều việc khác nên được ưu tiên; interface \texttt{Agent} đã cố định để các phần phát triển song song.
+  \item \textbf{R5 (Phụ thuộc chéo giữa các thành viên):} arena (\#17) và mạng (\#19) là đầu vào của nhiều việc khác nên được ưu tiên làm trước; interface \texttt{Agent} đã cố định để các phần phát triển song song.
 \end{gon}
 
 \subsection{Kế hoạch ôn tập lý thuyết (song song)}

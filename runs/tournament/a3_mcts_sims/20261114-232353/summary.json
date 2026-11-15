@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "ended": "2026-11-14T23:45:56",
+  "duration_s": 1323.071,
+  "games": 1600,
+  "metrics": 1,
+  "score": {
+    "L2-Rule": 785.0,
+    "MCTS-100": 0.0,
+    "L3-AlphaBeta": 796.0,
+    "MCTS-400": 0.0,
+    "MCTS-1600": 0.0,
+    "MCTS-6400": 19.0
+  },
+  "n_openings": 100,
+  "planned_games": 1600,
+  "failed_games": 0,
+  "workers": 4
+}

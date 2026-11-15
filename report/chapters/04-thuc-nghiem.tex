@@ -27,7 +27,44 @@
 \subsection{A1, A2 --- cắt tỉa, sắp xếp nước, TT}
 \goiy{số nút, thời gian, tỷ lệ chọn cùng nước}
 \subsection{A3, A4 --- số mô phỏng và kiểu rollout của MCTS}
-\goiy{score theo số mô phỏng, mô phỏng/giây}
+\paragraph{Thiết lập.}
+Cả hai thực nghiệm dùng cặp đấu \texttt{challengers\_vs\_baselines}: mỗi MCTS đấu với Cấp~2 (luật) và Cấp~3 (Alpha-Beta, độ sâu 4), seed gốc 2026, 100 khai cuộc, mỗi khai cuộc đấu hai ván đổi màu, nên mỗi cặp có 200 ván. A3 đổi số mô phỏng (100, 400, 1600, 6400; rollout \texttt{random}); A4 giữ 800 mô phỏng và đổi \texttt{rollout} giữa \texttt{random} và \texttt{light}. Thực nghiệm chạy bằng \texttt{notebooks/a3\_a4\_mcts.ipynb} với 4 worker; A3 gồm 1600 ván (22 phút), A4 gồm 800 ván (9 phút), không ván nào lỗi. Log nằm ở \texttt{runs/tournament/a3\_mcts\_sims/20261114-232353} và \texttt{runs/tournament/a4\_rollout/20261114-234556}. Cả hai run ghi \texttt{dirty: true} trong \texttt{meta.json} vì chạy khi working tree chưa commit (commit nền \texttt{27d6525}).
+
+\paragraph{Kết quả A3.}
+Điểm là $(\text{thắng}+0{,}5\times\text{hoà})/\text{tổng}$ của MCTS, kèm khoảng tin cậy Wilson 95\% (Bảng~\ref{tab:a3}, Hình~\ref{fig:a3}).
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{rccrrr}
+    \toprule
+    \textbf{Mô phỏng} & \textbf{vs Cấp 2} & \textbf{vs Cấp 3} & \textbf{TB (ms)} & \textbf{p95 (ms)} & \textbf{mp/s} \\
+    \midrule
+    100  & 0{,}000 [0{,}000; 0{,}019] & 0{,}000 [0{,}000; 0{,}019] & 16{,}4   & 22{,}3   & \num{6112} \\
+    400  & 0{,}000 [0{,}000; 0{,}019] & 0{,}000 [0{,}000; 0{,}019] & 68{,}9   & 85{,}3   & \num{5807} \\
+    1600 & 0{,}000 [0{,}000; 0{,}019] & 0{,}000 [0{,}000; 0{,}019] & 298{,}5  & 359{,}6  & \num{5360} \\
+    6400 & 0{,}075 [0{,}046; 0{,}120] & 0{,}020 [0{,}008; 0{,}050] & \num{1204.6} & \num{1467.2} & \num{5313} \\
+    \bottomrule
+  \end{tabular}
+  \caption{A3: điểm của MCTS (rollout \texttt{random}) theo số mô phỏng, $n=200$ ván mỗi ô. Ở 6400 mô phỏng: 15 thắng/185 thua trước Cấp~2 và 4 thắng/196 thua trước Cấp~3; các mức còn lại thua toàn bộ 200 ván.}
+  \label{tab:a3}
+\end{table}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.8\textwidth]{thuc-nghiem/a3_diem_theo_sims.png}
+  \caption{A3: điểm của MCTS theo $\log_2$ số mô phỏng, có khoảng tin cậy Wilson 95\%.}
+  \label{fig:a3}
+\end{figure}
+Với 100, 400 và 1600 mô phỏng, MCTS thua cả 400 ván. Chỉ ở 6400 mô phỏng mới có ván thắng: bước tăng cuối 1600$\rightarrow$6400 đạt $+0{,}075$ trước Cấp~2 với hai khoảng tin cậy tách rời, còn trước Cấp~3 là $+0{,}020$ và hai khoảng chồng lấn. Số mô phỏng/giây giảm nhẹ từ khoảng 6100 xuống 5300 khi cây lớn hơn. Thời gian mỗi nước tăng gần tuyến tính theo số mô phỏng, tới trung bình 1,2 giây ở 6400.
+
+\paragraph{Kết quả A4.}
+Ở 800 mô phỏng, cả \texttt{random} lẫn \texttt{light} đều thua toàn bộ 400 ván (điểm $0{,}000$, Wilson [0,000; 0,019], trước cả hai đối thủ), nên \emph{không phân biệt được hai kiểu rollout} qua điểm số. Hai kiểu khác nhau rõ về chi phí: \texttt{random} mất 147,2 ms/nước (p95 177,8 ms; 5435 mô phỏng/s), \texttt{light} mất 551,7 ms/nước (p95 745,8 ms; 1450 mô phỏng/s), tức chậm khoảng 3,7 lần. (Dòng ``tốt hơn: MCTS-random'' trong notebook chỉ là so sánh hai số bằng nhau, không nên dùng làm kết luận.)
+
+\paragraph{Thảo luận và kiểm tra.}
+Kết quả không do lỗi cài đặt: một kiểm tra riêng (MCTS 400 mô phỏng, rollout \texttt{light}, đấu 10 ván với Random, đổi màu) cho MCTS thắng 10/10. Ván mẫu cho thấy nguyên nhân là thiếu nhìn xa về chiến thuật: MCTS không chặn một ba hở trên đường chéo, đối thủ đi tiếp thành tứ hở và thắng; để thấy sự cố này cần cây sâu khoảng 4 ply (đi, đối thủ tạo tứ hở, đi, đối thủ thắng), trong khi 800 mô phỏng chia cho khoảng 40 nước gốc chỉ cho mỗi nước chừng 20 lượt thăm. Rollout \texttt{light} chỉ thắng/chặn \emph{ngay lập tức} nên không bù được chỗ này. Hai đối thủ lại có sẵn các luật chiến thuật (thắng ngay, chặn, đòn kép) nên khai thác điểm yếu đó. Các ván rất ngắn (trung bình 10--12 nước, kể cả 4 nước khai cuộc), và 100\% kết thúc bằng năm quân liền, không có hoà.
+
+Điều này nghĩa là với ngân sách thực nghiệm, tăng số mô phỏng chỉ có tác dụng ở mức rất cao (6400), và A4 chưa đủ sức phân biệt. Để trả lời RQ1 đầy đủ, cần thêm đối thủ yếu hơn (ví dụ Random, hoặc Cấp~2 chỉ bật P1--P2) để điểm không dồn về 0, và đối chiếu với chế độ A (cùng thời gian mỗi nước). Đây là kết luận về mức độ thực nghiệm, chưa phải về MCTS nói chung.
+
 \subsection{A5, A5b --- policy-only so với policy + MCTS; khởi tạo RL}
 \subsection{A6, A7 --- augmentation, trọng số hàm đánh giá}
 \subsection{E3 --- lợi thế đi trước}
@@ -40,7 +77,57 @@
 \goiy{chọn ván theo quy tắc định trước (không chọn riêng ván thắng); ảnh replay từ UI, chú thích nước quyết định}
 
 \section{Phân tích lỗi}
-\goiy{thống kê lỗi theo loại: bỏ sót chặn tứ, không thấy VCF, đi xa vùng giao tranh\ldots}
+\paragraph{Phương pháp.}
+Với mọi ván MCTS thua trong A3 và A4 (tổng 2\,381 ván), script \texttt{report/scripts/phan\_tich\_loi\_mcts.py} phân loại lỗi bằng engine (\texttt{winning\_squares}), không đoán tay. Tại nước cuối của MCTS, nếu đối thủ có đúng một ô thắng ngay mà MCTS không chặn thì là ``bỏ sót chặn năm''. Nếu đối thủ đã có từ hai ô thắng (tứ hở, đòn kép) thì ván đã thua, và script xét nước kế cuối: đối thủ có nước tạo từ hai ô thắng mà MCTS không ngăn là ``bỏ sót chặn ba hở / đòn kép''.
+
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \begin{tabular}{lrrr}
+    \toprule
+    \textbf{Cấu hình} & \textbf{Ván thua} & \textbf{Bỏ sót chặn ba hở / đòn kép} & \textbf{Bỏ sót chặn năm} \\
+    \midrule
+    A3, 100 mô phỏng   & 400 & 92{,}5\% & 7{,}5\% \\
+    A3, 400 mô phỏng   & 400 & 91{,}2\% & 8{,}8\% \\
+    A3, 1600 mô phỏng  & 400 & 88{,}5\% & 11{,}5\% \\
+    A3, 6400 mô phỏng  & 381 & 92{,}9\% & 7{,}1\% \\
+    A4, \texttt{random} (800) & 400 & 89{,}8\% & 10{,}2\% \\
+    A4, \texttt{light} (800)  & 400 & 65{,}2\% & 34{,}8\% \\
+    \bottomrule
+  \end{tabular}
+  \caption{Phân loại lỗi trong các ván MCTS thua. Một vài ván (dưới 2\%) thuộc lớp ``bỏ sót chặn năm ở nước kế cuối'' và được tính vào cột cuối.}
+  \label{tab:loi-mcts}
+\end{table}
+
+Hai nhận xét rút ra từ Bảng~\ref{tab:loi-mcts}. Thứ nhất, lỗi chủ đạo ở mọi mức mô phỏng là không ngăn đe doạ kép sớm (khoảng 90\%); tăng mô phỏng từ 100 lên 6400 không đổi tỷ lệ này, khớp với thảo luận ở A3/A4 rằng cây quá nông cho cấu trúc 4 ply. Thứ hai, với rollout \texttt{light} tỷ lệ bỏ sót chặn năm \emph{tăng} lên 34{,}8\%, dù rollout đã biết chặn. Nguyên nhân là rollout chỉ chặn bên trong mô phỏng, còn ở gốc cây thì thống kê thăm quá thưa nên nước chặn bắt buộc có thể không được chọn.
+
+\paragraph{Thử nghiệm sửa lỗi (thăm dò).}
+Từ đó cài tuỳ chọn \texttt{root\_tactics} cho MCTS (\texttt{caro/agents/mcts.py}, mặc định tắt nên A3/A4 vẫn tái lập): ở gốc, đi thắng ngay nếu có; nếu không thì chặn ô thắng của đối thủ; nếu không thì đi nước tạo từ hai ô thắng; nếu đối thủ có nước tạo từ hai ô thắng thì chỉ xét các ô đó. Một so sánh nhỏ, \emph{chưa phải thực nghiệm chính thức}: MCTS rollout \texttt{light}, 800 mô phỏng, 20 ván (đổi màu, khai cuộc ngẫu nhiên 4 nước) mỗi ô.
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Đối thủ} & \textbf{\texttt{light} (gốc)} & \textbf{\texttt{light} + \texttt{root\_tactics}} \\
+    \midrule
+    Cấp 2 (luật)      & 0 thắng / 0 hoà / 20 thua & 4 thắng / 2 hoà / 14 thua \\
+    Cấp 3 (Alpha-Beta) & 0 thắng / 0 hoà / 20 thua & 0 thắng / 0 hoà / 20 thua \\
+    \bottomrule
+  \end{tabular}
+  \caption{So sánh thăm dò, $n=20$ ván mỗi ô. Chỉ có Cấp~2 cho thấy cải thiện.}
+  \label{tab:root-tactics}
+\end{table}
+\paragraph{Vì sao \texttt{root\_tactics} tạo ra khác biệt.}
+Cơ chế (Mục~\ref{sec:root-tactics}) nhắm đúng hai lỗi của Bảng~\ref{tab:loi-mcts}. Giải thích dưới đây là suy luận từ cấu trúc thuật toán và thống kê lỗi, \emph{chưa} được kiểm chứng riêng từng bước bằng ablation.
+\begin{itemize}
+  \item \textbf{Cây UCT không ``thấy'' thất bại bắt buộc.} Khi MCTS đi một nước không chặn, nút con mới được mở rộng bằng \emph{một} nước ngẫu nhiên của đối thủ trong khoảng 40 ứng viên, rồi rollout bắt đầu từ thế sau nước đó. Chỉ khoảng $1/40$ lần nước ngẫu nhiên ấy là ô thắng; ở các lần còn lại, rollout cho MCTS thêm một lượt đi và (đặc biệt với \texttt{light}) lượt đó dùng để chặn. Vì thế nước bỏ sót chặn vẫn có tỷ lệ thắng ước lượng cao hơn thực tế, và UCT không tách nó khỏi nước chặn đúng. Điều này khớp với việc \texttt{light} có tới 34{,}8\% ván thua do bỏ sót chặn năm, nhiều hơn \texttt{random}.
+  \item \textbf{Gốc là nơi ngân sách bị loãng.} 800 mô phỏng chia cho khoảng 40 nước gốc chỉ cho mỗi nước chừng 20 lượt thăm. Bước 1--3 xử lý các nước bắt buộc mà không cần thống kê; bước 4 thu hẹp ứng viên, nên cùng 800 mô phỏng được dồn vào vài ô thay vì 40.
+  \item \textbf{Cấp~2 thua vì sai lỗi mà bước này sửa.} Cấp~2 luật chơi đúng các thế thắng ngay, chặn năm và đòn kép, nên trước đây MCTS thua nhanh bằng chính các lỗi chiến thuật ở nước cuối, khoảng 10--12 nước một ván. Sau khi chặn được các lỗi đó, một phần ván kéo dài và MCTS thắng hoặc hoà được (6/20).
+  \item \textbf{Cấp~3 không đổi vì cần cây sâu hơn.} Alpha-Beta độ sâu 4 tính đòn kép ba nước phía trước, trong khi \texttt{root\_tactics} chỉ nhìn tối đa một nước tạo đe doạ ở gốc. Các lỗi còn lại nằm sâu trong cây (đối thủ tạo ba hở ở các nước giữa), nên cần xử lý chiến thuật \emph{bên trong} cây hoặc tăng độ sâu nhìn trước.
+\end{itemize}
+Tóm lại, \texttt{root\_tactics} không làm MCTS ``thông minh hơn'' về chiến lược: nó bù một điểm yếu cấu trúc của UCT thuần là không nhìn thấy các nước bắt buộc ngắn hạn.
+
+Trước Cấp~2, điểm tăng từ $0{,}000$ lên $0{,}250$ (thắng + $0{,}5\times$hoà $=5/20$), nhưng với $n=20$ khoảng tin cậy còn rộng, và trước Cấp~3 chưa có ván thắng nào. Vì vậy chỉ kết luận được rằng xử lý chiến thuật ở gốc giảm loại lỗi dễ sửa nhất, chưa đủ để MCTS thắng đối thủ biết tìm kiếm sâu. Bước tiếp theo là chạy \texttt{root\_tactics} theo đúng quy trình A3/A4 (200 ván mỗi ô, 100 khai cuộc) và cân nhắc xử lý chiến thuật ngay trong cây, không chỉ ở gốc.
 
 \section{Thảo luận}
 \goiy{chất lượng nước đi so với độ phức tạp suy luận; sức mạnh thực nghiệm $\neq$ tối ưu đã chứng minh}

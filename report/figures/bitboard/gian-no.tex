@@ -1,0 +1,76 @@
+% Sinh tự động bởi report/scripts/ve_hinh_bitboard.py, đừng sửa tay.
+\definecolor{bbX}{HTML}{1F4E8C}
+\definecolor{bbO}{HTML}{C8553D}
+\definecolor{bbKq}{HTML}{2E8B57}
+\definecolor{bbSai}{HTML}{D7263D}
+\definecolor{bbMat}{HTML}{DCE8F5}
+\definecolor{bbVang}{HTML}{FBE7A1}
+\definecolor{bbXam}{HTML}{BDBDBD}
+\definecolor{bbNhat}{HTML}{9CC3E6}
+\begin{tikzpicture}
+\begin{scope}[shift={(0.000,0.000)}]
+\fill[bbX] (4.000,-1.200) rectangle ++(0.400,-0.400);
+\fill[bbX] (0.000,-2.800) rectangle ++(0.400,-0.400);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.400] (4.400,-4.400);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (4.400,-4.400);
+\node[anchor=south,font=\footnotesize] at (2.200,0.03) {$x$};
+\end{scope}
+\begin{scope}[shift={(5.150,0.000)}]
+\fill[bbNhat] (4.000,-0.800) rectangle ++(0.400,-0.400);
+\fill[bbX] (4.000,-1.200) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (4.000,-1.600) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.000,-2.400) rectangle ++(0.400,-0.400);
+\fill[bbX] (0.000,-2.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.000,-3.200) rectangle ++(0.400,-0.400);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.400] (4.400,-4.400);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (4.400,-4.400);
+\node[anchor=south,font=\footnotesize] at (2.200,0.03) {$v = x \mid (x \ll 11) \mid (x \gg 11)$};
+\end{scope}
+\begin{scope}[shift={(10.300,0.000)}]
+\fill[bbNhat] (0.400,-2.400) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.400,-2.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.400,-3.200) rectangle ++(0.400,-0.400);
+\fill[bbSai] (0.000,-1.200) rectangle ++(0.400,-0.400);
+\fill[bbSai] (0.000,-1.600) rectangle ++(0.400,-0.400);
+\fill[bbSai] (0.000,-2.000) rectangle ++(0.400,-0.400);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.400] (4.400,-4.400);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (4.400,-4.400);
+\node[anchor=south,font=\footnotesize] at (2.200,0.03) {$v \ll 1$ (chưa lọc)};
+\end{scope}
+\begin{scope}[shift={(0.000,-5.200)}]
+\fill[bbNhat] (3.600,-0.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (3.600,-1.200) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (3.600,-1.600) rectangle ++(0.400,-0.400);
+\fill[bbSai] (4.000,-2.000) rectangle ++(0.400,-0.400);
+\fill[bbSai] (4.000,-2.400) rectangle ++(0.400,-0.400);
+\fill[bbSai] (4.000,-2.800) rectangle ++(0.400,-0.400);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.400] (4.400,-4.400);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (4.400,-4.400);
+\node[anchor=south,font=\footnotesize] at (2.200,0.03) {$v \gg 1$ (chưa lọc)};
+\end{scope}
+\begin{scope}[shift={(5.150,-5.200)}]
+\fill[bbNhat] (0.400,-2.400) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.400,-2.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.400,-3.200) rectangle ++(0.400,-0.400);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.400] (4.400,-4.400);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (4.400,-4.400);
+\node[anchor=south,font=\footnotesize] at (2.200,0.03) {$(v \ll 1) \mathbin{\&} \mathrm{NOT\_COL0}$};
+\end{scope}
+\begin{scope}[shift={(10.300,-5.200)}]
+\fill[bbNhat] (3.600,-0.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (4.000,-0.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (3.600,-1.200) rectangle ++(0.400,-0.400);
+\fill[bbX] (4.000,-1.200) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (3.600,-1.600) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (4.000,-1.600) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.000,-2.400) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.400,-2.400) rectangle ++(0.400,-0.400);
+\fill[bbX] (0.000,-2.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.400,-2.800) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.000,-3.200) rectangle ++(0.400,-0.400);
+\fill[bbNhat] (0.400,-3.200) rectangle ++(0.400,-0.400);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.400] (4.400,-4.400);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (4.400,-4.400);
+\node[anchor=south,font=\footnotesize] at (2.200,0.03) {$\mathrm{dilate}(x)$, 12 ô};
+\end{scope}
+\end{tikzpicture}

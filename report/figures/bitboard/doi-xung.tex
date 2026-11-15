@@ -1,0 +1,139 @@
+% Sinh tự động bởi report/scripts/ve_hinh_bitboard.py, đừng sửa tay.
+\definecolor{bbX}{HTML}{1F4E8C}
+\definecolor{bbO}{HTML}{C8553D}
+\definecolor{bbKq}{HTML}{2E8B57}
+\definecolor{bbSai}{HTML}{D7263D}
+\definecolor{bbMat}{HTML}{DCE8F5}
+\definecolor{bbVang}{HTML}{FBE7A1}
+\definecolor{bbXam}{HTML}{BDBDBD}
+\definecolor{bbNhat}{HTML}{9CC3E6}
+\begin{tikzpicture}
+\begin{scope}[shift={(0.000,0.000)}]
+\fill[bbX] (0.620,-0.310) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-0.465) {X};
+\fill[bbX] (0.930,-0.310) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.085,-0.465) {X};
+\fill[bbX] (0.620,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-0.775) {X};
+\fill[bbO] (1.550,0.000) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-0.155) {O};
+\fill[bbO] (1.240,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.395,-1.085) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {0: giữ nguyên};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {488f902b\dots};
+\end{scope}
+\begin{scope}[shift={(4.060,0.000)}]
+\fill[bbX] (2.480,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-0.775) {X};
+\fill[bbX] (2.790,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.945,-0.775) {X};
+\fill[bbX] (2.790,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.945,-1.085) {X};
+\fill[bbO] (2.170,-1.240) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-1.395) {O};
+\fill[bbO] (3.100,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (3.255,-1.705) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {1: xoay 90°};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {90b8a019\dots};
+\end{scope}
+\begin{scope}[shift={(8.120,0.000)}]
+\fill[bbX] (2.480,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-2.635) {X};
+\fill[bbX] (2.170,-2.790) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-2.945) {X};
+\fill[bbX] (2.480,-2.790) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-2.945) {X};
+\fill[bbO] (1.860,-2.170) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.015,-2.325) {O};
+\fill[bbO] (1.550,-3.100) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-3.255) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {2: xoay 180°};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {a0905c2c\dots};
+\end{scope}
+\begin{scope}[shift={(12.180,0.000)}]
+\fill[bbX] (0.310,-2.170) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-2.325) {X};
+\fill[bbX] (0.310,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-2.635) {X};
+\fill[bbX] (0.620,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-2.635) {X};
+\fill[bbO] (0.000,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.155,-1.705) {O};
+\fill[bbO] (0.930,-1.860) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.085,-2.015) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {3: xoay 270°};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {c9502819\dots};
+\end{scope}
+\begin{scope}[shift={(0.000,-4.710)}]
+\fill[bbX] (2.170,-0.310) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-0.465) {X};
+\fill[bbX] (2.480,-0.310) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-0.465) {X};
+\fill[bbX] (2.480,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-0.775) {X};
+\fill[bbO] (1.550,0.000) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-0.155) {O};
+\fill[bbO] (1.860,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.015,-1.085) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {4: lật trái--phải};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {9f2f135c\dots};
+\end{scope}
+\begin{scope}[shift={(4.060,-4.710)}]
+\fill[bbX] (0.620,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-2.635) {X};
+\fill[bbX] (0.620,-2.790) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-2.945) {X};
+\fill[bbX] (0.930,-2.790) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.085,-2.945) {X};
+\fill[bbO] (1.240,-2.170) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.395,-2.325) {O};
+\fill[bbO] (1.550,-3.100) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-3.255) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {5: lật trên--dưới};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {d25deaaf\dots};
+\end{scope}
+\begin{scope}[shift={(8.120,-4.710)}]
+\fill[bbX] (0.310,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-0.775) {X};
+\fill[bbX] (0.620,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-0.775) {X};
+\fill[bbX] (0.310,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-1.085) {X};
+\fill[bbO] (0.930,-1.240) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.085,-1.395) {O};
+\fill[bbO] (0.000,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.155,-1.705) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {6: lật chéo chính};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {\textbf{1b354141\dots}};
+\end{scope}
+\begin{scope}[shift={(12.180,-4.710)}]
+\fill[bbX] (2.790,-2.170) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.945,-2.325) {X};
+\fill[bbX] (2.480,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-2.635) {X};
+\fill[bbX] (2.790,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.945,-2.635) {X};
+\fill[bbO] (3.100,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (3.255,-1.705) {O};
+\fill[bbO] (2.170,-1.860) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-2.015) {O};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {7: lật chéo phụ};
+\node[anchor=north,font=\footnotesize] at (1.705,-3.440) {66a9e8c5\dots};
+\end{scope}
+\end{tikzpicture}

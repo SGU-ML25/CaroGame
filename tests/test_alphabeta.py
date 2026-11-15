@@ -4,9 +4,23 @@ Chạy: pytest tests/test_alphabeta.py -v
 """
 from __future__ import annotations
 
+import random
+
+import pytest
+
 from caro.agents.alphabeta import AlphaBetaAgent
 from caro.agents.base import Limits
 from caro.engine import CaroGame
+from caro.engine.bitboard import (
+    LINES,
+    candidates,
+    exactly,
+    has_five,
+    iter_bits,
+    side_score,
+    window_counts,
+    winning_squares,
+)
 
 # ---------------------------------------------------------------------------
 # Helper
@@ -163,6 +177,103 @@ class TestMoveOrdering:
         ordered.select_action(game, LIMITS_D3)
         unordered.select_action(game, LIMITS_D3)
         assert ordered.last_stats()["nodes"] <= unordered.last_stats()["nodes"]
+
+
+def order_by_trying_each_move(agent, moves, me, opp, key, ply):
+    """Định nghĩa gốc của thứ tự nước: đi thử từng ứng viên rồi hỏi lại engine."""
+    if not agent.move_ordering or len(moves) == 1:
+        return moves
+    entry = agent._tt.get(key) if agent.use_tt else None
+    tt_move = entry[3] if entry is not None else -1
+    scores = []
+    for m in moves:
+        fm = me | (1 << m)
+        if m == tt_move:
+            s = 10_000_000
+        elif has_five(fm):
+            s = 9_500_000
+        elif winning_squares(fm, opp).bit_count() >= 2:
+            s = 9_000_000
+        elif any(exactly(4, *window_counts(fm, opp, d, st)) for d, st in LINES):
+            s = 8_000_000
+        elif winning_squares(opp | (1 << m), me).bit_count() >= 2:
+            s = 7_000_000
+        elif ply < len(agent._killer) and m == agent._killer[ply][0]:
+            s = 6_000_000
+        elif ply < len(agent._killer) and m == agent._killer[ply][1]:
+            s = 5_000_000
+        elif m in agent._history:
+            s = 1_000_000 + agent._history[m]
+        else:
+            s = side_score(fm, opp, agent._weight)
+        scores.append((s, m))
+    scores.sort(reverse=True)
+    return [m for _, m in scores]
+
+
+def random_board(rng: random.Random, stones: int) -> tuple[int, int]:
+    """Bàn chưa kết thúc: thế dày và tụ ở vùng giữa để có nhiều tứ, đòn kép."""
+    cells = [r * 11 + c for r in range(2, 9) for c in range(2, 9)]
+    rng.shuffle(cells)
+    me = opp = 0
+    for i, m in enumerate(cells[:stones]):
+        if i % 2 == 0:
+            if not has_five(me | (1 << m)):
+                me |= 1 << m
+        elif not has_five(opp | (1 << m)):
+            opp |= 1 << m
+    return me, opp
+
+
+class TestOrderingUnchanged:
+    """Bản tính một lượt cho mỗi nút phải cho đúng thứ tự như đi thử từng ứng viên."""
+
+    @pytest.mark.parametrize("weights", ["default", "no_defense", {"1": 3, "3": 50, "4": 700}])
+    def test_same_order_on_random_boards(self, weights):
+        rng = random.Random(2026)
+        agent = AlphaBetaAgent(eval_weights=weights)
+        threats = 0
+        for _ in range(1500):
+            me, opp = random_board(rng, rng.randrange(0, 34))
+            moves = list(iter_bits(candidates(me, opp, 2)))
+            if len(moves) < 2:
+                continue
+            agent._killer[1] = [rng.choice(moves), rng.choice(moves)]
+            agent._history = {rng.choice(moves): rng.randrange(1, 50) for _ in range(3)}
+            threats += winning_squares(me, opp).bit_count() >= 2
+            assert agent._order_moves(moves, me, opp, 0, 1) == order_by_trying_each_move(
+                agent, moves, me, opp, 0, 1
+            )
+        assert threats > 20          # bộ thế thực sự có đòn kép, không test trên bàn tầm thường
+
+    @pytest.mark.parametrize("tt", [False, True])
+    def test_same_search_result(self, tt, monkeypatch):
+        """Cùng thứ tự nên phải duyệt đúng cùng cây: cùng nước, điểm, số nút và PV."""
+        rng = random.Random(7)
+        for _ in range(6):
+            game = CaroGame()
+            for _ in range(rng.randrange(6, 16)):
+                moves = list(iter_bits(candidates(*game.me_opp(), 2)))
+                game.step(rng.choice(moves))
+                if game.is_terminal():
+                    game.undo()
+                    break
+
+            fast = AlphaBetaAgent(tt=tt)
+            fast.reset(0)
+            fast_move = fast.select_action(game, LIMITS_D2)
+
+            slow = AlphaBetaAgent(tt=tt)
+            slow.reset(0)
+            monkeypatch.setattr(
+                slow, "_order_moves",
+                lambda mv, me, opp, key, ply, a=slow: order_by_trying_each_move(a, mv, me, opp, key, ply),
+            )
+            slow_move = slow.select_action(game, LIMITS_D2)
+
+            a, b = fast.last_stats(), slow.last_stats()
+            assert fast_move == slow_move
+            assert (a["score"], a["nodes"], a["pv"]) == (b["score"], b["nodes"], b["pv"])
 
 
 # ---------------------------------------------------------------------------

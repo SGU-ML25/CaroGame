@@ -1,0 +1,112 @@
+% Sinh tự động bởi report/scripts/ve_hinh_bitboard.py, đừng sửa tay.
+\definecolor{bbX}{HTML}{1F4E8C}
+\definecolor{bbO}{HTML}{C8553D}
+\definecolor{bbKq}{HTML}{2E8B57}
+\definecolor{bbSai}{HTML}{D7263D}
+\definecolor{bbMat}{HTML}{DCE8F5}
+\definecolor{bbVang}{HTML}{FBE7A1}
+\definecolor{bbXam}{HTML}{BDBDBD}
+\definecolor{bbNhat}{HTML}{9CC3E6}
+\begin{tikzpicture}
+\begin{scope}[shift={(0.000,0.000)}]
+\fill[bbX] (2.170,-0.310) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-0.465) {18};
+\fill[bbX] (1.860,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.015,-0.775) {28};
+\fill[bbX] (1.550,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-1.085) {38};
+\fill[bbX] (1.240,-1.240) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.395,-1.395) {48};
+\fill[bbX] (0.310,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-1.705) {56};
+\fill[bbX] (0.620,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-1.705) {57};
+\fill[bbX] (1.240,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.395,-1.705) {59};
+\fill[bbX] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-1.705) {60};
+\fill[bbO] (0.620,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-0.775) {24};
+\fill[bbO] (2.480,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-1.085) {41};
+\fill[bbO] (2.170,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-1.705) {62};
+\fill[bbO] (1.860,-1.860) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.015,-2.015) {72};
+\fill[bbO] (0.930,-2.170) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.085,-2.325) {80};
+\fill[bbO] (2.480,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-2.635) {96};
+\fill[bbO] (0.310,-2.790) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-2.945) {100};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {Thế cờ};
+\end{scope}
+\begin{scope}[shift={(4.060,0.000)}]
+\fill[bbMat] (2.170,-0.310) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.860,-0.620) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.550,-0.930) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.240,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbVang] (0.310,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbMat] (0.620,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.240,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {$w_4$ ngang};
+\end{scope}
+\begin{scope}[shift={(8.120,0.000)}]
+\fill[bbVang] (2.170,-0.310) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.860,-0.620) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.550,-0.930) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.240,-1.240) rectangle ++(0.310,-0.310);
+\fill[bbMat] (0.310,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbMat] (0.620,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.240,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbMat] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\fill[bbVang] (2.480,0.000) rectangle ++(0.310,-0.310);
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {$w_4$ chéo $\swarrow$};
+\end{scope}
+\begin{scope}[shift={(12.180,0.000)}]
+\fill[bbX] (2.170,-0.310) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-0.465) {18};
+\fill[bbX] (1.860,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.015,-0.775) {28};
+\fill[bbX] (1.550,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-1.085) {38};
+\fill[bbX] (1.240,-1.240) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.395,-1.395) {48};
+\fill[bbX] (0.310,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-1.705) {56};
+\fill[bbX] (0.620,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-1.705) {57};
+\fill[bbX] (1.240,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.395,-1.705) {59};
+\fill[bbX] (1.550,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.705,-1.705) {60};
+\fill[bbO] (0.620,-0.620) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.775,-0.775) {24};
+\fill[bbO] (2.480,-0.930) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-1.085) {41};
+\fill[bbO] (2.170,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.325,-1.705) {62};
+\fill[bbO] (1.860,-1.860) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.015,-2.015) {72};
+\fill[bbO] (0.930,-2.170) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.085,-2.325) {80};
+\fill[bbO] (2.480,-2.480) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-2.635) {96};
+\fill[bbO] (0.310,-2.790) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (0.465,-2.945) {100};
+\fill[bbKq] (2.480,0.000) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (2.635,-0.155) {8};
+\fill[bbKq] (0.930,-1.550) rectangle ++(0.310,-0.310);
+\node[text=white,inner sep=0,font=\fontsize{5}{5}\selectfont] at (1.085,-1.705) {58};
+\draw[gray!55,line width=.2pt] (0,0) grid[step=0.310] (3.410,-3.410);
+\draw[gray!90!black,line width=.5pt] (0,0) rectangle (3.410,-3.410);
+\node[anchor=south,font=\footnotesize] at (1.705,0.03) {Ô thắng ngay};
+\end{scope}
+\end{tikzpicture}
