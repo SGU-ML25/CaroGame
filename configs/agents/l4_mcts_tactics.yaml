@@ -1,9 +1,0 @@
-id: L4-MCTS-T
-level: 4
-kind: mcts
-params:
-  c_uct: 1.4
-  rollout: light
-  rollout_radius: 1
-  candidate_radius: 2
-  root_tactics: true        # thắng ngay / chặn năm ở gốc (sửa từ phân tích lỗi A3/A4)
