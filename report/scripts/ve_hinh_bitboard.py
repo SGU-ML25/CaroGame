@@ -23,8 +23,8 @@ from caro.engine.bitboard import (
     bit,
     candidates,
     dilate,
-    exactly,
     evaluate,
+    exactly,
     has_five,
     index,
     inside,
@@ -411,7 +411,7 @@ def bang_o_thang() -> None:
     dong = []
     for j in range(WIN):
         s = w4 << (j * d)
-        o_ = list(iter_bits(s))[0]
+        o_ = next(iter(iter_bits(s)))
         r, c = rc(o_)
         trong = (s & empty) != 0
         dong.append(f"{j} & {o_} & $({r}, {c})$ & {'trống, giữ lại' if trong else 'đã có quân X, bị loại'} \\\\")

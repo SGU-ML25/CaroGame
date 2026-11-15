@@ -49,7 +49,6 @@ def phan_loai(moves: list[int], mcts_side: int) -> tuple[str, str]:
     # k>=2: xét nước kế cuối của MCTS
     if len(mc) < 2:
         return "thua sớm (<2 nước)", ""
-    s2 = states[mc[-2]]
     g2 = CaroGame.from_moves(moves[: mc[-2]])
     if winning_squares(g2.bb[g2.side ^ 1], g2.bb[g2.side]).bit_count() >= 1:
         return "bỏ sót chặn năm (nước kế cuối)", ""
@@ -63,8 +62,9 @@ def main() -> None:
     tong = defaultdict(Counter)
     do_dai = defaultdict(list)
     for r in runs:
-        for line in open(r / "games.jsonl"):
-            gm = json.loads(line)
+        with open(r / "games.jsonl") as f:
+            games = [json.loads(line) for line in f]
+        for gm in games:
             ten = {0: gm["agent_x"], 1: gm["agent_o"]}
             for s in (0, 1):
                 if not ten[s].startswith("MCTS"):
