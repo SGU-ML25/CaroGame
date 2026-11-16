@@ -51,11 +51,11 @@ def generate_single_game(game_id, openings, config):
     rng = np.random.default_rng(seed)
 
     datagen_cfg = config.get("datagen", config)
-    expert_cfg = (datagen_cfg.get("expert") or {}).get(
-        "from", "agents/l3_alphabeta"
-    )
+    # Giữ nguyên cả `params` (vd. backend: auto) thay vì chỉ lấy tên file cấu hình
+    expert_cfg = datagen_cfg.get("expert") or "agents/l3_alphabeta"
     expert_depth = int(datagen_cfg.get("expert_depth", 3))
     top_k = int(datagen_cfg.get("top_k", 3))
+    prune_root = bool(datagen_cfg.get("prune_root", True))   # False: search đầy đủ từng nước ở gốc
     temperature = float(datagen_cfg.get("temperature", 0.5))
 
     expert = make_agent(expert_cfg)
@@ -76,7 +76,7 @@ def generate_single_game(game_id, openings, config):
 
     while not game.is_terminal():
         state_tensor = board_to_tensor(game)
-        scored = expert.scored_moves(game, limits=limits, top_k=top_k)
+        scored = expert.scored_moves(game, limits=limits, top_k=top_k, prune_root=prune_root)
 
         if not scored:
             legal_moves = game.legal_actions()

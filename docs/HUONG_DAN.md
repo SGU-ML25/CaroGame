@@ -478,7 +478,7 @@ quy ước, lỗi thường gặp: [`report/README.md`](../report/README.md).
 
 ```bash
 sudo dnf install latexmk biber texlive-scheme-medium texlive-babel-vietnamese   # Fedora; hệ khác: report/README.md mục 2
-cd report && latexmk          # build/main.pdf + bản "Nhóm XX - Caro 11x11 - TTNTNC.pdf" cạnh main.tex
+cd report && latexmk          # build/main.pdf + bản "Nhóm 13 - Caro 11x11 - TTNTNC.pdf" cạnh main.tex
 ```
 
 - Sườn 5 chương theo mục 4 của đề: `chapters/01-gioi-thieu.tex` … `05-ket-luan.tex`. Mỗi mục có dòng
