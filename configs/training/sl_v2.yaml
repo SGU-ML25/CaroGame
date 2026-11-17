@@ -1,0 +1,5 @@
+# Học có giám sát cấp 5 trên dữ liệu bản 2 (bản 1: training/sl)
+defaults: [training/sl]
+experiment: {kind: train, name: sl_policy_v2, rq: [RQ2]}
+data:
+  dir: runs/data/expert_v2

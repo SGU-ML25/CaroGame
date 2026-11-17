@@ -22,3 +22,8 @@ runs/scratch/
 
 # bí mật
 .env
+
+# Lõi Cython tuỳ chọn (setup_native.py): file sinh ra khi build, không commit
+/build/
+*.so
+caro/engine/_native.cpp

@@ -28,7 +28,7 @@ def test_run_dir_layout(tmp_path):
     for name in ("config.yaml", "meta.json", "run.log", "games.jsonl", "metrics.jsonl", "summary.json"):
         assert (d / name).is_file(), name
     assert (d / "checkpoints").is_dir()
-    assert (d.parent / "latest").resolve() == d.resolve()
+    assert (d.parent / "latest").resolve().absolute() == d.resolve().absolute()
 
     game = json.loads((d / "games.jsonl").read_text())
     assert game["run_id"] == run.id and game["moves"] == [60, 61]

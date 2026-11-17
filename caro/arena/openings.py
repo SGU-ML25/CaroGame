@@ -23,6 +23,14 @@ def generate_openings(num_openings=100):
 
     return openings
 
+def load_openings():
+    """Hàm tải danh sách khai cuộc, tự động sinh mới nếu chưa có file."""
+    out_path = Path("runs/openings/openings_v1.json")
+    if out_path.exists():
+        with open(out_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return generate_openings()
+
 if __name__ == "__main__":
     # Thiết lập chạy qua giao diện dòng lệnh[cite: 4]
     parser = argparse.ArgumentParser(description="Sinh bộ dữ liệu khai cuộc")

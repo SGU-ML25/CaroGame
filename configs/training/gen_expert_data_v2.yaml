@@ -1,0 +1,7 @@
+# Sinh dữ liệu chuyên gia — bản 2: đa dạng hơn bản 1 (giữ nguyên bản 1 ở runs/data/expert_v1)
+defaults: [training/gen_expert_data]
+experiment: {kind: datagen, name: expert_data_v2}
+datagen:
+  temperature: 8.0          # điểm top-k cách nhau cỡ 10–30, T=0.5 gần như luôn chọn nước tốt nhất
+  top_k: 5
+  out: runs/data/expert_v2
