@@ -34,7 +34,7 @@ def new_game(client, **body):
 
 def test_agents_lists_every_config_and_marks_unavailable(client):
     agents = client.get("/agents").json()
-    assert [a["level"] for a in agents] == list(range(1, 9))
+    assert sorted({a["level"] for a in agents}) == list(range(1, 9))   # một cấp có thể có nhiều config (l4, l5…)
     by_level = {a["level"]: a for a in agents}
     assert all(by_level[k]["available"] for k in (1, 2, 3))
     assert by_level[3]["budget"] == ["time_ms", "max_depth"]
