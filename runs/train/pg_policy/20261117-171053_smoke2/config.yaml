@@ -1,0 +1,92 @@
+project: caro-11x11
+seed: 2026
+device: auto
+engine:
+  size: 11
+  win_length: 5
+  layout: stride11
+experiment:
+  kind: train
+  name: pg_policy
+  description: ''
+  rq:
+  - RQ2
+  config: training/pg
+run:
+  root: runs
+  tag: smoke2
+  index: runs/index.jsonl
+log:
+  level: INFO
+  console: true
+  file: run.log
+  games: games.jsonl
+  metrics: metrics.jsonl
+  per_move_stats: true
+  flush_every: 1
+checkpoint:
+  dir: checkpoints
+  keep_last: 5
+model:
+  arch: resnet_pv
+  in_planes: 4
+  channels: 64
+  blocks: 6
+  policy_head:
+    conv_out: 2
+    fc_out: 121
+  value_head:
+    conv_out: 1
+    fc_hidden: 64
+train:
+  init: runs/train/sl_policy_v2/latest.pt
+  episodes: 1000
+  batch_games: 128
+  optimizer: adam
+  lr: 0.0002
+  gamma: 1.0
+  baseline: value_head
+  entropy_coef: 0.01
+  entropy_decay: 0.999
+  temperature: 1.0
+  random_opening_plies: 2
+  opponent_pool:
+    latest: 0.5
+    past_checkpoints: 0.5
+  grad_clip: 1.0
+  update_chunk: 1024
+  snapshot_every: 5
+  eval_every: 500
+  eval_vs:
+  - id: L2-Rule
+    level: 2
+    kind: rule_based
+    params:
+      priorities:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      - P6
+      - P7
+      radius: 2
+      eval_weights: default
+    source: agents/l2_rule
+    limits: {}
+  - id: L3-AlphaBeta
+    level: 3
+    kind: alphabeta
+    params:
+      pruning: true
+      move_ordering: true
+      tt: true
+      tt_size_mb: 64
+      iterative_deepening: true
+      forced_moves: true
+      radius: 2
+      backend: auto
+      eval_weights: default
+    source: agents/l3_alphabeta
+    limits: {}
+  eval_games: 50

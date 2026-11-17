@@ -9,4 +9,5 @@ params:
   iterative_deepening: true
   forced_moves: true        # nước bắt buộc: thắng ngay / chặn tứ
   radius: 2                 # tập ứng viên = dilation bán kính 2
+  backend: auto             # auto = lõi Cython nếu đã build, không thì Python (kết quả giống nhau, native nhanh ~20–35 lần)
   eval_weights: default     # A7: default | no_defense
