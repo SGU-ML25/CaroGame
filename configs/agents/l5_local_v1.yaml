@@ -1,0 +1,7 @@
+# Cấp 5 chạy từ checkpoint cục bộ (bản dữ liệu 1) — để thử trên web trước khi push lên Hugging Face
+id: L5-PolicySL-v1
+level: 5
+kind: policy
+params:
+  checkpoint: runs/train/sl_policy/latest.pt
+  temperature: 0

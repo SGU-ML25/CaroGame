@@ -1,6 +1,7 @@
 import torch
 
 from caro.agents.policy_agent import PolicyAgent
+from caro.engine import CaroGame
 from caro.nn.features import board_to_tensor
 from caro.nn.model import CaroResNet
 
@@ -52,14 +53,13 @@ def test_resnet_model():
 
 
 def test_policy_agent():
-    """Kiểm tra hoạt động lựa chọn nước đi của PolicyAgent."""
-    state = MockGameState()
+    """PolicyAgent (mạng khởi tạo ngẫu nhiên, không checkpoint) đi một nước hợp lệ và ghi policy/value."""
+    game = CaroGame.from_moves([60, 61])
     agent = PolicyAgent()
-    action = agent.select_action(state)
+    action = agent.select_action(game)
     stats = agent.last_stats()
-    
-    assert action is not None
-    assert isinstance(action, tuple)
-    assert len(action) == 2
+
+    assert isinstance(action, int)
+    assert action in game.legal_actions()
     assert "policy" in stats
     assert "value" in stats

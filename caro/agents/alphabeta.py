@@ -30,6 +30,11 @@ from caro.engine.bitboard import (
 )
 from caro.engine.zobrist import SIDE_KEY, ZOBRIST
 
+try:                                    # lõi Cython tuỳ chọn: python setup_native.py build_ext --inplace
+    from caro.engine import _native
+except ImportError:                     # chưa build → chỉ dùng bản Python
+    _native = None
+
 # ---------------------------------------------------------------------------
 # Hằng số
 # ---------------------------------------------------------------------------
@@ -150,6 +155,9 @@ class AlphaBetaAgent(BaseAgent):
         forced_moves        -- bật/tắt nước bắt buộc (thắng ngay / chặn thắng)
         radius              -- bán kính candidates() (mặc định 2)
         eval_weights        -- 'default' hoặc 'no_defense' (A7)
+        backend             -- 'python' (mặc định) | 'native' (lõi Cython, lỗi nếu chưa build) | 'auto'
+                               (native nếu có, không thì python). Cùng điểm, PV và số nút với cùng tham số
+                               (tests/test_native.py); chỉ khác tốc độ. Backend đang dùng: thuộc tính `self.backend`.
     """
 
     def __init__(
@@ -164,8 +172,16 @@ class AlphaBetaAgent(BaseAgent):
         forced_moves: bool = True,
         radius: int = 2,
         eval_weights: str | dict = "default",
+        backend: str = "python",
     ) -> None:
         super().__init__(name=name, limits=limits)
+        if backend not in ("python", "native", "auto"):
+            raise ValueError(f"backend phải là python | native | auto, nhận được {backend!r}")
+        if backend == "native" and _native is None:
+            raise ImportError(
+                "backend='native' cần lõi Cython: uv pip install cython setuptools && "
+                "uv run python setup_native.py build_ext --inplace")
+        self.backend = "native" if backend != "python" and _native is not None else "python"
         self.pruning = pruning
         self.move_ordering = move_ordering
         self.use_tt = tt
@@ -191,12 +207,20 @@ class AlphaBetaAgent(BaseAgent):
         self._history: dict[int, int] = {}
         self._stats: dict = {}
         self._nodes: int = 0
+        self._nat = None
+        if self.backend == "native":
+            self._nat = _native.Native(
+                self.use_tt, self.pruning, self.move_ordering, self.forced_moves, self.radius,
+                self._no_defense, self._weight, tt_size_mb)
 
     def reset(self, seed: int) -> None:
         super().reset(seed)
         self._tt.clear()
         self._killer = [[-1, -1] for _ in range(64)]
         self._history.clear()
+        if self._nat is not None:
+            self._nat.clear_tt()
+            self._nat.reset_search()
 
     # ------------------------------------------------------------------
     # Interface bắt buộc
@@ -211,6 +235,8 @@ class AlphaBetaAgent(BaseAgent):
         self._nodes = 0
         self._killer = [[-1, -1] for _ in range(64)]
         self._history.clear()
+        if self._nat is not None:
+            self._nat.reset_search()
         t0 = time.perf_counter()
 
         cand_bb = bb_candidates(me, opp, self.radius)
@@ -271,6 +297,11 @@ class AlphaBetaAgent(BaseAgent):
         self, me: int, opp: int, key: int, side: int,
         moves: list[int], depth: int, deadline: Any,
     ) -> tuple[int, list[int]]:
+        if self._nat is not None:
+            self._nat.set_deadline(getattr(deadline, "end", None))
+            result = self._nat.root(me, opp, key, side, moves, depth)
+            self._nodes += self._nat.take_nodes()
+            return result
         alpha, beta = -INF, INF
         best_score = -INF
         moves[0]
@@ -309,6 +340,11 @@ class AlphaBetaAgent(BaseAgent):
         self, me: int, opp: int, key: int, side: int,
         depth: int, alpha: int, beta: int, ply: int, deadline: Any,
     ) -> tuple[int, list[int]]:
+        if self._nat is not None:
+            self._nat.set_deadline(getattr(deadline, "end", None))
+            result = self._nat.negamax(me, opp, key, side, depth, alpha, beta, ply)
+            self._nodes += self._nat.take_nodes()
+            return result
         self._nodes += 1
 
         # opp vừa đi — kiểm tra opp thắng
@@ -479,11 +515,15 @@ class AlphaBetaAgent(BaseAgent):
     # ------------------------------------------------------------------
 
     def scored_moves(
-        self, game: CaroGame, limits: Limits, top_k: int = 5,
+        self, game: CaroGame, limits: Limits, top_k: int = 5, prune_root: bool = True,
     ) -> list[tuple[int, int]]:
         """Trả [(move, score), ...] top-k nước tốt nhất theo góc nhìn bên đang đi.
 
         Dùng để sinh dữ liệu expert cho cấp 5 (mục 05.1–05.2).
+
+        prune_root: sau khi đã có k nước, gọi search con với cửa sổ (-INF, -θ + 1) với θ là điểm hạng k hiện có.
+        Điểm là số nguyên nên nước nào có điểm > θ vẫn chính xác; nước còn lại chỉ nhận một cận và nằm ngoài
+        top-k nên không ảnh hưởng kết quả. False = search đầy đủ từng nước như bản gốc (dùng để đối chiếu).
         """
         me, opp = game.me_opp()
         key = game.key
@@ -498,16 +538,21 @@ class AlphaBetaAgent(BaseAgent):
         self._nodes = 0
         max_depth = limits.max_depth if limits.max_depth is not None else 4
         results: list[tuple[int, int]] = []
+        prune = prune_root and top_k > 0
+        kth = None                      # điểm hạng top_k hiện có
 
         for m in moves:
             new_opp = me | (1 << m)
             new_key = key ^ ZOBRIST[side][m] ^ SIDE_KEY
             new_side = side ^ 1
+            beta = INF if kth is None else -kth + 1
             score, _ = self._negamax(
                 opp, new_opp, new_key, new_side,
-                max_depth - 1, -INF, INF, 1, deadline
+                max_depth - 1, -INF, beta, 1, deadline
             )
             results.append((m, -score))
+            if prune and len(results) >= top_k:
+                kth = sorted((s for _, s in results), reverse=True)[top_k - 1]
 
         results.sort(key=lambda x: x[1], reverse=True)
         return results[:top_k]

@@ -2,6 +2,7 @@ import argparse
 import concurrent.futures
 import json
 import random
+import time
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,44 @@ from caro.arena.openings import load_openings
 from caro.config import load_config
 from caro.engine.game import CaroGame, X
 from caro.nn.features import board_to_tensor
+
+
+def format_duration(seconds: float) -> str:
+    """1g05p09s / 4p30s / 12s."""
+    total = max(0, round(seconds))
+    hours, rest = divmod(total, 3600)
+    minutes, secs = divmod(rest, 60)
+    if hours:
+        return f"{hours}g{minutes:02d}p{secs:02d}s"
+    if minutes:
+        return f"{minutes}p{secs:02d}s"
+    return f"{secs}s"
+
+
+def format_progress(
+    done: int, total: int, new_done: int, samples: int, elapsed: float,
+    now: float | None = None, width: int = 20,
+) -> str:
+    """Một dòng tiến độ: phần trăm, thanh, số ván, tốc độ, số mẫu, thời gian đã chạy và còn lại.
+
+    done: tổng số ván đã có (kể cả các ván nạp lại từ file tiến độ); new_done: số ván hoàn thành
+    trong lần chạy này (dùng để tính tốc độ và thời gian còn lại, không tính ván đã có sẵn).
+    """
+    fraction = done / total if total else 1.0
+    filled = min(width, int(width * fraction))
+    parts = [
+        f"[{fraction * 100:5.1f}%] {'█' * filled}{'░' * (width - filled)} {done}/{total} ván",
+    ]
+    rate = new_done / elapsed if elapsed > 0 and new_done > 0 else 0.0
+    if rate:
+        parts.append(f"{rate:.1f} ván/s")
+    parts.append(f"{samples:,} mẫu".replace(",", "."))
+    parts.append(f"đã chạy {format_duration(elapsed)}")
+    if rate and done < total:
+        remaining = (total - done) / rate
+        finish = time.localtime((time.time() if now is None else now) + remaining)
+        parts.append(f"còn ~{format_duration(remaining)} (xong lúc {time.strftime('%H:%M', finish)})")
+    return " | ".join(parts)
 
 
 def build_policy_and_sample(scored_moves, top_k, temperature, rng):
@@ -51,11 +90,11 @@ def generate_single_game(game_id, openings, config):
     rng = np.random.default_rng(seed)
 
     datagen_cfg = config.get("datagen", config)
-    expert_cfg = (datagen_cfg.get("expert") or {}).get(
-        "from", "agents/l3_alphabeta"
-    )
+    # Giữ nguyên cả `params` (vd. backend: auto) thay vì chỉ lấy tên file cấu hình
+    expert_cfg = datagen_cfg.get("expert") or "agents/l3_alphabeta"
     expert_depth = int(datagen_cfg.get("expert_depth", 3))
     top_k = int(datagen_cfg.get("top_k", 3))
+    prune_root = bool(datagen_cfg.get("prune_root", True))   # False: search đầy đủ từng nước ở gốc
     temperature = float(datagen_cfg.get("temperature", 0.5))
 
     expert = make_agent(expert_cfg)
@@ -76,7 +115,7 @@ def generate_single_game(game_id, openings, config):
 
     while not game.is_terminal():
         state_tensor = board_to_tensor(game)
-        scored = expert.scored_moves(game, limits=limits, top_k=top_k)
+        scored = expert.scored_moves(game, limits=limits, top_k=top_k, prune_root=prune_root)
 
         if not scored:
             legal_moves = game.legal_actions()
@@ -110,22 +149,25 @@ def generate_single_game(game_id, openings, config):
     return int(game_id), records
 
 
-def load_completed_games(progress_file):
-    """Đọc các ván đã lưu; bỏ qua dòng cuối bị ghi dở nếu có."""
-    completed = {}
-    if not progress_file.exists():
-        return completed
+def iter_progress(progress_file):
+    """Duyệt từng ván trong file tiến độ (mỗi lần một dòng, không giữ cả file trong RAM).
 
+    Bỏ qua dòng cuối bị ghi dở nếu có.
+    """
+    if not progress_file.exists():
+        return
     with progress_file.open("r", encoding="utf-8") as f:
         for line in f:
             try:
                 item = json.loads(line)
-                game_id = int(item["game_id"])
-                records = item["records"]
-                completed[game_id] = records
+                yield int(item["game_id"]), item["records"]
             except (json.JSONDecodeError, KeyError, TypeError, ValueError):
                 continue
-    return completed
+
+
+def load_completed_games(progress_file):
+    """{game_id: số mẫu} của các ván đã lưu. Chỉ đếm, không giữ mẫu trong RAM."""
+    return {game_id: len(records) for game_id, records in iter_progress(progress_file)}
 
 
 def append_progress(progress_file, game_id, records):
@@ -139,17 +181,51 @@ def append_progress(progress_file, game_id, records):
         f.flush()
 
 
-def write_final_dataset(output_file, completed):
-    """Tổng hợp checkpoint thành JSON list tương thích định dạng cũ."""
-    all_records = []
-    for game_id in sorted(completed):
-        all_records.extend(completed[game_id])
+def canonical_key(state):
+    """Khoá chuẩn hoá D4: nhỏ nhất trong 8 phép đối xứng (state: 4x11x11 uint8)."""
+    keys = []
+    for k in range(4):
+        rot = np.rot90(state, k, axes=(1, 2))
+        keys.append(np.ascontiguousarray(rot).tobytes())
+        keys.append(np.ascontiguousarray(rot[:, :, ::-1]).tobytes())
+    return min(keys)
 
-    temp_file = output_file.with_suffix(output_file.suffix + ".tmp")
-    with temp_file.open("w", encoding="utf-8") as f:
-        json.dump(all_records, f, separators=(",", ":"))
+
+def write_final_dataset(output_file, progress_file, game_ids, dedup=True):
+    """Gom file tiến độ thành .npz gọn: states uint8, policies float32, values, game_ids.
+
+    Đọc từng ván một nên RAM chỉ cỡ kích thước mảng kết quả (~1 KB/mẫu).
+    """
+    states, policies, values, owners = [], [], [], []
+    seen = set()
+    wanted = set(game_ids)
+    taken = set()
+    for game_id, records in iter_progress(progress_file):
+        if game_id not in wanted or game_id in taken:
+            continue
+        taken.add(game_id)
+        for rec in records:
+            state = np.asarray(rec["state"], dtype=np.uint8)
+            if dedup:
+                key = canonical_key(state)
+                if key in seen:
+                    continue
+                seen.add(key)
+            states.append(state)
+            policies.append(np.asarray(rec["policy"], dtype=np.float32))
+            values.append(rec["value"])
+            owners.append(game_id)
+
+    temp_file = output_file.with_name(output_file.stem + ".tmp.npz")
+    np.savez_compressed(
+        temp_file,
+        states=np.stack(states) if states else np.zeros((0, 4, 11, 11), np.uint8),
+        policies=np.stack(policies) if policies else np.zeros((0, 121), np.float32),
+        values=np.asarray(values, dtype=np.float32),
+        game_ids=np.asarray(owners, dtype=np.int32),
+    )
     temp_file.replace(output_file)
-    return len(all_records)
+    return len(values)
 
 
 def main():
@@ -169,7 +245,7 @@ def main():
     output_dir = Path(datagen_cfg.get("out", "runs/data/expert_v1"))
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_file = output_dir / "expert_dataset.json"
+    output_file = output_dir / "expert_dataset.npz"
     progress_file = output_dir / "expert_dataset_progress.jsonl"
 
     num_games = int(datagen_cfg.get("games", 50))
@@ -193,12 +269,26 @@ def main():
         if game_id not in completed
     ]
 
+    datagen = {
+        "độ sâu": datagen_cfg.get("expert_depth", 3),
+        "top-k": datagen_cfg.get("top_k", 3),
+        "nhiệt độ": datagen_cfg.get("temperature", 0.5),
+        "cắt tỉa gốc": datagen_cfg.get("prune_root", True),
+    }
+    print("=" * 78, flush=True)
     print(
-        f"Bắt đầu sinh dữ liệu: tổng {num_games} ván, "
-        f"đã có {len(completed)} ván, còn {len(pending_ids)} ván, "
-        f"{num_workers} workers.",
+        f"Sinh dữ liệu chuyên gia: {num_games} ván | đã có {len(completed)} | còn {len(pending_ids)} | "
+        f"{num_workers} workers",
         flush=True,
     )
+    print("Cấu hình: " + ", ".join(f"{k} {v}" for k, v in datagen.items()), flush=True)
+    print(f"Ghi tiến độ vào: {progress_file} (dừng bằng Ctrl+C, chạy lại cùng lệnh để tiếp tục)", flush=True)
+    print("=" * 78, flush=True)
+
+    log_every = float(datagen_cfg.get("log_every_s", 5))     # giây giữa hai dòng tiến độ
+    samples = sum(completed.values())
+    failed = 0
+    started = time.monotonic()
 
     if pending_ids:
         with concurrent.futures.ProcessPoolExecutor(
@@ -212,34 +302,43 @@ def main():
             }
 
             finished_this_run = 0
+            last_print = started
             for future in concurrent.futures.as_completed(future_to_id):
                 game_id = future_to_id[future]
                 try:
                     returned_id, records = future.result()
                     append_progress(progress_file, returned_id, records)
-                    completed[returned_id] = records
+                    completed[returned_id] = len(records)
                     finished_this_run += 1
-
-                    if finished_this_run % 10 == 0 or len(completed) == num_games:
-                        samples = sum(len(v) for v in completed.values())
-                        print(
-                            f"Tiến độ: {len(completed)}/{num_games} ván "
-                            f"| {samples} mẫu | vừa hoàn thành ván {game_id}",
-                            flush=True,
-                        )
+                    samples += len(records)
                 except Exception as e:  # noqa: BLE001
+                    failed += 1
+                    print(f"[LỖI] ván {game_id}: {type(e).__name__}: {e}", flush=True)
+
+                now = time.monotonic()
+                if now - last_print >= log_every or len(completed) == num_games:
+                    last_print = now
                     print(
-                        f"Lỗi ở ván {game_id}: {type(e).__name__}: {e}",
+                        format_progress(len(completed), num_games, finished_this_run, samples, now - started),
                         flush=True,
                     )
 
-    sample_count = write_final_dataset(output_file, completed)
+    elapsed = time.monotonic() - started
+    if failed:
+        print(f"[CẢNH BÁO] {failed} ván bị lỗi, xem các dòng [LỖI] ở trên.", flush=True)
 
+    print("Đang gom dữ liệu thành file .npz (loại trùng đối xứng D4)...", flush=True)
+    sample_count = write_final_dataset(
+        output_file, progress_file, completed, dedup=datagen_cfg.get("dedup", "d4_canonical") == "d4_canonical"
+    )
+
+    print("=" * 78, flush=True)
     print(
-        f"Đã tổng hợp {len(completed)}/{num_games} ván, "
-        f"{sample_count} mẫu vào: {output_file}",
+        f"Xong: {len(completed)}/{num_games} ván, " + f"{sample_count:,} mẫu".replace(",", ".")
+        + f" | thời gian lần chạy này {format_duration(elapsed)}",
         flush=True,
     )
+    print(f"File dữ liệu: {output_file}", flush=True)
     if len(completed) < num_games:
         print(
             "Một số ván chưa hoàn thành. File progress JSONL vẫn giữ các ván "
