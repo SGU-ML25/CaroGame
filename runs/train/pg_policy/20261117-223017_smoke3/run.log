@@ -1,0 +1,7 @@
+2026-11-17 22:30:17 INFO    run train/pg_policy/20261117-223017_smoke3 — config training/pg, seed 2026
+2026-11-17 22:30:18 INFO    cấp 6 REINFORCE: init=runs/train/sl_policy_v3/latest.pt (/mnt/data/1_Projects/AAI/CaroGame/runs/train/sl_policy_v3/latest.pt), device=cuda, 7 vòng × 128 ván, tham số=479874
+2026-11-17 22:30:24 INFO    episode 512 vs L2-Rule: 28W 0D 22L, score 0.560 [0.423; 0.688]
+2026-11-17 22:32:17 INFO    episode 512 vs L3-AlphaBeta: 4W 1D 45L, score 0.090 [0.037; 0.201]
+2026-11-17 22:32:21 INFO    episode 896 vs L2-Rule: 31W 1D 18L, score 0.630 [0.491; 0.750]
+2026-11-17 22:34:20 INFO    episode 896 vs L3-AlphaBeta: 7W 1D 42L, score 0.150 [0.076; 0.274]
+2026-11-17 22:34:20 INFO    kết thúc: ok sau 242.7 s

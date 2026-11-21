@@ -1,0 +1,62 @@
+2026-11-17 16:40:22 INFO    run train/pg_policy/20261117-164022_smoke — config training/pg, seed 2026
+2026-11-17 16:40:23 INFO    cấp 6 REINFORCE: init=runs/train/sl_policy_v2/latest.pt (/mnt/data/1_Projects/AAI/CaroGame/runs/train/sl_policy_v2/latest.pt), device=cuda, 7 vòng × 128 ván, tham số=479874
+2026-11-17 16:40:30 INFO    episode 512 vs L2-Rule: 50W 3D 47L, score 0.515 [0.418; 0.611]
+2026-11-17 17:08:37 ERROR   run lỗi
+Traceback (most recent call last):
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/training/train_pg.py", line 315, in train
+    ev = evaluate(model, ref, t["eval_games"], device, derive_seed(seed, "eval", episodes))
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/training/train_pg.py", line 217, in evaluate
+    game.step(who.select_action(game, lim))
+              ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/alphabeta.py", line 260, in select_action
+    score, pv = self._negamax_root(
+                ~~~~~~~~~~~~~~~~~~^
+        me, opp, key, side, moves, depth, deadline
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/alphabeta.py", line 318, in _negamax_root
+    score, pv = self._negamax(
+                ~~~~~~~~~~~~~^
+        opp, new_opp, new_key, new_side,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        depth - 1, -beta, -alpha, 1, deadline
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/alphabeta.py", line 397, in _negamax
+    score, pv = self._negamax(
+                ~~~~~~~~~~~~~^
+        opp, new_opp, new_key, new_side,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        depth - 1, -beta, -alpha, ply + 1, deadline
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/alphabeta.py", line 397, in _negamax
+    score, pv = self._negamax(
+                ~~~~~~~~~~~~~^
+        opp, new_opp, new_key, new_side,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        depth - 1, -beta, -alpha, ply + 1, deadline
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/alphabeta.py", line 397, in _negamax
+    score, pv = self._negamax(
+                ~~~~~~~~~~~~~^
+        opp, new_opp, new_key, new_side,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        depth - 1, -beta, -alpha, ply + 1, deadline
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  [Previous line repeated 1 more time]
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/alphabeta.py", line 419, in _negamax
+    self._tt.put(key, best_score, depth, flag, best_m)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/alphabeta.py", line 135, in put
+    self._table.pop(next(iter(self._table)))
+                    ~~~~^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+2026-11-17 17:08:37 INFO    kết thúc: interrupted sau 1694.4 s
