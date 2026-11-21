@@ -24,6 +24,7 @@ REGISTRY: dict[str, str] = {
     "alphabeta": "caro.agents.alphabeta:AlphaBetaAgent",
     "mcts": "caro.agents.mcts:MCTSAgent",
     "policy": "caro.agents.policy_agent:PolicyAgent",
+    "puct": "caro.agents.puct:PUCTAgent",
 }
 
 
