@@ -31,6 +31,7 @@ from caro.agents import REGISTRY, Agent, Limits, make_agent
 from caro.config import CONFIG_ROOT, ConfigError, load_config, project_path, resolve_agent
 from caro.engine import CaroGame, IllegalMoveError, N, O, X
 from caro.engine.bitboard import LINES, WIN, index, iter_bits
+from caro.hub import HubError
 from caro.runlog import derive_seed
 
 HUMAN = "human"
@@ -188,7 +189,7 @@ def create_app(
             raise HTTPException(400, f"tác tử '{player}' chưa được cài (kind '{info['kind']}')")
         try:
             agent = agent_factory(resolve_agent(info["source"]))
-        except ConfigError as e:
+        except (ConfigError, HubError) as e:     # HubError: model chưa push / checkpoint không có
             raise HTTPException(400, str(e)) from None
         agent.reset(derive_seed(seed, "ui", color))    # cùng seed → cùng ván (ngân sách fixed)
         return agent

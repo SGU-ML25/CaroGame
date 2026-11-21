@@ -1,6 +1,6 @@
 # Ghi chú: quy ước dấu của value head lệch giữa học có giám sát (cấp 5) và RL (cấp 6)
 
-Ngày phát hiện: 2026-11-17 · Nhánh: `feat/l6-reinforce` · Trạng thái: **đã chứng minh, chưa sửa**.
+Ngày phát hiện: 2026-11-17 · Nhánh: `feat/l6-reinforce` · Trạng thái: **đã sửa** (hướng 1: `train_sl.mover_relative_values`; SL v3 → `model:l5`, RL từ v3 → `model:l6`). Kiểm lại với SL v3: MSE 0,356, tương quan +0,77 ở cả X đi lẫn O đi.
 
 ## Triệu chứng
 

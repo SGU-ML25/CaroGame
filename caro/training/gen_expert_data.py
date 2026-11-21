@@ -136,6 +136,7 @@ def generate_single_game(game_id, openings, config):
         game.step(action)
 
     winner = game.winner
+    # Nhãn TUYỆT ĐỐI (+1 nếu X thắng). train_sl đổi sang góc nhìn người đi khi nạp dữ liệu.
     value_target = 1.0 if winner == X else -1.0 if winner is not None else 0.0
 
     records = []

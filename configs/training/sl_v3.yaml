@@ -1,0 +1,9 @@
+# Học có giám sát cấp 5, bản 3: nhãn value theo góc nhìn người đi (sửa lệch quy ước với RL, xem docs/GHI_CHU_value_head.md),
+# 60 epoch và lr giảm dần (cosine). Dữ liệu vẫn là expert_v2.
+defaults: [training/sl]
+experiment: {kind: train, name: sl_policy_v3, rq: [RQ2]}
+data:
+  dir: runs/data/expert_v2
+train:
+  epochs: 60
+  lr_schedule: cosine

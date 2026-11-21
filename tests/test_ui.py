@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 
 from caro.agents.base import BaseAgent
 from caro.engine import CaroGame
+from caro.hub import HubError
 from caro.ui.server import MAX_GAMES, agent_catalog, create_app, winning_cells
 
 
@@ -269,3 +270,14 @@ def test_slow_agent_does_not_block_server_and_stats_are_json():
     assert done["last_stats"]["visits"] == {"60": 3}
     assert done["last_stats"]["policy"] == {"60": 0.5}
     assert done["last_stats"]["value"] == 0.25
+
+
+def test_agent_without_pushed_model_is_400_not_500(tmp_path):
+    """Tác tử có checkpoint chưa push (vd. model:l6) phải trả lỗi 400 rõ ràng, không làm server sập (500)."""
+    def factory(cfg):
+        raise HubError("model 'l6' chưa được push (revision: null) — chạy `caro-hub push l6 <run>`")
+
+    app = create_app(runs_root=tmp_path / "runs", openings_file=tmp_path / "openings.json", agent_factory=factory)
+    r = TestClient(app).post("/games", json={"x": "L1-Random", "o": "L1-Random"})
+    assert r.status_code == 400
+    assert "chưa được push" in r.json()["detail"]
