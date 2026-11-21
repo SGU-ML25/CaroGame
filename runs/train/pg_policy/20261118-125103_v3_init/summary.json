@@ -1,0 +1,29 @@
+{
+  "status": "ok",
+  "ended": "2026-11-18T13:36:48",
+  "duration_s": 2744.643,
+  "games": 0,
+  "metrics": 400,
+  "episodes": 49920,
+  "plies": 1525677,
+  "init": "runs/train/sl_policy_v3/latest.pt",
+  "best_score_mean": 0.5775,
+  "last_eval": {
+    "L2-Rule_n": 100,
+    "L2-Rule_wins": 78,
+    "L2-Rule_draws": 1,
+    "L2-Rule_losses": 21,
+    "L2-Rule_score": 0.785,
+    "L2-Rule_ci_low": 0.6947384489822945,
+    "L2-Rule_ci_high": 0.8541745107563845,
+    "L3-AlphaBeta_n": 100,
+    "L3-AlphaBeta_wins": 22,
+    "L3-AlphaBeta_draws": 8,
+    "L3-AlphaBeta_losses": 70,
+    "L3-AlphaBeta_score": 0.26,
+    "L3-AlphaBeta_ci_low": 0.18404578126986462,
+    "L3-AlphaBeta_ci_high": 0.35371172631861636
+  },
+  "train_seconds": 2743.5,
+  "device": "cuda"
+}

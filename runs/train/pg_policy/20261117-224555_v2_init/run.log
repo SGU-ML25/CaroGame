@@ -1,0 +1,23 @@
+2026-11-17 22:45:55 INFO    run train/pg_policy/20261117-224555_v2_init — config training/pg, seed 2026
+2026-11-17 22:45:56 INFO    cấp 6 REINFORCE: init=runs/train/sl_policy_v2/latest.pt (/mnt/data/1_Projects/AAI/CaroGame/runs/train/sl_policy_v2/latest.pt), device=cuda, 390 vòng × 128 ván, tham số=479874
+2026-11-17 22:46:25 INFO    episode 5120 vs L2-Rule: 61W 1D 38L, score 0.615 [0.517; 0.704]
+2026-11-17 22:50:33 INFO    episode 5120 vs L3-AlphaBeta: 15W 6D 79L, score 0.180 [0.117; 0.267]
+2026-11-17 22:51:05 INFO    episode 10112 vs L2-Rule: 50W 1D 49L, score 0.505 [0.409; 0.601]
+2026-11-17 22:55:24 INFO    episode 10112 vs L3-AlphaBeta: 11W 7D 82L, score 0.145 [0.089; 0.227]
+2026-11-17 22:55:58 INFO    episode 15104 vs L2-Rule: 53W 8D 39L, score 0.570 [0.472; 0.663]
+2026-11-17 23:00:30 INFO    episode 15104 vs L3-AlphaBeta: 21W 5D 74L, score 0.235 [0.163; 0.327]
+2026-11-17 23:01:05 INFO    episode 20096 vs L2-Rule: 70W 0D 30L, score 0.700 [0.604; 0.781]
+2026-11-17 23:05:13 INFO    episode 20096 vs L3-AlphaBeta: 18W 3D 79L, score 0.195 [0.129; 0.283]
+2026-11-17 23:05:45 INFO    episode 25088 vs L2-Rule: 72W 3D 25L, score 0.735 [0.641; 0.812]
+2026-11-17 23:09:30 INFO    episode 25088 vs L3-AlphaBeta: 20W 4D 76L, score 0.220 [0.150; 0.311]
+2026-11-17 23:10:01 INFO    episode 30080 vs L2-Rule: 65W 6D 29L, score 0.680 [0.583; 0.763]
+2026-11-17 23:14:43 INFO    episode 30080 vs L3-AlphaBeta: 24W 5D 71L, score 0.265 [0.188; 0.359]
+2026-11-17 23:15:14 INFO    episode 35072 vs L2-Rule: 73W 2D 25L, score 0.740 [0.646; 0.816]
+2026-11-17 23:18:53 INFO    episode 35072 vs L3-AlphaBeta: 29W 3D 68L, score 0.305 [0.223; 0.401]
+2026-11-17 23:19:24 INFO    episode 40064 vs L2-Rule: 72W 3D 25L, score 0.735 [0.641; 0.812]
+2026-11-17 23:23:12 INFO    episode 40064 vs L3-AlphaBeta: 27W 5D 68L, score 0.295 [0.215; 0.391]
+2026-11-17 23:23:40 INFO    episode 45056 vs L2-Rule: 73W 2D 25L, score 0.740 [0.646; 0.816]
+2026-11-17 23:27:52 INFO    episode 45056 vs L3-AlphaBeta: 19W 9D 72L, score 0.235 [0.163; 0.327]
+2026-11-17 23:28:20 INFO    episode 49920 vs L2-Rule: 72W 1D 27L, score 0.725 [0.630; 0.803]
+2026-11-17 23:32:45 INFO    episode 49920 vs L3-AlphaBeta: 28W 3D 69L, score 0.295 [0.215; 0.391]
+2026-11-17 23:32:45 INFO    kết thúc: ok sau 2809.9 s

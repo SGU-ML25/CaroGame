@@ -1,0 +1,36 @@
+{
+  "started": "2026-11-18T12:51:03",
+  "argv": [
+    "/mnt/data/1_Projects/AAI/CaroGame/caro/training/train_pg.py",
+    "training/pg",
+    "train.init=runs/train/sl_policy_v3/latest.pt",
+    "train.eval_every=5000",
+    "run.tag=v3_init"
+  ],
+  "seed": 2026,
+  "config_hash": "1f79bdefc8fa",
+  "git": {
+    "commit": "aa5294234787fe6186e6a771e7591c5c42f1d948",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.3-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": {
+      "cuda": true,
+      "name": "NVIDIA RTX A2000 Laptop GPU",
+      "cuda_version": "13.0"
+    }
+  }
+}
