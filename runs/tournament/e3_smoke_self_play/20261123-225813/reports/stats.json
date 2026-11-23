@@ -1,0 +1,54 @@
+{
+  "detailed_record_by_turn": {
+    "L1-Random": {
+      "first_hand_X": {
+        "wins": 6,
+        "draws": 0,
+        "losses": 4
+      },
+      "second_hand_O": {
+        "wins": 4,
+        "draws": 0,
+        "losses": 6
+      },
+      "total": {
+        "wins": 10,
+        "draws": 0,
+        "losses": 10,
+        "score": 0.5
+      }
+    }
+  },
+  "performance": {
+    "L1-Random": {
+      "time_mean_ms": 0.010585106382978722,
+      "time_p95_ms": 0.02,
+      "nodes_mean": 0.0
+    }
+  },
+  "self_play": {
+    "L1-Random": {
+      "games": 10,
+      "as_X": {
+        "wins": 6,
+        "draws": 0,
+        "losses": 4,
+        "score": 0.6
+      },
+      "as_O": {
+        "wins": 4,
+        "draws": 0,
+        "losses": 6,
+        "score": 0.4
+      },
+      "first_move_advantage": 0.19999999999999996,
+      "first_move_advantage_ci": {
+        "low": -0.6,
+        "high": 1.0,
+        "confidence": 0.95,
+        "n_boot": 200,
+        "opening_pairs": 5
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+﻿defaults: [base, budgets/mode_b_fixed, arena/smoke]
+
+experiment:
+  name: e3_smoke_self_play
+  rq: [RQ4]
+
+arena:
+  pairs: self_play
+  stats:
+    bootstrap: 200
+
+agents:
+  - agents/l1_random
