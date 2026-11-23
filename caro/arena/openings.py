@@ -4,7 +4,6 @@ import json
 import random
 from pathlib import Path
 
-
 DEFAULT_OPENINGS_FILE = Path("runs/openings/openings_v1.json")
 BOARD_SIZE = 11
 

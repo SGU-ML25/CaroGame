@@ -4,7 +4,6 @@ import json
 import pytest
 
 from caro.arena.openings import (
-    DEFAULT_OPENINGS_FILE,
     generate_openings,
     load_openings,
 )

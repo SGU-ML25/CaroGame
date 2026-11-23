@@ -232,7 +232,7 @@ def main():
             f"Bảng điểm chung cuộc: {scores}"
         )
 
-        report = generate_tournament_report(
+        generate_tournament_report(
             game_records=game_records,
             pairs_mode=pairs_mode,
             report_dir=report_dir,
