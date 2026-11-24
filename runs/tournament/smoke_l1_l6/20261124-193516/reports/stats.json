@@ -1,0 +1,144 @@
+{
+  "detailed_record_by_turn": {
+    "L1-Random": {
+      "first_hand_X": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 25
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 25
+      },
+      "total": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 50,
+        "score": 0.0
+      }
+    },
+    "L2-Rule": {
+      "first_hand_X": {
+        "wins": 15,
+        "draws": 0,
+        "losses": 10
+      },
+      "second_hand_O": {
+        "wins": 11,
+        "draws": 0,
+        "losses": 14
+      },
+      "total": {
+        "wins": 26,
+        "draws": 0,
+        "losses": 24,
+        "score": 0.52
+      }
+    },
+    "L3-AlphaBeta": {
+      "first_hand_X": {
+        "wins": 19,
+        "draws": 2,
+        "losses": 4
+      },
+      "second_hand_O": {
+        "wins": 16,
+        "draws": 0,
+        "losses": 9
+      },
+      "total": {
+        "wins": 35,
+        "draws": 2,
+        "losses": 13,
+        "score": 0.72
+      }
+    },
+    "L4-MCTS": {
+      "first_hand_X": {
+        "wins": 5,
+        "draws": 0,
+        "losses": 20
+      },
+      "second_hand_O": {
+        "wins": 5,
+        "draws": 0,
+        "losses": 20
+      },
+      "total": {
+        "wins": 10,
+        "draws": 0,
+        "losses": 40,
+        "score": 0.2
+      }
+    },
+    "L5-PolicySL": {
+      "first_hand_X": {
+        "wins": 18,
+        "draws": 0,
+        "losses": 7
+      },
+      "second_hand_O": {
+        "wins": 15,
+        "draws": 0,
+        "losses": 10
+      },
+      "total": {
+        "wins": 33,
+        "draws": 0,
+        "losses": 17,
+        "score": 0.66
+      }
+    },
+    "L6-PolicyRL": {
+      "first_hand_X": {
+        "wins": 24,
+        "draws": 0,
+        "losses": 1
+      },
+      "second_hand_O": {
+        "wins": 20,
+        "draws": 2,
+        "losses": 3
+      },
+      "total": {
+        "wins": 44,
+        "draws": 2,
+        "losses": 4,
+        "score": 0.9
+      }
+    }
+  },
+  "performance": {
+    "L1-Random": {
+      "time_mean_ms": 0.02439849624060151,
+      "time_p95_ms": 0.04,
+      "nodes_mean": 0.0
+    },
+    "L2-Rule": {
+      "time_mean_ms": 1.4472916666666669,
+      "time_p95_ms": 3.7129999999999974,
+      "nodes_mean": 0.0
+    },
+    "L3-AlphaBeta": {
+      "time_mean_ms": 340.28342187500004,
+      "time_p95_ms": 947.2119999999999,
+      "nodes_mean": 6403.36875
+    },
+    "L4-MCTS": {
+      "time_mean_ms": 137.4271626297578,
+      "time_p95_ms": 183.59599999999998,
+      "nodes_mean": 0.0
+    },
+    "L5-PolicySL": {
+      "time_mean_ms": 2.0375714285714284,
+      "time_p95_ms": 3.470999999999999,
+      "nodes_mean": 0.0
+    },
+    "L6-PolicyRL": {
+      "time_mean_ms": 2.1037157534246576,
+      "time_p95_ms": 3.712000000000003,
+      "nodes_mean": 0.0
+    }
+  }
+}

@@ -1,0 +1,29 @@
+2026-11-24 19:18:10 INFO    run tournament/smoke_l1_l7/20261124-191810 — config experiments/smoke_l1_l7, seed 2026
+2026-11-24 19:18:10 INFO    Bắt đầu giải đấu: 210 ván cờ, 1 workers, chế độ round_robin.
+2026-11-24 19:23:38 ERROR   run lỗi
+concurrent.futures.process._RemoteTraceback:
+"""
+Traceback (most recent call last):
+  File "C:\Users\ASUS VIVOBOOK\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\process.py", line 254, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "C:\Users\ASUS VIVOBOOK\CaroGame\caro\arena\tournament.py", line 45, in worker_play
+    agent_o = make_agent(agent_o_cfg)
+  File "C:\Users\ASUS VIVOBOOK\CaroGame\caro\agents\__init__.py", line 41, in make_agent
+    cls = agent_class(agent_cfg["kind"])
+  File "C:\Users\ASUS VIVOBOOK\CaroGame\caro\agents\__init__.py", line 32, in agent_class
+    raise ConfigError(f"kind tác tử '{kind}' chưa được cài (có: {sorted(REGISTRY)})")
+caro.config.ConfigError: kind tác tử 'puct' chưa được cài (có: ['alphabeta', 'mcts', 'policy', 'random', 'rule_based'])
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ASUS VIVOBOOK\CaroGame\caro\arena\tournament.py", line 211, in main
+    res = future.result()
+  File "C:\Users\ASUS VIVOBOOK\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ASUS VIVOBOOK\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+caro.config.ConfigError: kind tác tử 'puct' chưa được cài (có: ['alphabeta', 'mcts', 'policy', 'random', 'rule_based'])
+2026-11-24 19:23:38 INFO    kết thúc: error sau 327.3 s
