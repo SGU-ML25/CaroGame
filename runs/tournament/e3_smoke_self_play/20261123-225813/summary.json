@@ -1,0 +1,10 @@
+{
+  "status": "ok",
+  "ended": "2026-11-23T22:58:14",
+  "duration_s": 0.638,
+  "games": 10,
+  "metrics": 0,
+  "score": {
+    "L1-Random": 10.0
+  }
+}
