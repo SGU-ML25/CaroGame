@@ -1,0 +1,8 @@
+# A8 — MCTS có / không xử lý chiến thuật ở gốc (root_tactics). Giữ: 800 mô phỏng, rollout light
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {name: a8_root_tactics, rq: [RQ1]}
+arena: {pairs: challengers_vs_baselines}
+baselines: [agents/l2_rule, agents/l3_alphabeta]
+agents:
+  - {from: agents/l4_mcts, id: MCTS-light,       params: {rollout: light, root_tactics: false}}
+  - {from: agents/l4_mcts, id: MCTS-light-tactic, params: {rollout: light, root_tactics: true}}

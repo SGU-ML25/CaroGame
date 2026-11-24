@@ -12,6 +12,16 @@ from caro.nn.dataset import ArrayDataset
 from caro.nn.model import CaroResNet
 
 
+def mover_relative_values(states, values):
+    """Đổi nhãn value từ tuyệt đối (+1 nếu X thắng) sang góc nhìn người đang đi (+1 nếu người đang đi thắng).
+
+    Cùng quy ước với đầu vào mạng (kênh 0 = quân người đi) và với `z` của train_pg, nên value head dùng được
+    cho RL / PUCT / AlphaZero. Kênh 2 của `states` bằng 1 khi X đi, 0 khi O đi.
+    """
+    sign = np.where(states[:, 2, 0, 0] == 1, 1.0, -1.0)
+    return (values * sign).astype(values.dtype)
+
+
 def train_model(config_path):
     config = load_config(config_path)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,6 +33,10 @@ def train_model(config_path):
     lr = tcfg.get("lr", 1e-3)
     weight_decay = tcfg.get("weight_decay", 1e-4)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+    epochs = int(tcfg.get("epochs", 5))
+    # lr_schedule: cosine → giảm lr mượt về ~0 ở epoch cuối; mặc định giữ lr cố định như các bản trước
+    scheduler = (optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+                 if tcfg.get("lr_schedule") == "cosine" else None)
 
     criterion_policy = nn.CrossEntropyLoss()
     criterion_value = nn.MSELoss()
@@ -40,6 +54,8 @@ def train_model(config_path):
     with np.load(data_path) as npz:
         states, policies = npz["states"], npz["policies"]
         values, game_ids = npz["values"], npz["game_ids"]
+    # File dữ liệu lưu nhãn tuyệt đối; huấn luyện theo góc nhìn người đi (xem docs/GHI_CHU_value_head.md)
+    values = mover_relative_values(states, values)
 
     # Chia 80/10/10 THEO VÁN (các nước của cùng một ván không rơi vào hai tập khác nhau)
     rng = np.random.default_rng(int(config.get("seed", 42)))
@@ -59,7 +75,6 @@ def train_model(config_path):
     train_loader = DataLoader(subset(0, augment_flag), batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(subset(1, False), batch_size=batch_size, shuffle=False)
 
-    epochs = int(tcfg.get("epochs", 5))
     eval_every = int(tcfg.get("eval_every", 2))
     best_val_loss = float('inf')
     
@@ -94,6 +109,8 @@ def train_model(config_path):
                 loss_v = criterion_value(pred_values.squeeze(-1), values)
                 val_loss += (loss_p + c_weight * loss_v).item()
                 
+        if scheduler is not None:
+            scheduler.step()
         avg_train_loss = total_train_loss / len(train_loader)
         avg_val_loss = val_loss / max(len(val_loader), 1)
         
