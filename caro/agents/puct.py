@@ -18,6 +18,7 @@ Tham số (params trong configs/agents/l7_puct.yaml):
     dirichlet     -- None, hoặc {alpha, epsilon}: nhiễu ở gốc (dùng khi tự chơi, KHÔNG dùng khi thi đấu)
     batch_leaves  -- số lá gom mỗi lần suy luận
     temperature   -- 0: chọn nước nhiều lượt thăm nhất; >0: lấy mẫu ∝ N^(1/τ) (tự chơi cấp 8)
+    backend       -- 'python' | 'native' (Cython) | 'auto' (ưu tiên Cython nếu đã build)
 
 Không có tiêu chí dừng nào (Limits rỗng) thì dừng sau DEFAULT_MAX_SIMS mô phỏng.
 """
@@ -37,6 +38,11 @@ from caro.engine import CaroGame
 from caro.hub import resolve_checkpoint
 from caro.nn.features import encode, legal_mask
 from caro.nn.model import CaroResNet
+
+try:
+    from caro.engine import _puct_native
+except ImportError:
+    _puct_native = None
 
 DEFAULT_MAX_SIMS = 200
 
@@ -92,12 +98,22 @@ class PUCTAgent(BaseAgent):
         channels: int = 64,
         blocks: int = 6,
         model: CaroResNet | None = None,
+        backend: str = "auto",
     ) -> None:
         super().__init__(name, limits)
         if leaf_eval not in ("value", "mix"):
             raise ValueError(f"leaf_eval phải là 'value' hoặc 'mix', nhận {leaf_eval!r}")
         if batch_leaves < 1:
             raise ValueError("batch_leaves phải ≥ 1")
+        if backend not in ("python", "native", "auto"):
+            raise ValueError("backend phải là python | native | auto")
+        if backend == "native" and _puct_native is None:
+            raise ValueError("backend='native' cần build bằng python setup_native.py build_ext --inplace")
+        self.backend = "native" if backend != "python" and _puct_native is not None else "python"
+        native = _puct_native if self.backend == "native" else None
+        self._node = native.PUCTNode if native else PUCTNode
+        self._select_child = native.select_child if native else select_child
+        self._make_children = native.make_children if native else None
         self.c_puct = float(c_puct)
         self.leaf_eval = leaf_eval
         self.mix_lambda = float(mix_lambda)
@@ -127,13 +143,15 @@ class PUCTAgent(BaseAgent):
         logits, v = self.model(x, m)
         return torch.softmax(logits, dim=1).cpu().numpy(), v.squeeze(1).cpu().numpy()
 
-    @staticmethod
-    def _expand(node: PUCTNode, legal: np.ndarray, probs: np.ndarray) -> None:
+    def _expand(self, node: PUCTNode, legal: np.ndarray, probs: np.ndarray) -> None:
         cells = np.flatnonzero(legal)
         p = probs[cells]
         total = float(p.sum())
         p = p / total if total > 0 else np.full(len(cells), 1.0 / len(cells))
-        node.children = [PUCTNode(int(c), float(pc)) for c, pc in zip(cells, p, strict=True)]
+        if self._make_children is not None:
+            node.children = self._make_children(cells, p.astype(np.float64, copy=False))
+        else:
+            node.children = [PUCTNode(int(c), float(pc)) for c, pc in zip(cells, p, strict=True)]
 
     def _leaf_value(self, game: CaroGame | None, v: float) -> float:
         if game is None:
@@ -160,9 +178,10 @@ class PUCTAgent(BaseAgent):
             max_sims = DEFAULT_MAX_SIMS
 
         work = game.clone()
-        root = PUCTNode(None, 1.0)
-        probs, vals = self._evaluate([encode(work)], [legal_mask(work)])
-        self._expand(root, legal_mask(work), probs[0])
+        root = self._node(None, 1.0)
+        root_mask = legal_mask(work)
+        probs, vals = self._evaluate([encode(work)], [root_mask])
+        self._expand(root, root_mask, probs[0])
         root_value = float(vals[0])
         priors = {ch.move: ch.prior for ch in root.children}
         if self.dirichlet:
@@ -181,7 +200,7 @@ class PUCTAgent(BaseAgent):
                 node = root
                 depth = 0
                 while node.expanded:
-                    node = select_child(node, self.c_puct)
+                    node = self._select_child(node, self.c_puct)
                     path.append(node)
                     work.step(node.move)
                     depth += 1

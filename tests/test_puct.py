@@ -121,6 +121,23 @@ def test_same_seed_same_move(net):
     assert len(moves) == 1
 
 
+@pytest.mark.parametrize("opening", [[60, 59, 71, 48], [60, 0, 61, 11, 62, 22, 63, 33]])
+@pytest.mark.parametrize("batch, temperature", [(1, 0.0), (8, 1.0)])
+def test_native_matches_python(net, opening, batch, temperature):
+    pytest.importorskip("caro.engine._puct_native")
+    g = CaroGame.from_moves(opening)
+    limits = Limits(max_sims=81)
+    kw = {"batch_leaves": batch, "temperature": temperature, "dirichlet": {"alpha": 0.3, "epsilon": 0.25}}
+    python = agent(net, backend="python", **kw)
+    native = agent(net, backend="native", **kw)
+
+    assert native.select_action(g, limits) == python.select_action(g, limits)
+    native_stats = {k: v for k, v in native.last_stats().items() if k != "time_ms"}
+    python_stats = {k: v for k, v in python.last_stats().items() if k != "time_ms"}
+    assert native_stats == python_stats
+    assert (native.last_pi == python.last_pi).all()
+
+
 def test_mix_and_noise_modes_run(net):
     g = CaroGame()
     g.step(60)

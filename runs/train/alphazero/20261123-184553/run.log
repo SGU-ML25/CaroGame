@@ -1,0 +1,3 @@
+2026-11-23 18:45:53 INFO    run train/alphazero/20261123-184553 — config training/alphazero, seed 2026
+2026-11-23 18:45:54 INFO    L8 init=/home/solozy/.cache/huggingface/hub/models--solozy--CaroGame/snapshots/a76d294b369af4440e64037a176eab3e14e2ba51/l5/best.pt, device=cpu
+2026-11-23 18:45:54 INFO    L8 vòng 1: tự đấu 200 ván

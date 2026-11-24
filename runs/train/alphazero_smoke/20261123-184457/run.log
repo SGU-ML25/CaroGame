@@ -1,0 +1,6 @@
+2026-11-23 18:44:58 INFO    run train/alphazero_smoke/20261123-184457 — config training/alphazero_smoke, seed 2026
+2026-11-23 18:44:58 INFO    L8 init=/home/solozy/.cache/huggingface/hub/models--solozy--CaroGame/snapshots/a76d294b369af4440e64037a176eab3e14e2ba51/l5/best.pt, device=cpu
+2026-11-23 18:44:58 INFO    L8 vòng 1: tự đấu 2 ván
+2026-11-23 18:44:59 INFO    L8 vòng 1: loss 7.1895 · duyệt=False · điểm đối chứng=0.5
+2026-11-23 18:45:00 INFO    L8 best.pt gặp L7: {'n': 2, 'wins': 1, 'draws': 0, 'losses': 1, 'score': 0.5}
+2026-11-23 18:45:00 INFO    kết thúc: ok sau 2.2 s
