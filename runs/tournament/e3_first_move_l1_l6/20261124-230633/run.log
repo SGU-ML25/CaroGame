@@ -1,0 +1,5 @@
+2026-11-24 23:06:33 INFO    run tournament/e3_first_move_l1_l6/20261124-230633 — config experiments/e3_first_move_l1_l6, seed 2026
+2026-11-24 23:06:33 INFO    Bắt đầu giải đấu: 1200 ván cờ, 4 workers, chế độ self_play.
+2026-11-24 23:23:17 INFO    Bảng điểm chung cuộc: {'L1-Random': 200.0, 'L2-Rule': 200.0, 'L3-AlphaBeta': 200.0, 'L4-MCTS': 200.0, 'L5-PolicySL': 200.0, 'L6-PolicyRL': 200.0}
+2026-11-24 23:23:17 INFO    Đã lưu báo cáo thống kê tại: C:\Users\ASUS VIVOBOOK\CaroGame\runs\tournament\e3_first_move_l1_l6\20261124-230633\reports
+2026-11-24 23:23:17 INFO    kết thúc: ok sau 1003.7 s
