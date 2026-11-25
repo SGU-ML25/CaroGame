@@ -29,7 +29,7 @@ CKPTS = {
 def split_by_game(states, game_ids, seed=42):
     rng = np.random.default_rng(seed)
     unique = rng.permutation(np.unique(game_ids))
-    n_train, n_val = int(len(unique) * 0.8), int(len(unique) * 0.9)
+    _, n_val = int(len(unique) * 0.8), int(len(unique) * 0.9)
     test_ids = unique[n_val:]
     return np.isin(game_ids, test_ids)
 
@@ -65,7 +65,7 @@ def main():
     phase = order / np.maximum(1, lengths - 1)
     phase = phase[test]
 
-    report = {"n_test": int(test.sum()), "n_games_test": int(len(np.unique(game_ids[test]))), "models": {}}
+    report = {"n_test": int(test.sum()), "n_games_test": len(np.unique(game_ids[test])), "models": {}}
     for name, rel in CKPTS.items():
         net = CaroResNet({"num_channels": 64, "num_blocks": 6})
         state = torch.load(ROOT / rel, map_location="cpu")

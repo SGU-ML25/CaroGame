@@ -8,8 +8,7 @@ Thay cho các hồ sơ lặp lại từng khai cuộc/từng vòng. Chạy từ 
 from __future__ import annotations
 
 import json
-import statistics
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -144,8 +143,6 @@ def training_appendix() -> None:
         xw = sum(r["result"] == 1 for r in games)
         ow = sum(r["result"] == -1 for r in games)
         plies = [len(r["moves"]) for r in games]
-        gw = sum(r["result"] == 1 for r in gate)
-        gd = sum(r["result"] == 0 for r in gate)
         rows_all.append((step, f"{xw}/{200 - xw - ow}/{ow}", f"{np.median(plies):.0f}",
                          f"{m['loss']:.3f}".replace(".", ","), pct(m["gating"]["score"]),
                          "có" if m["accepted"] else "—"))
@@ -226,7 +223,7 @@ def training_appendix() -> None:
          "phần lớn, loss value nhỏ hơn nhiều. Điều này hợp lý vì value đã được khởi tạo từ SL v3 "
          "và chỉ cần tinh chỉnh, còn policy phải học phân phối thăm của PUCT, khác với phân phối "
          "chuyên gia. Thứ hai, tỷ lệ duyệt thấp (6/50 vòng) nhưng không có nghĩa quá trình thất "
-         "bại: ngưỡng 55\% trên 100 ván là khắt khe, và nhiều ứng viên có điểm 50--55\% vẫn có "
+         r"bại: ngưỡng 55\% trên 100 ván là khắt khe, và nhiều ứng viên có điểm 50--55\% vẫn có "
          "thể đã tốt hơn ở một số khía cạnh. Việc giữ bản cũ khi nghi ngờ là lựa chọn thận trọng."),
         ("Một hạn chế: log không lưu phân phối thăm trung bình của PUCT theo vòng, nên không thể "
          "phân tích policy đã dịch chuyển như thế nào. Muốn làm điều đó cần thêm trường thống kê "

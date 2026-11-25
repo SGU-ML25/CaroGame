@@ -19,7 +19,6 @@ from pathlib import Path
 from caro.agents import make_agent
 from caro.arena.match import play_match
 from caro.arena.stats import wilson
-from caro.runlog import derive_seed
 
 SEED = 42
 

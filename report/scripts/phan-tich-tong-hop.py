@@ -13,7 +13,6 @@ from __future__ import annotations
 import csv
 import json
 import math
-import statistics
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -30,7 +29,7 @@ RUNS = ROOT / "runs"
 import sys
 
 sys.path.insert(0, str(ROOT))
-from caro.engine import CaroGame, iter_bits, winning_squares
+from caro.engine import CaroGame, winning_squares
 
 plt.rcParams.update({
     "font.size": 9, "axes.titlesize": 10, "axes.labelsize": 9,
@@ -210,7 +209,7 @@ def matrix_table(records: list[dict], agents: list[str]) -> str:
             if not sub:
                 cells.append("·")
                 continue
-            w, d, l = wdl(sub, a)
+            w, d, _ = wdl(sub, a)
             n = len(sub)
             cells.append(f"{100 * (w + 0.5 * d) / n:.0f}")
         lines.append(tex(a) + " & " + " & ".join(cells) + r" \\")
@@ -309,7 +308,7 @@ def make_rr(tag: str, records: list[dict], agents: list[str]) -> dict:
     for i, (color, key) in enumerate((("X", "x"), ("O", "o"))):
         vals = []
         for a in agents:
-            (w, d, l), n = out["color"][a][key]
+            (w, d, _), n = out["color"][a][key]
             vals.append(100 * (w + .5 * d) / n if n else 0)
         ax.bar(xs + (i - .5) * .36, vals, .36, label=f"cầm {color}", color=(C1, C2)[i])
     ax.set(xticks=xs, xticklabels=agents, ylabel="Điểm (%)", ylim=(0, 100))
@@ -323,8 +322,8 @@ def make_rr(tag: str, records: list[dict], agents: list[str]) -> dict:
     data = [out["lengths"][a] for a in agents if out["lengths"][a]]
     labels = [a for a in agents if out["lengths"][a]]
     ax.boxplot(data, tick_labels=labels, showfliers=False, patch_artist=True,
-               boxprops=dict(facecolor="#d8e6e3", edgecolor=C1),
-               medianprops=dict(color=C2, lw=1.4))
+               boxprops={"facecolor": "#d8e6e3", "edgecolor": C1},
+               medianprops={"color": C2, "lw": 1.4})
     ax.set(ylabel="Số nước", xlabel="Tác tử")
     ax.tick_params(axis="x", rotation=20)
     save_fig(fig, f"{tag}_lengths")
@@ -356,7 +355,7 @@ def make_a3a4() -> dict:
                 rows.append((tag, c, rival.split("-")[0], n, f"{w}/{d}/{l}", pct((w + .5 * d) / n),
                              dec(np.median(times), 1) if times else "—",
                              dec(np.quantile(times, .95), 1) if times else "—",
-                             f"{rate:.0f}" if rate == rate else "—"))
+                             f"{rate:.0f}" if not math.isnan(rate) else "—"))
                 summary[f"{tag}:{c}:{rival}"] = {"score": (w + .5 * d) / n, "w": w, "d": d, "l": l,
                                                   "time_median": float(np.median(times)) if times else None,
                                                   "sims_per_s": rate}

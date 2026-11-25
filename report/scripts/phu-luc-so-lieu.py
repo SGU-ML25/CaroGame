@@ -82,7 +82,7 @@ def main() -> None:
     for a in AGENTS:
         xs = [r for r in rr if r["agent_x"] == a]
         os_ = [r for r in rr if r["agent_o"] == a]
-        def line(sub):
+        def line(sub, a=a):
             w = sum(outcome(r, a) == 1 for r in sub)
             d = sum(outcome(r, a) == 0 for r in sub)
             l = len(sub) - w - d

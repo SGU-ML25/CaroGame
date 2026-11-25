@@ -189,7 +189,7 @@ NHAN_XET = {
     "RR8 · L4 thua L2 · ván 1101": (
         "Ván ngắn nhất trong nhóm L4 thua L2: chỉ 12 nước. Ở nước 11, O có bốn quân B6, C6, "
         "D6, E6; F6 là ô thắng duy nhất. L4 đi nước khác, L2 đi F6 và hoàn thành hàng ngang "
-        "B6–F6. Đây là lỗi bỏ chặn duy nhất điển hình, và cũng là lý do L4 chỉ đạt 14,3\% "
+        r"B6–F6. Đây là lỗi bỏ chặn duy nhất điển hình, và cũng là lý do L4 chỉ đạt 14,3\% "
         "tổng: với 400 mô phỏng, cây tìm kiếm quá thưa để thấy nước bắt buộc ở gốc."
     ),
     "RR8 · L5 thắng L2 · ván 517": (
@@ -202,12 +202,12 @@ NHAN_XET = {
     "RR8 · L6 thắng L3 · ván 900": (
         "L6 cầm O thắng L3 trong 34 nước bằng hàng ngang E10–I10. Không có lỗi bỏ chặn hay "
         "bỏ thắng ngay trong ván; khác biệt đến từ tích luỹ đe doạ và chọn cánh. Đây là ví "
-        "dụ vì sao L6 (61,9\%) nhỉnh hơn L3 (58,3\%) dù khoảng tin cậy chồng lấn: RL học "
+        r"dụ vì sao L6 (61,9\%) nhỉnh hơn L3 (58,3\%) dù khoảng tin cậy chồng lấn: RL học "
         "được một số mẫu tấn công mà Alpha-Beta độ sâu 4 không thấy."
     ),
     "RR8 · L7 thắng L8 · ván 2401": (
         "L7 cầm X thắng L8 trong 21 nước bằng đường chéo G4–C8. Đây là một trong 34 ván L7 "
-        "thắng L8 trên 100 ván cặp này; tỷ lệ 34\% là cao hơn nhiều so với các tác tử khác "
+        r"thắng L8 trên 100 ván cặp này; tỷ lệ 34\% là cao hơn nhiều so với các tác tử khác "
         "trước L8. Ván cho thấy L8 không bất khả chiến bại: khi L7 tạo được đe doạ chéo sớm, "
         "L8 cũng bị cuốn vào thế phòng thủ."
     ),
@@ -300,11 +300,11 @@ def section(label: str, r: dict) -> str:
     lines += [
         rf"\paragraph{{Thế cờ trước nước quyết định (sau nước {max(0, key - 1)})}}",
         board(r, upto=max(1, key - 1)),
-        rf"\paragraph{{Thế kết thúc}}",
+        r"\paragraph{Thế kết thúc}",
         board(r, winning=True),
         rf"\paragraph{{Cơ chế kết thúc}} {critical(r)}",
         rf"\paragraph{{Nhận xét}} {NHAN_XET.get(label, '')}",
-        rf"\paragraph{{Diễn biến}} {{\footnotesize " +
+        r"\paragraph{Diễn biến} {\footnotesize " +
         " ".join(f"{i + 1}.{coord(m)}" for i, m in enumerate(r["moves"])) + r"\par}",
     ]
     return "\n".join(lines)
