@@ -20,9 +20,14 @@ Mục đích không phải kể lể, mà để người đọc biết con số 
 18/11/2026 & RL v3 (từ SL v3) & 46 phút & 49\,920 episode \\
 23/11/2026 & L8 smoke & 2 giây & 6 \\
 23/11/2026 & L8 GPU (ngắt) & 2 giờ 44 phút & 3\,007 \\
+24/11/2026 & Mode A L1--L6 & 56,4 phút & 3\,000 \\
+24/11/2026 & Mode B L1--L6 & 29,6 phút & 3\,000 \\
+24/11/2026 & E3 chính thức L1--L6 & 16,7 phút & 1\,200 \\
 24--25/11/2026 & L8 GPU native & 12 giờ 19 phút & 15\,020 \\
 25/11/2026 & L8 gặp L3 & 2,6 phút & 40 \\
 25/11/2026 & E3 tự đấu & 7,3 phút & 800 \\
+26/11/2026 & A6 no-aug (early stop) & ~12 phút & 13 epoch \\
+26/11/2026 & A5b from-random & 26,3 phút & 49\,920 episode \\
 \bottomrule
 \end{longtable}
 \end{center}
@@ -56,10 +61,15 @@ build sớm, đừng để đến cuối.
 \midrule
 Sinh dữ liệu chuyên gia v2 & vài giờ & 297\,098 mẫu, 20\,000 ván \\
 SL v3 & khoảng 20--30 phút & 60 epoch, GPU \\
-RL v3 & 46 phút & 49\,920 episode \\
+RL v3 & 46 phút & 49\,920 episode, from SL \\
+A6 no-aug & ~12 phút & 13 epoch, early stopping \\
+A5b from-random & 26,3 phút & 49\,920 episode \\
 L8 & 12 giờ 19 phút & 10\,000 ván tự đấu + 50 gating \\
+Mode A L1--L6 & 56,4 phút & 3\,000 ván, 1\,000 ms/nước \\
+Mode B L1--L6 & 29,6 phút & 3\,000 ván \\
+E3 chính thức L1--L6 & 16,7 phút & 1\,200 ván \\
 RR8 & khoảng 30 phút & 2\,800 ván, 1 worker \\
-E3 & 7,3 phút & 800 ván \\
+E3 mở rộng & 7,3 phút & 800 ván \\
 A3 & 22 phút & 1\,600 ván \\
 A4 & 9 phút & 800 ván \\
 \bottomrule

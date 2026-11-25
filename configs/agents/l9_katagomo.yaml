@@ -1,0 +1,16 @@
+# Đối thủ ngoài để đối chiếu, không thuộc thang L1–L8 của đồ án.
+# Cài engine + model: scripts/setup_katagomo.sh (xem docs/KATAGOMO.md).
+# Engine là Caro2024 đã vá luật freestyle; không dùng binary Caro2024/Gom2024 gốc.
+id: KataGomo-11
+level: 8                  # cùng nhóm hiển thị với L8; không thuộc thang điểm
+kind: katagomo
+params:
+  binary: null              # null → $KATAGOMO_BIN → ~/.local/share/caro/katagomo/katago
+  model: null               # null → $KATAGOMO_MODEL → …/b10_freestyle15x.bin.gz
+  config: null              # null → $KATAGOMO_CONFIG → …/default_gtp.cfg
+  max_visits: 800           # số lượt thăm mỗi nước ở chế độ fixed (limits.max_sims ghi đè)
+  threads: 2                # số luồng tìm kiếm của engine
+  move_timeout: 120         # giây; quá hạn thì khởi động lại engine một lần
+limits:
+  mode: fixed
+  max_sims: 800

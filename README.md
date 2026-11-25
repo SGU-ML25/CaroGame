@@ -33,6 +33,20 @@ Khi sửa code, thêm `--reload` để server tự khởi động lại; đổi 
 Trang web có chế độ người–máy, máy–máy và xem lại ván từ log; cấp chưa cài được ghi rõ trên trang.
 Chi tiết ở [`docs/HUONG_DAN.md`](docs/HUONG_DAN.md) mục 7.6.
 
+## Đối thủ ngoài KataGomo (tuỳ chọn)
+
+Để đối chiếu với một engine Caro/Gomoku bên ngoài, cài một lần:
+
+```bash
+scripts/setup_katagomo.sh
+uv run uvicorn caro.ui.server:app --port 8000   # chọn KataGomo-11 trong UI
+```
+
+Engine dùng `Caro2024` đã vá luật freestyle (5 quân bị chặn hai đầu vẫn thắng) + model
+`b10_freestyle15x`. Đây là **đối thủ đối chiếu**, không thuộc thang L1–L8. Giải thích đầy đủ,
+lý do chọn engine/model, kiến trúc, kiểm thử và hạn chế:
+[`docs/KATAGOMO.md`](docs/KATAGOMO.md).
+
 ## Cấu trúc
 
 ```
@@ -188,3 +202,11 @@ GitHub Actions: đặt `HF_TOKEN` trong Environment hoặc Repository secrets; b
 | `experiments/a6_augment` | Có / không augmentation ×8 | |
 | `experiments/a7_eval_weights` | Heuristic mặc định / bỏ phòng thủ | |
 | `experiments/e3_first_move` | Lợi thế đi trước | RQ4 |
+
+## Giấy phép
+
+Mã nguồn và tài liệu trong repo này dùng **MIT License** — xem [`LICENSE`](LICENSE).
+
+KataGomo/KataGo được tải riêng khi chạy `scripts/setup_katagomo.sh`, không nằm trong repo;
+phần đó giữ giấy phép gốc của tác giả phát hành. Model `b10_freestyle15x` cũng tải riêng từ
+release của KataGomo, không được commit vào repo.

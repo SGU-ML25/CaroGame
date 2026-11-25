@@ -1,0 +1,16 @@
+# A6 — cùng cấu hình SL v3 (expert_v2, 60 epoch, cosine) nhưng TẮT tăng cường D4.
+# So với checkpoint SL v3 đã có (augment=true) để đo tác dụng augmentation.
+# Có early stopping (patience 5) và eval định kỳ 10 epoch với L1/L2/L3.
+defaults: [training/sl_v3]
+experiment: {kind: train, name: a6_noaug, rq: [RQ2]}
+data:
+  dir: runs/data/expert_v2
+  augment_x8: false
+  num_workers: 4
+train:
+  epochs: 60
+  torch_threads: 4
+  early_stopping: {metric: val_loss, patience: 5}
+  eval_every: 10
+  eval_games: 50
+  eval_vs: [agents/l1_random, agents/l2_rule, agents/l3_alphabeta]

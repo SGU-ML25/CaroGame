@@ -25,6 +25,7 @@ REGISTRY: dict[str, str] = {
     "mcts": "caro.agents.mcts:MCTSAgent",
     "policy": "caro.agents.policy_agent:PolicyAgent",
     "puct": "caro.agents.puct:PUCTAgent",
+    "katagomo": "caro.agents.katagomo:KataGomoAgent",
 }
 
 

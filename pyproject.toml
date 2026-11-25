@@ -3,6 +3,7 @@ name = "caro"
 version = "0.1.0"
 description = "Caro 11×11 (5 quân thắng, không luật chặn 2 đầu): engine bitboard và tác tử AI cấp 1–8"
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.11"
 dependencies = [
     "huggingface-hub>=0.30",

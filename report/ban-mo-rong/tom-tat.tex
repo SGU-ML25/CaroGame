@@ -9,24 +9,29 @@ và vòng lặp AlphaZero-inspired. Mọi tham số nằm trong cấu hình; m�
 ghép, seed, commit, log ván và tổng kết, nên một bảng trong báo cáo có thể lần ngược về đúng
 lần chạy sinh ra nó.
 
-Báo cáo có bốn kết quả thực nghiệm chính. Thứ nhất, trong giải vòng tròn tám tác tử ở ngân sách
-cố định, PUCT có mạng học vượt Alpha-Beta viết tay: L8 đạt 89,8\%, L7 82,0\%, L6 61,9\%, L3
-58,3\%, L5 50,2\%, L2 43,6\%, L4 14,3\% và L1 0,0\%. MCTS rollout ngẫu nhiên thua cả tác tử
-luật, cho thấy tìm kiếm không có hàm lượng giá hoặc tri thức chiến thuật không đủ ở ngân sách
-này. Thứ hai, tự đấu từng cấp cho thấy
-lợi thế đi trước không đơn điệu theo sức mạnh: L2 và L3 lệch mạnh (X thắng 75\% và 66\%), L4
-cân bằng tuyệt đối 50--50, L7 lệch mạnh nhất (X thắng 80\%), còn L8 chỉ lệch vừa (X thắng 50\%,
-hoà 28\%). Thứ ba, học có giám sát đạt top-1 67,8\% và top-3 89,4\% trên tập test tách theo ván;
-phát hiện và sửa lỗi quy ước dấu của value head làm MSE giảm từ 1,38 xuống 0,36 và tương quan
-tăng từ gần 0 lên +0,78. Thứ tư, L8 vòng 37 thắng L7 82,5\% trên 20 ván và thắng Alpha-Beta
-68,75\% trên 40 ván; trong 10\,000 ván tự đấu từ bàn trống, X thắng 77,0\%, O thắng 9,2\%,
-hoà 13,8\%, cho thấy khai cuộc làm giảm mạnh lợi thế đi trước.
+Báo cáo có năm kết quả thực nghiệm chính. Thứ nhất, giải chính thức L1--L6 trên nhánh
+\texttt{main} (200 ván/cặp) cho thứ hạng ổn định: mode B L6 79,5\%, L3 74,8\%, L5 67,3\%, L2
+58,3\%, L4 20,1\%, L1 0\%; mode A cùng 1\,000 ms/nước cho cùng thứ hạng, chênh lệch không quá
+2,8 điểm phần trăm. Thứ hai, giải mở rộng tám tác tử ở ngân sách cố định (RR8) xác nhận PUCT
+có mạng học vượt Alpha-Beta viết tay: L8 89,8\%, L7 82,0\%, L6 61,9\%, L3 58,3\%, L5 50,2\%,
+L2 43,6\%, L4 14,3\%, L1 0\%. Thứ ba, tự đấu từng cấp cho thấy lợi thế đi trước không đơn điệu
+theo sức mạnh: L2 và L3 lệch mạnh (X thắng 75\% và 66\% ở E3 mở rộng; 71,8\% và 70,0\% ở E3
+chính thức), L4 cân bằng 50--50, L7 lệch mạnh nhất (X thắng 80\%), còn L8 chỉ lệch vừa (X thắng
+50\%, hoà 28\%). Thứ tư, học có giám sát đạt top-1 67,8\% và top-3 89,4\% trên tập test tách
+theo ván; phát hiện và sửa lỗi quy ước dấu của value head làm MSE giảm từ 1,38 xuống 0,36 và
+tương quan tăng từ gần 0 lên +0,78. A6 cho thấy augmentation giúp policy/sức chơi (top-1 67,8\%
+so với 60,5\%; L3 21,0\% so với 7,0\%). Thứ năm, L8 vòng 37 thắng L7 82,5\% trên 20 ván và
+thắng Alpha-Beta 68,75\% trên 40 ván; trong 10\,000 ván tự đấu từ bàn trống, X thắng 77,0\%,
+O thắng 9,2\%, hoà 13,8\%, cho thấy khai cuộc làm giảm mạnh lợi thế đi trước. A5b cho thấy RL
+khởi tạo từ random thua L2/L3/L5 toàn bộ 100 ván, trong khi from-SL đạt L2 81,0\%, L3 37,0\%,
+L5 66,5\%; khởi tạo từ SL là điều kiện cần ở ngân sách 50k episode.
 
-Báo cáo cũng chỉ rõ giới hạn: chưa chạy chế độ cùng thời gian mỗi nước cho đủ tám tác tử, chưa
-lặp nhiều seed, chưa có tập khai cuộc giữ riêng, và một số ablation (A6, A7b, A8b, A5b) chưa
-đủ mẫu. Các phần này được liệt kê ở phụ lục cuối với công sức và tác động ước tính, để người
-đọc quyết định bổ sung hay bỏ qua. Cách trình bày này có chủ đích: kết quả được nêu ở mức
-\emph{sức mạnh thi đấu trong cấu hình đã đo}, không phải \emph{tối ưu đã chứng minh}.
+Báo cáo cũng chỉ rõ giới hạn: mode A mới có cho L1--L6, chưa có cho L7--L8; chưa lặp nhiều
+seed; chưa có tập khai cuộc giữ riêng; A6 cần thêm run no-aug 60 epoch không early stopping để
+so công bằng; A7b/A8b chưa chạy. Các phần này được liệt kê ở phụ lục cuối với công sức và tác
+động ước tính, để người đọc quyết định bổ sung hay bỏ qua. Cách trình bày này có chủ đích: kết
+quả được nêu ở mức \emph{sức mạnh thi đấu trong cấu hình đã đo}, không phải \emph{tối ưu đã
+chứng minh}.
 
 \noindent\textbf{Từ khóa:} Caro 11×11, bitboard, Alpha-Beta, MCTS, UCT, PUCT, AlphaZero, học
 tăng cường, tự đấu, thiết kế thí nghiệm, khoảng tin cậy.

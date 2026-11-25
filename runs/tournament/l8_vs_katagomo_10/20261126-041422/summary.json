@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "ended": "2026-11-26T04:19:10",
+  "duration_s": 287.118,
+  "games": 10,
+  "metrics": 0,
+  "score": {
+    "L8-AlphaZero": 3.0,
+    "KataGomo-11": 7.0
+  }
+}

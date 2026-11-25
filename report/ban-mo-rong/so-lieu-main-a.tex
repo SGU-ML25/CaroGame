@@ -1,0 +1,28 @@
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Tác tử & Ván & W/D/L & Điểm & Wilson 95\% \\
+\midrule
+L6-PolicyRL & 1000 & 769/21/210 & 78,0\% & [75,3\%; 80,4\%] \\
+L3-AlphaBeta & 1000 & 763/27/210 & 77,6\% & [75,0\%; 80,1\%] \\
+L5-PolicySL & 1000 & 656/9/335 & 66,0\% & [63,1\%; 68,9\%] \\
+L2-Rule & 1000 & 564/13/423 & 57,0\% & [54,0\%; 60,1\%] \\
+L4-MCTS & 1000 & 213/0/787 & 21,3\% & [18,9\%; 23,9\%] \\
+L1-Random & 1000 & 0/0/1000 & 0,0\% & [0,0\%; 0,4\%] \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{center}\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & L1-Random & L2-Rule & L3-AlphaBeta & L4-MCTS & L5-PolicySL & L6-PolicyRL \\
+\midrule
+L1-Random & — & 0 & 0 & 0 & 0 & 0 \\
+L2-Rule & 100 & — & 31 & 96 & 34 & 24 \\
+L3-AlphaBeta & 100 & 69 & — & 99 & 67 & 53 \\
+L4-MCTS & 100 & 4 & 1 & — & 2 & 0 \\
+L5-PolicySL & 100 & 66 & 33 & 98 & — & 33 \\
+L6-PolicyRL & 100 & 76 & 47 & 100 & 67 & — \\
+\bottomrule
+\end{tabular}
+\end{center}

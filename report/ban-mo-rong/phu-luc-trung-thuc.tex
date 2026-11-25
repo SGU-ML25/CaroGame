@@ -62,7 +62,7 @@ Tối ưu nước đi & Phân tích cơ hội thắng/chặn tức thì & Không
 Lợi thế đi trước & Đo trên từng cặp tác tử, từng bộ khai cuộc & Không khẳng định hằng số cho mọi cấu hình \\
 AlphaZero-inspired & Vòng lặp, gating, checkpoint, kết quả & Không khẳng định tái hiện AlphaZero gốc \\
 Cải thiện do RL & So sánh checkpoint, learning curve & Không tách hoàn toàn khỏi nhiễu seed/khai cuộc \\
-Ablation & A1/A2/A3/A4/A5/A7 & A6/A7b/A8b/A5b chưa đủ, ghi rõ \\
+Ablation & A1/A2/A3/A4/A5/A6/A7, A5b & A7b/A8b chưa chạy; A6 cần run 60 epoch công bằng \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -87,7 +87,7 @@ bản cuối.
   \item Chế độ cùng thời gian mỗi nước cho đủ tám tác tử (chưa chạy).
   \item Lặp nhiều seed (chưa chạy).
   \item Tập khai cuộc giữ riêng (chưa chạy).
-  \item A6, A7b, A8b, A5b đầy đủ (chưa chạy hoặc chưa đủ mẫu).
+  \item A6 công bằng 60 epoch (run hiện tại dừng sớm 13 epoch), A7b, A8b.
   \item So sánh với engine bên ngoài như Rapfi (chưa chạy).
   \item Biến thể luật chặn hai đầu, Renju, bàn 15×15 (ngoài phạm vi).
 \end{itemize}

@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 from caro.config import load_config
 from caro.nn.dataset import ArrayDataset
 from caro.nn.model import CaroResNet
+from caro.runlog import derive_seed
 
 
 def mover_relative_values(states, values):
@@ -22,14 +23,15 @@ def mover_relative_values(states, values):
     return (values * sign).astype(values.dtype)
 
 
-def train_model(config_path):
-    config = load_config(config_path)
+def train_model(config_path, overrides=()):
+    config = load_config(config_path, overrides)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
+
+    tcfg = {**config, **(config.get("train") or {})}      # `train:` ưu tiên, vẫn đọc khoá ở gốc (sl_test.yaml)
+    torch.set_num_threads(int(tcfg.get("torch_threads", 1)))
     print(f"Khởi tạo huấn luyện SL trên thiết bị: {device}")
     model = CaroResNet(config.get("model", {})).to(device)
-    
-    tcfg = {**config, **(config.get("train") or {})}      # `train:` ưu tiên, vẫn đọc khoá ở gốc (sl_test.yaml)
+
     lr = tcfg.get("lr", 1e-3)
     weight_decay = tcfg.get("weight_decay", 1e-4)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -43,6 +45,7 @@ def train_model(config_path):
     c_weight = tcfg.get("value_coef", tcfg.get("value_weight", 1.0))
     # Mỗi thí nghiệm một thư mục (runs/train/<experiment.name>) để không ghi đè lên nhau
     out_dir = Path("runs/train") / (config.get("experiment") or {}).get("name", "sl_policy")
+    out_dir.mkdir(parents=True, exist_ok=True)
     batch_size = int(tcfg.get("batch_size", 16))
 
     data_dir = Path((config.get("data") or {}).get("dir", "runs/data/expert_v1"))
@@ -72,69 +75,104 @@ def train_model(config_path):
         return ArrayDataset(states[m], policies[m], values[m], augment=augment)
 
     augment_flag = (config.get("data") or {}).get("augment_x8", True)
-    train_loader = DataLoader(subset(0, augment_flag), batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(subset(1, False), batch_size=batch_size, shuffle=False)
+    num_workers = int((config.get("data") or {}).get("num_workers", 0))
+    loader_kw = {"num_workers": num_workers, "pin_memory": device.type == "cuda"}
+    if num_workers > 0:
+        loader_kw["persistent_workers"] = True
+    train_loader = DataLoader(subset(0, augment_flag), batch_size=batch_size, shuffle=True, **loader_kw)
+    val_loader = DataLoader(subset(1, False), batch_size=batch_size, shuffle=False, **loader_kw)
+    print(f"Augment D4: {augment_flag} · DataLoader workers: {num_workers}")
 
     eval_every = int(tcfg.get("eval_every", 2))
+    eval_vs = tcfg.get("eval_vs") or []
+    eval_games = int(tcfg.get("eval_games", 100))
+    early = tcfg.get("early_stopping") or {}
+    patience = int(early["patience"]) if early.get("patience") else None
+    print(f"Eval mỗi {eval_every} epoch với {len(eval_vs)} đối thủ ({eval_games} ván); "
+          f"early stopping: {patience or 'tắt'}")
+
     best_val_loss = float('inf')
-    
+    bad_epochs = 0
     metrics_history = []
 
     for epoch in range(epochs):
         model.train()
         total_train_loss = 0.0
-        
-        for states, policies, values in train_loader:
-            states, policies, values = states.to(device), policies.to(device), values.to(device)
-            
+
+        for states_b, policies_b, values_b in train_loader:
+            states_b = states_b.to(device)
+            policies_b = policies_b.to(device)
+            values_b = values_b.to(device)
+
             optimizer.zero_grad()
-            pred_policies, pred_values = model(states)
-            
-            loss_p = criterion_policy(pred_policies, policies)
-            loss_v = criterion_value(pred_values.squeeze(-1), values)
+            pred_policies, pred_values = model(states_b)
+
+            loss_p = criterion_policy(pred_policies, policies_b)
+            loss_v = criterion_value(pred_values.squeeze(-1), values_b)
             loss = loss_p + c_weight * loss_v
-            
+
             loss.backward()
             optimizer.step()
             total_train_loss += loss.item()
-            
+
         # Đánh giá tập Validation
         model.eval()
         val_loss = 0.0
         with torch.no_grad():
-            for states, policies, values in val_loader:
-                states, policies, values = states.to(device), policies.to(device), values.to(device)
-                pred_policies, pred_values = model(states)
-                loss_p = criterion_policy(pred_policies, policies)
-                loss_v = criterion_value(pred_values.squeeze(-1), values)
+            for states_b, policies_b, values_b in val_loader:
+                states_b = states_b.to(device)
+                policies_b = policies_b.to(device)
+                values_b = values_b.to(device)
+                pred_policies, pred_values = model(states_b)
+                loss_p = criterion_policy(pred_policies, policies_b)
+                loss_v = criterion_value(pred_values.squeeze(-1), values_b)
                 val_loss += (loss_p + c_weight * loss_v).item()
-                
+
         if scheduler is not None:
             scheduler.step()
         avg_train_loss = total_train_loss / len(train_loader)
         avg_val_loss = val_loss / max(len(val_loader), 1)
-        
-        print(f"Epoch [{epoch+1}/{epochs}] | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f}")
-        
-        metrics_history.append({"epoch": epoch+1, "train_loss": avg_train_loss, "val_loss": avg_val_loss})
-        
-        if avg_val_loss < best_val_loss:
-            best_val_loss = avg_val_loss
-            save_dir = out_dir
-            save_dir.mkdir(parents=True, exist_ok=True)
-            torch.save(model.state_dict(), save_dir / "latest.pt")
-            
-        if (epoch + 1) % eval_every == 0:
-            print(f"--> (epoch {epoch+1}) đấu thử với cấp 1-3 chưa được cài đặt trong train_sl.")
 
-    out_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Epoch [{epoch+1}/{epochs}] | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f}")
+        metrics_history.append({"epoch": epoch+1, "train_loss": avg_train_loss, "val_loss": avg_val_loss})
+
+        improved = avg_val_loss < best_val_loss
+        if improved:
+            best_val_loss = avg_val_loss
+            bad_epochs = 0
+            torch.save(model.state_dict(), out_dir / "latest.pt")
+            torch.save(model.state_dict(), out_dir / "best.pt")
+        else:
+            bad_epochs += 1
+
+        if eval_vs and (epoch + 1) % eval_every == 0:
+            from caro.training.train_pg import evaluate  # import muộn để tránh kéo arena khi không cần
+
+            evals = {}
+            for ref in eval_vs:
+                tag = ref["id"] if isinstance(ref, dict) else str(ref).split("/")[-1]
+                ev = evaluate(model, ref, eval_games, device,
+                              derive_seed(int(config.get("seed", 42)), "sl_eval", epoch + 1))
+                evals[tag] = ev
+                print(f"  eval {tag}: {ev['wins']}W {ev['draws']}D {ev['losses']}L "
+                      f"score {ev['score']:.3f} [{ev['ci_low']:.3f}; {ev['ci_high']:.3f}]")
+            metrics_history[-1]["eval"] = evals
+
+        if patience is not None and bad_epochs >= patience:
+            print(f"Dừng sớm ở epoch {epoch+1}: val_loss không cải thiện {patience} epoch "
+                  f"(best {best_val_loss:.4f}).")
+            break
+
+    torch.save(model.state_dict(), out_dir / "last.pt")
     with open(out_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics_history, f, indent=4)
-        
-    print(f"Huấn luyện SL hoàn tất và đã lưu checkpoint tại {out_dir / 'latest.pt'}!")
+
+    print(f"Huấn luyện SL hoàn tất. Checkpoint: {out_dir / 'best.pt'} (best) và {out_dir / 'last.pt'} (cuối).")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("config", type=str, help="Đường dẫn file cấu hình YAML (vd: training/sl)")
+    parser.add_argument("overrides", nargs="*", help="ghi đè dạng a.b=c (vd: train.epochs=30)")
     args = parser.parse_args()
-    train_model(args.config)
+    train_model(args.config, args.overrides)

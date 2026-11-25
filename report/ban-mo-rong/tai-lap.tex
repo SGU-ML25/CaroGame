@@ -57,7 +57,9 @@ L8 chưa được push lên Hugging Face tại thời điểm viết; muốn tá
 Từ gốc repo, chạy:
 \begin{lstlisting}[numbers=none]
 uv run python report/scripts/phan-tich-tong-hop.py
+uv run python report/scripts/phan-tich-main.py
 uv run python report/scripts/phan-tich-hoc.py
+uv run python report/scripts/phan-tich-a6-a5b.py
 uv run python report/scripts/phu-luc-chon-loc.py
 uv run python report/scripts/ho-so-van-moi.py
 cd report && latexmk -xelatex bao-cao-caro.tex
@@ -93,8 +95,17 @@ uv run python -m caro.arena.tournament experiments/a8b_root_tactics
 \begin{lstlisting}[numbers=none]
 uv run python -m caro.training.gen_expert_data training/gen_expert_data_v2
 uv run python -m caro.training.train_sl training/sl_v3
-uv run python -m caro.training.train_pg training/pg
+uv run python -m caro.training.train_sl experiments/a6_augment_v3
+uv run python -m caro.training.train_pg experiments/a5b_from_random
 uv run python -m caro.training.alphazero_loop training/alphazero
+\end{lstlisting}
+
+\paragraph{Đánh giá checkpoint.}
+\begin{lstlisting}[numbers=none]
+uv run python experiments/eval_checkpoint.py \
+  --checkpoint runs/train/a6_noaug/best.pt \
+  --vs agents/l2_rule agents/l3_alphabeta --games 100 \
+  --label "A6 no-aug" --out runs/eval/a6_sl_noaug.csv
 \end{lstlisting}
 
 \section{Chỉ mục nguồn số liệu}
@@ -104,7 +115,10 @@ uv run python -m caro.training.alphazero_loop training/alphazero
 \textbf{Phép đo} & \textbf{Đường dẫn log} \\
 \midrule
 RR8 & \repoFile{runs/eval/tournament/rr8\_mode\_b/latest/} \\
-E3 & \repoFile{runs/eval/tournament/e3\_selfplay/20261125-232320/} và \repoFile{20261125-233229/} \\
+Mode A L1--L6 & \repoFile{runs/tournament/main\_mode\_a\_l1\_l6/20261124-212727/} \\
+Mode B L1--L6 & \repoFile{runs/tournament/main\_mode\_b\_l1\_l6/20261124-222606/} \\
+E3 chính thức L1--L6 & \repoFile{runs/tournament/e3\_first\_move\_l1\_l6/20261124-230633/} \\
+E3 mở rộng & \repoFile{runs/eval/tournament/e3\_selfplay/20261125-232320/} và \repoFile{20261125-233229/} \\
 A1 & \repoFile{runs/bench/a1\_ab\_pruning/20261029-200321/} \\
 A2 & \repoFile{runs/bench/a2\_ordering\_tt/20261029-212610/} \\
 A7 & \repoFile{runs/bench/a7\_eval\_weights/20261029-223250/} \\
@@ -113,7 +127,10 @@ A4 & \repoFile{runs/tournament/a4\_rollout/20261114-234556/} \\
 A5 & \repoFile{runs/eval/a5\_puct/results.csv} \\
 Arena cũ & \repoFile{runs/arena\_matrix/games.csv} và \repoFile{ranking.csv} \\
 SL v1/v2/v3 & \repoFile{runs/train/sl\_policy*/metrics.json} \\
+A6 no-aug & \repoFile{runs/train/a6\_noaug/} \\
 RL v2/v3 & \repoFile{runs/train/pg\_policy/20261117-224555\_v2\_init/} và \repoFile{20261118-125103\_v3\_init/} \\
+A5b from-random & \repoFile{runs/train/a5b\_from\_random/20261126-013405\_from\_random/} \\
+Đánh giá A5b & \repoFile{runs/eval/a5b\_from\_sl\_best.csv} và \repoFile{a5b\_from\_random\_best.csv} \\
 L8 & \repoFile{runs/train/alphazero/20261124-160615\_gpu-native/} \\
 L8--L3 & \repoFile{runs/eval/tournament/l8\_vs\_l3/20261125-134954\_round37/} \\
 \bottomrule
@@ -128,7 +145,7 @@ L8--L3 & \repoFile{runs/eval/tournament/l8\_vs\_l3/20261125-134954\_round37/} \\
 \midrule
 \texttt{model:l5} & SL v3 & Trọng số dùng cho L5 và L7; revision ghim trong \texttt{models.yaml} \\
 \texttt{model:l6} & RL v3 & Trọng số dùng cho L6; revision ghim trong \texttt{models.yaml} \\
-\texttt{model:l8} & L8 & Revision null tại thời điểm viết; dùng checkpoint cục bộ \\
+\texttt{model:l8} & L8 & Revision \texttt{397bdb65ef}; checkpoint vòng 37 \\
 \texttt{sl\_policy/latest.pt} & SL v1 & Bản cũ, nhãn value tuyệt đối; chỉ dùng để so lịch sử \\
 \texttt{sl\_policy\_v2/latest.pt} & SL v2 & Bản cũ, nhãn value tuyệt đối; chỉ dùng để so lịch sử \\
 \texttt{sl\_policy\_v3/latest.pt} & SL v3 & Bản đã sửa quy ước; dùng làm init cho RL và PUCT \\

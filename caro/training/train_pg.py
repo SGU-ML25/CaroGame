@@ -237,6 +237,7 @@ def train(cfg: dict) -> dict:
     t = cfg["train"]
     seed = cfg["seed"]
     device = torch.device("cuda" if torch.cuda.is_available() and cfg.get("device", "auto") != "cpu" else "cpu")
+    torch.set_num_threads(int(t.get("torch_threads", 1)))
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)

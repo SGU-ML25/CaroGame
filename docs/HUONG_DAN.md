@@ -493,6 +493,18 @@ từng nước, tốc độ) và xem lại ván từ `runs/**/games.jsonl`. Khun
 Tác tử mới tự hiện trên UI khi `kind` có trong `REGISTRY`. Nếu nó dùng ngân sách, thêm `kind` vào `BUDGET_KEYS`
 trong `caro/ui/server.py` để trang hiện đúng ô nhập. Ván đang chơi chỉ nằm trong bộ nhớ server.
 
+#### 7.6.1 Đối thủ ngoài KataGomo ✅
+
+```bash
+scripts/setup_katagomo.sh                  # tải model + build CPU + vá luật freestyle
+uv run uvicorn caro.ui.server:app --port 8000
+```
+
+Chọn `KataGomo-11` trong danh sách tác tử. Đây là engine ngoài để đối chiếu, **không** thuộc
+thang L1–L8. Engine là `Caro2024` đã vá `configs/katagomo/freestyle-five.patch` để `OXXXXXO`
+vẫn thắng như luật đồ án; model là `b10_freestyle15x` (15×15, chuyển kích thước — chưa có model
+11×11 chính thức). Giải thích đầy đủ ở [`KATAGOMO.md`](KATAGOMO.md).
+
 ### 7.7 Báo cáo LaTeX (tuần 1–8) — khung ✅, nội dung 🚧
 
 `report/` là báo cáo cuối kỳ viết bằng LaTeX (XeLaTeX + latexmk). Hướng dẫn đầy đủ — cài đặt, cấu hình,
