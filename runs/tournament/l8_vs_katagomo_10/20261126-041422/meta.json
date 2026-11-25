@@ -1,0 +1,35 @@
+{
+  "started": "2026-11-26T04:14:22",
+  "argv": [
+    "/mnt/data/1_Projects/AAI/CaroGame/caro/arena/tournament.py",
+    "experiments/main_mode_a",
+    "agents=[agents/l8_alphazero, agents/l9_katagomo]",
+    "experiment.name=l8_vs_katagomo_10",
+    "arena.games_per_pair=10",
+    "arena.swap_colors=true",
+    "arena.workers=2",
+    "arena.stats.elo=false"
+  ],
+  "seed": 2026,
+  "config_hash": "957ba65b8406",
+  "git": {
+    "commit": "5b9ee7e347ff0407a7d2fa4a155e16a26cb2e258",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  }
+}

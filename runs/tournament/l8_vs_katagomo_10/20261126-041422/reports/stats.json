@@ -1,0 +1,52 @@
+{
+  "detailed_record_by_turn": {
+    "KataGomo-11": {
+      "first_hand_X": {
+        "wins": 3,
+        "draws": 2,
+        "losses": 0
+      },
+      "second_hand_O": {
+        "wins": 2,
+        "draws": 2,
+        "losses": 1
+      },
+      "total": {
+        "wins": 5,
+        "draws": 4,
+        "losses": 1,
+        "score": 0.7
+      }
+    },
+    "L8-AlphaZero": {
+      "first_hand_X": {
+        "wins": 1,
+        "draws": 2,
+        "losses": 2
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 2,
+        "losses": 3
+      },
+      "total": {
+        "wins": 1,
+        "draws": 4,
+        "losses": 5,
+        "score": 0.3
+      }
+    }
+  },
+  "performance": {
+    "KataGomo-11": {
+      "time_mean_ms": 664.8950156739812,
+      "time_p95_ms": 683.8339999999848,
+      "nodes_mean": 0.0
+    },
+    "L8-AlphaZero": {
+      "time_mean_ms": 1005.5809148264985,
+      "time_p95_ms": 1013.236,
+      "nodes_mean": 0.0
+    }
+  }
+}

@@ -1,0 +1,5 @@
+checkpoint,source,opponent,n,wins,draws,losses,score,ci_low,ci_high
+RL v3 best (from SL),/mnt/data/1_Projects/AAI/CaroGame/runs/train/pg_policy/20261118-125103_v3_init/checkpoints/best.pt,l1_random,100,100,0,0,1.0,0.9630051925239981,0.9999999999999999
+RL v3 best (from SL),/mnt/data/1_Projects/AAI/CaroGame/runs/train/pg_policy/20261118-125103_v3_init/checkpoints/best.pt,l2_rule,100,79,4,17,0.81,0.7222097592919214,0.8748534600729574
+RL v3 best (from SL),/mnt/data/1_Projects/AAI/CaroGame/runs/train/pg_policy/20261118-125103_v3_init/checkpoints/best.pt,l3_alphabeta,100,33,8,59,0.37,0.28182212569509163,0.46779652424866885
+RL v3 best (from SL),/mnt/data/1_Projects/AAI/CaroGame/runs/train/pg_policy/20261118-125103_v3_init/checkpoints/best.pt,l5_policy_sl,100,65,3,32,0.665,0.5679080619801153,0.749883651552804

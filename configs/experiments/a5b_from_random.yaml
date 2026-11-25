@@ -1,0 +1,10 @@
+# A5b — REINFORCE khởi tạo NGẪU NHIÊN, cùng 50k episode với RL v3 (khởi tạo từ SL v3).
+# Eval thêm L1 và L5 (mặc định pg chỉ eval L2/L3). Eval mỗi 5.000 episode như RL v3.
+defaults: [training/pg]
+experiment: {kind: train, name: a5b_from_random, rq: [RQ2]}
+run: {tag: from_random}
+train:
+  init: random
+  torch_threads: 4
+  eval_every: 5000
+  eval_vs: [agents/l1_random, agents/l2_rule, agents/l3_alphabeta, agents/l5_policy_sl]

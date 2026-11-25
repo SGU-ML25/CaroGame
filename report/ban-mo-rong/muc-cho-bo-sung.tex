@@ -12,13 +12,14 @@ thiếu, công sức ước tính, tác động lên kết luận, và khuyến 
 \toprule
 \textbf{Hạng mục} & \textbf{Trạng thái} & \textbf{Công sức} & \textbf{Tác động} & \textbf{Khuyến nghị} \\
 \midrule
-Giải chính chế độ A (cùng thời gian) & Chưa có & 4--8 giờ & Cao & Nên bổ sung \\
+Giải chính thức L1--L6 (mode A/B, E3) & Đã có & — & — & Đã xong \\
+Giải chính thức L7--L8 (mode A/B/E3, 200 ván/cặp) & Chưa có & 3--8 giờ & Cao & Nên bổ sung \\
 Lặp nhiều seed & Chưa có & 4--8 giờ & Cao & Nên bổ sung \\
 Tập khai cuộc giữ riêng & Chưa có & 1--2 giờ & Cao & Nên bổ sung \\
-A6 tăng cường đối xứng & Chưa có checkpoint & 1--2 giờ & Trung bình & Tuỳ chọn \\
+A6 tăng cường đối xứng & Đã có no-aug (dừng sớm 13 epoch); cần fair 60 epoch & 45 phút & Trung bình & Nên chạy lại \\
 A7b đối đầu trọng số & Chưa chạy & 30 phút & Trung bình & Nên bổ sung \\
 A8b root tactics & Chưa chạy & 1--2 giờ & Trung bình & Nên bổ sung \\
-A5b khởi tạo RL & Chưa có cặp đủ & 8--12 giờ & Trung bình & Cân nhắc \\
+A5b khởi tạo RL & Đã có (from-random + eval L1/L5) & — & — & Đã xong \\
 Top-1/top-3 trên tập giữ riêng & Đã có & — & — & Đã xong \\
 Calibration value theo pha & Đã có & — & — & Đã xong \\
 Phân tích ván sâu & 20 ván & 2--3 giờ & Trung bình & Có thể thêm \\
@@ -31,17 +32,27 @@ Khảo sát người dùng UI & Chưa có & 2--3 giờ & Thấp & Tuỳ chọn \
 \end{longtable}
 \end{small}
 
-\section{Giải chính chế độ A}
-\paragraph{Câu hỏi.} Với cùng 1\,000 ms mỗi nước, thứ hạng tám tác tử có khác chế độ B không?
-\paragraph{Trạng thái.} Chưa có. Báo cáo chỉ có RR8 chế độ B (ngân sách cố định theo loại thuật
-toán) và các phép đo A3/A4/A5 ở ngân sách cố định.
-\paragraph{Lý do.} Chạy chế độ A cho tám tác tử tốn khoảng 4--8 giờ vì mỗi nước chờ đủ 1 giây,
-kể cả khi tác tử đã tìm xong. Với 2\,800 ván và khoảng 30 nước/ván, tổng thời gian chờ rất lớn.
-\paragraph{Tác động.} Cao. Đây là phần còn thiếu quan trọng nhất để trả lời RQ1 đầy đủ. Chế độ
-A có thể đảo thứ hạng giữa Alpha-Beta và PUCT/MCTS vì Alpha-Beta dùng thời gian hiệu quả hơn
-trên mỗi nút, còn PUCT có thể dùng nhiều mô phỏng hơn.
-\paragraph{Khuyến nghị.} Nên bổ sung, ít nhất cho các cặp L3--L4, L3--L7, L3--L8, L7--L8, thay vì
-toàn bộ 28 cặp. Chạy 20 khai cuộc × 2 màu × 5 cặp = 200 ván, khoảng 1--2 giờ.
+\section{Giải chính thức L7--L8 (mode A/B, E3)}
+\paragraph{Câu hỏi.} L7/L8 có duy trì thứ hạng khi chạy cùng giao thức chính thức 200 ván/cặp,
+ở cả mode A và mode B, và E3 200 ván/cấp không?
+\paragraph{Trạng thái.} Giải chính thức trên main mới có L1--L6: mode A 3\,000 ván, mode B
+3\,000 ván, E3 1\,200 ván. L7--L8 chỉ có RR8 mode B 100 ván/cặp và E3 mở rộng 100 ván/cấp;
+\emph{chưa} có mode A, chưa có mode B 200 ván/cặp, chưa có E3 200 ván/cấp.
+\paragraph{Lý do.} Mode A tốn thời gian vì mỗi nước chờ đủ 1 giây, kể cả khi PUCT đã tìm xong;
+PUCT còn tốn thêm suy luận mạng. Mode B/E3 200 ván/cặp cũng cần nhiều ván hơn RR8/E3 hiện tại.
+\paragraph{Tác động.} Cao. Đây là phần còn thiếu để trả lời RQ1 và RQ4 cho \emph{toàn bộ} tám
+cấp, và để giải chính thức thực sự đầy đủ. Với L1--L6, Alpha-Beta thắng MCTS ở cả hai mode;
+L7--L8 có thể thu hẹp khoảng cách khi được cấp thời gian.
+\paragraph{Khuyến nghị.} Có hai mức:
+\begin{itemize}
+  \item \textbf{Đầy đủ 8 tác tử:} chạy \texttt{main\_mode\_a} và \texttt{main\_mode\_b} (8 tác
+        tử, 100 khai cuộc, 200 ván/cặp = 5\,600 ván/mode) + E3 8 cấp × 200 ván. Mode B khoảng
+        2--4 giờ; mode A khoảng 8--12 giờ; E3 khoảng 1--2 giờ.
+  \item \textbf{Chỉ bổ sung L7--L8:} L7/L8 gặp L1--L6 và nhau, 200 ván/cặp = 2\,600 ván/mode;
+        mode B khoảng 1--2 giờ, mode A khoảng 4--6 giờ; E3 L7--L8 200 ván/cấp = 400 ván, khoảng
+        20 phút. Cách này đủ để ghép vào ma trận L1--L6 đã có.
+\end{itemize}
+Với ngân sách hiện tại, cách thứ hai là lựa chọn thực tế hơn.
 
 \section{Lặp nhiều seed}
 \paragraph{Câu hỏi.} Kết quả có ổn định qua các seed gốc khác nhau không?
@@ -64,14 +75,14 @@ L3--L7, mỗi cặp 100 ván. Khoảng 1--2 giờ.
 
 \section{A6: tăng cường đối xứng}
 \paragraph{Câu hỏi.} Huấn luyện có tăng cường D4 có cải thiện sức chơi so với không tăng cường?
-\paragraph{Trạng thái.} Chưa có cặp checkpoint. Có cấu hình \texttt{experiments/a6\_augment.yaml}
-nhưng chưa chạy hai lần.
-\paragraph{Lý do.} Cần huấn luyện hai mô hình cùng dữ liệu, cùng epoch, khác cờ augment. Mỗi
-lần khoảng 20--40 phút trên GPU.
-\paragraph{Tác động.} Trung bình. Tăng cường D4 thường giúp ích nhưng mức độ phụ thuộc dữ liệu;
-không phải kết luận trung tâm của báo cáo.
-\paragraph{Khuyến nghị.} Tuỳ chọn. Nếu làm, dùng 15 epoch thay vì 30 để tiết kiệm, và đấu trên
-20 khai cuộc.
+\paragraph{Trạng thái.} Đã có run no-aug (\texttt{runs/train/a6\_noaug}) nhưng early stopping
+dừng ở epoch 13; so với SL v3 60 epoch chưa công bằng. Kết quả tạm: top-1 60,5\% so với 67,8\%,
+L2 54\% so với 66\%, L3 7\% so với 21\%; value MSE 0,281 so với 0,356.
+\paragraph{Lý do.} Cần chạy no-aug 60 epoch, tắt early stopping, để so cùng số epoch với SL v3.
+\paragraph{Tác động.} Trung bình. Kết quả hiện tại đã cho thấy augmentation giúp policy/sức chơi;
+run công bằng sẽ chốt được ảnh hưởng lên calibration value.
+\paragraph{Khuyến nghị.} Chạy thêm một lần no-aug 60 epoch, tắt early stopping, khoảng 45 phút,
+rồi chốt kết luận A6.
 
 \section{A7b: đối đầu hai bảng trọng số}
 \paragraph{Câu hỏi.} Bảng trọng số mặc định có chơi mạnh hơn bảng bỏ phòng thủ không?
@@ -94,20 +105,24 @@ sức tốt.
 
 \section{A5b: khởi tạo RL}
 \paragraph{Câu hỏi.} RL khởi tạo từ SL có tốt hơn RL khởi tạo ngẫu nhiên không?
-\paragraph{Trạng thái.} Chưa có cặp đủ số ván. Có cấu hình \texttt{experiments/a5b\_rl\_init.yaml}
-và các run smoke, nhưng chưa chạy 50k episode cho cả hai nhánh.
-\paragraph{Lý do.} Mỗi nhánh 50k episode tốn nhiều giờ; chạy hai nhánh tốn gấp đôi.
-\paragraph{Tác động.} Trung bình. Trả lời câu hỏi về vai trò của tri thức chuyên gia trong RL.
-\paragraph{Khuyến nghị.} Cân nhắc; chỉ nên làm nếu có GPU mạnh và thời gian.
+\paragraph{Trạng thái.} Đã có. From-random 49\,920 episode (26,3 phút): L1 100\%, L2/L3/L5 0\%
+ở mọi mốc. From-SL (RL v3): L1 100\%, L2 81,0\%, L3 37,0\%, L5 66,5\%.
+\paragraph{Ý nghĩa.} Khởi tạo từ SL là điều kiện cần ở ngân sách 50k; random init không học
+được để thắng tác tử luật. Đây là kết quả âm có ý nghĩa, không phải lỗi code.
+\paragraph{Khuyến nghị.} Đã xong. Nếu muốn kiểm tra thêm, chạy 100k episode từ random
+(khoảng 50 phút) để xem có vượt L2 sau ngân sách dài hơn không.
 
 \section{Những phần đã hoàn thành trong bản này}
 Để tránh hiểu nhầm rằng mọi thứ đều thiếu, bảng dưới liệt kê các phần đã có bằng chứng mới:
 \begin{itemize}
+  \item Giải chính thức L1--L6 trên \texttt{main}: mode A, mode B (3\,000 ván mỗi mode),
+        E3 (1\,200 ván).
   \item RR8: 2\,800 ván, tám tác tử, 50 khai cuộc đổi màu.
-  \item E3: 800 ván, tám cấp tự đấu, 50 khai cuộc đổi màu.
-  \item Top-1/top-3 và calibration value trên 29\,161 mẫu test.
+  \item E3 mở rộng: 800 ván, tám cấp tự đấu, 50 khai cuộc đổi màu.
+  \item Top-1/top-3 và calibration value trên 29\,161 mẫu test, gồm A6 no-aug.
+  \item A6: augmentation bật/tắt; A5b: RL from-SL vs from-random.
   \item Phân tích chiến thuật trên hàng nghìn ván, đếm bỏ thắng/bỏ chặn.
-  \item Mười ván phân tích sâu với bàn TikZ và cơ chế kết thúc.
+  \item Hai mươi ván phân tích sâu với bàn TikZ và cơ chế kết thúc.
   \item A1/A2/A7 benchmark và A3/A4/A5 (dữ liệu lịch sử, có đối chiếu).
 \end{itemize}
 
@@ -115,8 +130,9 @@ và các run smoke, nhưng chưa chạy 50k episode cho cả hai nhánh.
 Nếu chỉ có 4--6 giờ để bổ sung, thứ tự đề xuất là:
 \begin{enumerate}
   \item Tập khai cuộc giữ riêng (1--2 giờ) — cải thiện giá trị khoa học lớn nhất trên mỗi giờ.
+  \item A6 no-aug 60 epoch không early stopping (45 phút) — chốt kết luận A6.
+  \item Giải chính thức L7--L8 (mode B 1--2 giờ; mode A 4--6 giờ; E3 20 phút) — hoàn tất RQ1/RQ4 cho tám cấp.
   \item A7b và A8b (1,5--2,5 giờ) — trả lời hai câu hỏi ablation còn trống.
-  \item Chế độ A cho 5 cặp chính (1--2 giờ) — trả lời RQ1 đầy đủ hơn.
   \item Lặp 3 seed cho RR8 trên 20 khai cuộc (2--4 giờ) — đo độ ổn định.
 \end{enumerate}
 Các mục còn lại có thể để hướng phát triển. Việc chọn hay bỏ do người đọc quyết định; phụ lục

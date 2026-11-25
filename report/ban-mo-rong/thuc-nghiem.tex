@@ -33,7 +33,12 @@ liệu chính và quy mô.
     \textbf{Nguồn} & \textbf{Đơn vị so sánh} & \textbf{Quy mô} \\
     \midrule
     RR8 (mới) & Tám tác tử, 50 khai cuộc đổi màu & 2\,800 ván \\
-    E3 (mới) & Mỗi cấp tự đấu, 50 khai cuộc đổi màu & 800 ván \\
+    Mode A chính thức & L1--L6, 100 khai cuộc, 200 ván/cặp, 1\,000 ms/nước & 3\,000 ván \\
+    Mode B chính thức & L1--L6, 100 khai cuộc, 200 ván/cặp, ngân sách cố định & 3\,000 ván \\
+    E3 chính thức & L1--L6 tự đấu, 200 ván/cấp & 1\,200 ván \\
+    E3 (mới) & L1--L8 tự đấu, 50 khai cuộc đổi màu & 800 ván \\
+    A6 (mới) & SL v3 không augmentation, early stopping & 13 epoch \\
+    A5b (mới) & RL from-random, 49\,920 episode & 1 run \\
     A7b (mới) & Hai bảng trọng số Alpha-Beta, độ sâu 4 & 100 ván \\
     A1 & Cắt tỉa bật/tắt trên 50 thế cờ & 50 thế $\times$ 3 lần \\
     A2 & Sắp xếp nước và TT trên 10 thế, ngân sách 1 s & 10 thế $\times$ 3 lần \\
@@ -173,6 +178,102 @@ xác suất chứ không tối ưu luật. Hai là PUCT giảm mạnh lỗi như
 bỏ 5 cơ hội thắng và 6 cơ hội chặn. Đây là lý do các engine mạnh thường thêm lớp luật chiến
 thuật trước khi gọi mạng.
 
+\section{Giải chính thức L1--L6 trên nhánh main}
+\label{sec:tn-main}
+\subsection{Thiết lập}
+Nhánh \texttt{main} có ba run chính thức cho sáu cấp đầu, chạy trước khi bổ sung L7--L8:
+\begin{itemize}
+  \item \textbf{Mode A} (\texttt{main\_mode\_a\_l1\_l6}): cùng 1\,000 ms mỗi nước, 3\,000 ván,
+        200 ván mỗi cặp, 100 khai cuộc đổi màu.
+  \item \textbf{Mode B} (\texttt{main\_mode\_b\_l1\_l6}): ngân sách cố định (Alpha-Beta độ sâu 4,
+        MCTS 800 mô phỏng), 3\,000 ván, 200 ván mỗi cặp.
+  \item \textbf{E3} (\texttt{e3\_first\_move\_l1\_l6}): mỗi cấp tự đấu, 200 ván/cấp, 100 khai
+        cuộc đổi màu.
+\end{itemize}
+Đây là các run có quy mô lớn hơn RR8 (200 ván/cặp so với 100) nhưng chỉ có sáu cấp. Chúng dùng
+để kiểm chứng thứ hạng của RR8 và để trả lời RQ1 ở chế độ cùng thời gian cho L1--L6. L7--L8
+không có trong các run này; kết quả L7--L8 chỉ có ở RR8 (mode B, 100 ván/cặp) và E3 mở rộng
+(100 ván/cấp). Vì vậy \emph{giải chính thức đầy đủ tám cấp vẫn còn thiếu}: chưa có mode A,
+mode B 200 ván/cặp và E3 200 ván/cấp cho L7--L8. Phần còn thiếu được liệt kê ở
+Phụ lục~\ref{app:cho-bo-sung}.
+
+\subsection{Mode A và mode B}
+\begin{table}[H]
+  \centering\small
+  \caption{Mode A (cùng 1\,000 ms/nước): xếp hạng và ma trận điểm phần trăm. Mỗi tác tử 1\,000
+  ván; mỗi ô ma trận 200 ván.}
+  \label{tab:tn-main-a}
+  \input{ban-mo-rong/so-lieu-main-a}
+\end{table}
+\begin{table}[H]
+  \centering\small
+  \caption{Mode B (ngân sách cố định: Alpha-Beta độ sâu 4, MCTS 800 mô phỏng): xếp hạng và ma
+  trận điểm phần trăm. Mỗi tác tử 1\,000 ván; mỗi ô ma trận 200 ván.}
+  \label{tab:tn-main-b}
+  \input{ban-mo-rong/so-lieu-main-b}
+\end{table}
+
+Thứ hạng ở hai mode giống nhau: \textbf{L6 > L3 > L5 > L2 > L4 > L1}. Mode A: L6 78,0\%, L3
+77,6\%, L5 66,0\%, L2 57,0\%, L4 21,3\%, L1 0\%. Mode B: L6 79,5\%, L3 74,8\%, L5 67,3\%, L2
+58,3\%, L4 20,1\%, L1 0\%. Chênh lệch giữa hai mode chỉ 0--2,8 điểm phần trăm (Bảng~\ref{tab:tn-main-ab}),
+nhỏ hơn khoảng tin cậy, nên \emph{không phân biệt được} mode A và mode B ở cỡ mẫu này. Điểm
+tuyệt đối thấp hơn RR8 vì ở đây mỗi tác tử chỉ gặp năm đối thủ L1--L6 (không có L7/L8), còn RR8
+có thêm hai đối thủ mạnh.
+
+\begin{table}[H]
+  \centering\small
+  \caption{So sánh điểm mode A và mode B. Cột cuối là B trừ A (điểm phần trăm).}
+  \label{tab:tn-main-ab}
+  \input{ban-mo-rong/so-lieu-main-ab}
+\end{table}
+\begin{figure}[H]
+  \centering\includegraphics[width=.82\textwidth]{ban-mo-rong/hinh/main-ab.png}
+  \caption{Điểm của sáu tác tử ở mode A và mode B. Thứ hạng giống nhau; chênh lệch nhỏ hơn
+  khoảng tin cậy.}
+  \label{fig:tn-main-ab}
+\end{figure}
+
+\paragraph{Đọc kết quả.} Ba quan sát. Thứ nhất, L6 và L3 gần như ngang nhau: ở mode A chênh 0,4
+điểm phần trăm, ở mode B L6 hơn 4,7 điểm. Khoảng Wilson của hai tác tử chồng lấn ở cả hai mode,
+nên chưa thể khẳng định L6 mạnh hơn L3. Thứ hai, L5 thấp hơn L3 khoảng 8--12 điểm, cho thấy
+policy-only bắt chước chưa đủ để vượt Alpha-Beta viết tay. Thứ ba, L4 MCTS 800 mô phỏng chỉ
+đạt 20--21\%, thấp hơn L2 36--38 điểm, khớp với kết quả A3/A4: rollout ngẫu nhiên không đủ
+nhìn xa.
+
+\paragraph{Màu.} Bảng~\ref{tab:tn-main-color} tách điểm theo màu ở mode B. Mọi tác tử đều tốt
+hơn khi cầm X; L3 và L6 chênh khoảng 13--14 điểm, L2 chênh khoảng 18 điểm, L4 gần như bằng nhau
+vì thua mọi đối thủ bất kể màu. L1 bằng 0 ở cả hai màu. Mode A cho xu hướng tương tự; bảng màu
+mode A nằm trong phụ lục số liệu.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Điểm theo màu ở mode B.}
+  \label{tab:tn-main-color}
+  \input{ban-mo-rong/so-lieu-main-b-color}
+\end{table}
+
+\subsection{E3 chính thức L1--L6}
+\begin{table}[H]
+  \centering\small
+  \caption{E3 chính thức L1--L6: mỗi cấp tự đấu 200 ván (100 khai cuộc đổi màu).}
+  \label{tab:tn-e3-official}
+  \input{ban-mo-rong/so-lieu-e3-official}
+\end{table}
+\begin{figure}[H]
+  \centering\includegraphics[width=.82\textwidth]{ban-mo-rong/hinh/e3-official.png}
+  \caption{Điểm của bên đi trước (X) và bên đi sau (O) trong E3 chính thức L1--L6. Đây là phép
+  đo lợi thế đi trước khi mỗi cấp tự đấu, không phải xếp hạng sức mạnh giữa các cấp; xếp hạng
+  sức mạnh ở Mục~\ref{sec:tn-rr8}.}
+  \label{fig:tn-e3-official}
+\end{figure}
+
+E3 chính thức cho kết quả gần với E3 mở rộng ở Mục~\ref{sec:tn-e3}: L1 53,0\%, L2 71,8\%, L3
+70,0\% (hoà 18\%), L4 48,5\%, L5 68,5\%, L6 61,5\% (hoà 9\%). So với bảng E3 mở rộng (100
+ván/cấp), chênh lệch lớn nhất khoảng 5,5 điểm phần trăm (L5 63,0\% so với 68,5\%), nằm trong
+khoảng tin cậy. Hai phép đo độc lập cùng cho thấy: L1 gần cân bằng, L2/L3/L5 lệch mạnh về X, L4
+gần 50--50, L6 lệch vừa và có hoà. L7 (83,0\%) và L8 (64,0\%, hoà 28\%) chỉ có ở E3 mở rộng
+100 ván/cấp, nên chưa có kiểm chứng 200 ván.
+
 \section{Tự đấu và lợi thế đi trước}
 \label{sec:tn-e3}
 \subsection{Thiết lập}
@@ -183,14 +284,18 @@ hết; nếu lợi thế phụ thuộc vào khả năng khai thác, các cấp s
 
 \begin{table}[H]
   \centering\small\setlength{\tabcolsep}{3pt}
-  \caption{Tự đấu từng cấp (E3): số ván X thắng, O thắng, hoà và điểm của bên đi trước.}
+  \caption{Lợi thế đi trước trong tự đấu từng cấp (E3, 100 ván/cấp): điểm X là tỷ lệ X
+  thắng/hoà. Cột này đo độ lệch giữa hai màu khi cùng một cấp tự đấu, \emph{không} dùng để xếp
+  hạng sức mạnh giữa các cấp; cấp mạnh hơn có thể có điểm X thấp hơn nếu bên O phòng thủ tốt
+  hơn (xem thêm Bảng~\ref{tab:tn-rr8}).}
   \label{tab:tn-e3}
   \input{ban-mo-rong/so-lieu-e3}
 \end{table}
 \begin{figure}[H]
   \centering\includegraphics[width=.82\textwidth]{ban-mo-rong/hinh/e3.png}
-  \caption{Điểm của bên đi trước (X) và bên đi sau (O) trong tự đấu từng cấp. Điểm tính cả hoà
-  nửa điểm. Đường ngang là 50\%.}
+  \caption{Điểm của bên đi trước (X) và bên đi sau (O) khi mỗi cấp tự đấu (E3 mở rộng). Điểm
+  tính hoà nửa điểm; đường ngang là 50\%. Đây là phép đo lợi thế đi trước, không phải xếp hạng
+  sức mạnh; xếp hạng sức mạnh ở Bảng~\ref{tab:tn-rr8}.}
   \label{fig:tn-e3}
 \end{figure}
 
@@ -212,6 +317,12 @@ biệt, nó đối xử với hai màu gần như nhau. Thứ ba, trong cùng h�
 lệch +28 điểm, vì L8 hoà nhiều hơn (28\%). Một tác tử mạnh hơn có thể \emph{giảm} tỷ lệ thắng
 quyết định bằng cách phòng thủ tốt hơn, biến nhiều ván thua thành hoà. Vì vậy không thể dùng
 chênh lệch X--O làm thước đo sức mạnh; nó đo mức độ ``quyết định'' của cặp đấu.
+
+\paragraph{Đọc đúng bảng.} Điểm của X đo lợi thế màu trong tự đấu, không đo sức mạnh. L8 có
+điểm X thấp hơn L7 (64,0\% so với 83,0\%) nhưng điểm O cao hơn (36,0\% so với 17,0\%) và hoà
+nhiều hơn (28\% so với 6\%): bên O của L8 khó bị đánh bại hơn. Trong RR8 và đối đầu trực tiếp,
+L8 vẫn mạnh hơn L7 (89,8\% so với 82,0\%; thắng 66/100). Vì vậy không được dùng cột điểm X để
+xếp hạng các cấp.
 
 Kết quả này phản bác một giả định ngây thơ rằng ``lợi thế đi trước là một hằng số của trò
 chơi''. Trong thực tế, nó là thuộc tính của \emph{cặp tác tử}: hai tác tử yếu có thể cân bằng,
@@ -267,10 +378,27 @@ tiến độ chỉ có cấu hình, chưa có kết quả đối đầu đủ l�
 này; nếu chưa chạy xong, mục này ghi rõ là chưa kết luận được.
 
 \subsection{A6: tăng cường đối xứng}
-A6 so huấn luyện có và không có tăng cường D4. Bản tiến độ mới có cấu hình, chưa có cặp
-checkpoint tương ứng. Đây là phần cần bổ sung: huấn luyện hai mô hình cùng dữ liệu, cùng epoch,
-khác cờ \texttt{augment\_x8}, rồi đấu trên cùng tập khai cuộc. Báo cáo không suy đoán kết quả
-từ lý thuyết, vì tăng cường đối xứng có thể giúp ích hoặc không tuỳ dữ liệu.
+A6 so hai mô hình cùng cấu hình SL v3 (expert\_v2, 60 epoch, cosine), khác đúng một cờ
+\texttt{data.augment\_x8}. Nhánh augmentation=true là checkpoint SL v3 đã có; nhánh
+augmentation=false được huấn luyện mới, có early stopping (patience 5) và eval định kỳ. Nhánh
+no-aug dừng sớm ở epoch 13 (best val loss 1,8791 ở epoch 8), nên so sánh với SL v3 60 epoch
+\emph{chưa hoàn toàn công bằng}: cần chạy lại no-aug 60 epoch không early stopping để chốt.
+Kết quả hiện có:
+
+\begin{table}[H]
+  \centering\small
+  \caption{A6: so sánh SL v3 (augmentation) và A6 no-aug. Top-1/top-3 và value đo trên tập test
+  \texttt{expert\_v2}; Vs L2/L3 là 100 ván mỗi đối thủ.}
+  \label{tab:tn-a6}
+  \input{ban-mo-rong/so-lieu-a6}
+\end{table}
+
+Augmentation giúp policy và sức chơi rõ rệt: top-1 67,8\% so với 60,5\%, top-3 89,4\% so với
+84,9\%, L2 66,0\% so với 54,0\%, L3 21,0\% so với 7,0\%. Ngược lại, value head của no-aug có
+MSE thấp hơn (0,281 so với 0,356) và tương quan cao hơn (+0,831 so với +0,778). Đây có thể là
+do early stopping (13 epoch) giữ value head ít overfit hơn, không nhất thiết do bỏ augmentation.
+Vì vậy báo cáo chỉ kết luận augmentation giúp policy/sức chơi; ảnh hưởng lên calibration value
+cần run 60 epoch công bằng mới tách được.
 
 \section{MCTS thuần: số mô phỏng và rollout}
 \label{sec:tn-mcts}
@@ -467,6 +595,39 @@ cùng tập thế. Vì vậy đường cong nên đọc như xu hướng, không
 quá khớp hoặc do nhiễu khai cuộc. Chọn checkpoint theo tiêu chí định trước và đánh lại trên tập
 giữ riêng sẽ phân biệt hai khả năng; báo cáo chưa làm được vì thiếu thời gian.
 
+\subsection{A5b: khởi tạo từ SL và từ random}
+A5b chạy hai nhánh REINFORCE cùng 49\,920 episode, cùng batch 128, cùng eval mỗi 5\,000
+episode, khác đúng điều kiện khởi tạo: từ SL v3 và từ trọng số ngẫu nhiên. Nhánh from-SL là RL
+v3 đã có; nhánh from-random được chạy mới, mất 26,3 phút. Eval gồm L1, L2, L3 và L5, 100 ván
+mỗi đối thủ.
+
+\begin{table}[H]
+  \centering\small
+  \caption{A5b: so sánh RL khởi tạo từ SL và từ random, cùng 49\,920 episode. Điểm là 100 ván
+  mỗi đối thủ.}
+  \label{tab:tn-a5b}
+  \input{ban-mo-rong/so-lieu-a5b}
+\end{table}
+\begin{figure}[H]
+  \centering\includegraphics[width=.9\textwidth]{ban-mo-rong/hinh/a5b.png}
+  \caption{Đường học của RL from-random (nét liền) và mốc cuối của RL from-SL (nét đứt). Từ
+  random, điểm trước L2/L3/L5 bằng 0 ở mọi mốc; chỉ L1 tăng lên 100\%.}
+  \label{fig:tn-a5b}
+\end{figure}
+
+Kết quả rất rõ: from-random thắng L1 100\% nhưng thua L2, L3 và L5 \emph{toàn bộ} 100 ván ở
+mọi mốc đánh giá. From-SL đạt L1 100\%, L2 81,0\%, L3 37,0\%, L5 66,5\%. Trong quá trình
+huấn luyện from-random, entropy chỉ giảm từ 4,30 xuống 3,02 (vẫn cao), value loss quanh 0,97
+(gần mức đoán 0), policy loss gần 0 và tỷ lệ thắng pool quanh 0,5. Mạng không học được chiến
+thuật nào đủ để thắng tác tử luật.
+
+Đây là kết quả âm có ý nghĩa: với ngân sách 50k episode, \emph{khởi tạo từ SL là điều kiện
+cần} để REINFORCE vượt các tác tử luật. Random init không sai về code; nó chỉ cho thấy
+REINFORCE với phần thưởng thưa và phương sai lớn cần một prior tốt để bắt đầu. Kết quả này
+củng cố RQ2: lợi ích của self-play không tách rời khởi tạo; nó là \emph{tinh chỉnh} một policy
+đã có tri thức, không phải học từ đầu trong 50k ván. Chạy 100k episode từ random là hướng kiểm
+tra tiếp theo, nhưng vượt ngân sách của báo cáo.
+
 \section{Vòng lặp AlphaZero}
 \label{sec:tn-l8}
 \begin{table}[H]
@@ -639,18 +800,23 @@ khai cuộc. Báo cáo ghi rõ các điều kiện này thay vì che chúng.
 \paragraph{RQ1. Trong cùng thời gian mỗi nước, MCTS có thắng nhiều hơn Alpha-Beta không?}
 Trong các phép đo hiện có, Alpha-Beta mạnh hơn MCTS rất rõ. Ở ngân sách cố định, MCTS chỉ đạt
 7,5\% trước L2 và 2,0\% trước L3 khi dùng 6\,400 mô phỏng; ở các mức thấp hơn, MCTS thua toàn
-bộ. Trong RR8, L4 MCTS 400 mô phỏng chỉ đạt 14,3\% tổng và thua L2 (43,6\%). Tuy nhiên, báo cáo
-\emph{chưa} có chế độ cùng thời gian mỗi nước cho đủ tám tác tử, nên chưa trả lời đầy đủ vế
-``cùng thời gian''. Kết luận hiện tại: với ngân sách cố định theo loại thuật toán, Alpha-Beta
-thắng; với cùng thời gian, cần đo thêm.
+bộ. Trong RR8, L4 MCTS 400 mô phỏng chỉ đạt 14,3\% tổng và thua L2 (43,6\%). Ở chế độ cùng
+thời gian chính thức cho L1--L6 (mode A, 1\,000 ms/nước), L4 đạt 21,3\% trong khi L2 57,0\% và
+L3 77,6\%; khoảng tin cậy tách rời. Như vậy với L1--L6, câu trả lời là \emph{Alpha-Beta thắng
+MCTS ở cả hai chế độ ngân sách}. L7--L8 chưa có mode A, nên kết luận cho hai cấp này vẫn chỉ
+dựa trên mode B.
 
 \paragraph{RQ2. Self-play có cải thiện so với bắt chước chuyên gia không?}
-Có, nhưng mức cải thiện phụ thuộc vào giai đoạn và đối thủ. RL v3 cải thiện khoảng 12--16 điểm
-phần trăm so với SL v3 trước L2/L3. Thêm PUCT vào cùng mạng cải thiện 37,5 điểm phần trăm trước
-L3. L8 vòng 37 thắng L7 82,5\% trên 20 ván và thắng L3 68,75\% trên 40 ván. Trong RR8, L6 đạt
-61,9\% so với L5 50,2\%; L7 đạt 82,0\% và L8 đạt 89,8\% so với L3 58,3\%. Bốn phép đo tách bốn
-mức đóng góp: cập nhật policy bằng RL, thêm tìm kiếm khi chơi, huấn luyện policy--value bằng tự
-đấu, và chất lượng checkpoint. Chưa có nhiều seed để định lượng độ ổn định.
+Có, nhưng mức cải thiện phụ thuộc vào giai đoạn, đối thủ và \emph{điều kiện khởi tạo}. RL v3
+từ SL cải thiện khoảng 12--16 điểm phần trăm so với SL v3 trước L2/L3. Thêm PUCT vào cùng mạng
+cải thiện 37,5 điểm phần trăm trước L3. L8 vòng 37 thắng L7 82,5\% trên 20 ván và thắng L3
+68,75\% trên 40 ván. Trong RR8, L6 đạt 61,9\% so với L5 50,2\%; L7 đạt 82,0\% và L8 đạt 89,8\%
+so với L3 58,3\%. Hai đối chứng mới làm rõ biên: (i) A6 cho thấy augmentation giúp policy và sức
+chơi (top-1 67,8\% so với 60,5\%; L3 21,0\% so với 7,0\%); (ii) A5b cho thấy RL from-random
+thua L2/L3/L5 toàn bộ 100 ván, trong khi from-SL đạt L2 81,0\%, L3 37,0\%, L5 66,5\%. Vì vậy
+self-play không thay thế dữ liệu/khởi tạo chuyên gia ở ngân sách 50k; nó \emph{tinh chỉnh} một
+policy đã có tri thức. Năm phép đo tách năm mức đóng góp: dữ liệu/augmentation, khởi tạo, cập
+nhật policy bằng RL, thêm tìm kiếm khi chơi, và chất lượng checkpoint.
 
 \paragraph{RQ3. Cắt tỉa và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nước đi?}
 A1 cho thấy cắt tỉa giảm khoảng 20 lần số nút và thời gian, giữ nguyên giá trị gốc trên 100\%
@@ -660,9 +826,11 @@ phòng thủ thay đổi giá trị gốc trên 90\% số thế. Chưa đo đư�
 nước đồng hạng, và chưa có A7b/A8b đủ lớn nếu chưa chạy xong.
 
 \paragraph{RQ4. Lợi thế đi trước lớn đến mức nào?}
-Lợi thế đi trước không phải hằng số. L1 gần cân bằng (52/48), L2 và L3 lệch mạnh (75/25 và
-66/18/16), L4 cân bằng tuyệt đối (50/50), L5 và L6 ở giữa (62/36/2 và 50/36/14), L7 lệch mạnh
-nhất (80/14/6) và L8 lệch vừa nhưng hoà nhiều (50/22/28). Trong RR8, mọi tác tử đều đạt điểm
+Lợi thế đi trước không phải hằng số. Trên E3 mở rộng 100 ván/cấp: L1 gần cân bằng (52/48), L2
+và L3 lệch mạnh (75/25 và 66/18/16), L4 cân bằng tuyệt đối (50/50), L5 và L6 ở giữa (62/36/2
+và 50/36/14), L7 lệch mạnh nhất (80/14/6) và L8 lệch vừa nhưng hoà nhiều (50/22/28). Trên E3
+chính thức 200 ván/cấp cho L1--L6: L1 53,0\%, L2 71,8\%, L3 70,0\%, L4 48,5\%, L5 68,5\%, L6
+61,5\%; cùng xu hướng, chênh lệch dưới 5,5 điểm so với E3 mở rộng. Trong RR8, mọi tác tử đều đạt điểm
 cao hơn khi cầm X: L8 95,0\% so với 84,6\%, L7 90,3\% so với 73,7\%, L3 68,9\% so với 47,7\%,
 L6 70,6\% so với 53,1\%, L5 56,1\% so với 44,3\%, L2 50,7\% so với 36,4\%. Lợi thế đi trước vì
 vậy vừa phụ thuộc cặp tác tử, vừa phụ thuộc cách chọn khai cuộc: tự đấu từ bàn trống lệch hơn

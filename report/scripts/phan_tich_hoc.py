@@ -23,6 +23,7 @@ CKPTS = {
     "SL v1": "runs/train/sl_policy/latest.pt",
     "SL v2": "runs/train/sl_policy_v2/latest.pt",
     "SL v3": "runs/train/sl_policy_v3/latest.pt",
+    "A6 no-aug": "runs/train/a6_noaug/best.pt",
 }
 
 
@@ -67,6 +68,9 @@ def main():
 
     report = {"n_test": int(test.sum()), "n_games_test": len(np.unique(game_ids[test])), "models": {}}
     for name, rel in CKPTS.items():
+        if not (ROOT / rel).is_file():
+            print(f"bỏ qua {name}: chưa có {rel}", flush=True)
+            continue
         net = CaroResNet({"num_channels": 64, "num_blocks": 6})
         state = torch.load(ROOT / rel, map_location="cpu")
         net.load_state_dict(state.get("model_state_dict", state) if isinstance(state, dict) else state)

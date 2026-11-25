@@ -1,0 +1,3 @@
+checkpoint,source,opponent,n,wins,draws,losses,score,ci_low,ci_high
+SL v3 aug,/mnt/data/1_Projects/AAI/CaroGame/runs/train/sl_policy_v3/latest.pt,l2_rule,100,63,6,31,0.66,0.5627754565831095,0.74538620502457
+SL v3 aug,/mnt/data/1_Projects/AAI/CaroGame/runs/train/sl_policy_v3/latest.pt,l3_alphabeta,100,19,4,77,0.21,0.14165549531645788,0.2998014930196232

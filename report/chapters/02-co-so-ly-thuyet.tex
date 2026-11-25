@@ -364,18 +364,18 @@ AlphaGo Zero chỉ thay mạng tốt nhất khi mạng mới đạt tỷ lệ th
 
 \begin{table}[!htb]
   \centering\small
-  \caption{Thành phần của hệ thống gốc và của cấp 7--8, theo cấu hình trong \texttt{configs/}. Trạng thái tại ngày 04/11/2026.}
+  \caption{Thành phần của hệ thống gốc và của cấp 7--8, theo cấu hình trong \texttt{configs/}. Trạng thái tại thời điểm nộp (25/11/2026).}
   \label{tab:lt-inspired}
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{.14\textwidth} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X l@{}}
     \toprule
     \textbf{Thành phần} & \textbf{AlphaGo} & \textbf{Cấp 7} & \textbf{AlphaZero} & \textbf{Cấp 8} & \textbf{Trạng thái} \\
     \midrule
-    Tiên nghiệm & Policy SL từ ván người & Mạng cấp 5, học từ Alpha-Beta & Mạng policy-value & Mạng policy-value & Chưa cài \\
-    Policy RL & Có & Tuỳ chọn mạng cấp 6 & Không tách riêng & Không tách riêng & Chưa cài \\
-    Đánh giá lá & Value và rollout, $\lambda = 0{,}5$ & Value và rollout, khảo sát $\lambda$ & Chỉ value & Chỉ value & Chưa cài \\
-    Dữ liệu & Ván người, self-play & Ván Alpha-Beta & Chỉ self-play & Chỉ self-play, khởi tạo ngẫu nhiên & Chưa cài \\
-    Nhiễu gốc & Không & Không khi thi đấu & Dirichlet & Dirichlet $\alpha = 0{,}3$, $\varepsilon = 0{,}25$ & Chưa cài \\
-    Chọn checkpoint & Không có vòng lặp này & Không có & Không gating & Gating 100 ván, ngưỡng 55\% & Chưa cài \\
+    Tiên nghiệm & Policy SL từ ván người & Mạng cấp 5, học từ Alpha-Beta & Mạng policy-value & Mạng policy-value & Đã cài \\
+    Policy RL & Có & Tuỳ chọn mạng cấp 6 & Không tách riêng & Không tách riêng & Đã cài \\
+    Đánh giá lá & Value và rollout, $\lambda = 0{,}5$ & Value, có tuỳ chọn mix & Chỉ value & Chỉ value & Đã cài \\
+    Dữ liệu & Ván người, self-play & Ván Alpha-Beta & Chỉ self-play & Tự đấu, khởi tạo từ L5 & Đã cài \\
+    Nhiễu gốc & Không & Không khi thi đấu & Dirichlet & Dirichlet $\alpha = 0{,}3$, $\varepsilon = 0{,}25$ & Đã cài \\
+    Chọn checkpoint & Không có vòng lặp này & Không có & Không gating & Gating 100 ván, ngưỡng 55\% & Đã cài \\
     \bottomrule
   \end{tabularx}
 \end{table}

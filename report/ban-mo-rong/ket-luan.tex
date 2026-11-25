@@ -16,29 +16,33 @@ tổng và thua L2 (43,6\%). Rollout nhẹ không cải thiện điểm, chỉ l
 tích lỗi cho thấy khoảng 90\% ván thua của MCTS là do không ngăn đe doạ kép sớm, một cấu trúc
 cần cây sâu khoảng 4 ply trong khi ngân sách bị chia cho hàng chục nước gốc.
 
-Tuy nhiên, báo cáo \emph{chưa} chạy chế độ cùng thời gian mỗi nước cho đủ tám tác tử. Đây là
-khoảng trống quan trọng: Alpha-Beta có hàm lượng giá viết tay và nước bắt buộc nên mỗi nút đắt
-hơn, còn MCTS có thể dùng nhiều mô phỏng hơn trong cùng 1 giây. Kết luận hiện tại chỉ đúng cho
-ngân sách cố định theo loại thuật toán. Để trả lời đầy đủ RQ1, cần chạy thêm chế độ A với cùng
-1\,000 ms/nước và báo cáo cả điểm lẫn thời gian.
+Ở chế độ cùng thời gian chính thức cho L1--L6 (mode A, 1\,000 ms/nước), kết quả vẫn nghiêng
+về Alpha-Beta: L4 MCTS 21,3\%, L2 57,0\%, L3 77,6\%; khoảng tin cậy tách rời. Vì vậy với
+L1--L6, câu trả lời là Alpha-Beta thắng MCTS ở \emph{cả hai} chế độ ngân sách. Khoảng trống
+còn lại là L7--L8: hai cấp này chưa có mode A, nên kết luận cho chúng vẫn chỉ dựa trên mode B.
+Muốn trả lời đầy đủ cho toàn bộ tám cấp, cần chạy thêm mode A cho L7--L8.
 
 \paragraph{RQ2. Self-play có cải thiện so với bắt chước chuyên gia không?}
-Có, nhưng mức cải thiện phụ thuộc vào giai đoạn và đối thủ. Ba lớp bằng chứng:
+Có, nhưng mức cải thiện phụ thuộc vào giai đoạn, đối thủ và điều kiện khởi tạo. Năm lớp bằng
+chứng:
 \begin{itemize}
+  \item \textbf{Dữ liệu/augmentation (A6):} SL v3 có augmentation đạt top-1 67,8\% và L3 21,0\%;
+        bản no-aug chỉ 60,5\% và 7,0\%. Augmentation giúp policy và sức chơi.
+  \item \textbf{Khởi tạo (A5b):} RL from-random 49\,920 episode thua L2/L3/L5 toàn bộ 100 ván;
+        from-SL đạt L2 81,0\%, L3 37,0\%, L5 66,5\%. Khởi tạo từ SL là điều kiện cần ở ngân sách
+        này.
   \item \textbf{Cập nhật policy bằng RL:} RL v3 cải thiện khoảng 12--16 điểm phần trăm so với
         SL v3 trước L2/L3 trong phép đánh giá checkpoint (81,0\% so với 66,0\% trước L2; 37,0\%
         so với 21,0\% trước L3).
   \item \textbf{Thêm tìm kiếm khi chơi:} với cùng mạng L5, PUCT 200 mô phỏng nâng điểm trước L3
         từ 21,0\% lên 58,5\%, tức 37,5 điểm phần trăm. PUCT 800 mô phỏng đạt 67,0\%.
   \item \textbf{Huấn luyện policy--value bằng tự đấu có tìm kiếm:} L8 vòng 37 thắng L7 82,5\%
-        trên 20 ván và thắng L3 68,75\% trên 40 ván.
-  \item \textbf{Giải vòng tròn đầy đủ:} L6 đạt 61,9\% so với L5 50,2\%; L7 đạt 82,0\% và L8
-        đạt 89,8\% so với L3 58,3\%. Đây là bằng chứng mạnh nhất rằng tìm kiếm có mạng vượt
-        Alpha-Beta viết tay trong cấu hình này.
+        trên 20 ván và thắng L3 68,75\% trên 40 ván; trong RR8, L6 đạt 61,9\% so với L5 50,2\%,
+        L7 82,0\% và L8 89,8\% so với L3 58,3\%.
 \end{itemize}
-Ba phép đo tách ba mức đóng góp khác nhau, không nên cộng chúng thành một con số duy nhất. Hạn
-chế là mỗi phép đo dùng một seed, cỡ mẫu cuối nhỏ (20--40 ván), và tập khai cuộc đánh giá cuối
-từng được dùng trong gating. Chưa có lặp nhiều seed để định lượng độ ổn định của từng thay đổi.
+Năm phép đo tách năm mức đóng góp khác nhau, không nên cộng chúng thành một con số duy nhất.
+Hạn chế là mỗi phép đo dùng một seed, cỡ mẫu cuối nhỏ (20--40 ván), và tập khai cuộc đánh giá
+cuối từng được dùng trong gating. Chưa có lặp nhiều seed để định lượng độ ổn định.
 
 \paragraph{RQ3. Cắt tỉa alpha-beta và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nước đi?}
 A1 cho thấy cắt tỉa giảm khoảng 20,4 lần số nút và 20,9 lần thời gian, giữ nguyên giá trị gốc
@@ -54,7 +58,7 @@ A7b và A8b (nếu chạy xong) bổ sung phần đối đầu, nhưng vẫn c�
 tách chi phí khỏi chất lượng.
 
 \paragraph{RQ4. Lợi thế đi trước trên 11×11 lớn đến mức nào giữa các tác tử cùng cấp?}
-Lợi thế đi trước không phải một hằng số. Kết quả E3:
+Lợi thế đi trước không phải một hằng số. Kết quả E3 mở rộng 100 ván/cấp:
 \begin{itemize}
   \item L1 Random: X thắng 52\%, O thắng 48\% — gần cân bằng, đúng với tác tử không biết khai
         thác thế mở đầu.
@@ -66,6 +70,9 @@ Lợi thế đi trước không phải một hằng số. Kết quả E3:
   \item L7 PUCT: X thắng 80\%, O thắng 14\%, hoà 6\% — lệch mạnh nhất.
   \item L8 AlphaZero: X thắng 50\%, O thắng 22\%, hoà 28\% — lợi thế trung bình nhưng nhiều hoà.
 \end{itemize}
+E3 chính thức 200 ván/cấp cho L1--L6 cho cùng xu hướng: L1 53,0\%, L2 71,8\%, L3 70,0\%, L4
+48,5\%, L5 68,5\%, L6 61,5\%; chênh lệch với E3 mở rộng dưới 5,5 điểm phần trăm.
+
 Kết quả này phản bác giả định ``lợi thế đi trước là hằng số của trò chơi''. Nó là thuộc tính
 của \emph{cặp tác tử}: hai tác tử yếu có thể cân bằng, hai tác tử mạnh có thể lệch, và một tác
 tử có thể lệch theo hướng này nhưng không lệch theo hướng khác. Trong RR8, mọi tác tử đều đạt
@@ -174,8 +181,8 @@ tri thức chiến thuật viết tay vẫn rất mạnh ở ngân sách nhỏ; 
 với policy-only; self-play có cải thiện so với bắt chước nhưng cần nhiều ván; và lợi thế đi
 trước phụ thuộc vào cặp tác tử, không phải hằng số của trò chơi.
 
-Báo cáo cũng chỉ rõ những gì chưa làm được: chế độ cùng thời gian, nhiều seed, tập khai cuộc
-giữ riêng, A6/A7b/A8b đầy đủ, và đánh giá trên biến thể luật. Những phần này được liệt kê ở
+Báo cáo cũng chỉ rõ những gì chưa làm được: mode A cho L7--L8, nhiều seed, tập khai cuộc giữ
+riêng, A6 công bằng 60 epoch, A7b/A8b, và đánh giá trên biến thể luật. Những phần này được liệt kê ở
 Phụ lục~\ref{app:cho-bo-sung} để người đọc biết chính xác phạm vi bằng chứng. Cách trình bày
 này có chủ đích: một báo cáo nghiên cứu không chỉ nêu kết quả mà còn nêu điều kiện để kết quả
 đó có giá trị.

@@ -41,7 +41,8 @@ MAX_REPLAYS = 500         # số ván tối đa trong một lần GET /replays
 # Một nước đang chạy trong thread không huỷ được, nên chặn ngân sách quá lớn ngay từ đầu.
 MAX_BUDGET = {"time_ms": 60_000, "max_depth": 8, "max_sims": 100_000}
 # Ngân sách mà từng kind của tác tử thực sự dùng; kind không có ở đây chỉ đi một nước theo luật / mạng.
-BUDGET_KEYS = {"alphabeta": ["time_ms", "max_depth"], "mcts": ["time_ms", "max_sims"], "puct": ["time_ms", "max_sims"]}
+BUDGET_KEYS = {"alphabeta": ["time_ms", "max_depth"], "mcts": ["time_ms", "max_sims"],
+               "puct": ["time_ms", "max_sims"], "katagomo": ["time_ms", "max_sims"]}
 
 
 class NewGame(BaseModel):
@@ -256,7 +257,11 @@ def create_app(
                           floor=len(game.history), stats=[{} for _ in game.history])
         games[session.id] = session
         while len(games) > MAX_GAMES:
-            games.popitem(last=False)
+            _, old = games.popitem(last=False)
+            for agent in old.agents:          # engine ngoài (KataGomo) phải đóng tiến trình
+                close = getattr(agent, "close", None)
+                if callable(close):
+                    close()
         return state(session)
 
     @app.get("/games/{game_id}")
@@ -289,7 +294,10 @@ def create_app(
             if agent is None:
                 raise HTTPException(409, "đang là lượt của người chơi")
             t0 = time.perf_counter()
-            action = await run_in_threadpool(agent.select_action, g.clone(), s.limits)
+            try:
+                action = await run_in_threadpool(agent.select_action, g.clone(), s.limits)
+            except ConfigError as e:      # vd. KataGomo chưa cài
+                raise HTTPException(400, str(e)) from None
             elapsed = (time.perf_counter() - t0) * 1000
             try:
                 g.step(action)

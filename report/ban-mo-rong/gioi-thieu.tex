@@ -257,7 +257,7 @@ Mục tiêu này được cụ thể hoá thành ba nhóm trong Bảng~\ref{tab:
 
 \begin{table}[!htb]
   \centering\small
-  \caption{Phạm vi và trạng thái các cấp tác tử tại ngày 04/11/2026.}
+  \caption{Phạm vi và trạng thái các cấp tác tử tại thời điểm nộp (25/11/2026).}
   \label{tab:gt-cap}
   \begin{tabularx}{\textwidth}{@{}c l X l l@{}}
     \toprule
@@ -267,10 +267,10 @@ Mục tiêu này được cụ thể hoá thành ba nhóm trong Bảng~\ref{tab:
     2 & Rule-based & Thứ tự ưu tiên P1--P7, nhìn trước 1 nước & Bắt buộc & Đã cài \\
     3 & Alpha-Beta & Negamax, iterative deepening, bảng chuyển vị & Bắt buộc & Đã cài \\
     4 & MCTS & UCT, rollout ngẫu nhiên và rollout nhẹ & Bắt buộc & Đã cài \\
-    5 & Policy SL & ResNet policy-value, học từ nhãn Cấp 3 & Bắt buộc* & Chưa cài \\
-    6 & REINFORCE & Policy gradient có baseline, tự chơi & Bắt buộc* & Chưa cài \\
-    7 & PUCT & Tìm kiếm PUCT với mạng cấp 5 & Khuyến khích & Chưa cài \\
-    8 & Vòng lặp self-play & Policy-value, PUCT, self-play, gating & Khuyến khích & Chưa cài \\
+    5 & Policy SL & ResNet policy-value, học từ nhãn Cấp 3 & Bắt buộc* & Đã cài, SL v3 \\
+    6 & REINFORCE & Policy gradient có baseline, tự chơi & Bắt buộc* & Đã cài, RL v3 \\
+    7 & PUCT & Tìm kiếm PUCT với mạng cấp 5 & Khuyến khích & Đã cài, PUCT + A5 \\
+    8 & Vòng lặp self-play & Policy-value, PUCT, self-play, gating & Khuyến khích & Đã cài, 50 vòng \\
     \bottomrule
     \multicolumn{5}{@{}l}{\footnotesize * Đề bài yêu cầu tối thiểu một trong hai cấp 5, 6; nhóm đặt mục tiêu làm cả hai.}
   \end{tabularx}
@@ -290,7 +290,7 @@ Cấp nào chưa hoàn thành sẽ được loại khỏi ma trận đối đầ
 
 \subsection{Phạm vi đánh giá}
 \label{sec:gt-pham-vi-danh-gia}
-Giải chính là round-robin giữa các cấp đã cài, 200 ván mỗi cặp từ 100 khai cuộc có đổi màu, ở hai chế độ ngân sách: cùng thời gian mỗi nước và cấu hình cố định (độ sâu, số mô phỏng). Bên cạnh đó là các thí nghiệm phân tích thành phần: A1, A2 về cắt tỉa và sắp xếp nước; A3, A4 về số mô phỏng và kiểu rollout; A5, A5b về vai trò của tìm kiếm và cách khởi tạo học tăng cường; A6 về tăng cường dữ liệu; A7 về trọng số hàm lượng giá; E3 về lợi thế đi trước. Nếu thời gian không đủ, số ván có thể giảm về 100 ván mỗi cặp, là mức tối thiểu của đề bài, và sẽ được ghi rõ.
+Giải chính thức là round-robin L1--L6, 200 ván mỗi cặp từ 100 khai cuộc có đổi màu, ở hai chế độ ngân sách: cùng thời gian mỗi nước (mode A) và cấu hình cố định (mode B). Giải mở rộng RR8 bổ sung L7--L8 với 100 ván mỗi cặp; E3 chính thức chạy L1--L6 200 ván/cấp, E3 mở rộng thêm L7--L8. Bên cạnh đó là các thí nghiệm phân tích thành phần: A1, A2 về cắt tỉa và sắp xếp nước; A3, A4 về số mô phỏng và kiểu rollout; A5, A5b về vai trò của tìm kiếm và cách khởi tạo học tăng cường; A6 về tăng cường dữ liệu; A7 về trọng số hàm lượng giá; E3 về lợi thế đi trước. Nếu thời gian không đủ, số ván có thể giảm về 100 ván mỗi cặp, là mức tối thiểu của đề bài, và sẽ được ghi rõ.
 
 \subsection{Phần tự cài đặt và phần kế thừa}
 \label{sec:gt-ke-thua}
