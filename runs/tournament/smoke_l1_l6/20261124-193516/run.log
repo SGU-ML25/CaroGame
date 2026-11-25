@@ -1,0 +1,5 @@
+2026-11-24 19:35:16 INFO    run tournament/smoke_l1_l6/20261124-193516 — config experiments/smoke_l1_l6, seed 2026
+2026-11-24 19:35:16 INFO    Bắt đầu giải đấu: 150 ván cờ, 1 workers, chế độ round_robin.
+2026-11-24 19:39:40 INFO    Bảng điểm chung cuộc: {'L1-Random': 0.0, 'L2-Rule': 26.0, 'L3-AlphaBeta': 36.0, 'L4-MCTS': 10.0, 'L5-PolicySL': 33.0, 'L6-PolicyRL': 45.0}
+2026-11-24 19:39:40 INFO    Đã lưu báo cáo thống kê tại: C:\Users\ASUS VIVOBOOK\CaroGame\runs\tournament\smoke_l1_l6\20261124-193516\reports
+2026-11-24 19:39:40 INFO    kết thúc: ok sau 264.5 s

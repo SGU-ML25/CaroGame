@@ -1,0 +1,5 @@
+2026-11-24 21:27:28 INFO    run tournament/main_mode_a_l1_l6/20261124-212727 — config experiments/main_mode_a_l1_l6, seed 2026
+2026-11-24 21:27:28 INFO    Bắt đầu giải đấu: 3000 ván cờ, 4 workers, chế độ round_robin.
+2026-11-24 22:23:52 INFO    Bảng điểm chung cuộc: {'L1-Random': 0.0, 'L2-Rule': 570.5, 'L3-AlphaBeta': 776.5, 'L4-MCTS': 213.0, 'L5-PolicySL': 660.5, 'L6-PolicyRL': 779.5}
+2026-11-24 22:23:52 INFO    Đã lưu báo cáo thống kê tại: C:\Users\ASUS VIVOBOOK\CaroGame\runs\tournament\main_mode_a_l1_l6\20261124-212727\reports
+2026-11-24 22:23:52 INFO    kết thúc: ok sau 3384.9 s
