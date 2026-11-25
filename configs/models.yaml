@@ -11,4 +11,4 @@ repo_type: model
 models:
   l5: {file: l5/best.pt, revision: a76d294b369af4440e64037a176eab3e14e2ba51}   # SL policy-value (cấp 5, cấp 7 dùng chung)
   l6: {file: l6/best.pt, revision: 3ecb6fdaa3968892b6acd448a7f83b73eaa7b39b}   # REINFORCE (cấp 6)
-  l8: {file: l8/best.pt, revision: null}   # AlphaZero-inspired (cấp 8)
+  l8: {file: l8/best.pt, revision: 397bdb65efc06598235bfe2e8e4bf10747ede6d1}   # AlphaZero-inspired (cấp 8)
