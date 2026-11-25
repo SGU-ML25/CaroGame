@@ -1,0 +1,93 @@
+\chapter{Thuật ngữ và ký hiệu}
+\label{app:thuat-ngu}
+
+Phụ lục này giải thích các thuật ngữ dùng trong báo cáo. Các định nghĩa được viết ngắn, theo
+nghĩa dùng trong dự án; một số thuật ngữ có nghĩa rộng hơn trong tài liệu tham khảo.
+
+\section{Trò chơi và engine}
+\begin{description}
+  \item[Bitboard] Cách biểu diễn bàn cờ bằng số nguyên nhiều bit; mỗi bit là một ô. Trong dự án,
+        mỗi bên có một số nguyên 121 bit.
+  \item[Cửa sổ] Năm ô liên tiếp theo hàng ngang, cột dọc hoặc đường chéo. Bàn 11×11 có 252 cửa
+        sổ.
+  \item[Cửa sổ sống] Cửa sổ không chứa quân đối thủ. Chỉ cửa sổ sống mới có thể trở thành dãy
+        thắng.
+  \item[Ô thắng ngay] Ô trống mà đặt quân vào là có ngay 5 quân liền. Tương ứng cửa sổ sống có
+        đúng 4 quân.
+  \item[Ba hở] Cửa sổ sống có 3 quân mình và 2 ô trống; đi vào một ô tạo đe doạ bắt buộc.
+  \item[Tứ hở] Cửa sổ sống có 4 quân mình và 1 ô trống; ô trống là ô thắng ngay.
+  \item[Đòn kép] Nước đi tạo ra từ hai ô thắng ngay trở lên; đối thủ không chặn hết được.
+  \item[VCF/VCT] Chuỗi ép thắng liên tục bằng tứ (VCF) hoặc bằng mọi đe doạ (VCT).
+  \item[Zobrist] Kỹ thuật băm thế cờ bằng XOR các số ngẫu nhiên gán cho từng cặp (ô, quân).
+  \item[D4] Nhóm 8 phép đối xứng của bàn vuông: 4 phép xoay và 4 phép lật.
+  \item[Perft] Kiểm chuẩn đếm số chuỗi nước ở độ sâu $d$; dùng để kiểm tra sinh nước.
+\end{description}
+
+\section{Tìm kiếm}
+\begin{description}
+  \item[Negamax] Dạng Minimax trong đó giá trị luôn tính theo góc nhìn bên đang đi.
+  \item[Alpha-Beta] Cắt tỉa nhánh không thể ảnh hưởng giá trị gốc, dùng cửa sổ $[\alpha,\beta]$.
+  \item[Iterative deepening] Tìm lần lượt ở độ sâu 1, 2, 3, \dots{} đến khi hết giờ.
+  \item[Transposition table (TT)] Bảng lưu kết quả theo khoá thế cờ, tránh tính lại.
+  \item[Killer move] Nước từng gây cắt tỉa ở cùng độ sâu; dùng để sắp xếp nước.
+  \item[History heuristic] Điểm tích luỹ cho nước thường gây cắt tỉa.
+  \item[MCTS] Tìm kiếm cây Monte Carlo; bốn bước selection, expansion, simulation,
+        backpropagation.
+  \item[UCT] Công thức chọn con trong MCTS, cân bằng khai thác và khám phá.
+  \item[Rollout] Mô phỏng từ nút lá đến hết ván theo một chính sách nhanh.
+  \item[PUCT] Biến thể MCTS dùng tiên nghiệm policy và giá trị mạng thay rollout.
+  \item[Prior] Xác suất tiên nghiệm của nước đi, do policy head cung cấp.
+  \item[Virtual loss] Giá trị thua tạm thời để các lá trong cùng lô khác nhau.
+  \item[Gating] Bước đấu ứng viên với bản đương nhiệm trước khi thay checkpoint.
+\end{description}
+
+\section{Học máy}
+\begin{description}
+  \item[Policy head] Đầu ra phân phối xác suất trên 121 ô.
+  \item[Value head] Đầu ra giá trị $v\in[-1,1]$ theo góc nhìn bên đi.
+  \item[SL] Học có giám sát; trong dự án là bắt chước Alpha-Beta.
+  \item[RL] Học tăng cường; trong dự án là REINFORCE có baseline.
+  \item[Self-play] Tự chơi để sinh dữ liệu và cải thiện.
+  \item[Baseline] Hàm $b(s)$ trừ khỏi phần thưởng để giảm phương sai.
+  \item[Advantage] $z-v(s)$: kết quả thực tế trừ kỳ vọng.
+  \item[Entropy] Độ phân tán của chính sách; dùng để khuyến khích khám phá.
+  \item[Calibration] Mức khớp giữa giá trị dự đoán và kết quả thực; đo bằng MSE, tương quan,
+        độ chính xác dấu.
+  \item[Augmentation] Tạo thêm mẫu bằng phép đối xứng D4.
+\end{description}
+
+\section{Thống kê}
+\begin{description}
+  \item[Điểm] $(W+0.5D)/n$, trong đó $W,D,n$ là thắng, hoà, tổng.
+  \item[Wilson] Khoảng tin cậy cho tỷ lệ, tốt hơn khoảng chuẩn khi $n$ nhỏ.
+  \item[Bootstrap] Lấy mẫu lại có hoàn lại để ước lượng phân phối của thống kê.
+  \item[Bradley-Terry] Mô hình xác suất thắng dựa trên chênh lệch điểm Elo.
+  \item[Elo] Thang điểm ước lượng sức mạnh tương đối.
+  \item[Khoảng tin cậy 95\%] Khoảng chứa giá trị thật với xác suất 95\% theo mô hình.
+  \item[Đơn vị ghép cặp] Cặp hai ván cùng khai cuộc; dùng làm đơn vị bootstrap.
+\end{description}
+
+\section{Ký hiệu}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Ký hiệu} & \textbf{Nghĩa} \\
+\midrule
+$s$ & trạng thái bàn cờ \\
+$a$ & nước đi (0--120) \\
+$b$ & hệ số rẽ nhánh \\
+$d$ & độ sâu tìm kiếm \\
+$N(s,a)$ & số lần thăm nước $a$ tại $s$ \\
+$W(s,a)$ & tổng phần thưởng của nước $a$ \\
+$Q(s,a)$ & $W/N$ \\
+$P(s,a)$ & xác suất tiên nghiệm \\
+$v_\theta(s)$ & value head \\
+$p_\theta(a|s)$ & policy head \\
+$\pi$ & phân phối thăm ở gốc PUCT \\
+$z$ & kết quả ván theo góc nhìn người đi \\
+$\gamma$ & hệ số chiết khấu; trong dự án $\gamma=1$ \\
+$\beta$ & hệ số entropy \\
+$\lambda$ & trọng số trộn value/rollout \\
+\bottomrule
+\end{tabular}
+\end{center}

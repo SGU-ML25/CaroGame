@@ -1,0 +1,32 @@
+\chapter{Phân công và tỷ lệ đóng góp}
+\label{app:phan-cong}
+
+Bảng dưới ghi phân công chính của nhóm ba thành viên. Tỷ lệ đóng góp chưa chốt tại thời điểm
+viết; nhóm sẽ tính từ lịch sử commit và xác nhận trước khi nộp. Bảng này để người đọc biết ai
+phụ trách phần nào, không dùng để so sánh mức đóng góp.
+
+\begin{table}[H]
+  \centering\small
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{.22\textwidth} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Thành viên} & \textbf{Phụ trách chính} & \textbf{Phụ trách phụ} \\
+    \midrule
+    Huỳnh Thanh Tiến & Engine bitboard, interface tác tử, CI, UI; cấp 4 (MCTS), cấp 7--8 (PUCT, self-play) & README, demo; A3/A4 \\
+    Võ Thị Như Ý & Cấp 2, cấp 3 (Alpha-Beta), A1/A2 & Phân tích lỗi tác tử \\
+    Đặng Ngọc Như Ý & Cấp 5--6, arena và thống kê & Notebook, biểu đồ \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Phân công chính của nhóm. Tỷ lệ phần trăm sẽ được chốt từ lịch sử commit khi nộp.}
+  \label{tab:phan-cong}
+\end{table}
+
+\section{Cách xác định tỷ lệ đóng góp}
+Nhóm dùng ba nguồn: (i) số commit và số dòng thay đổi theo từng thư mục; (ii) issue được giao
+và issue đã đóng; (iii) xác nhận chéo của các thành viên. Không dùng số dòng tuyệt đối làm
+trọng số duy nhất, vì một thay đổi nhỏ ở engine có thể quan trọng hơn nhiều dòng notebook. Tỷ
+lệ cuối cùng do nhóm thống nhất và ghi ở bản nộp.
+
+\section{Bằng chứng đóng góp}
+Lịch sử Git trong repo là bằng chứng chính. Mỗi commit ghi người thực hiện và thư mục thay đổi;
+các nhãn issue (TV1--TV4) trong đề bài và trong repo giúp đối chiếu. Báo cáo không ghi tỷ lệ
+ước lượng khi chưa có xác nhận, để tránh con số không kiểm chứng được.

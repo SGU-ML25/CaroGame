@@ -1,0 +1,71 @@
+\chapter{Phụ lục giao diện người dùng}
+\label{app:ui}
+
+Giao diện web cho phép chơi người--máy, máy--máy và xem lại ván từ log. Phụ lục này mô tả cách
+chạy, các endpoint và cách đọc dữ liệu hiển thị. Mục đích là để người đọc có thể tự kiểm tra
+hành vi của tác tử, không chỉ đọc bảng.
+
+\section{Chạy giao diện}
+\begin{lstlisting}[numbers=none]
+uv sync --group dev --extra ui --extra nn
+uv run uvicorn caro.ui.server:app --reload
+\end{lstlisting}
+Mở \url{http://127.0.0.1:8000}. Khi sửa code, \texttt{--reload} tự khởi động lại. Đổi cổng bằng
+\texttt{--port 8001}. Cấp neural cần đúng checkpoint; nếu model chưa tải, giao diện báo lỗi
+thay vì treo.
+
+\section{Chức năng}
+\begin{itemize}
+  \item \textbf{Người--máy:} chọn cấp cho một hoặc hai bên; bấm ô để đi; nút ``AI đi'' gọi tác
+        tử. Nước bất hợp lệ bị từ chối và bàn cờ không đổi.
+  \item \textbf{Máy--máy:} chọn hai tác tử, bấm chạy; mỗi nước hiển thị thời gian, số nút hoặc
+        số mô phỏng, biến chính và bản đồ nhiệt lượt thăm (nếu có).
+  \item \textbf{Xem lại:} đọc \texttt{runs/**/games.jsonl}, dựng lại ván theo đúng luật; có thể
+        tua từng nước.
+  \item \textbf{Lùi nước:} lùi một hoặc nhiều nước, không lùi qua mốc khai cuộc.
+  \item \textbf{Ngân sách:} chọn thời gian, độ sâu hoặc số mô phỏng trong giới hạn an toàn.
+\end{itemize}
+
+\section{Endpoint chính}
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Phương thức} & \textbf{Đường dẫn} & \textbf{Ý nghĩa} \\
+\midrule
+GET & \texttt{/agents} & Danh sách tác tử, cấp, kind, khả dụng, ngân sách \\
+GET & \texttt{/budgets} & Ngân sách mặc định và giới hạn \\
+GET & \texttt{/openings} & Danh sách khai cuộc \\
+POST & \texttt{/games} & Tạo ván mới (người--máy hoặc máy--máy) \\
+GET & \texttt{/games/\{id\}} & Trạng thái ván, lịch sử, thống kê từng nước \\
+POST & \texttt{/games/\{id\}/move} & Người đi một nước \\
+POST & \texttt{/games/\{id\}/ai-move} & Gọi tác tử đi một nước \\
+POST & \texttt{/games/\{id\}/undo} & Lùi nước \\
+GET & \texttt{/replays} & Liệt kê ván trong log \\
+GET & \texttt{/replays/\{id\}} & Dựng lại một ván \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Cách đọc thống kê}
+Khi tác tử đi, giao diện hiển thị \texttt{last\_stats()}. Các khoá có thể có:
+\begin{itemize}
+  \item \texttt{nodes}, \texttt{depth}, \texttt{pv}, \texttt{score}: Alpha-Beta.
+  \item \texttt{sims}, \texttt{visits}, \texttt{pv}: MCTS/PUCT. \texttt{visits} là bản đồ nhiệt
+        số lượt thăm từng ô.
+  \item \texttt{policy}, \texttt{value}: policy-only/PUCT. \texttt{policy} là xác suất các ô;
+        \texttt{value} là giá trị theo góc nhìn bên đi.
+  \item \texttt{reason}: cấp 2, cho biết luật đã dùng (P1--P7).
+\end{itemize}
+Cần phân biệt \emph{giải thích quá trình} với \emph{chứng minh tối ưu}. Một ô có nhiều lượt
+thăm hoặc prior cao không chứng minh nước đó tốt; nó chỉ cho biết tác tử đã dành ngân sách cho
+ô đó. Muốn đánh giá chất lượng, phải đấu và phân tích ván.
+
+\section{Giới hạn}
+Giao diện giữ ván trong bộ nhớ tiến trình; tắt server là mất ván đang chơi. Ván đã ghi trong
+\texttt{games.jsonl} vẫn xem lại được. Số ván tối đa trong bộ nhớ là 256; ván cũ nhất bị bỏ.
+Một nước đang chạy trong thread không huỷ được, nên ngân sách bị chặn trước (thời gian tối đa
+60 giây, độ sâu 8, mô phỏng 100\,000). Các giới hạn này để tránh treo server.
+
+\section{Kiểm thử giao diện}
+Bộ test \texttt{tests/test\_ui.py} kiểm tra tạo ván, đi nước hợp lệ/bất hợp lệ, lùi nước, gọi
+AI, xem lại và các trường hợp lỗi. Test dùng FastAPI TestClient, không cần chạy server thật.

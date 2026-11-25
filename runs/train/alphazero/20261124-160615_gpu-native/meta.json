@@ -1,0 +1,36 @@
+{
+  "started": "2026-11-24T16:06:15",
+  "argv": [
+    "/mnt/data/1_Projects/AAI/CaroGame/caro/training/alphazero_loop.py",
+    "training/alphazero",
+    "device=cuda",
+    "selfplay.backend=native",
+    "run.tag=gpu-native"
+  ],
+  "seed": 2026,
+  "config_hash": "7d1facb34131",
+  "git": {
+    "commit": "b7b13128d1054ad4c53ca26032c5675e15d56b97",
+    "dirty": false
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": {
+      "cuda": true,
+      "name": "NVIDIA RTX A2000 Laptop GPU",
+      "cuda_version": "13.0"
+    }
+  }
+}

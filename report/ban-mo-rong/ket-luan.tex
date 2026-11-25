@@ -1,0 +1,181 @@
+\chapter{Kết luận và hướng phát triển}
+\label{ch:ket-luan}
+
+Chương này tổng hợp kết quả theo bốn câu hỏi nghiên cứu, nêu đóng góp và bài học thiết kế, chỉ
+rõ giới hạn của phép đo, và đề xuất hướng phát triển. Các kết luận được viết ở mức mà dữ liệu
+cho phép: \emph{sức mạnh thi đấu trong cấu hình đã đo}, không phải \emph{tối ưu đã chứng minh}.
+
+\section{Trả lời các câu hỏi nghiên cứu}
+\label{sec:kl-rq}
+
+\paragraph{RQ1. Trong cùng thời gian mỗi nước, MCTS có thắng nhiều hơn Alpha-Beta không?}
+Trong các phép đo hiện có, Alpha-Beta mạnh hơn MCTS rất rõ. Ở ngân sách cố định, MCTS rollout
+ngẫu nhiên thua toàn bộ 200 ván trước L2 và L3 ở 100, 400 và 1\,600 mô phỏng; chỉ ở 6\,400 mô
+phỏng mới thắng 7,5\% trước L2 và 2,0\% trước L3. Trong RR8, L4 MCTS 400 mô phỏng đạt 14,3\%
+tổng và thua L2 (43,6\%). Rollout nhẹ không cải thiện điểm, chỉ làm chậm khoảng 4 lần. Phân
+tích lỗi cho thấy khoảng 90\% ván thua của MCTS là do không ngăn đe doạ kép sớm, một cấu trúc
+cần cây sâu khoảng 4 ply trong khi ngân sách bị chia cho hàng chục nước gốc.
+
+Tuy nhiên, báo cáo \emph{chưa} chạy chế độ cùng thời gian mỗi nước cho đủ tám tác tử. Đây là
+khoảng trống quan trọng: Alpha-Beta có hàm lượng giá viết tay và nước bắt buộc nên mỗi nút đắt
+hơn, còn MCTS có thể dùng nhiều mô phỏng hơn trong cùng 1 giây. Kết luận hiện tại chỉ đúng cho
+ngân sách cố định theo loại thuật toán. Để trả lời đầy đủ RQ1, cần chạy thêm chế độ A với cùng
+1\,000 ms/nước và báo cáo cả điểm lẫn thời gian.
+
+\paragraph{RQ2. Self-play có cải thiện so với bắt chước chuyên gia không?}
+Có, nhưng mức cải thiện phụ thuộc vào giai đoạn và đối thủ. Ba lớp bằng chứng:
+\begin{itemize}
+  \item \textbf{Cập nhật policy bằng RL:} RL v3 cải thiện khoảng 12--16 điểm phần trăm so với
+        SL v3 trước L2/L3 trong phép đánh giá checkpoint (81,0\% so với 66,0\% trước L2; 37,0\%
+        so với 21,0\% trước L3).
+  \item \textbf{Thêm tìm kiếm khi chơi:} với cùng mạng L5, PUCT 200 mô phỏng nâng điểm trước L3
+        từ 21,0\% lên 58,5\%, tức 37,5 điểm phần trăm. PUCT 800 mô phỏng đạt 67,0\%.
+  \item \textbf{Huấn luyện policy--value bằng tự đấu có tìm kiếm:} L8 vòng 37 thắng L7 82,5\%
+        trên 20 ván và thắng L3 68,75\% trên 40 ván.
+  \item \textbf{Giải vòng tròn đầy đủ:} L6 đạt 61,9\% so với L5 50,2\%; L7 đạt 82,0\% và L8
+        đạt 89,8\% so với L3 58,3\%. Đây là bằng chứng mạnh nhất rằng tìm kiếm có mạng vượt
+        Alpha-Beta viết tay trong cấu hình này.
+\end{itemize}
+Ba phép đo tách ba mức đóng góp khác nhau, không nên cộng chúng thành một con số duy nhất. Hạn
+chế là mỗi phép đo dùng một seed, cỡ mẫu cuối nhỏ (20--40 ván), và tập khai cuộc đánh giá cuối
+từng được dùng trong gating. Chưa có lặp nhiều seed để định lượng độ ổn định của từng thay đổi.
+
+\paragraph{RQ3. Cắt tỉa alpha-beta và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nước đi?}
+A1 cho thấy cắt tỉa giảm khoảng 20,4 lần số nút và 20,9 lần thời gian, giữ nguyên giá trị gốc
+trên 100\% số thế. Đây là bằng chứng mạnh nhất về tính đúng đắn của cài đặt. A2 cho thấy sắp
+xếp nước giảm khoảng 24,5 lần số nút trong cùng 1 giây, nhưng không giảm thời gian vì ngân sách
+thời gian cố định; nó giúp tìm sâu hơn. A7 cho thấy bỏ thành phần phòng thủ thay đổi giá trị
+gốc trên 90\% số thế, tức thành phần này không thể bỏ qua.
+
+Hai hạn chế. Thứ nhất, benchmark A2 không ghi độ sâu đạt được, nên không tách được ``nhiều nút
+hơn vì tìm sâu hơn'' với ``nhiều nút hơn vì TT kém hiệu quả''. Thứ hai, báo cáo chưa đo tỷ lệ
+chọn cùng nước khi có nhiều nước đồng hạng; trường nhất quán của benchmark chỉ so giá trị gốc.
+A7b và A8b (nếu chạy xong) bổ sung phần đối đầu, nhưng vẫn cần một phép đo cố định độ sâu để
+tách chi phí khỏi chất lượng.
+
+\paragraph{RQ4. Lợi thế đi trước trên 11×11 lớn đến mức nào giữa các tác tử cùng cấp?}
+Lợi thế đi trước không phải một hằng số. Kết quả E3:
+\begin{itemize}
+  \item L1 Random: X thắng 52\%, O thắng 48\% — gần cân bằng, đúng với tác tử không biết khai
+        thác thế mở đầu.
+  \item L2 Rule: X thắng 75\%, O thắng 25\% — lệch mạnh.
+  \item L3 Alpha-Beta: X thắng 66\%, O thắng 18\%, hoà 16\% — lệch mạnh nhưng có hoà.
+  \item L4 MCTS: X thắng 50\%, O thắng 50\% — cân bằng tuyệt đối.
+  \item L5 Policy SL: X thắng 62\%, O thắng 36\%, hoà 2\%.
+  \item L6 Policy RL: X thắng 50\%, O thắng 36\%, hoà 14\%.
+  \item L7 PUCT: X thắng 80\%, O thắng 14\%, hoà 6\% — lệch mạnh nhất.
+  \item L8 AlphaZero: X thắng 50\%, O thắng 22\%, hoà 28\% — lợi thế trung bình nhưng nhiều hoà.
+\end{itemize}
+Kết quả này phản bác giả định ``lợi thế đi trước là hằng số của trò chơi''. Nó là thuộc tính
+của \emph{cặp tác tử}: hai tác tử yếu có thể cân bằng, hai tác tử mạnh có thể lệch, và một tác
+tử có thể lệch theo hướng này nhưng không lệch theo hướng khác. Trong RR8, mọi tác tử đều đạt
+điểm cao hơn khi cầm X, nhưng mức chênh khác nhau: L8 95,0\% so với 84,6\%, L7 90,3\% so với
+73,7\%, L3 68,9\% so với 47,7\%, L5 56,1\% so với 44,3\%. Trong các trận L8--L3, L8 cầm X đạt
+92,5\% và cầm O 45,0\%. Trong 10\,000 ván tự đấu từ bàn trống của L8, X thắng 77,0\%, O thắng
+9,2\%, hoà 13,8\%; nhưng khi tự đấu từ khai cuộc 2--4 nước (E3), L8 chỉ còn 50/22/28. Điều này
+cho thấy khai cuộc là một biến kiểm soát mạnh: nó làm giảm lợi thế đi trước và làm kết quả phản
+ánh sức mạnh tác tử tốt hơn. Kết luận chỉ áp dụng cho bộ khai cuộc và ngân sách đã dùng.
+
+\section{Đóng góp}
+\label{sec:kl-dong-gop}
+Báo cáo có sáu đóng góp, tương ứng với sáu mục ở Chương~\ref{ch:gioi-thieu}:
+\begin{enumerate}
+  \item Một hệ thống chạy được từ đầu đến cuối, dùng chung engine, giao diện tác tử, arena,
+        huấn luyện, log và giao diện web.
+  \item Tám cấp tác tử có thể so sánh trực tiếp, từ Random đến PUCT/AlphaZero-inspired.
+  \item Một giao thức đánh giá có kiểm soát nhiễu, với khoảng Wilson, bootstrap theo cặp khai
+        cuộc và phân tích theo màu.
+  \item Phát hiện và sửa lỗi quy ước dấu của value head; đo lại calibration trước và sau khi
+        sửa.
+  \item Kết quả thực nghiệm mới về lợi thế đi trước (E3) cho thấy nó không đơn điệu theo sức
+        mạnh tác tử.
+  \item Phân tích ván có kiểm chứng bằng engine, đếm cơ hội thắng/chặn và phân loại lỗi trên
+        hàng nghìn ván, thay vì mô tả định tính.
+\end{enumerate}
+
+\section{Bài học thiết kế}
+\label{sec:kl-bai-hoc}
+\paragraph{Tách quy ước dấu ngay từ đầu.} Lỗi value head là bài học đắt nhất của dự án. Nhãn
+kết quả ván có hai quy ước tự nhiên: tuyệt đối (X thắng) và tương đối (người đi thắng). Nếu
+không cố định quy ước ở một nơi và kiểm tra bằng test, lỗi sẽ lan sang RL và PUCT, nơi value
+được dùng làm baseline hoặc hàm lượng giá. Bài học: định nghĩa quy ước trong một module, viết
+test kiểm tra dấu, và đo calibration theo cả hai quy ước.
+
+\paragraph{Đo chi phí cùng chất lượng.} Một tác tử có thể thắng nhờ được cấp nhiều thời gian
+hơn, không nhờ thuật toán tốt hơn. Mọi so sánh trong báo cáo đều ghi ngân sách, backend và
+thời gian mỗi nước. Khi ngân sách là thời gian, cần báo cáo cả số nút/mô phỏng đạt được; khi
+ngân sách là số nút/mô phỏng, cần báo cáo cả thời gian. Không có một phép đo nào trả lời cả hai
+câu hỏi.
+
+\paragraph{Kiểm chứng chiến thuật bằng engine.} Phân tích ván định tính dễ bị thiên lệch bởi
+ấn tượng. Dùng chính \texttt{winning\_squares} để đếm cơ hội thắng/chặn giúp phân biệt ``thua vì bỏ
+chặn'' với ``thua vì đối thủ mạnh hơn ở thế cờ''. Cách làm này có thể mở rộng thành một bộ
+kiểm tra tự động cho mọi ván.
+
+\paragraph{Đa dạng dữ liệu quan trọng hơn số epoch.} SL v1 và v2 dùng cùng kiến trúc, cùng số
+epoch, nhưng v2 có 297\,098 mẫu với temperature 8 thay vì 27\,720 mẫu với temperature 0,5. Top-1
+tăng từ 44,0\% lên 65,3\%. SL v3 thêm 30 epoch chỉ tăng 2,5 điểm. Bài học: khi trần dữ liệu
+đã đạt, thêm epoch không giúp; phải đổi nguồn nhãn hoặc tăng đa dạng.
+
+\paragraph{Chọn checkpoint theo tiêu chí định trước.} Điểm gating của L8 dao động 43--62\% và
+không so sánh trực tiếp giữa các vòng vì đối thủ đương nhiệm thay đổi. Một quy trình tốt cần
+một tập đánh giá giữ riêng, cố định, và tiêu chí chọn checkpoint viết trước khi chạy. Báo cáo
+dùng vòng 37 vì đó là lần duyệt cuối, nhưng không khẳng định đó là checkpoint tốt nhất tuyệt
+đối.
+
+\section{Giới hạn}
+\label{sec:kl-gioi-han}
+\paragraph{Giới hạn của phép đo.} Cỡ mẫu 100--200 ván mỗi cặp cho khoảng tin cậy rộng; chênh
+lệch dưới 10 điểm phần trăm thường chưa phân biệt được. Các mốc đánh giá dùng khai cuộc khác
+nhau, nên đường cong huấn luyện có nhiễu. Một seed gốc chưa đo được độ ổn định giữa các seed.
+Các trận cuối L8--L7 (20 ván) và L8--L3 (40 ván) nhỏ, và tập khai cuộc từng dùng trong gating.
+
+\paragraph{Giới hạn của mô hình.} Mạng chỉ có khoảng 0,48 triệu tham số, huấn luyện trên một
+GPU laptop. L8 chạy 10\,000 ván tự đấu trong 12 giờ, nhỏ hơn nhiều so với AlphaZero gốc. Kết
+quả không phản ánh năng lực của các hệ thống gốc, và không nên dùng để dự đoán chúng.
+
+\paragraph{Giới hạn của luật và bàn cờ.} Bàn 11×11, luật tự do, không áp dụng luật chặn hai đầu
+hay Renju. Kết quả không ngoại suy trực tiếp sang bàn 15×15 hoặc các biến thể khác. Tập ứng
+viên bán kính 2 là cắt tỉa tiến, có thể loại nước tốt; tác tử không tìm kiếm trên toàn bộ cây.
+
+\paragraph{Giới hạn của phân tích.} Phân tích chiến thuật chỉ đếm cơ hội thắng ngay và chặn bắt
+buộc, không đánh giá được nước đi tối ưu dài hạn. Các nhận xét ván dựa trên luật thắng ngay và
+đe doạ nước kế tiếp, không dựa trên phân tích sâu nhiều nước. Một nước không bỏ chặn vẫn có
+thể là sai về chiến lược; báo cáo không kết luận ngược lại.
+
+\section{Hướng phát triển}
+\label{sec:kl-huong}
+\paragraph{Đánh giá cùng thời gian.} Chạy chế độ A với 1\,000 ms/nước cho đủ tám tác tử, báo
+cáo điểm và số nút/mô phỏng đạt được. Đây là phần còn thiếu quan trọng nhất để trả lời RQ1.
+
+\paragraph{Nhiều seed.} Lặp mỗi cấu hình với 3--5 seed gốc, báo cáo trung bình và khoảng bất
+định giữa các seed. Điều này đặc biệt quan trọng cho L8, nơi quá trình tự đấu có phương sai lớn.
+
+\paragraph{Tập khai cuộc giữ riêng.} Tách một tập khai cuộc chưa dùng trong phát triển/gating,
+đánh giá lại các cặp chính trên tập đó. Đây là cách duy nhất để tránh thiên lệch chọn mẫu.
+
+\paragraph{Tăng cường chiến thuật.} Thêm lớp luật thắng/chặn trước khi gọi mạng, như các engine
+Gomoku mạnh. Kết quả phân tích lỗi cho thấy L5/L6 bỏ 4--12 cơ hội thắng ngay trên 90 cơ hội;
+một lớp luật đơn giản có thể sửa phần lớn mà không cần huấn luyện thêm.
+
+\paragraph{Mạng lớn hơn và dữ liệu tốt hơn.} Tăng số kênh/khối, dùng nhiều dữ liệu chuyên gia
+hơn, hoặc chưng cất tri thức từ Alpha-Beta độ sâu cao hơn. SL v3 đã gần trần của dữ liệu hiện
+tại; đổi nguồn nhãn là cách tiếp theo.
+
+\paragraph{Đánh giá nhiều biến thể luật.} Chạy cùng hệ thống trên luật chặn hai đầu, Renju, hoặc
+bàn 15×15 để xem kết luận nào phụ thuộc vào luật. Đây là hướng mở rộng tự nhiên nhưng nằm
+ngoài phạm vi đồ án.
+
+\section{Kết luận}
+\label{sec:kl-ket}
+Đề tài đã xây dựng một hệ thống Game AI đa cấp độ cho Caro 11×11, hiện thực tám cấp tác tử trên
+cùng một engine, và đánh giá chúng bằng một giao thức có kiểm soát nhiễu. Kết quả chính là:
+tri thức chiến thuật viết tay vẫn rất mạnh ở ngân sách nhỏ; tìm kiếm có mạng cải thiện rõ so
+với policy-only; self-play có cải thiện so với bắt chước nhưng cần nhiều ván; và lợi thế đi
+trước phụ thuộc vào cặp tác tử, không phải hằng số của trò chơi.
+
+Báo cáo cũng chỉ rõ những gì chưa làm được: chế độ cùng thời gian, nhiều seed, tập khai cuộc
+giữ riêng, A6/A7b/A8b đầy đủ, và đánh giá trên biến thể luật. Những phần này được liệt kê ở
+Phụ lục~\ref{app:cho-bo-sung} để người đọc biết chính xác phạm vi bằng chứng. Cách trình bày
+này có chủ đích: một báo cáo nghiên cứu không chỉ nêu kết quả mà còn nêu điều kiện để kết quả
+đó có giá trị.

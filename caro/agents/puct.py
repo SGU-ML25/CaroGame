@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import math
 import time
+from collections.abc import Generator, Sequence
 from typing import Any
 
 import numpy as np
@@ -45,6 +46,8 @@ except ImportError:
     _puct_native = None
 
 DEFAULT_MAX_SIMS = 200
+EvalRequest = tuple[list[np.ndarray], list[np.ndarray]]
+EvalResult = tuple[np.ndarray, np.ndarray]
 
 
 class PUCTNode:
@@ -169,6 +172,16 @@ class PUCTAgent(BaseAgent):
             ch.prior = (1 - eps) * ch.prior + eps * g / total
 
     def select_action(self, game: CaroGame, limits: Limits) -> int:
+        search = self._search(game, limits)
+        try:
+            request = next(search)
+            while True:
+                request = search.send(self._evaluate(*request))
+        except StopIteration as finished:
+            return finished.value
+
+    def _search(self, game: CaroGame, limits: Limits) -> Generator[EvalRequest, EvalResult, int]:
+        """Nhường quyền tại mỗi lần suy luận để có thể ghép lá từ nhiều cây."""
         if game.is_terminal():
             return -1
         t0 = time.perf_counter()
@@ -180,7 +193,7 @@ class PUCTAgent(BaseAgent):
         work = game.clone()
         root = self._node(None, 1.0)
         root_mask = legal_mask(work)
-        probs, vals = self._evaluate([encode(work)], [root_mask])
+        probs, vals = yield [encode(work)], [root_mask]
         self._expand(root, root_mask, probs[0])
         root_value = float(vals[0])
         priors = {ch.move: ch.prior for ch in root.children}
@@ -215,7 +228,7 @@ class PUCTAgent(BaseAgent):
                 for _ in range(depth):
                     work.undo()
             if pending:
-                probs, vals = self._evaluate([p[2] for p in pending], [p[3] for p in pending])
+                probs, vals = yield [p[2] for p in pending], [p[3] for p in pending]
                 for (path, node, _x, mask, game_leaf), pr, v in zip(pending, probs, vals, strict=True):
                     if not node.expanded:                    # lá trùng trong cùng lô chỉ mở rộng một lần
                         self._expand(node, mask, pr)
@@ -266,3 +279,36 @@ class PUCTAgent(BaseAgent):
             stats["score"] = round(-chosen.W / chosen.N, 4)       # theo góc nhìn bên đi ở gốc
         self._stats = stats
         return move
+
+
+def select_actions(agents: Sequence[PUCTAgent], games: Sequence[CaroGame]) -> list[int]:
+    """Ghép lượt suy luận giữa các ván dùng cùng mạng và ngân sách cố định."""
+    matches = list(zip(agents, games, strict=True))
+    if not matches:
+        return []
+    if len(matches) == 1:
+        agent, game = matches[0]
+        return [agent.select_action(game, agent.limits)]
+    if len(set(agents)) != len(agents):
+        raise ValueError("Mỗi ván cần tác tử PUCT riêng để giữ RNG và thống kê.")
+    if any(a.model is not agents[0].model or a.limits.time_ms is not None for a in agents):
+        raise ValueError("PUCT ghép lô cần dùng chung mạng và không đặt giới hạn thời gian.")
+    active = [(i, a._search(g, a.limits), None) for i, (a, g) in enumerate(matches)]
+    moves = [-1] * len(matches)
+    while active:
+        waiting, states, masks = [], [], []
+        for i, search, result in active:
+            try:
+                xs, ms = search.send(result)
+            except StopIteration as finished:
+                moves[i] = finished.value
+                continue
+            start = len(states)
+            states.extend(xs)
+            masks.extend(ms)
+            waiting.append((i, search, slice(start, len(states))))
+        if not waiting:
+            break
+        probs, values = agents[0]._evaluate(states, masks)
+        active = [(i, search, (probs[span], values[span])) for i, search, span in waiting]
+    return moves

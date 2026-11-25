@@ -1,0 +1,25 @@
+{
+  "status": "ok",
+  "ended": "2026-11-25T04:25:03",
+  "duration_s": 44327.952,
+  "games": 15020,
+  "metrics": 51,
+  "selfplay_games": 10000,
+  "accepted_iterations": 6,
+  "best_iteration": 37,
+  "init_source": "/home/solozy/.cache/huggingface/hub/models--solozy--CaroGame/snapshots/a76d294b369af4440e64037a176eab3e14e2ba51/l5/best.pt",
+  "last_gating": {
+    "n": 100,
+    "wins": 38,
+    "draws": 16,
+    "losses": 46,
+    "score": 0.46
+  },
+  "vs_l7": {
+    "n": 20,
+    "wins": 16,
+    "draws": 1,
+    "losses": 3,
+    "score": 0.825
+  }
+}

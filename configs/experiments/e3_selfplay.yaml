@@ -1,0 +1,6 @@
+# E3 — lợi thế đi trước: mỗi cấp tự đấu với chính nó, 50 khai cuộc × 2 màu.
+# Chạy bằng experiments/e3_selfplay.py (không dùng tournament.py vì cần tự đấu).
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {kind: tournament, name: e3_selfplay, rq: [RQ4]}
+run: {root: runs/eval}
+arena: {num_openings: 50, workers: 4, max_plies: 121}

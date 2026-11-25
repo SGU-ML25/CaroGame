@@ -1,0 +1,1011 @@
+\chapter{Phụ lục huấn luyện L8: 50 vòng và năm vòng chọn lọc}
+
+\label{app:huan-luyen}
+
+Phụ lục này thay cho hồ sơ từng vòng. Bảng đầu ghi cả 50 vòng; năm mục sau đi sâu vào các vòng đại diện: vòng 1 (khởi đầu), 12 (duyệt đầu), 24 (giữa), 37 (duyệt cuối) và 50 (kết thúc). Điểm gating so ứng viên với bản đương nhiệm tại thời điểm đó, nên không so sánh trực tiếp giữa các vòng.
+
+\begin{center}\scriptsize\setlength{\tabcolsep}{3pt}
+
+\begin{tabular}{@{}rrrrrr@{}}
+
+\toprule
+
+Vòng & Tự đấu X/O & Ply P50 & Loss & Gating & Duyệt \\
+
+\midrule
+
+1 & 136/30/34 & 25 & 2,768 & 43,0\% & — \\
+
+2 & 138/25/37 & 25 & 2,847 & 45,0\% & — \\
+
+3 & 137/28/35 & 25 & 2,870 & 49,5\% & — \\
+
+4 & 148/23/29 & 24 & 2,890 & 49,0\% & — \\
+
+5 & 136/26/38 & 25 & 2,903 & 50,0\% & — \\
+
+6 & 135/26/39 & 23 & 2,907 & 50,0\% & — \\
+
+7 & 138/29/33 & 25 & 2,914 & 51,0\% & — \\
+
+8 & 140/27/33 & 23 & 2,904 & 52,5\% & — \\
+
+9 & 136/23/41 & 23 & 2,915 & 54,5\% & — \\
+
+10 & 139/27/34 & 24 & 2,909 & 46,0\% & — \\
+
+11 & 145/31/24 & 24 & 2,912 & 49,0\% & — \\
+
+12 & 139/26/35 & 24 & 2,914 & 57,5\% & có \\
+
+13 & 167/26/7 & 22 & 2,842 & 50,0\% & — \\
+
+14 & 157/23/20 & 21 & 2,844 & 49,5\% & — \\
+
+15 & 157/26/17 & 23 & 2,841 & 48,0\% & — \\
+
+16 & 165/26/9 & 21 & 2,829 & 52,5\% & — \\
+
+17 & 159/23/18 & 21 & 2,833 & 52,5\% & — \\
+
+18 & 158/30/12 & 21 & 2,827 & 59,0\% & có \\
+
+19 & 162/22/16 & 21 & 2,812 & 55,5\% & có \\
+
+20 & 156/30/14 & 21 & 2,807 & 44,0\% & — \\
+
+21 & 159/33/8 & 21 & 2,796 & 45,5\% & — \\
+
+22 & 168/21/11 & 20 & 2,795 & 49,0\% & — \\
+
+23 & 152/33/15 & 21 & 2,790 & 52,0\% & — \\
+
+24 & 155/25/20 & 22 & 2,788 & 55,0\% & có \\
+
+25 & 158/30/12 & 21 & 2,785 & 53,5\% & — \\
+
+26 & 151/35/14 & 23 & 2,774 & 48,5\% & — \\
+
+27 & 153/35/12 & 23 & 2,778 & 51,5\% & — \\
+
+28 & 153/27/20 & 21 & 2,766 & 52,5\% & — \\
+
+29 & 156/31/13 & 19 & 2,763 & 62,0\% & có \\
+
+30 & 152/35/13 & 21 & 2,751 & 45,5\% & — \\
+
+31 & 159/23/18 & 22 & 2,749 & 54,5\% & — \\
+
+32 & 163/17/20 & 21 & 2,740 & 53,5\% & — \\
+
+33 & 165/21/14 & 20 & 2,731 & 54,5\% & — \\
+
+34 & 160/23/17 & 21 & 2,718 & 47,0\% & — \\
+
+35 & 158/23/19 & 21 & 2,709 & 46,5\% & — \\
+
+36 & 174/14/12 & 19 & 2,707 & 49,0\% & — \\
+
+37 & 163/25/12 & 21 & 2,685 & 61,0\% & có \\
+
+38 & 156/29/15 & 23 & 2,690 & 49,0\% & — \\
+
+39 & 164/27/9 & 21 & 2,685 & 44,5\% & — \\
+
+40 & 152/34/14 & 23 & 2,688 & 41,0\% & — \\
+
+41 & 167/20/13 & 21 & 2,692 & 46,0\% & — \\
+
+42 & 163/28/9 & 23 & 2,688 & 46,5\% & — \\
+
+43 & 157/34/9 & 22 & 2,687 & 46,0\% & — \\
+
+44 & 159/28/13 & 21 & 2,690 & 49,0\% & — \\
+
+45 & 158/30/12 & 23 & 2,694 & 47,5\% & — \\
+
+46 & 162/27/11 & 22 & 2,697 & 49,0\% & — \\
+
+47 & 165/29/6 & 21 & 2,695 & 48,0\% & — \\
+
+48 & 151/37/12 & 22 & 2,696 & 50,5\% & — \\
+
+49 & 152/33/15 & 23 & 2,697 & 47,5\% & — \\
+
+50 & 148/42/10 & 21 & 2,693 & 46,0\% & — \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{center}
+
+\section{Năm vòng chọn lọc}
+
+\subsection{Vòng 01}
+
+Tự đấu 200 ván: X thắng 136, O thắng 34, hoà 30; độ dài trung vị 25 nước. Loss tổng 2.7680, policy 2.5972, value 0.1708. Gating 43.0\%; không được duyệt.
+
+\begin{center}\small\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu của L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/1/19 & 61,0\% \\
+
+O & 50 & 35/5/10 & 75,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection{Vòng 12}
+
+Tự đấu 200 ván: X thắng 139, O thắng 35, hoà 26; độ dài trung vị 24 nước. Loss tổng 2.9136, policy 2.6589, value 0.2547. Gating 57.5\%; được duyệt.
+
+\begin{center}\small\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu của L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 40/1/9 & 81,0\% \\
+
+O & 50 & 32/2/16 & 66,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection{Vòng 24}
+
+Tự đấu 200 ván: X thắng 155, O thắng 20, hoà 25; độ dài trung vị 22 nước. Loss tổng 2.7883, policy 2.5691, value 0.2192. Gating 55.0\%; được duyệt.
+
+\begin{center}\small\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu của L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 39/3/8 & 81,0\% \\
+
+O & 50 & 31/9/10 & 71,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection{Vòng 37}
+
+Tự đấu 200 ván: X thắng 163, O thắng 12, hoà 25; độ dài trung vị 21 nước. Loss tổng 2.6853, policy 2.4869, value 0.1983. Gating 61.0\%; được duyệt.
+
+\begin{center}\small\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu của L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 39/3/8 & 81,0\% \\
+
+O & 50 & 23/13/14 & 59,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection{Vòng 50}
+
+Tự đấu 200 ván: X thắng 148, O thắng 10, hoà 42; độ dài trung vị 21 nước. Loss tổng 2.6931, policy 2.5097, value 0.1834. Gating 46.0\%; không được duyệt.
+
+\begin{center}\small\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu của L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 28/5/17 & 61,0\% \\
+
+O & 50 & 29/11/10 & 69,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\section{Hồ sơ từng vòng}
+
+\subsection*{Vòng 01}
+
+Tự đấu X/O/hoà: 136/34/30; độ dài P50 25; loss 2.7680; gating 43,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/1/19 & 61,0\% \\
+
+O & 50 & 35/5/10 & 75,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 02}
+
+Tự đấu X/O/hoà: 138/37/25; độ dài P50 25; loss 2.8466; gating 45,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 33/1/16 & 67,0\% \\
+
+O & 50 & 37/3/10 & 77,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 03}
+
+Tự đấu X/O/hoà: 137/35/28; độ dài P50 25; loss 2.8701; gating 49,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/8/13 & 66,0\% \\
+
+O & 50 & 30/7/13 & 67,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 04}
+
+Tự đấu X/O/hoà: 148/29/23; độ dài P50 24; loss 2.8898; gating 49,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 35/0/15 & 70,0\% \\
+
+O & 50 & 33/6/11 & 72,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 05}
+
+Tự đấu X/O/hoà: 136/38/26; độ dài P50 25; loss 2.9029; gating 50,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 34/1/15 & 69,0\% \\
+
+O & 50 & 33/3/14 & 69,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 06}
+
+Tự đấu X/O/hoà: 135/39/26; độ dài P50 23; loss 2.9074; gating 50,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 35/3/12 & 73,0\% \\
+
+O & 50 & 33/7/10 & 73,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 07}
+
+Tự đấu X/O/hoà: 138/33/29; độ dài P50 25; loss 2.9138; gating 51,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 38/2/10 & 78,0\% \\
+
+O & 50 & 36/4/10 & 76,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 08}
+
+Tự đấu X/O/hoà: 140/33/27; độ dài P50 23; loss 2.9039; gating 52,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 35/2/13 & 72,0\% \\
+
+O & 50 & 31/5/14 & 67,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 09}
+
+Tự đấu X/O/hoà: 136/41/23; độ dài P50 23; loss 2.9145; gating 54,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 36/3/11 & 75,0\% \\
+
+O & 50 & 31/4/15 & 66,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 10}
+
+Tự đấu X/O/hoà: 139/34/27; độ dài P50 24; loss 2.9089; gating 46,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 32/4/14 & 68,0\% \\
+
+O & 50 & 33/10/7 & 76,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 11}
+
+Tự đấu X/O/hoà: 145/24/31; độ dài P50 24; loss 2.9117; gating 49,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/4/16 & 64,0\% \\
+
+O & 50 & 28/10/12 & 66,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 12}
+
+Tự đấu X/O/hoà: 139/35/26; độ dài P50 24; loss 2.9136; gating 57,5\%; duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 40/1/9 & 81,0\% \\
+
+O & 50 & 32/2/16 & 66,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 13}
+
+Tự đấu X/O/hoà: 167/7/26; độ dài P50 22; loss 2.8416; gating 50,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/7/13 & 67,0\% \\
+
+O & 50 & 28/11/11 & 67,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 14}
+
+Tự đấu X/O/hoà: 157/20/23; độ dài P50 21; loss 2.8441; gating 49,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/5/15 & 65,0\% \\
+
+O & 50 & 30/6/14 & 66,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 15}
+
+Tự đấu X/O/hoà: 157/17/26; độ dài P50 23; loss 2.8414; gating 48,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 27/3/20 & 57,0\% \\
+
+O & 50 & 24/13/13 & 61,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 16}
+
+Tự đấu X/O/hoà: 165/9/26; độ dài P50 21; loss 2.8294; gating 52,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 27/8/15 & 62,0\% \\
+
+O & 50 & 23/11/16 & 57,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 17}
+
+Tự đấu X/O/hoà: 159/18/23; độ dài P50 21; loss 2.8334; gating 52,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 31/8/11 & 70,0\% \\
+
+O & 50 & 29/7/14 & 65,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 18}
+
+Tự đấu X/O/hoà: 158/12/30; độ dài P50 21; loss 2.8269; gating 59,0\%; duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 38/3/9 & 79,0\% \\
+
+O & 50 & 27/7/16 & 61,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 19}
+
+Tự đấu X/O/hoà: 162/16/22; độ dài P50 21; loss 2.8120; gating 55,5\%; duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 34/6/10 & 74,0\% \\
+
+O & 50 & 28/7/15 & 63,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 20}
+
+Tự đấu X/O/hoà: 156/14/30; độ dài P50 21; loss 2.8065; gating 44,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/3/18 & 61,0\% \\
+
+O & 50 & 34/5/11 & 73,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 21}
+
+Tự đấu X/O/hoà: 159/8/33; độ dài P50 21; loss 2.7965; gating 45,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/5/15 & 65,0\% \\
+
+O & 50 & 34/6/10 & 74,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 22}
+
+Tự đấu X/O/hoà: 168/11/21; độ dài P50 20; loss 2.7947; gating 49,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/10/11 & 68,0\% \\
+
+O & 50 & 32/6/12 & 70,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 23}
+
+Tự đấu X/O/hoà: 152/15/33; độ dài P50 21; loss 2.7899; gating 52,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/9/11 & 69,0\% \\
+
+O & 50 & 29/7/14 & 65,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 24}
+
+Tự đấu X/O/hoà: 155/20/25; độ dài P50 22; loss 2.7883; gating 55,0\%; duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 39/3/8 & 81,0\% \\
+
+O & 50 & 31/9/10 & 71,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 25}
+
+Tự đấu X/O/hoà: 158/12/30; độ dài P50 21; loss 2.7846; gating 53,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 35/5/10 & 75,0\% \\
+
+O & 50 & 26/16/8 & 68,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 26}
+
+Tự đấu X/O/hoà: 151/14/35; độ dài P50 23; loss 2.7739; gating 48,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/8/13 & 66,0\% \\
+
+O & 50 & 30/9/11 & 69,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 27}
+
+Tự đấu X/O/hoà: 153/12/35; độ dài P50 23; loss 2.7785; gating 51,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/7/14 & 65,0\% \\
+
+O & 50 & 27/8/15 & 62,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 28}
+
+Tự đấu X/O/hoà: 153/20/27; độ dài P50 21; loss 2.7664; gating 52,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/6/15 & 64,0\% \\
+
+O & 50 & 23/13/14 & 59,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 29}
+
+Tự đấu X/O/hoà: 156/13/31; độ dài P50 19; loss 2.7630; gating 62,0\%; duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 34/4/12 & 72,0\% \\
+
+O & 50 & 19/10/21 & 48,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 30}
+
+Tự đấu X/O/hoà: 152/13/35; độ dài P50 21; loss 2.7515; gating 45,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/7/14 & 65,0\% \\
+
+O & 50 & 35/4/11 & 74,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 31}
+
+Tự đấu X/O/hoà: 159/18/23; độ dài P50 22; loss 2.7491; gating 54,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 32/7/11 & 71,0\% \\
+
+O & 50 & 29/4/17 & 62,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 32}
+
+Tự đấu X/O/hoà: 163/20/17; độ dài P50 21; loss 2.7396; gating 53,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/7/13 & 67,0\% \\
+
+O & 50 & 26/8/16 & 60,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 33}
+
+Tự đấu X/O/hoà: 165/14/21; độ dài P50 20; loss 2.7312; gating 54,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/4/17 & 62,0\% \\
+
+O & 50 & 23/7/20 & 53,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 34}
+
+Tự đấu X/O/hoà: 160/17/23; độ dài P50 21; loss 2.7180; gating 47,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/5/15 & 65,0\% \\
+
+O & 50 & 32/7/11 & 71,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 35}
+
+Tự đấu X/O/hoà: 158/19/23; độ dài P50 21; loss 2.7090; gating 46,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 26/9/15 & 61,0\% \\
+
+O & 50 & 33/2/15 & 68,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 36}
+
+Tự đấu X/O/hoà: 174/12/14; độ dài P50 19; loss 2.7069; gating 49,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/10/11 & 68,0\% \\
+
+O & 50 & 32/6/12 & 70,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 37}
+
+Tự đấu X/O/hoà: 163/12/25; độ dài P50 21; loss 2.6853; gating 61,0\%; duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 39/3/8 & 81,0\% \\
+
+O & 50 & 23/13/14 & 59,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 38}
+
+Tự đấu X/O/hoà: 156/15/29; độ dài P50 23; loss 2.6899; gating 49,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 25/11/14 & 61,0\% \\
+
+O & 50 & 24/15/11 & 63,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 39}
+
+Tự đấu X/O/hoà: 164/9/27; độ dài P50 21; loss 2.6852; gating 44,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 23/11/16 & 57,0\% \\
+
+O & 50 & 27/14/9 & 68,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 40}
+
+Tự đấu X/O/hoà: 152/14/34; độ dài P50 23; loss 2.6876; gating 41,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 24/8/18 & 56,0\% \\
+
+O & 50 & 29/16/5 & 74,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 41}
+
+Tự đấu X/O/hoà: 167/13/20; độ dài P50 21; loss 2.6924; gating 46,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/8/13 & 66,0\% \\
+
+O & 50 & 30/14/6 & 74,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 42}
+
+Tự đấu X/O/hoà: 163/9/28; độ dài P50 23; loss 2.6877; gating 46,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/11/10 & 69,0\% \\
+
+O & 50 & 34/8/8 & 76,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 43}
+
+Tự đấu X/O/hoà: 157/9/34; độ dài P50 22; loss 2.6869; gating 46,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 29/11/10 & 69,0\% \\
+
+O & 50 & 33/11/6 & 77,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 44}
+
+Tự đấu X/O/hoà: 159/13/28; độ dài P50 21; loss 2.6899; gating 49,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 25/18/7 & 68,0\% \\
+
+O & 50 & 30/10/10 & 70,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 45}
+
+Tự đấu X/O/hoà: 158/12/30; độ dài P50 23; loss 2.6939; gating 47,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 27/13/10 & 67,0\% \\
+
+O & 50 & 33/6/11 & 72,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 46}
+
+Tự đấu X/O/hoà: 162/11/27; độ dài P50 22; loss 2.6968; gating 49,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/11/9 & 71,0\% \\
+
+O & 50 & 30/13/7 & 73,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 47}
+
+Tự đấu X/O/hoà: 165/6/29; độ dài P50 21; loss 2.6948; gating 48,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 26/12/12 & 64,0\% \\
+
+O & 50 & 28/12/10 & 68,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 48}
+
+Tự đấu X/O/hoà: 151/12/37; độ dài P50 22; loss 2.6961; gating 50,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 30/12/8 & 72,0\% \\
+
+O & 50 & 30/11/9 & 71,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 49}
+
+Tự đấu X/O/hoà: 152/15/33; độ dài P50 23; loss 2.6972; gating 47,5\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 28/9/13 & 65,0\% \\
+
+O & 50 & 28/14/8 & 70,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\subsection*{Vòng 50}
+
+Tự đấu X/O/hoà: 148/10/42; độ dài P50 21; loss 2.6931; gating 46,0\%; không duyệt.
+
+\begin{center}\scriptsize\begin{tabular}{@{}lrrr@{}}\toprule
+
+Màu L8 & Ván & W/D/L & Điểm \\
+
+\midrule
+
+X & 50 & 28/5/17 & 61,0\% \\
+
+O & 50 & 29/11/10 & 69,0\% \\
+
+\bottomrule\end{tabular}\end{center}
+
+\section{Đọc lịch sử huấn luyện}
+
+Hai đặc điểm nổi bật. Thứ nhất, loss tổng giảm chậm và có dao động; loss policy chiếm phần lớn, loss value nhỏ hơn nhiều. Điều này hợp lý vì value đã được khởi tạo từ SL v3 và chỉ cần tinh chỉnh, còn policy phải học phân phối thăm của PUCT, khác với phân phối chuyên gia. Thứ hai, tỷ lệ duyệt thấp (6/50 vòng) nhưng không có nghĩa quá trình thất bại: ngưỡng 55\% trên 100 ván là khắt khe, và nhiều ứng viên có điểm 50--55\% vẫn có thể đã tốt hơn ở một số khía cạnh. Việc giữ bản cũ khi nghi ngờ là lựa chọn thận trọng.
+
+Một hạn chế: log không lưu phân phối thăm trung bình của PUCT theo vòng, nên không thể phân tích policy đã dịch chuyển như thế nào. Muốn làm điều đó cần thêm trường thống kê vào log tự đấu, hoặc chạy lại một tập thế cố định qua từng checkpoint.

@@ -1,0 +1,74 @@
+\chapter{Câu hỏi thường gặp}
+\label{app:faq}
+
+Phụ lục này trả lời các câu hỏi người đọc thường đặt khi xem báo cáo. Câu trả lời ngắn, kèm
+trỏ đến mục liên quan.
+
+\paragraph{Vì sao chọn bàn 11×11 mà không phải 9×9 hay 15×15?}
+Bàn 11×11 vừa 121 bit, tiện biểu diễn bằng một số nguyên; bàn 15×15 có 225 bit, vượt 128 bit
+và làm bitboard phức tạp hơn. Bàn 9×9 nhỏ hơn, ít không gian cho tám cấp phân hoá. 11×11 cũng
+gần với Caro Việt Nam. Chi tiết ở Mục~\ref{sec:gt-tro-choi}.
+
+\paragraph{Vì sao dùng luật tự do, không chặn hai đầu?}
+Luật tự do làm điều kiện thắng đơn giản: chỉ cần 5 quân liền, không cần xét hai đầu. Điều này
+cho phép engine tính mọi thứ bằng vài phép bit và giữ hàm lượng giá đơn giản. Luật chặn hai
+đầu sẽ làm mẫu đe doạ phức tạp hơn, nhưng không cần thiết cho mục tiêu so sánh tám cấp. Chi
+tiết ở Mục~\ref{sec:gt-luat} và Mục~\ref{sec:gt-de-doa}.
+
+\paragraph{Vì sao MCTS thua cả tác tử luật?}
+Vì MCTS rollout ngẫu nhiên không có tri thức chiến thuật và ở 400 mô phỏng cây quá thưa để thấy
+chuỗi ép 4 ply. Tác tử luật có sẵn luật thắng/chặn/đòn kép nên trừng phạt ngay. Đây là kết quả
+của cấu hình, không phải kết luận ``MCTS kém'' nói chung. Chi tiết ở Mục~\ref{sec:tn-mcts}.
+
+\paragraph{Vì sao L4 cân bằng 50–50 trong tự đấu nhưng thua L2?}
+Vì tự đấu L4 gặp chính nó, cả hai bên đều thiếu tri thức chiến thuật như nhau; kết quả cân
+bằng. Khi gặp L2, đối thủ có luật thắng/chặn nên trừng phạt lỗi của L4. Tự đấu cân bằng không
+có nghĩa tác tử mạnh. Chi tiết ở Mục~\ref{sec:tn-e3} và Mục~\ref{sec:tn-loi}.
+
+\paragraph{Vì sao L8 mạnh hơn L7 nhưng lợi thế đi trước của L8 nhỏ hơn?}
+Vì L8 phòng thủ tốt hơn khi cầm O, biến nhiều ván thua thành hoà. Lợi thế X–O đo mức độ
+``quyết định'' của cặp đấu, không đo sức mạnh tuyệt đối. L7 thắng nhanh hơn nhưng cũng thua
+nhiều hơn; L8 thắng ít quyết định hơn nhưng ít thua hơn. Chi tiết ở Mục~\ref{sec:tn-e3} và
+Mục~\ref{sec:tn-l8-selfplay}.
+
+\paragraph{Vì sao không báo cáo Elo?}
+Vì có tác tử thắng/thua gần tuyệt đối (L1 0\%, L8 89,8\%), ước lượng Bradley-Terry không hữu
+hạn nếu không có điều chuẩn, và giá trị phụ thuộc điều chuẩn. Báo cáo dùng điểm và khoảng
+Wilson, là các đại lượng trực tiếp từ dữ liệu. Chi tiết ở Mục~\ref{sec:lt-thong-ke} và
+Phụ lục~\ref{app:thong-ke}.
+
+\paragraph{Vì sao chỉ dùng một seed?}
+Vì thời gian. Một seed cho phép chạy nhiều cấu hình hơn; nhiều seed sẽ tốt hơn nhưng vượt ngân
+sách. Báo cáo ghi rõ giới hạn này và đề xuất lặp seed ở Phụ lục~\ref{app:cho-bo-sung}.
+
+\paragraph{Vì sao L8 chỉ duyệt 6/50 vòng?}
+Vì ngưỡng 55\% trên 100 ván là khắt khe; nhiều ứng viên có điểm 50--55\% vẫn có thể tốt hơn ở
+một số khía cạnh. Gating thận trọng giữ bản cũ khi nghi ngờ. Đây là lựa chọn thiết kế, không
+phải bằng chứng quá trình thất bại. Chi tiết ở Mục~\ref{sec:tn-l8}.
+
+\paragraph{Vì sao value head quan trọng đến vậy?}
+Vì PUCT dùng value để đánh giá lá và REINFORCE dùng value làm baseline. Nếu value sai dấu, tìm
+kiếm bị dẫn sai và gradient policy bị nhiễu. Lỗi quy ước dấu là bài học lớn nhất của dự án.
+Chi tiết ở Mục~\ref{sec:tn-sl}.
+
+\paragraph{Vì sao không dùng dữ liệu ván người?}
+Vì mục tiêu là so sánh các phương pháp tự sinh dữ liệu, không phải đạt trình độ người. Dữ liệu
+chuyên gia đến từ Alpha-Beta của nhóm, nên mọi cấp đều tự chứa. Điều này cũng tránh vấn đề bản
+quyền và quyền riêng tư.
+
+\paragraph{Làm sao kiểm tra một con số trong báo cáo?}
+Mở \texttt{config.yaml} của run, lọc \texttt{games.jsonl} theo tác tử, tính $(W+0.5D)/n$. Hoặc
+chạy lại script trong \repoFile{report/scripts/}. Hướng dẫn đầy đủ ở Phụ lục~\ref{app:tai-lap}.
+
+\paragraph{Nếu muốn chơi thử thì làm sao?}
+Chạy giao diện web:
+\begin{lstlisting}[numbers=none]
+uv sync --group dev --extra ui --extra nn
+uv run uvicorn caro.ui.server:app
+\end{lstlisting}
+Mở \url{http://127.0.0.1:8000}, chọn cấp, chơi. Chi tiết ở Phụ lục~\ref{app:ui}.
+
+\paragraph{Kết quả có ngoại suy sang Caro 15×15 không?}
+Không trực tiếp. Bàn lớn hơn làm hệ số rẽ nhánh và độ dài ván tăng; lợi thế đi trước có thể
+mạnh hơn. Kết quả chỉ áp dụng cho 11×11, luật tự do, bộ khai cuộc và ngân sách đã dùng. Muốn
+ngoại suy cần chạy lại.

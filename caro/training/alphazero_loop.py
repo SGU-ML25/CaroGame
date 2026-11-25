@@ -6,14 +6,17 @@ import argparse
 import copy
 import json
 import random
+import time
 from collections import deque
+from collections.abc import Sequence
+from dataclasses import dataclass, field
 
 import numpy as np
 import torch
 import torch.nn.functional as F
 
 from caro.agents.base import Limits
-from caro.agents.puct import PUCTAgent
+from caro.agents.puct import PUCTAgent, select_actions
 from caro.arena.match import play_match
 from caro.config import load_config, project_path
 from caro.engine import CaroGame, N
@@ -26,28 +29,52 @@ from caro.training.train_pg import build_model, load_init, save_checkpoint
 GameSamples = tuple[np.ndarray, np.ndarray, np.ndarray]
 
 
-def selfplay_game(agent: PUCTAgent, seed: int, temperature_moves: int) -> tuple[GameSamples, dict]:
-    game = CaroGame()
-    agent.reset(seed)
-    states, policies, movers = [], [], []
-    moves, times, sims = [], [], []
-    while not game.is_terminal():
-        agent.temperature = float(len(moves) < temperature_moves)
-        move = agent.select_action(game, agent.limits)
-        states.append(encode(game).astype(np.uint8))
-        policies.append(agent.last_pi)
-        movers.append(game.side)
+@dataclass
+class SelfplayTrace:
+    seed: int
+    game: CaroGame = field(default_factory=CaroGame)
+    states: list[np.ndarray] = field(default_factory=list)
+    policies: list[np.ndarray] = field(default_factory=list)
+    times: list[float] = field(default_factory=list)
+    sims: list[int] = field(default_factory=list)
+
+    def step(self, move: int, agent: PUCTAgent) -> None:
+        self.states.append(encode(self.game).astype(np.uint8))
+        self.policies.append(agent.last_pi)
         stats = agent.last_stats()
-        moves.append(move)
-        times.append(stats["time_ms"])
-        sims.append(stats["sims"])
-        game.step(move)
-    result = game.result()
-    values = np.asarray([result if side == 0 else -result for side in movers], dtype=np.int8)
-    return (np.stack(states), np.stack(policies), values), {
-        "seed": seed, "moves": moves, "result": result, "termination": game.termination(),
-        "time_ms": times, "sims": sims,
-    }
+        self.times.append(stats["time_ms"])
+        self.sims.append(stats["sims"])
+        self.game.step(move)
+
+    def finish(self) -> tuple[GameSamples, dict]:
+        result = self.game.result()
+        values = np.full(len(self.states), result, dtype=np.int8)
+        values[1::2] *= -1  # tự đấu luôn bắt đầu từ bàn trống, X đi trước
+        return (np.stack(self.states), np.stack(self.policies), values), {
+            "seed": self.seed, "moves": self.game.history, "result": result, "termination": self.game.termination(),
+            "time_ms": self.times, "sims": self.sims,
+        }
+
+
+def selfplay_games(
+    agents: Sequence[PUCTAgent], seeds: Sequence[int], temperature_moves: int,
+) -> list[tuple[GameSamples, dict]]:
+    traces = [SelfplayTrace(seed) for seed in seeds]
+    active = list(zip(agents, traces, strict=True))
+    for agent, trace in active:
+        agent.reset(trace.seed)
+    while active:
+        for agent, trace in active:
+            agent.temperature = float(len(trace.game.history) < temperature_moves)
+        moves = select_actions([agent for agent, _ in active], [trace.game for _, trace in active])
+        for (agent, trace), move in zip(active, moves, strict=True):
+            trace.step(move, agent)
+        active = [(agent, trace) for agent, trace in active if not trace.game.is_terminal()]
+    return [trace.finish() for trace in traces]
+
+
+def selfplay_game(agent: PUCTAgent, seed: int, temperature_moves: int) -> tuple[GameSamples, dict]:
+    return selfplay_games([agent], [seed], temperature_moves)[0]
 
 
 def train_replay(model, optimizer, replay, settings, device, rng, augment) -> dict:
@@ -134,6 +161,9 @@ def validate(cfg: dict) -> None:
             raise ValueError(f"{section}.games vượt số khai cuộc có sẵn.")
     if not 0 <= cfg["gating"]["threshold"] <= 1:
         raise ValueError("gating.threshold phải nằm trong [0, 1].")
+    parallel = cfg["selfplay"].get("parallel_games", "auto")
+    if parallel != "auto" and (type(parallel) is not int or parallel < 1):
+        raise ValueError("selfplay.parallel_games phải là auto hoặc số nguyên dương.")
     if cfg["train"]["optimizer"] != "adam":
         raise ValueError("L8 hiện hỗ trợ train.optimizer=adam.")
     noise = cfg["selfplay"]["dirichlet"]
@@ -154,36 +184,53 @@ def train(cfg: dict) -> dict:
     torch.set_num_threads(cfg["selfplay"]["torch_threads"])
 
     sp, t, gate, final = (cfg[key] for key in ("selfplay", "train", "gating", "evaluation"))
+    parallel = sp.get("parallel_games", "auto")
+    if parallel == "auto":
+        parallel = 4 if device.type == "cuda" else 1
+    parallel = min(parallel, sp["games_per_iter"])
     replay = deque(maxlen=cfg["buffer"]["window_games"])
     with Run(cfg) as run:
         model = build_model(cfg, device)
         source = load_init(model, t["init"], device)
         incumbent = copy.deepcopy(model)
-        agent = PUCTAgent(limits=Limits(max_sims=sp["sims_per_move"]), model=model,
-                          c_puct=sp["c_puct"], dirichlet=sp["dirichlet"], backend=sp.get("backend", "auto"))
+        limits = Limits(max_sims=sp["sims_per_move"])
+        agents = [
+            PUCTAgent(limits=limits, model=model, c_puct=sp["c_puct"],
+                      dirichlet=sp["dirichlet"], backend=sp.get("backend", "auto"))
+            for _ in range(parallel)
+        ]
+        backend = agents[0].backend
         optimizer = torch.optim.Adam(model.parameters(), lr=t["lr"], weight_decay=t["weight_decay"])
         accepted = best_iteration = played = 0
         last_gate = None
-        run.log.info("L8 init=%s, device=%s, PUCT backend=%s", source, device, agent.backend)
+        run.log.info("L8 init=%s, device=%s, PUCT backend=%s, parallel_games=%d", source, device, backend, parallel)
         save_checkpoint(run.checkpoint_path("best.pt"), incumbent, cfg, 0, {"iteration": 0})
         for iteration in range(1, t["iterations"] + 1):
             model.eval()
             run.log.info("L8 vòng %d: tự đấu %d ván", iteration, sp["games_per_iter"])
-            for _ in range(sp["games_per_iter"]):
-                samples, game = selfplay_game(agent, derive_seed(seed, "selfplay", played), sp["temperature_moves"])
-                replay.append(samples)
-                run.log_game({
-                    **game, "game_id": played, "opening_id": None, "tournament_id": "selfplay",
-                    "agent_x": "L8-selfplay", "agent_o": "L8-selfplay",
-                })
-                played += 1
+            start = time.perf_counter()
+            for first in range(0, sp["games_per_iter"], parallel):
+                count = min(parallel, sp["games_per_iter"] - first)
+                seeds = [derive_seed(seed, "selfplay", played + i) for i in range(count)]
+                for samples, game in selfplay_games(agents[:count], seeds, sp["temperature_moves"]):
+                    replay.append(samples)
+                    run.log_game({
+                        **game, "game_id": played, "opening_id": None, "tournament_id": "selfplay",
+                        "agent_x": "L8-selfplay", "agent_o": "L8-selfplay",
+                    })
+                    played += 1
+            selfplay_seconds = time.perf_counter() - start
+            start = time.perf_counter()
             optimizer_before = copy.deepcopy(optimizer.state_dict()) if gate["games"] else None
             losses = train_replay(model, optimizer, replay, t, device, rng, cfg["buffer"]["augment_x8"])
             save_checkpoint(run.checkpoint_path("last.pt"), model, cfg, played, {"iteration": iteration})
+            train_seconds = time.perf_counter() - start
+            start = time.perf_counter()
             last_gate = None
             if gate["games"]:
                 last_gate = evaluate(run, model, incumbent, "L8-incumbent", gate,
-                                     derive_seed(seed, "gating", iteration), iteration, agent.backend)
+                                     derive_seed(seed, "gating", iteration), iteration, backend)
+            gating_seconds = time.perf_counter() - start if gate["games"] else 0.0
             promote = last_gate is None or last_gate["score"] >= gate["threshold"]
             if promote:
                 incumbent.load_state_dict(model.state_dict())
@@ -194,16 +241,19 @@ def train(cfg: dict) -> dict:
                 model.load_state_dict(incumbent.state_dict())
                 optimizer.load_state_dict(optimizer_before)
             run.log_metric(iteration, **losses, accepted=promote, gating=last_gate,
+                           selfplay_seconds=selfplay_seconds, train_seconds=train_seconds, gating_seconds=gating_seconds,
                            selfplay_games=played, replay_positions=sum(len(game[2]) for game in replay))
             run.log.info("L8 vòng %d: loss %.4f · duyệt=%s · điểm đối chứng=%s",
                          iteration, losses["loss"], promote, last_gate and last_gate["score"])
+            run.log.info("L8 vòng %d: tự đấu %.1fs · huấn luyện %.1fs · kiểm tra %.1fs",
+                         iteration, selfplay_seconds, train_seconds, gating_seconds)
 
         against_l7 = None
         if final["games"]:
             l7 = CaroResNet().to(device)
             load_init(l7, "model:l5", device)
             against_l7 = evaluate(run, incumbent, l7, "L7-PUCT[l5]", final,
-                                  derive_seed(seed, "l7"), best_iteration, agent.backend)
+                                  derive_seed(seed, "l7"), best_iteration, backend)
             run.log_metric(t["iterations"], evaluation=against_l7, best_iteration=best_iteration)
             run.log.info("L8 best.pt gặp L7: %s", against_l7)
         summary = {"selfplay_games": played, "accepted_iterations": accepted, "best_iteration": best_iteration,

@@ -1,0 +1,100 @@
+\chapter{Khai báo trung thực học thuật}
+\label{app:trung-thuc}
+
+Phụ lục này khai báo phần tự làm, phần kế thừa, công cụ hỗ trợ, nguồn dữ liệu và những điều
+báo cáo không khẳng định. Mục tiêu là để người đọc đánh giá đúng mức độ tin cậy của từng kết
+quả.
+
+\section{Phần tự cài đặt}
+Nhóm tự viết:
+\begin{itemize}
+  \item Engine bitboard: biểu diễn 121 bit, \texttt{has\_five}, \texttt{candidates},
+        \texttt{window\_counts}, \texttt{winning\_squares}, \texttt{evaluate}, Zobrist, đối
+        xứng D4.
+  \item Tám cấp tác tử: Random, Rule-based, Alpha-Beta, MCTS, Policy SL, REINFORCE, PUCT,
+        vòng lặp AlphaZero.
+  \item Arena: chạy trận, round-robin, khai cuộc, thống kê Wilson/bootstrap/Bradley-Terry,
+        benchmark.
+  \item Huấn luyện: sinh dữ liệu chuyên gia, SL, REINFORCE, vòng lặp tự đấu có gating.
+  \item Hạ tầng: config tập trung, log JSONL, quản lý run, giao diện FastAPI, script sinh bảng
+        và hình cho báo cáo.
+\end{itemize}
+
+\section{Phần kế thừa}
+Thư viện và công cụ bên ngoài:
+\begin{itemize}
+  \item \textbf{NumPy, PyYAML, huggingface\_hub}: tính toán mảng, đọc cấu hình, tải model.
+  \item \textbf{PyTorch}: mạng nơ-ron, huấn luyện, suy luận GPU.
+  \item \textbf{FastAPI, Uvicorn}: giao diện web.
+  \item \textbf{pandas, Matplotlib, Jupyter}: phân tích log, vẽ hình.
+  \item \textbf{pytest, ruff}: kiểm thử và kiểm tra mã.
+  \item \textbf{Cython}: lõi tăng tốc tùy chọn cho Alpha-Beta và PUCT.
+\end{itemize}
+Thuật toán tham khảo từ các công trình được trích dẫn ở Chương~\ref{ch:ly-thuyet}. Không có
+đoạn mã nào được sao chép từ engine bên ngoài.
+
+\section{Công cụ hỗ trợ}
+Báo cáo và một phần mã được soạn với sự hỗ trợ của trợ lý lập trình AI (Claude Code). Phạm vi hỗ
+trợ gồm: gợi ý cấu trúc báo cáo, soát lỗi chính tả, viết một số đoạn mô tả thuật toán, và hỗ
+trợ kỹ thuật khi chạy thực nghiệm. Mọi số liệu trong báo cáo được sinh từ log chạy thật, không
+do AI tạo ra. Nhóm chịu trách nhiệm kiểm tra lại mã, số liệu và kết luận. Nếu quy định môn học
+yêu cầu khai báo chi tiết hơn, nhóm bổ sung ở bản nộp.
+
+\section{Nguồn dữ liệu}
+Mọi dữ liệu huấn luyện và đánh giá do nhóm tự sinh:
+\begin{itemize}
+  \item Dữ liệu chuyên gia: Alpha-Beta của nhóm, không dùng ván người hay engine ngoài.
+  \item Checkpoint SL/RL: huấn luyện từ dữ liệu trên.
+  \item Checkpoint L8: tự đấu từ L5, không dùng dữ liệu ngoài.
+  \item Khai cuộc: sinh ngẫu nhiên có seed trong vùng 5×5 giữa bàn.
+  \item Log đấu: do arena của nhóm ghi.
+\end{itemize}
+Không có dữ liệu cá nhân, dữ liệu nhạy cảm hay dữ liệu lấy từ internet.
+
+\section{Điều báo cáo khẳng định và không khẳng định}
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}p{.3\textwidth} X X@{}}
+\toprule
+\textbf{Vấn đề} & \textbf{Có bằng chứng} & \textbf{Không khẳng định} \\
+\midrule
+Sức mạnh tác tử & Điểm trong cấu hình, bộ khai cuộc, ngân sách đã ghi & Không khẳng định ``mạnh nhất nói chung'' \\
+Tối ưu nước đi & Phân tích cơ hội thắng/chặn tức thì & Không khẳng định nước đi tối ưu dài hạn \\
+Lợi thế đi trước & Đo trên từng cặp tác tử, từng bộ khai cuộc & Không khẳng định hằng số cho mọi cấu hình \\
+AlphaZero-inspired & Vòng lặp, gating, checkpoint, kết quả & Không khẳng định tái hiện AlphaZero gốc \\
+Cải thiện do RL & So sánh checkpoint, learning curve & Không tách hoàn toàn khỏi nhiễu seed/khai cuộc \\
+Ablation & A1/A2/A3/A4/A5/A7 & A6/A7b/A8b/A5b chưa đủ, ghi rõ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Lỗi đã phát hiện và sửa}
+\paragraph{Quy ước dấu value.} Nhãn value trong dữ liệu SL v1/v2 là tuyệt đối (+1 nếu X thắng),
+trong khi mạng và RL cần tương đối (người đi thắng). Lỗi làm baseline REINFORCE và value của
+PUCT sai dấu ở khoảng một nửa số thế. Đã sửa ở SL v3 bằng \texttt{mover\_relative\_values}; đo
+lại MSE 0,356 và tương quan +0,778. Các run SL v1/v2 vẫn giữ nhãn cũ và được ghi rõ trong báo
+cáo.
+
+\paragraph{Tham số model trong YAML.} File \texttt{resnet\_small.yaml} ghi \texttt{fc\_hidden:
+64} nhưng code dùng 32. Báo cáo dùng code làm chuẩn và ghi chú chỗ lệch.
+
+\paragraph{Đường dẫn input trong báo cáo.} Một số bảng ban đầu dùng đường dẫn tương đối sai
+(\texttt{so-lieu-*.tex} thay vì \texttt{ban-mo-rong/so-lieu-*.tex}); đã sửa trước khi build
+bản cuối.
+
+\section{Những gì không nằm trong báo cáo}
+Để tránh hiểu nhầm, các mục sau \emph{không} được coi là kết quả của báo cáo:
+\begin{itemize}
+  \item Chế độ cùng thời gian mỗi nước cho đủ tám tác tử (chưa chạy).
+  \item Lặp nhiều seed (chưa chạy).
+  \item Tập khai cuộc giữ riêng (chưa chạy).
+  \item A6, A7b, A8b, A5b đầy đủ (chưa chạy hoặc chưa đủ mẫu).
+  \item So sánh với engine bên ngoài như Rapfi (chưa chạy).
+  \item Biến thể luật chặn hai đầu, Renju, bàn 15×15 (ngoài phạm vi).
+\end{itemize}
+Các mục này được liệt kê ở Phụ lục~\ref{app:cho-bo-sung} với công sức và tác động ước tính.
+
+\section{Trách nhiệm}
+Nhóm chịu trách nhiệm về tính chính xác của số liệu và mã nguồn. Nếu phát hiện sai sót, nhóm
+sẽ sửa và ghi lại trong lịch sử commit; báo cáo không cố che giấu các run thất bại hoặc các
+phần chưa làm. Cách trình bày ``những gì chưa làm'' là một phần của tiêu chuẩn trung thực học
+thuật, không phải điểm yếu cần giấu.

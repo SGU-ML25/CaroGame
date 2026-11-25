@@ -1,0 +1,31 @@
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Mạng & Số epoch & Epoch tốt nhất & Val loss tốt nhất & Val loss cuối \\
+\midrule
+SL v1 & 30 & 30 & 2,1566 & 2,1566 \\
+SL v2 & 30 & 28 & 1,6020 & 1,7095 \\
+SL v3 & 60 & 55 & 1,4723 & 1,4758 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{center}\small
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Checkpoint & Đối thủ & Ván & W/D/L & Điểm \\
+\midrule
+SL v1 & L2 & 100 & 40/0/60 & 40,0\% \\
+SL v1 & L3 & 100 & 5/0/95 & 5,0\% \\
+SL v2 & L2 & 100 & 66/0/34 & 66,0\% \\
+SL v2 & L3 & 100 & 19/3/78 & 20,5\% \\
+SL v3 & L2 & 100 & 63/6/31 & 66,0\% \\
+SL v3 & L3 & 100 & 19/4/77 & 21,0\% \\
+RL v2 best & L2 & 100 & 72/1/27 & 72,5\% \\
+RL v2 best & L3 & 100 & 25/5/70 & 27,5\% \\
+RL v3 best & L2 & 100 & 79/4/17 & 81,0\% \\
+RL v3 best & L3 & 100 & 33/8/59 & 37,0\% \\
+RL v3 last & L2 & 100 & 81/1/18 & 81,5\% \\
+RL v3 last & L3 & 100 & 33/7/60 & 36,5\% \\
+\bottomrule
+\end{tabular}
+\end{center}

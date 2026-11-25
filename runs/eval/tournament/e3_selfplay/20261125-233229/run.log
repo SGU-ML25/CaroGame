@@ -1,0 +1,6 @@
+2026-11-25 23:32:29 INFO    run tournament/e3_selfplay/20261125-233229 — config experiments/e3_selfplay, seed 2026
+2026-11-25 23:39:47 INFO    E3 L5-PolicySL: X 62 / O 36 / hoà 2 trên 100 ván
+2026-11-25 23:39:47 INFO    E3 L6-PolicyRL: X 50 / O 36 / hoà 14 trên 100 ván
+2026-11-25 23:39:47 INFO    E3 L7-PUCT: X 80 / O 14 / hoà 6 trên 100 ván
+2026-11-25 23:39:47 INFO    E3 L8-AlphaZero: X 50 / O 22 / hoà 28 trên 100 ván
+2026-11-25 23:39:47 INFO    kết thúc: ok sau 437.6 s

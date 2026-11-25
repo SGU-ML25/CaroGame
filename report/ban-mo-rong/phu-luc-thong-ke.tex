@@ -1,0 +1,107 @@
+\chapter{Phụ lục phân tích lực lượng thống kê}
+
+\label{app:thong-ke}
+
+Phụ lục này trả lời câu hỏi: với cỡ mẫu đã dùng, báo cáo có thể phân biệt được những chênh lệch nào? Các bảng dùng khoảng Wilson, kiểm định nhị thức chính xác và xấp xỉ chuẩn cho hai tỷ lệ. Mục đích là để người đọc biết giới hạn của kết luận, không phải để thay thế phép đo.
+
+\section{Bề rộng khoảng Wilson}
+
+Bảng dưới là bề rộng (điểm phần trăm) của khoảng Wilson 95\% theo $n$ và tỷ lệ quan sát. Với $n=100$ và $p=0{,}5$, bề rộng khoảng 19,6 điểm; với $n=700$, còn khoảng 7,4 điểm. Đây là lý do RR8 dùng 700 ván mỗi tác tử: đủ để phân biệt các nhóm cách nhau khoảng 10 điểm, nhưng không đủ để phân biệt các tác tử cách nhau 3--5 điểm.
+
+\begin{center}\small
+
+\begin{tabular}{@{}rrrrrr@{}}
+
+\toprule
+
+$n$ & $p=0,5$ & $p=0,6$ & $p=0,7$ & $p=0,8$ & $p=0,9$ \\
+
+\midrule
+
+25 & 36,5 & 35,9 & 33,9 & 30,3 & 24,4 \\
+
+50 & 26,7 & 26,2 & 24,6 & 21,8 & 17,0 \\
+
+100 & 19,2 & 18,9 & 17,7 & 15,5 & 11,9 \\
+
+200 & 13,7 & 13,5 & 12,6 & 11,0 & 8,4 \\
+
+500 & 8,7 & 8,6 & 8,0 & 7,0 & 5,3 \\
+
+700 & 7,4 & 7,2 & 6,8 & 5,9 & 4,5 \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{center}
+
+\section{Lực lượng của kiểm định nhị thức}
+
+Bảng dưới là xác suất phát hiện ($1-\beta$, \%) khi kiểm định hai phía $H_0:p=0{,}5$ ở mức $\alpha=0{,}05$, với tỷ lệ thật $p$. Ví dụ, với 100 ván và $p=0{,}7$, lực lượng khoảng 97\%; với $p=0{,}6$, chỉ khoảng 52\%. Điều này có nghĩa một kết quả 60\% trên 100 ván thường chưa đủ để bác bỏ 50\%, trong khi 70\% thì đủ.
+
+\begin{center}\small
+
+\begin{tabular}{@{}rrrrrrr@{}}
+
+\toprule
+
+$n$ & $p=0,55$ & $p=0,60$ & $p=0,65$ & $p=0,70$ & $p=0,80$ & $p=0,90$ \\
+
+\midrule
+
+50 & 13 & 34 & 62 & 86 & 100 & 100 \\
+
+100 & 18 & 54 & 87 & 99 & 100 & 100 \\
+
+200 & 31 & 83 & 99 & 100 & 100 & 100 \\
+
+500 & 62 & 100 & 100 & 100 & 100 & 100 \\
+
+700 & 76 & 100 & 100 & 100 & 100 & 100 \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{center}
+
+\section{Lực lượng so sánh hai tác tử}
+
+Bảng dưới là lực lượng xấp xỉ khi so hai tác tử, mỗi bên $n$ ván, chênh lệch thật $d$ điểm phần trăm, xung quanh mức 50\%. Với $n=100$ mỗi bên, chỉ chênh lệch từ 20 điểm trở lên mới có lực lượng trên 80\%; với $n=500$, chênh lệch 10 điểm đã đủ. Đây là lý do các so sánh nhỏ trong báo cáo được ghi là ``chưa phân biệt được''.
+
+\begin{center}\small
+
+\begin{tabular}{@{}rrrrrr@{}}
+
+\toprule
+
+$n$ mỗi bên & $d=5$ & $d=10$ & $d=15$ & $d=20$ & $d=30$ \\
+
+\midrule
+
+50 & 7 & 17 & 32 & 52 & 86 \\
+
+100 & 10 & 29 & 56 & 81 & 99 \\
+
+200 & 17 & 52 & 85 & 98 & 100 \\
+
+500 & 35 & 89 & 100 & 100 & 100 \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{center}
+
+\section{So sánh nhiều lần}
+
+RR8 có 28 cặp đấu. Nếu mỗi cặp kiểm định ở $\alpha=0{,}05$ và giả thuyết không đúng, xác suất có ít nhất một dương tính giả là $1-0{,}95^{28}\approx 76\%$. Vì vậy không thể đọc từng cặp có $p<0{,}05$ như bằng chứng độc lập. Báo cáo không hiệu chỉnh Bonferroni vì mục tiêu là mô tả, nhưng chỉ kết luận khi chênh lệch lớn hơn khoảng tin cậy và nhất quán với phân tích chiến thuật.
+
+Với 8 tác tử, số cặp là 28; nếu chỉ xét 5 cặp chính (L3--L5, L3--L6, L3--L7, L3--L8, L7--L8), xác suất có ít nhất một dương tính giả là $1-0{,}95^5\approx 23\%$. Ngay cả với 5 cặp, cần thận trọng. Cách tốt hơn là đặt trước các cặp chính và báo cáo khoảng tin cậy, thay vì quét toàn bộ rồi chọn cặp có ý nghĩa.
+
+\section{Áp dụng vào RR8}
+
+RR8 có 700 ván mỗi tác tử (100 ván mỗi cặp, 7 cặp). Khoảng Wilson của L8 là [87,3; 91,8], của L7 [79,0; 84,7], của L6 [58,2; 65,4], của L3 [54,6; 61,9], của L5 [46,5; 53,9], của L2 [39,9; 47,3]. Các khoảng này cho phép kết luận: L8 và L7 tạo thành nhóm dẫn đầu tách biệt; L6 và L3 chồng lấn nhẹ; L3 và L5 gần chạm; L2 thấp hơn L5 nhưng khoảng tin cậy chạm nhẹ; L4 và L1 tách hẳn ở đáy.
+
+Điều không thể kết luận: L6 mạnh hơn L3 (chênh 3,6 điểm, khoảng tin cậy chồng lấn), L5 mạnh hơn L2 (chênh 6,6 điểm, khoảng tin cậy chạm nhẹ), L7 mạnh hơn L8 (chênh 7,8 điểm, khoảng tin cậy tách rời nhưng chỉ 100 ván trực tiếp). Muốn phân biệt các chênh lệch 3--8 điểm cần khoảng 1\,000--3\,000 ván mỗi cặp, vượt ngân sách của đồ án.

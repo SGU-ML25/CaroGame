@@ -4,6 +4,9 @@
 
 \input{config/preamble}
 
+% Đường dẫn và phân trang dùng trong bảng, hồ sơ thực nghiệm.
+\newcommand{\repoFile}[1]{\path{#1}}
+
 \title{\TenDeTai}
 \author{}
 \date{}
@@ -13,10 +16,12 @@
 
 \begin{document}
 
+\hypersetup{pageanchor=false}
 \input{frontmatter/cover}
 
 % Thứ tự phần đầu theo quy ước báo cáo ở trường; bỏ dòng nào môn không yêu cầu.
 \pagenumbering{roman}
+\hypersetup{pageanchor=true}
 \input{frontmatter/nhan-xet-gv}
 \input{frontmatter/loi-cam-on}
 {\linespread{1}\selectfont

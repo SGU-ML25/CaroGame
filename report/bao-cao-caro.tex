@@ -1,0 +1,40 @@
+% Từ thư mục report: latexmk bao-cao-caro.tex
+\documentclass[12pt,a4paper]{report}
+\input{config/preamble}
+\renewcommand{\LoaiBaoCao}{Báo cáo đồ án và hồ sơ thực nghiệm}
+\renewcommand{\goiy}[1]{}
+\renewcommand{\chualam}[1]{}
+\newcommand{\repoFile}[1]{\path{#1}}
+\newcommand{\HoSoTrang}[1]{\clearpage\subsection*{#1}\markright{#1}}
+\BanNoptrue   % bản mở rộng không còn dấu mờ "BẢN NHÁP"
+\begin{document}
+\input{frontmatter/cover}
+\pagenumbering{roman}
+\input{ban-mo-rong/tom-tat}
+{\linespread{1}\selectfont\tableofcontents\listoffigures\listoftables}
+\clearpage
+\pagenumbering{arabic}
+\include{ban-mo-rong/gioi-thieu}
+\include{chapters/02-co-so-ly-thuyet}
+\include{ban-mo-rong/phuong-phap}
+\include{ban-mo-rong/thuc-nghiem}
+\include{ban-mo-rong/ho-so-van-moi}
+\include{ban-mo-rong/ket-luan}
+\printbibliography[heading=bibintoc,title={Tài liệu tham khảo}]
+\appendix
+\include{ban-mo-rong/tai-lap}
+\include{ban-mo-rong/phu-luc-cau-hinh}
+\include{ban-mo-rong/phu-luc-so-lieu}
+\include{ban-mo-rong/phu-luc-thong-ke}
+\include{ban-mo-rong/phu-luc-thiet-ke}
+\include{ban-mo-rong/phu-luc-faq}
+\include{ban-mo-rong/phu-luc-phan-cong}
+\include{ban-mo-rong/phu-luc-ma-nguon}
+\include{ban-mo-rong/phu-luc-trung-thuc}
+\include{ban-mo-rong/phu-luc-nhat-ky}
+\include{ban-mo-rong/phu-luc-ui}
+\include{ban-mo-rong/phu-luc-thuat-ngu}
+\include{ban-mo-rong/ho-so-khai-cuoc}
+\include{ban-mo-rong/ho-so-huan-luyen}
+\include{ban-mo-rong/muc-cho-bo-sung}
+\end{document}

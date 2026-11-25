@@ -1,0 +1,69 @@
+project: caro-11x11
+seed: 2026
+device: cuda
+engine:
+  size: 11
+  win_length: 5
+  layout: stride11
+experiment:
+  kind: train
+  name: alphazero
+  description: ''
+  rq:
+  - RQ2
+  config: training/alphazero
+run:
+  root: runs
+  tag: gpu-native
+  index: runs/index.jsonl
+log:
+  level: INFO
+  console: true
+  file: run.log
+  games: games.jsonl
+  metrics: metrics.jsonl
+  per_move_stats: true
+  flush_every: 1
+checkpoint:
+  dir: checkpoints
+  keep_last: 5
+model:
+  arch: resnet_pv
+  in_planes: 4
+  channels: 64
+  blocks: 6
+  policy_head:
+    conv_out: 2
+    fc_out: 121
+  value_head:
+    conv_out: 1
+    fc_hidden: 64
+selfplay:
+  backend: native
+  games_per_iter: 200
+  sims_per_move: 400
+  c_puct: 1.5
+  dirichlet:
+    alpha: 0.3
+    epsilon: 0.25
+  temperature_moves: 8
+  torch_threads: 1
+buffer:
+  window_games: 5000
+  augment_x8: true
+train:
+  init: model:l5
+  optimizer: adam
+  lr: 0.001
+  weight_decay: 0.0001
+  batch_size: 256
+  steps_per_iter: 1000
+  iterations: 50
+gating:
+  games: 100
+  swap_colors: true
+  threshold: 0.55
+  sims_per_move: 200
+evaluation:
+  games: 20
+  sims_per_move: 200

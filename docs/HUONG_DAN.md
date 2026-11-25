@@ -432,7 +432,7 @@ uv run python -m caro.training.alphazero_loop  training/alphazero         # hu�
 uv run caro-hub push l8 runs/train/alphazero/latest
 ```
 
-L8 tự đấu tuần tự bằng PUCT và học từ phân phối lượt thăm cùng kết quả theo góc nhìn bên đang đi.
+L8 tự đấu bằng PUCT và học từ phân phối lượt thăm cùng kết quả theo góc nhìn bên đang đi.
 `last.pt` lưu ứng viên vừa huấn luyện. `best.pt` lưu mạng đang được giữ sau khi đấu kiểm tra với bản hiện hành.
 Cuối lượt chạy, `summary.json` ghi điểm `vs_l7` của `best.pt` khi gặp L7 dùng cùng ngân sách tìm kiếm
 (200 mô phỏng/nước ở cấu hình đầy đủ). Nếu không vòng nào vượt ngưỡng, `best_iteration: 0` nghĩa là
@@ -448,6 +448,10 @@ uv pip install cython setuptools
 
 `selfplay.backend=auto` ưu tiên Cython nếu đã build, còn `native` báo lỗi nếu thiếu extension.
 Kiểm tra `device=cuda, PUCT backend=native` trong log để xác nhận cả hai đang được dùng.
+
+Với CUDA, `selfplay.parallel_games=auto` ghép lá từ 4 ván tự đấu vào cùng lượt suy luận.
+Có thể đặt `selfplay.parallel_games=1` để đo chế độ tuần tự, hoặc tăng số ván nếu GPU còn đủ bộ nhớ.
+Mỗi vòng ghi riêng thời gian tự đấu, cập nhật mạng và đấu kiểm tra trong `metrics.jsonl`.
 
 Ablation huấn luyện chạy 2 lần với override:
 

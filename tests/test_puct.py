@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import numpy as np
 import pytest
 import torch
 
 from caro.agents import make_agent
 from caro.agents.base import Limits
-from caro.agents.puct import PUCTAgent, PUCTNode, select_child, terminal_value
+from caro.agents.puct import PUCTAgent, PUCTNode, select_actions, select_child, terminal_value
 from caro.engine import CaroGame
 
 FIXED = Limits(mode="fixed", max_sims=300)
@@ -136,6 +137,30 @@ def test_native_matches_python(net, opening, batch, temperature):
     python_stats = {k: v for k, v in python.last_stats().items() if k != "time_ms"}
     assert native_stats == python_stats
     assert (native.last_pi == python.last_pi).all()
+
+
+def test_batches_independent_searches(net, monkeypatch):
+    sizes = []
+
+    def evaluate(self, states, masks):
+        sizes.append(len(states))
+        probs = np.asarray(masks, dtype=np.float32)
+        return probs / probs.sum(axis=1, keepdims=True), np.zeros(len(states), dtype=np.float32)
+
+    monkeypatch.setattr(PUCTAgent, "_evaluate", evaluate)
+    limits = Limits(max_sims=17)
+    games = [CaroGame.from_moves([60]), CaroGame.from_moves([5, 17]), CaroGame()]
+    kwargs = {"limits": limits, "temperature": 1.0, "dirichlet": {"alpha": 0.3, "epsilon": 0.25}}
+    serial = [agent(net, **kwargs) for _ in games]
+    expected = [a.select_action(g, limits) for a, g in zip(serial, games, strict=True)]
+    serial_calls = len(sizes)
+    sizes.clear()
+    batched = [agent(net, **kwargs) for _ in games]
+    assert select_actions(batched, games) == expected
+    assert len(sizes) < serial_calls and max(sizes) > batched[0].batch_leaves
+    for a, b in zip(serial, batched, strict=True):
+        assert a.last_stats()["visits"] == b.last_stats()["visits"]
+        assert np.array_equal(a.last_pi, b.last_pi)
 
 
 def test_mix_and_noise_modes_run(net):
