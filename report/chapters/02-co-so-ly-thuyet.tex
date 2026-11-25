@@ -391,3 +391,312 @@ AlphaGo Zero chỉ thay mạng tốt nhất khi mạng mới đạt tỷ lệ th
 \textbf{Tài liệu nhập môn.} Sách của Liu \cite{liu2024alphago}, do đề bài giới thiệu, trình bày con đường từ tác tử luật, Minimax, MCTS đến mạng nơ-ron, học tăng cường và các phiên bản rút gọn của AlphaGo, AlphaZero trên các trò chơi nhỏ. Trình tự tám cấp của đề bài tương ứng với con đường này.
 
 \textbf{Khác biệt của đề tài.} Đề tài không đặt mục tiêu vượt các engine thi đấu hay đóng góp lý thuyết mới. Trọng tâm là đặt nhiều lớp phương pháp lên cùng một engine, cùng giao diện và cùng giải đấu có kiểm soát ngân sách, để đo tác dụng của từng thành phần bằng thí nghiệm phân tích thành phần và khoảng tin cậy. Những so sánh này được thiết kế ở Chương~\ref{ch:phuong-phap} và báo cáo ở Chương~\ref{ch:thuc-nghiem}.
+
+\section{Khung hình thức bổ sung cho Caro}
+\label{sec:lt-khung-caro}
+Mục này bổ sung các định nghĩa và bổ đề dùng lại ở Chương~\ref{ch:phuong-phap} và
+Chương~\ref{ch:thuc-nghiem}. Các định nghĩa được phát biểu theo ngôn ngữ bitboard để khớp trực
+tiếp với code, nhưng ý nghĩa không phụ thuộc vào cách cài đặt.
+
+\subsection{Cửa sổ, ô thắng và phân loại đe doạ}
+\label{sec:lt-de-doa}
+Gọi $W$ là tập 252 cửa sổ 5 ô. Với hai bitboard $x$ (quân mình) và $o$ (quân đối thủ), cửa sổ
+$w \in W$ là \emph{sống} với $x$ nếu $w \cap o = \varnothing$. Ký hiệu $n_x(w)$ là số quân của
+$x$ trong $w$. Khi $w$ sống và $n_x(w)=4$, ô còn lại của $w$ là một \emph{ô thắng ngay} của $x$;
+tập các ô như vậy chính là \texttt{winning\_squares(x, o)} trong engine.
+
+\begin{dinhnghia}[Đe doạ bắt buộc]
+\label{dn:de-doa}
+Một nước đi của $x$ là \emph{đe doạ bắt buộc} nếu sau nước đó, $x$ có ít nhất một ô thắng ngay.
+Đối thủ chỉ có thể tránh thua ngay bằng cách chiếm một trong các ô thắng đó. Nếu $x$ có từ hai
+ô thắng ngay trở lên và đối thủ không có ô thắng ngay nào, ta gọi đó là \emph{đòn kép}: mỗi
+lượt đối thủ chỉ chặn được một ô, nên $x$ thắng ở lượt kế tiếp.
+\end{dinhnghia}
+
+Các mẫu thường gặp trong Caro có thể diễn đạt bằng số quân trong cửa sổ sống:
+\begin{itemize}
+  \item \textbf{Ba hở:} một cửa sổ sống có đúng 3 quân $x$ và 2 ô trống. Nước đi vào một trong
+        hai ô trống tạo ra cửa sổ 4 quân, tức một đe doạ bắt buộc (một ô thắng ngay). Ba hở
+        \emph{không} thắng ngay, nhưng buộc đối thủ phải trả lời.
+  \item \textbf{Tứ hở:} cửa sổ sống có 4 quân $x$ và 1 ô trống. Đây là đe doạ mạnh nhất trước
+        khi thắng: đối thủ phải chặn ô trống đó, nhưng nếu có hai tứ hở cùng lúc thì không chặn
+        hết được.
+  \item \textbf{Đòn kép:} một nước tạo ra từ hai ô thắng ngay trở lên. Đòn kép có thể hình
+        thành từ hai ba hở cắt nhau, từ một tứ hở cộng một ba hở, hoặc từ một nước vừa chặn vừa
+        tạo đe doạ.
+\end{itemize}
+
+\begin{nhanxet}
+Với luật tự do, một cửa sổ có 4 quân $x$ luôn cho một ô thắng ngay, bất kể hai đầu cửa sổ có
+bị chặn hay không. Đây là khác biệt căn bản so với luật chặn hai đầu: trong luật tự do, ``tứ bị
+chặn một đầu'' vẫn là đe doạ bắt buộc, còn ``tứ bị chặn hai đầu'' vẫn thắng nếu đủ 5 quân. Vì
+vậy hàm lượng giá chỉ cần đếm số quân trong cửa sổ sống, không cần trạng thái ``đầu bị chặn''.
+\end{nhanxet}
+
+\subsection{Chuỗi ép và tìm kiếm không gian đe doạ}
+\label{sec:lt-vcf}
+Một \emph{chuỗi ép} là dãy nước mà mỗi nước của bên tấn công đều là đe doạ bắt buộc, buộc đối
+thủ phải trả lời duy nhất (hoặc gần như duy nhất). Nếu chuỗi kết thúc bằng thắng, ta gọi là
+\emph{VCF} (victory by continuous four) khi các đe doạ là tứ, và \emph{VCT} (victory by
+continuous threat) khi cho phép cả ba hở. VCF/VCT là cơ sở của các engine Gomoku mạnh: thay vì
+duyệt mọi nước, engine chỉ duyệt các nước tạo đe doạ, nên cây tìm kiếm hẹp hơn nhiều.
+
+Về mặt lý thuyết, nếu một thế cờ có chuỗi ép thắng dài $k$ nước, tác tử chỉ nhìn trước $d < k$
+nước sẽ không thấy chuỗi đó. Đây là \emph{hiệu ứng chân trời} đã nêu ở Mục~\ref{sec:lt-negamax}.
+Trong Caro, các chuỗi ép thắng thường dài 4--10 nước, nên tác tử có độ sâu 3--4 vẫn có thể bỏ
+sót. Đây là lý do thực nghiệm A3/A4 quan sát MCTS thua Alpha-Beta ngay cả khi số mô phỏng tăng:
+cây phải đủ sâu để thấy cấu trúc 4 ply, trong khi ngân sách bị chia cho hàng chục nước gốc.
+
+\subsection{Lợi thế đi trước và lập luận đánh cắp chiến lược}
+\label{sec:lt-di-truoc}
+Với trò chơi tổng bằng không, hữu hạn, thông tin đầy đủ, mỗi thế cờ có một giá trị xác định khi
+cả hai bên chơi tối ưu. Lập luận đánh cắp chiến lược (strategy stealing) chứng minh bên đi sau
+không thể có chiến lược thắng trong Caro luật tự do: nếu bên đi sau có chiến lược thắng, bên đi
+trước có thể đánh một nước bất kỳ rồi giả vờ là bên đi sau; quân thừa không làm hại vì luật
+không phạt việc có thêm quân. Do đó bên đi trước hoặc thắng, hoặc hoà. Lập luận này không cho
+biết trường hợp nào xảy ra trên bàn 11×11, cũng không cho biết lợi thế lớn đến mức nào với tác
+tử hữu hạn. Đó là lý do RQ4 phải đo bằng thực nghiệm.
+
+Một điểm tinh tế: lợi thế đi trước đo được không chỉ phụ thuộc vào trò chơi mà còn phụ thuộc
+vào \emph{cặp tác tử}. Hai tác tử yếu có thể tự đấu cân bằng vì cả hai đều không biết khai thác
+thế mở đầu; hai tác tử mạnh có thể lệch mạnh vì bên đi trước biết cách tạo đe doạ sớm. Vì vậy
+E3 được thiết kế cho từng cấp, không gộp tất cả các cấp thành một con số duy nhất.
+
+\section{Chi tiết lý thuyết tìm kiếm}
+\label{sec:lt-tim-kiem}
+\subsection{UCB1, hồi quy và UCT}
+\label{sec:lt-ucb}
+Bài toán chọn nhánh trong MCTS là bài toán multi-armed bandit: mỗi nước là một ``máy'', kéo
+máy cho phần thưởng ngẫu nhiên, mục tiêu là tối đa hoá tổng phần thưởng sau $n$ lần. Thuật
+toán UCB1 \cite{auer2002ucb} chọn máy
+\begin{equation}
+  a_t = \arg\max_a \left[ \hat\mu_a + \sqrt{\frac{2\ln t}{n_a}} \right],
+  \label{eq:ucb1}
+\end{equation}
+trong đó $\hat\mu_a$ là phần thưởng trung bình và $n_a$ là số lần chọn máy $a$. Với phần thưởng
+trong $[0,1]$, UCB1 có hồi quy (regret) kỳ vọng $O(\log n)$ so với máy tốt nhất. UCT áp dụng
+cùng nguyên lý cho từng nút trong cây, thay $t$ bằng số lần thăm nút cha:
+\begin{equation}
+  \mathrm{UCT}(a) = \frac{W_a}{N_a} + c\sqrt{\frac{\ln N_{\text{cha}}}{N_a}}.
+  \label{eq:uct2}
+\end{equation}
+Kocsis và Szepesvári chứng minh UCT hội tụ về giá trị Minimax khi số mô phỏng tiến tới vô hạn
+\cite{kocsis2006uct}. Tuy nhiên, hội tụ tiệm cận không cho biết chất lượng ở ngân sách hữu hạn.
+Trong Caro, phần thưởng của một rollout là kết quả cuối ván, có phương sai lớn; để ước lượng
+chính xác một nước cần nhiều mô phỏng hơn so với trò chơi có phần thưởng dày.
+
+\subsection{PUCT, tiên nghiệm và virtual loss}
+\label{sec:lt-puct}
+PUCT thay số hạng khám phá $\sqrt{\ln N_{\text{cha}}/N_a}$ bằng một số hạng có trọng số tiên
+nghiệm:
+\begin{equation}
+  a^* = \arg\max_a \left[ Q(s,a) + c_{\text{puct}} P(s,a) \frac{\sqrt{N_{\text{cha}}}}{1+N(s,a)} \right].
+  \label{eq:puct2}
+\end{equation}
+Khi $N(s,a)$ nhỏ, mẫu số $1+N$ làm số hạng khám phá lớn; khi $N$ tăng, số hạng này giảm và giá
+trị $Q$ chi phối. Tiên nghiệm $P(s,a)$ do mạng policy cung cấp giúp tập trung mô phỏng vào những
+nước có khả năng cao, thay vì thử đều. Đây là điểm khác biệt cốt lõi so với UCT: UCT khám phá
+đều theo số lần thăm, còn PUCT khám phá có định hướng theo tri thức học được.
+
+Khi gom nhiều lá trong một lô để suy luận mạng, các lá trong cùng lô có thể chọn trùng nhau vì
+cây chưa cập nhật. \emph{Virtual loss} khắc phục bằng cách tạm thời cộng một giá trị thua cho
+mỗi nút trên đường đi, làm nó kém hấp dẫn ở lần chọn tiếp theo; sau khi suy luận xong, giá trị
+tạm này được gỡ. Trong code, mỗi nút có biến `vl` đếm số virtual loss đang treo, và công thức
+chọn con dùng $N+vl$ ở mẫu số.
+
+\subsection{Sai số của giá trị lá và tầm quan trọng của calibration}
+\label{sec:lt-calibration}
+PUCT dùng value head để đánh giá lá. Nếu value head chỉ dự đoán đúng \emph{thứ tự} nhưng lệch
+\emph{độ lớn}, PUCT vẫn có thể chọn đúng nhánh; nhưng nếu value head sai dấu, nó sẽ đẩy tìm kiếm
+vào nhánh thua. Vì vậy báo cáo đo cả MSE, tương quan và độ chính xác dấu, không chỉ loss huấn
+luyện. Một value head có MSE thấp nhưng tương quan thấp vẫn có thể vô dụng cho tìm kiếm; ngược
+lại, một value head có MSE trung bình nhưng tương quan cao và đúng dấu có thể hữu ích.
+
+\section{Chi tiết lý thuyết học}
+\label{sec:lt-hoc}
+\subsection{Định lý policy gradient và baseline}
+\label{sec:lt-pg}
+Với chính sách tham số $\pi_\theta$, mục tiêu $J(\theta)=\mathbb{E}_{\pi_\theta}[G_0]$. Định lý
+policy gradient cho
+\begin{equation}
+  \nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta}\left[\sum_t G_t \nabla_\theta \log \pi_\theta(a_t\mid s_t)\right].
+  \label{eq:pg}
+\end{equation}
+Trừ một baseline $b(s_t)$ không phụ thuộc hành động không làm thay đổi kỳ vọng, vì
+\begin{equation}
+  \mathbb{E}_{a\sim\pi_\theta}\left[b(s)\nabla_\theta\log\pi_\theta(a\mid s)\right]
+  = b(s)\nabla_\theta\sum_a \pi_\theta(a\mid s)=0.
+  \label{eq:baseline}
+\end{equation}
+Chọn $b(s)=v_\theta(s)$ là value head cho ưu thế $G_t-v_\theta(s_t)$, giảm phương sai mà không
+tạo thiên lệch. Trong Caro, $G_t=z$ (kết quả cuối ván theo góc nhìn người đi) vì $\gamma=1$ và
+phần thưởng chỉ có ở cuối ván. Phương sai vẫn lớn vì cả ván chỉ có một tín hiệu $\pm1$; đó là
+lý do cần nhiều ván tự chơi và entropy bonus để tránh chính sách sụp về một nước.
+
+\subsection{Ưu thế, entropy và sự đánh đổi khám phá}
+\label{sec:lt-entropy}
+Entropy $H(\pi(\cdot\mid s))=-\sum_a\pi(a\mid s)\log\pi(a\mid s)$ đo độ phân tán của chính sách.
+Thêm $-\beta H$ vào mục tiêu (tức trừ entropy trong loss) khuyến khích chính sách giữ nhiều lựa
+chọn. Nếu $\beta$ quá lớn, tác tử không hội tụ; nếu quá nhỏ, tác tử sụp về một nước và mất đa
+dạng tự chơi. Trong đề tài, $\beta$ bắt đầu 0,01 và giảm dần theo hệ số 0,999 mỗi vòng, để giai
+đoạn đầu khám phá rộng rồi dần khai thác.
+
+\subsection{Self-play như một quá trình không dừng}
+\label{sec:lt-nonstationary}
+Trong self-play, đối thủ là phiên bản cũ của chính tác tử, nên môi trường không dừng. Các đảm
+bảo hội tụ của MDP cố định không áp dụng trực tiếp. Ba biện pháp giảm rủi ro: (i) giữ một pool
+các checkpoint cũ để tránh quên; (ii) đánh giá định kỳ trước đối thủ cố định để đo tiến bộ thật;
+(iii) dùng gating để chỉ thay bản tốt nhất khi ứng viên thắng đủ tỷ lệ. Cả ba được cài trong
+cấp 6 và cấp 8.
+
+\section{Phương pháp thống kê đánh giá}
+\label{sec:lt-thong-ke}
+\subsection{Khoảng Wilson}
+Với $k$ thắng trong $n$ ván, ước lượng điểm $\hat p=k/n$. Khoảng Wilson 95\% là
+\begin{equation}
+  \frac{\hat p + \frac{z^2}{2n} \pm z\sqrt{\frac{\hat p(1-\hat p)}{n}+\frac{z^2}{4n^2}}}{1+\frac{z^2}{n}},
+  \qquad z=1.96.
+  \label{eq:wilson}
+\end{equation}
+Wilson tốt hơn khoảng chuẩn khi $n$ nhỏ hoặc $\hat p$ gần 0/1, là trường hợp thường gặp trong
+các cặp đấu chênh lệch. Báo cáo dùng Wilson cho từng tỷ lệ, không dùng nó để so sánh hai cặp
+đấu khác nhau vì các ván không độc lập hoàn toàn (cùng khai cuộc, cùng seed).
+
+\subsection{Bootstrap theo cặp khai cuộc}
+Mỗi khai cuộc sinh hai ván đổi màu, nên hai ván này phụ thuộc. Đơn vị bootstrap là \emph{cặp
+khai cuộc}, không phải từng ván. Với $m$ cặp, mỗi cặp có điểm $s_i\in\{0,0.5,1\}$ (trung bình
+hai ván), bootstrap lấy mẫu có hoàn lại $m$ cặp và tính trung bình. Khoảng 2,5\%--97,5\% của
+phân phối bootstrap là khoảng tin cậy 95\%. Cách này giữ được cấu trúc phụ thuộc và cho khoảng
+rộng hơn (thận trọng hơn) so với bootstrap từng ván.
+
+\subsection{Bradley-Terry và Elo}
+Mô hình Bradley-Terry giả định xác suất $i$ thắng $j$ là
+\begin{equation}
+  P(i\succ j)=\frac{1}{1+10^{(r_j-r_i)/400}},
+  \label{eq:bt}
+\end{equation}
+trong đó $r_i$ là điểm Elo. Ước lượng $r_i$ bằng cực đại hoá likelihood của toàn bộ kết quả.
+Khác với Elo cập nhật tuần tự, Bradley-Terry dùng toàn bộ dữ liệu và ít phụ thuộc thứ tự trận.
+Báo cáo dùng Bradley-Terry làm thang xấp xỉ, nhưng không coi chênh lệch Elo là đo lường tuyệt
+đối: với 8 tác tử và vài trăm ván mỗi cặp, khoảng bất định của Elo có thể hàng trăm điểm.
+
+\subsection{Lực lượng thống kê và so sánh nhiều lần}
+Với 100 ván mỗi cặp, khoảng Wilson 95\% của tỷ lệ 50\% là khoảng 40--60\%. Vì vậy chênh lệch
+dưới 10 điểm phần trăm thường chưa phân biệt được. Khi so sánh 8 tác tử (28 cặp), xác suất có
+ít nhất một cặp vượt ngưỡng ngẫu nhiên tăng theo số phép so sánh; báo cáo không hiệu chỉnh
+Bonferroni vì mục tiêu là mô tả, nhưng diễn giải thận trọng: chỉ những chênh lệch lớn hơn
+khoảng tin cậy mới được coi là bằng chứng, các chênh lệch nhỏ được ghi là ``chưa phân biệt
+được''.
+
+\section{Giả định và giới hạn của khung lý thuyết}
+\label{sec:lt-gia-dinh}
+Các kết quả lý thuyết ở trên dựa trên vài giả định không hoàn toàn đúng trong thực nghiệm.
+Thứ nhất, UCT hội tụ khi số mô phỏng tiến tới vô hạn; ở ngân sách 100--800 mô phỏng, ta đang ở
+vùng tiệm cận chưa đạt. Thứ hai, Alpha-Beta chỉ đảm bảo giá trị Minimax trên \emph{tập nước
+được xét}; giới hạn ứng viên bán kính 2 là cắt tỉa tiến, có thể loại nhầm nước tốt. Thứ ba,
+policy gradient giả định mẫu lấy từ chính sách hiện tại; trong self-play, dữ liệu cũ trong
+replay buffer đến từ chính sách khác, nên về lý thuyết là off-policy và chỉ xấp xỉ. Thứ tư,
+các khoảng tin cậy giả định đơn vị lấy mẫu độc lập; bootstrap theo cặp giảm nhưng không loại bỏ
+hoàn toàn phụ thuộc giữa các cặp dùng chung khai cuộc.
+
+Những giới hạn này không làm các so sánh vô nghĩa, nhưng chúng đặt ra mức diễn giải: kết quả
+là \emph{sức mạnh thi đấu trong cấu hình đã đo}, không phải \emph{tối ưu đã chứng minh}. Mọi
+kết luận ở Chương~\ref{ch:ket-luan} được viết theo mức đó.
+
+\section{Chứng minh và ví dụ tính toán}
+\label{sec:lt-chung-minh}
+Mục này bổ sung chứng minh tóm tắt và ví dụ số cho các kết quả được dùng ở Chương~3--4. Các
+chứng minh không mới; mục đích là để người đọc thấy rõ điều kiện áp dụng.
+
+\subsection{Tính đúng đắn của cắt tỉa Alpha-Beta}
+\begin{dinhly}
+Với cửa sổ đầy đủ $[-\infty,+\infty]$ tại gốc, Alpha-Beta trả về đúng giá trị Minimax trên cùng
+độ sâu, cùng tập nước và cùng hàm lượng giá.
+\end{dinhly}
+\begin{proof}[Chứng minh tóm tắt]
+Quy nạp theo độ sâu. Ở lá, hai thuật toán trả cùng $\mathrm{Eval}(s)$. Giả sử đúng ở độ sâu
+$d-1$. Tại nút độ sâu $d$, Alpha-Beta chỉ bỏ qua nhánh khi $\alpha \ge \beta$. Xét hai trường
+hợp. Nếu $\alpha$ đến từ một nước đã duyệt có giá trị $v \ge \beta$, thì bên đi hiện tại đã có
+một nước đảm bảo ít nhất $v$; bên cha (đối thủ) sẽ không chọn nhánh này vì nó có lựa chọn khác
+tốt hơn hoặc bằng $\beta$. Do đó giá trị thực của nhánh bị bỏ không thể làm thay đổi quyết định
+ở cha. Nếu $\beta$ đến từ cận trên, lập luận đối xứng. Vì mọi nhánh bị bỏ đều không thể thay
+đổi giá trị truyền lên, giá trị gốc trùng Minimax. Trường hợp có TT phức tạp hơn vì một mục tìm
+ở độ sâu lớn hơn có thể được dùng lại; định lý áp dụng trực tiếp cho bản không TT, và cho bản
+có TT khi mục TT có độ sâu ít nhất bằng độ sâu đang xét.
+\end{proof}
+
+\paragraph{Ví dụ số.} Xét cây hai tầng trong Hình~\ref{fig:lt-cat-tia}. Nhánh trái cho giá trị 3;
+nhánh giữa có lá đầu 2, nên MIN sẽ chọn không quá 2; vì $2 < 3$, hai lá còn lại bị bỏ. Tổng
+cộng duyệt 7/9 lá, giá trị gốc vẫn 3. Nếu lá đầu của nhánh giữa là 4 thay vì 2, MIN có thể
+chọn 4, và nhánh này có thể tốt hơn 3; khi đó không được bỏ, phải duyệt tiếp.
+
+\subsection{Ước lượng hồi quy của UCB1}
+Với $K$ máy và phần thưởng trong $[0,1]$, UCB1 có hồi quy kỳ vọng sau $n$ lần kéo:
+\begin{equation}
+  \mathbb{E}[R_n] \le \mu^* n + \sum_{a:\mu_a<\mu^*} \frac{8\ln n}{\Delta_a} + O(K),
+  \label{eq:ucb-regret}
+\end{equation}
+trong đó $\Delta_a=\mu^*-\mu_a$ là khoảng cách tới máy tốt nhất. Cận này nói rằng số lần chọn
+máy dưới tối ưu tăng theo $\ln n$, không theo $n$. Với UCT, kết quả tương tự áp dụng cho từng
+nút nếu phần thưởng trong $[0,1]$ và cây hữu hạn. Trong Caro, phần thưởng là $\{0,1\}$ sau khi
+đổi góc nhìn, nên điều kiện thoả; nhưng hằng số phụ thuộc số nút và có thể rất lớn ở ngân sách
+thực tế.
+
+\subsection{Đạo hàm policy gradient}
+Lấy gradient của $J(\theta)=\sum_s d(s)\sum_a \pi_\theta(a|s)Q(s,a)$:
+\begin{align}
+  \nabla_\theta J &= \sum_s d(s)\sum_a \nabla_\theta\pi_\theta(a|s)Q(s,a) \\
+  &= \sum_s d(s)\sum_a \pi_\theta(a|s)\nabla_\theta\log\pi_\theta(a|s)Q(s,a) \\
+  &= \mathbb{E}_{\pi_\theta}\left[\nabla_\theta\log\pi_\theta(a|s)Q(s,a)\right].
+\end{align}
+Bước thứ hai dùng $\nabla\pi=\pi\nabla\log\pi$. Trong Caro, $Q(s,a)$ được thay bằng kết quả ván
+$z$ vì $\gamma=1$ và phần thưởng chỉ ở cuối. Trừ baseline $b(s)$ không phụ thuộc $a$:
+\begin{equation}
+  \mathbb{E}_{a\sim\pi_\theta}\left[b(s)\nabla_\theta\log\pi_\theta(a|s)\right]
+  = b(s)\sum_a\nabla_\theta\pi_\theta(a|s)=b(s)\nabla_\theta 1=0.
+\end{equation}
+Vì vậy $z-b(s)$ là ước lượng không thiên lệch của advantage.
+
+\subsection{Wilson so với xấp xỉ chuẩn}
+Khoảng chuẩn $\hat p\pm z\sqrt{\hat p(1-\hat p)/n}$ có hai vấn đề khi $n$ nhỏ hoặc $\hat p$ gần
+0/1: nó có thể vượt ra ngoài $[0,1]$, và bề rộng bằng 0 khi $\hat p=0$ hoặc $1$. Wilson giải
+quyết bằng cách giải bất phương trình $( \hat p-p )^2 \le z^2 p(1-p)/n$, cho công thức
+\eqref{eq:wilson}. Với $n=200,\hat p=0$, Wilson cho khoảng $[0;0{,}019]$, phản ánh việc vẫn có
+thể có tỷ lệ nhỏ chưa quan sát; khoảng chuẩn cho $[0;0]$, sai. Vì vậy báo cáo dùng Wilson.
+
+\subsection{Ước lượng Bradley-Terry}
+Với dữ liệu $y_{ij}$ là số lần $i$ thắng $j$, log-likelihood:
+\begin{equation}
+  \ell(r)=\sum_{i<j}\left[y_{ij}\log\frac{1}{1+10^{(r_j-r_i)/400}}+
+  y_{ji}\log\frac{1}{1+10^{(r_i-r_j)/400}}\right].
+  \label{eq:bt-ll}
+\end{equation}
+Hàm lõm theo $r$ sau khi chuẩn hoá $\sum_i r_i=0$, nên cực đại hoá bằng gradient ascent hoặc
+Newton. Báo cáo dùng gradient ascent 5\,000 bước, lr 2,0, chuẩn hoá trung bình 1\,000. Với 8 tác
+tử và 2\,800 ván, nghiệm hội tụ nhanh; nhưng khoảng bất định của $r$ không được tính, nên Elo
+chỉ là minh hoạ thang đo.
+
+\subsection{Ví dụ tính độ phức tạp}
+Giả sử hệ số rẽ nhánh $b=40$ và độ sâu $d=4$. Minimax duyệt $40^4=2{,}56$ triệu lá. Với thứ tự
+hoàn hảo, Alpha-Beta duyệt $b^{\lceil d/2\rceil}+b^{\lfloor d/2\rfloor}-1=40^2+40^2-1=3{,}199$
+lá, giảm khoảng 800 lần. Trong thực tế, A1 (không sắp xếp) chỉ giảm 20 lần; A2 (có sắp xếp)
+giảm 24,5 lần số nút so với không sắp xếp. Khoảng cách giữa lý thuyết và thực tế là do thứ tự
+không hoàn hảo và chi phí sắp xếp.
+
+\subsection{Ví dụ tính điểm cửa sổ}
+Xét hàng 5 có dạng \texttt{.XX.XX.O...}, tức X ở cột 1, 2, 4, 5; O ở cột 7. Có bảy cửa sổ
+ngang bắt đầu ở cột 0--6:
+\begin{itemize}
+  \item cột 0 (ô 0--4): \texttt{.XX.X} — 3 quân X, không có O, sống;
+  \item cột 1 (ô 1--5): \texttt{XX.XX} — 4 quân X, sống;
+  \item cột 2 (ô 2--6): \texttt{X.XX.} — 3 quân X, sống;
+  \item cột 3 (ô 3--7): \texttt{.XX.O} — chứa O, chết;
+  \item cột 4 (ô 4--8): \texttt{XX.O.} — chứa O, chết;
+  \item cột 5 (ô 5--9): \texttt{X.O..} — chứa O, chết;
+  \item cột 6 (ô 6--10): \texttt{.O...} — chứa O, chết.
+\end{itemize}
+Với $w=(0,1,8,64,512)$, điểm của X theo hàng này là $1 \times 512 + 2 \times 64 = 640$. Cửa sổ
+cột 1 còn một ô trống ở cột 3, nên ô $(5,3)$ là ô thắng ngay của X. Ví dụ này cũng cho thấy vì
+sao phải lọc cửa sổ chứa O trước khi đếm: nếu đếm cả cửa sổ chết, điểm sẽ sai và hàm lượng giá
+sẽ đánh giá quá cao một thế đã bị chặn. Engine làm phép lọc này bằng bit; test đối chiếu với
+bản duyệt mảng để bảo đảm không sai ở mép bàn.

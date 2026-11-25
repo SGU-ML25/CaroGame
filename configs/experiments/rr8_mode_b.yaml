@@ -1,0 +1,18 @@
+# RR8 — giải vòng tròn đầy đủ 8 cấp, ngân sách cố định theo loại thuật toán.
+# 50 khai cuộc × đổi màu ⇒ 100 ván mỗi cặp; 28 cặp ⇒ 2.800 ván.
+# L3 dùng độ sâu 4 (native), L4 400 mô phỏng, L7/L8 200 mô phỏng.
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {kind: tournament, name: rr8_mode_b, rq: [RQ1, RQ2, RQ4]}
+run: {root: runs/eval}
+arena: {num_openings: 50, workers: 4, max_plies: 121}
+agents:
+  - agents/l1_random
+  - agents/l2_rule
+  - {from: agents/l3_alphabeta, id: L3-AlphaBeta, budget: {max_depth: 4}, params: {backend: native}}
+  - {from: agents/l4_mcts, id: L4-MCTS, budget: {max_sims: 400}}
+  - agents/l5_policy_sl
+  - agents/l6_policy_rl
+  - {from: agents/l7_puct, budget: {max_sims: 200}, params: {backend: native}}
+  - {from: agents/l8_alphazero, id: L8-AlphaZero, budget: {max_sims: 200},
+     params: {checkpoint: runs/train/alphazero/20261124-160615_gpu-native/checkpoints/best.pt,
+              backend: native}}

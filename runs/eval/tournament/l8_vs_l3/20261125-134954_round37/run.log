@@ -1,0 +1,4 @@
+2026-11-25 13:49:54 INFO    run tournament/l8_vs_l3/20261125-134954_round37 — config experiments/main_mode_b, seed 2026
+2026-11-25 13:49:54 INFO    Bắt đầu giải đấu: 40 ván cờ, dùng 4 workers song song.
+2026-11-25 13:52:28 INFO    Bảng điểm chung cuộc: {'L8-AlphaZero': 27.5, 'L3-AlphaBeta': 12.5}
+2026-11-25 13:52:28 INFO    kết thúc: ok sau 154.3 s

@@ -1,0 +1,32 @@
+\chapter*{Tóm tắt}
+\addcontentsline{toc}{chapter}{Tóm tắt}
+
+Đồ án xây dựng và đánh giá một hệ thống Game AI đa cấp độ cho Caro 11×11, từ nước đi ngẫu
+nhiên đến tự đấu dùng PUCT và mạng policy--value. Hệ thống dùng chung một engine bitboard cho
+sinh dữ liệu, huấn luyện, thi đấu, kiểm tra chiến thuật và phát lại. Tám cấp tác tử được cài
+đặt trên cùng một giao diện: Random, Rule-based, Alpha-Beta, MCTS, Policy SL, REINFORCE, PUCT
+và vòng lặp AlphaZero-inspired. Mọi tham số nằm trong cấu hình; mỗi lần chạy lưu cấu hình đã
+ghép, seed, commit, log ván và tổng kết, nên một bảng trong báo cáo có thể lần ngược về đúng
+lần chạy sinh ra nó.
+
+Báo cáo có bốn kết quả thực nghiệm chính. Thứ nhất, trong giải vòng tròn tám tác tử ở ngân sách
+cố định, PUCT có mạng học vượt Alpha-Beta viết tay: L8 đạt 89,8\%, L7 82,0\%, L6 61,9\%, L3
+58,3\%, L5 50,2\%, L2 43,6\%, L4 14,3\% và L1 0,0\%. MCTS rollout ngẫu nhiên thua cả tác tử
+luật, cho thấy tìm kiếm không có hàm lượng giá hoặc tri thức chiến thuật không đủ ở ngân sách
+này. Thứ hai, tự đấu từng cấp cho thấy
+lợi thế đi trước không đơn điệu theo sức mạnh: L2 và L3 lệch mạnh (X thắng 75\% và 66\%), L4
+cân bằng tuyệt đối 50--50, L7 lệch mạnh nhất (X thắng 80\%), còn L8 chỉ lệch vừa (X thắng 50\%,
+hoà 28\%). Thứ ba, học có giám sát đạt top-1 67,8\% và top-3 89,4\% trên tập test tách theo ván;
+phát hiện và sửa lỗi quy ước dấu của value head làm MSE giảm từ 1,38 xuống 0,36 và tương quan
+tăng từ gần 0 lên +0,78. Thứ tư, L8 vòng 37 thắng L7 82,5\% trên 20 ván và thắng Alpha-Beta
+68,75\% trên 40 ván; trong 10\,000 ván tự đấu từ bàn trống, X thắng 77,0\%, O thắng 9,2\%,
+hoà 13,8\%, cho thấy khai cuộc làm giảm mạnh lợi thế đi trước.
+
+Báo cáo cũng chỉ rõ giới hạn: chưa chạy chế độ cùng thời gian mỗi nước cho đủ tám tác tử, chưa
+lặp nhiều seed, chưa có tập khai cuộc giữ riêng, và một số ablation (A6, A7b, A8b, A5b) chưa
+đủ mẫu. Các phần này được liệt kê ở phụ lục cuối với công sức và tác động ước tính, để người
+đọc quyết định bổ sung hay bỏ qua. Cách trình bày này có chủ đích: kết quả được nêu ở mức
+\emph{sức mạnh thi đấu trong cấu hình đã đo}, không phải \emph{tối ưu đã chứng minh}.
+
+\noindent\textbf{Từ khóa:} Caro 11×11, bitboard, Alpha-Beta, MCTS, UCT, PUCT, AlphaZero, học
+tăng cường, tự đấu, thiết kế thí nghiệm, khoảng tin cậy.

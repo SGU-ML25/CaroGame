@@ -3,16 +3,31 @@
 % Đề mục 4: Câu trả lời cho câu hỏi nghiên cứu; thành tựu, hạn chế, khả năng tái lập và mở rộng.
 
 \section{Câu trả lời cho câu hỏi nghiên cứu}
-\goiy{tóm tắt RQ1--RQ4, dẫn về Chương~\ref{ch:thuc-nghiem}}
+\paragraph{RQ1. Tìm kiếm mô phỏng so với AlphaBeta.}
+UCT thuần ở các thiết lập A3/A4 ghi ít điểm trước AlphaBeta. Kết quả chứng minh sự chênh lệch ở các đối sánh đã đo, với độ sâu và số mô phỏng riêng. Chưa có đủ kết quả cùng thời gian mỗi nước để khẳng định giả thuyết RQ1 ở chế độ thời gian.
+
+\paragraph{RQ2. Tác động của tự đấu và tìm kiếm có mạng.}
+RL v3 cải thiện điểm trước các đối thủ được đo khi so với SL v3 trong bảng đánh giá checkpoint. Cùng mạng L5, thêm PUCT thay đổi mạnh sức chơi trước L3. L8 vòng 37 thắng L7 ở cùng thiết lập PUCT qua 20 ván. Ba phép đo tách các mức đóng góp khác nhau: cập nhật policy bằng RL, thêm tìm kiếm tại lúc chơi và huấn luyện policy--value bằng tự đấu có tìm kiếm. Chưa có lặp nhiều seed để định lượng độ ổn định của từng thay đổi.
+
+\paragraph{RQ3. Giảm chi phí tìm kiếm.}
+A1 có sự giảm rõ về số nút và thời gian, đồng thời đạt tiêu chí nhất quán của benchmark. A2 cho thấy số nút thấp hơn nhưng thiết kế giới hạn thời gian yêu cầu thận trọng khi diễn giải. Ưu tiên thí nghiệm cùng độ sâu và báo cả số nút, tốc độ nút mỗi giây và kết quả lựa chọn nước.
+
+\paragraph{RQ4. Lợi thế đi trước.}
+Các trận L7--L8 và L8--L3 cho thấy điểm L8 cao hơn khi cầm X. Với L7--L8, chênh lệch tỷ lệ thắng gộp theo màu chưa có khoảng bootstrap tách khỏi 0. Kết luận hiện tại chỉ áp dụng cho các đối sánh và tập khai cuộc đã dùng. Để trả lời câu hỏi về tự đấu từng cấp, cần chạy E3 trên các tập khai cuộc giữ riêng và đổi bên nhận trạng thái mở đầu theo protocol định trước.
 
 \section{Thành tựu}
-\goiy{các cấp đã hoàn thành, hệ thống, UI}
+Dự án đã hiện thực tám cấp, có engine dùng chung, log ván đủ để phát lại, cấu hình ngân sách và checkpoint cho các phép đo chính. Các bảng và biểu đồ có chỉ mục nguồn để đối chiếu với log gốc. Một số log chạy trên working tree có thay đổi, một số cấu hình hiện tại đã khác cấu hình khi chạy, và bàn 11×11 dùng luật năm quân liên tiếp của đề tài. Không ngoại suy trực tiếp sang bàn khác hoặc luật cấm nước của Renju.
 
 \section{Hạn chế}
-\goiy{ngân sách huấn luyện, chỉ một kích thước bàn, thiếu dữ liệu chuyên gia thật, \ldots}
+Nguồn khai cuộc được dùng nhiều lần và kích thước bàn cố định. Dữ liệu chuyên gia
+lấy từ AlphaBeta, nên chất lượng nhãn phụ thuộc heuristic của cùng hệ thống.
+Một số logs thiếu thời gian từng nước hoặc revision của mã đúng lúc chạy. Vì vậy chỉ so sánh
+điểm, thời gian và độ sâu trong những điều kiện có đối chứng phù hợp.
 
 \section{Khả năng tái lập}
-\goiy{config, seed, log, checkpoint, test, CI; xem Phụ lục~\ref{app:tai-lap}}
+Đối với L7, checkpoint L5 đã ghim là trọng số của tác tử PUCT đã đánh giá. Đối với L8, lựa chọn có căn cứ trong log là \repoFile{best.pt} vòng 37. Việc phát hành checkpoint là một bước triển khai riêng, cần kiểm tra revision thật trên dịch vụ và khả năng tải lại. Nên lưu toàn bộ log và mã SHA-256 khi phát hành để người đọc biết chính xác trọng số nào tạo ra kết quả. Xem Phụ lục~\ref{app:tai-lap} để tái lập bảng, biểu đồ và ván minh họa.
 
 \section{Hướng phát triển}
-\goiy{luật Renju / chặn hai đầu, bàn 15×15, tăng tốc engine (C++/Rust), \ldots; ngoại suy sang game khác chỉ là giả thuyết}
+Ưu tiên giải đủ L1--L8 với khai cuộc giữ riêng, đo theo cả thời gian và ngân sách cố định.
+Sau đó kiểm tra tự đấu từng cấp, lặp huấn luyện với nhiều seed, và đo phần giảm thời gian
+do Cython và gom suy luận với cùng checkpoint và cùng máy.

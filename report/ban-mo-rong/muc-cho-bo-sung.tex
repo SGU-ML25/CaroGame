@@ -1,0 +1,123 @@
+\chapter{Các mục chờ bổ sung và khuyến nghị}
+\label{app:cho-bo-sung}
+
+Phụ lục này liệt kê những phần chưa có bằng chứng đầy đủ, để người đọc biết chính xác phạm vi
+của báo cáo và quyết định phần nào cần bổ sung. Mỗi mục ghi: câu hỏi, trạng thái, lý do còn
+thiếu, công sức ước tính, tác động lên kết luận, và khuyến nghị. Không có mục nào được coi là
+``đã trả lời'' nếu chỉ có cấu hình mà chưa có log.
+
+\section{Bảng trạng thái}
+\begin{small}
+\begin{longtable}{@{}p{.3\textwidth} p{.16\textwidth} p{.1\textwidth} p{.12\textwidth} p{.2\textwidth}@{}}
+\toprule
+\textbf{Hạng mục} & \textbf{Trạng thái} & \textbf{Công sức} & \textbf{Tác động} & \textbf{Khuyến nghị} \\
+\midrule
+Giải chính chế độ A (cùng thời gian) & Chưa có & 4--8 giờ & Cao & Nên bổ sung \\
+Lặp nhiều seed & Chưa có & 4--8 giờ & Cao & Nên bổ sung \\
+Tập khai cuộc giữ riêng & Chưa có & 1--2 giờ & Cao & Nên bổ sung \\
+A6 tăng cường đối xứng & Chưa có checkpoint & 1--2 giờ & Trung bình & Tuỳ chọn \\
+A7b đối đầu trọng số & Chưa chạy & 30 phút & Trung bình & Nên bổ sung \\
+A8b root tactics & Chưa chạy & 1--2 giờ & Trung bình & Nên bổ sung \\
+A5b khởi tạo RL & Chưa có cặp đủ & 8--12 giờ & Trung bình & Cân nhắc \\
+Top-1/top-3 trên tập giữ riêng & Đã có & — & — & Đã xong \\
+Calibration value theo pha & Đã có & — & — & Đã xong \\
+Phân tích ván sâu & 20 ván & 2--3 giờ & Trung bình & Có thể thêm \\
+PUCT Python vs Cython & Số cũ & 30 phút & Thấp & Tuỳ chọn \\
+Gom suy luận GPU & Chưa đo & 1--2 giờ & Thấp & Tuỳ chọn \\
+Đối chiếu engine ngoài & Chưa có & 2--4 giờ & Cao & Khó, cân nhắc \\
+Biến thể luật/bàn & Chưa có & 4--8 giờ & Cao & Ngoài phạm vi \\
+Khảo sát người dùng UI & Chưa có & 2--3 giờ & Thấp & Tuỳ chọn \\
+\bottomrule
+\end{longtable}
+\end{small}
+
+\section{Giải chính chế độ A}
+\paragraph{Câu hỏi.} Với cùng 1\,000 ms mỗi nước, thứ hạng tám tác tử có khác chế độ B không?
+\paragraph{Trạng thái.} Chưa có. Báo cáo chỉ có RR8 chế độ B (ngân sách cố định theo loại thuật
+toán) và các phép đo A3/A4/A5 ở ngân sách cố định.
+\paragraph{Lý do.} Chạy chế độ A cho tám tác tử tốn khoảng 4--8 giờ vì mỗi nước chờ đủ 1 giây,
+kể cả khi tác tử đã tìm xong. Với 2\,800 ván và khoảng 30 nước/ván, tổng thời gian chờ rất lớn.
+\paragraph{Tác động.} Cao. Đây là phần còn thiếu quan trọng nhất để trả lời RQ1 đầy đủ. Chế độ
+A có thể đảo thứ hạng giữa Alpha-Beta và PUCT/MCTS vì Alpha-Beta dùng thời gian hiệu quả hơn
+trên mỗi nút, còn PUCT có thể dùng nhiều mô phỏng hơn.
+\paragraph{Khuyến nghị.} Nên bổ sung, ít nhất cho các cặp L3--L4, L3--L7, L3--L8, L7--L8, thay vì
+toàn bộ 28 cặp. Chạy 20 khai cuộc × 2 màu × 5 cặp = 200 ván, khoảng 1--2 giờ.
+
+\section{Lặp nhiều seed}
+\paragraph{Câu hỏi.} Kết quả có ổn định qua các seed gốc khác nhau không?
+\paragraph{Trạng thái.} Chưa có. Mọi run dùng seed 2026 (hoặc 42 cho A5).
+\paragraph{Lý do.} Mỗi lần chạy lại tốn thời gian; L8 đặc biệt tốn vì tự đấu.
+\paragraph{Tác động.} Cao. Một chênh lệch 5 điểm phần trăm có thể do seed, không do phương pháp.
+Hiện báo cáo chỉ có một quan sát cho mỗi cấu hình, nên không thể tách nhiễu seed.
+\paragraph{Khuyến nghị.} Nên bổ sung cho các cặp chính, không cần cho cả tám tác tử. Chạy lại
+RR8 với 3 seed (2026, 2027, 2028) trên 20 khai cuộc, hoặc chạy L8 với 3 seed nếu có thời gian.
+
+\section{Tập khai cuộc giữ riêng}
+\paragraph{Câu hỏi.} Kết quả có giữ nguyên trên các khai cuộc chưa dùng trong phát triển/gating?
+\paragraph{Trạng thái.} Chưa có. Tập 100 khai cuộc được dùng cho cả phát triển, A3/A4, A5, RR8
+và gating L8.
+\paragraph{Lý do.} Cần sinh thêm khai cuộc và chạy lại các cặp chính.
+\paragraph{Tác động.} Cao. Đây là cách chuẩn để tránh thiên lệch chọn mẫu. Đặc biệt quan trọng
+cho L8, vì checkpoint được chọn bằng gating trên cùng tập khai cuộc dùng để đánh giá cuối.
+\paragraph{Khuyến nghị.} Nên bổ sung. Sinh 50 khai cuộc mới với seed khác, chạy L7--L8, L8--L3,
+L3--L7, mỗi cặp 100 ván. Khoảng 1--2 giờ.
+
+\section{A6: tăng cường đối xứng}
+\paragraph{Câu hỏi.} Huấn luyện có tăng cường D4 có cải thiện sức chơi so với không tăng cường?
+\paragraph{Trạng thái.} Chưa có cặp checkpoint. Có cấu hình \texttt{experiments/a6\_augment.yaml}
+nhưng chưa chạy hai lần.
+\paragraph{Lý do.} Cần huấn luyện hai mô hình cùng dữ liệu, cùng epoch, khác cờ augment. Mỗi
+lần khoảng 20--40 phút trên GPU.
+\paragraph{Tác động.} Trung bình. Tăng cường D4 thường giúp ích nhưng mức độ phụ thuộc dữ liệu;
+không phải kết luận trung tâm của báo cáo.
+\paragraph{Khuyến nghị.} Tuỳ chọn. Nếu làm, dùng 15 epoch thay vì 30 để tiết kiệm, và đấu trên
+20 khai cuộc.
+
+\section{A7b: đối đầu hai bảng trọng số}
+\paragraph{Câu hỏi.} Bảng trọng số mặc định có chơi mạnh hơn bảng bỏ phòng thủ không?
+\paragraph{Trạng thái.} Chưa chạy. Có cấu hình \texttt{experiments/a7b\_head\_to\_head.yaml}.
+A7 cũ chỉ so giá trị gốc trên 10 thế, cho thấy 9/10 thế khác giá trị.
+\paragraph{Lý do.} Cần chạy 100 ván; rất nhanh nhưng chưa được ưu tiên.
+\paragraph{Tác động.} Trung bình. Trả lời trực tiếp câu hỏi ``thành phần phòng thủ có cần không''
+ở mức sức chơi, không chỉ giá trị gốc.
+\paragraph{Khuyến nghị.} Nên bổ sung; chỉ mất khoảng 30 phút.
+
+\section{A8b: chiến thuật tại gốc}
+\paragraph{Câu hỏi.} Bật \texttt{root\_tactics} cho MCTS có cải thiện điểm trước L2/L3 không?
+\paragraph{Trạng thái.} Chưa chạy. Có cấu hình \texttt{experiments/a8b\_root\_tactics.yaml}.
+\paragraph{Lý do.} MCTS rollout nhẹ tốn khoảng 0,6 giây/nước; 600 ván mất 1--2 giờ.
+\paragraph{Tác động.} Trung bình. Kết quả A3/A4 cho thấy MCTS bỏ chặn rất nhiều, nên giả thuyết
+là bật chiến thuật sẽ cải thiện mạnh. Nếu đúng, đây là bằng chứng ``sửa lỗi bằng luật'' rẻ hơn
+tăng mô phỏng.
+\paragraph{Khuyến nghị.} Nên bổ sung nếu còn thời gian; đây là thí nghiệm có tỷ lệ tác động/công
+sức tốt.
+
+\section{A5b: khởi tạo RL}
+\paragraph{Câu hỏi.} RL khởi tạo từ SL có tốt hơn RL khởi tạo ngẫu nhiên không?
+\paragraph{Trạng thái.} Chưa có cặp đủ số ván. Có cấu hình \texttt{experiments/a5b\_rl\_init.yaml}
+và các run smoke, nhưng chưa chạy 50k episode cho cả hai nhánh.
+\paragraph{Lý do.} Mỗi nhánh 50k episode tốn nhiều giờ; chạy hai nhánh tốn gấp đôi.
+\paragraph{Tác động.} Trung bình. Trả lời câu hỏi về vai trò của tri thức chuyên gia trong RL.
+\paragraph{Khuyến nghị.} Cân nhắc; chỉ nên làm nếu có GPU mạnh và thời gian.
+
+\section{Những phần đã hoàn thành trong bản này}
+Để tránh hiểu nhầm rằng mọi thứ đều thiếu, bảng dưới liệt kê các phần đã có bằng chứng mới:
+\begin{itemize}
+  \item RR8: 2\,800 ván, tám tác tử, 50 khai cuộc đổi màu.
+  \item E3: 800 ván, tám cấp tự đấu, 50 khai cuộc đổi màu.
+  \item Top-1/top-3 và calibration value trên 29\,161 mẫu test.
+  \item Phân tích chiến thuật trên hàng nghìn ván, đếm bỏ thắng/bỏ chặn.
+  \item Mười ván phân tích sâu với bàn TikZ và cơ chế kết thúc.
+  \item A1/A2/A7 benchmark và A3/A4/A5 (dữ liệu lịch sử, có đối chiếu).
+\end{itemize}
+
+\section{Khuyến nghị ưu tiên}
+Nếu chỉ có 4--6 giờ để bổ sung, thứ tự đề xuất là:
+\begin{enumerate}
+  \item Tập khai cuộc giữ riêng (1--2 giờ) — cải thiện giá trị khoa học lớn nhất trên mỗi giờ.
+  \item A7b và A8b (1,5--2,5 giờ) — trả lời hai câu hỏi ablation còn trống.
+  \item Chế độ A cho 5 cặp chính (1--2 giờ) — trả lời RQ1 đầy đủ hơn.
+  \item Lặp 3 seed cho RR8 trên 20 khai cuộc (2--4 giờ) — đo độ ổn định.
+\end{enumerate}
+Các mục còn lại có thể để hướng phát triển. Việc chọn hay bỏ do người đọc quyết định; phụ lục
+này chỉ nêu điều kiện và hệ quả.

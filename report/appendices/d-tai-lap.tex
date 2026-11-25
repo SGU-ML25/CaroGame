@@ -2,16 +2,56 @@
 \label{app:tai-lap}
 
 \section{Cài đặt}
-\goiy{\texttt{uv sync --group dev}, extra \texttt{nn}, \texttt{uv run pytest}}
+Từ gốc repo, chạy \repoFile{uv sync --group dev --extra analysis} để chuẩn bị môi trường.
+Chạy \repoFile{uv run pytest} để kiểm tra. Nếu cần backend native, cài nhóm phụ thuộc
+\repoFile{native} và build theo \repoFile{setup_native.py}.
 
 \section{Chạy giải đấu và thí nghiệm}
-\goiy{lệnh cho từng file \texttt{configs/experiments/*.yaml}}
+Notebook \repoFile{notebooks/arena_analysis.ipynb} đọc giải cũ.
+\par
+Notebook \repoFile{notebooks/l7_l8_duel.ipynb} đọc log L7--L8 và có tùy chọn chạy arena đủ tám cấp.
+Với từng lượt đấu mới, lưu seed, cấu hình, khai cuộc, backend và checksum checkpoint.
 
 \section{Huấn luyện}
-\goiy{sinh dữ liệu chuyên gia, train SL, train PG, vòng lặp AlphaZero; tải checkpoint bằng \texttt{caro-hub}}
+Bộ sinh chuyên gia, học có giám sát, REINFORCE và AlphaZero lần lượt nằm ở
+\repoFile{caro/training/gen_expert_data.py}, \repoFile{train_sl.py},
+\repoFile{train_pg.py} và \repoFile{alphazero_loop.py}. Lệnh chạy đầy đủ L8:
+\begin{lstlisting}[language=bash]
+uv run python -m caro.training.alphazero_loop training/alphazero
+\end{lstlisting}
+Dùng config \repoFile{training/alphazero_smoke} để kiểm tra đường chạy nhanh.
 
 \section{Sinh bảng và hình}
-\goiy{notebook phân tích, đường dẫn log thô}
+Từ gốc repo, chạy \repoFile{python report/scripts/sinh-ho-so-caro.py} với môi trường của dự án
+để sinh lại bảng và hình từ log gốc. Từ thư mục \repoFile{report/}, chạy
+\repoFile{latexmk main.tex}. Mục lục, danh mục hình, danh mục bảng và trích dẫn vẫn theo template.
 
 \section{Demo}
-\goiy{\texttt{uv run uvicorn caro.ui.server:app}}
+Từ gốc repo, chạy \repoFile{uv run uvicorn caro.ui.server:app}. Giao diện có hai chế độ
+đối đầu và phát lại. Tác tử neural chỉ sẵn sàng khi nạp đúng checkpoint.
+
+\section{Chỉ mục nguồn thực nghiệm}
+\begin{itemize}
+\item A1, A2, A7: các \repoFile{summary.json} và \repoFile{metrics.jsonl} dưới \repoFile{runs/bench/}.
+\item A3, A4: log ván dưới \repoFile{runs/tournament/a3_mcts_sims/} và \repoFile{runs/tournament/a4_rollout/}.
+\item Arena cũ: \repoFile{runs/arena_matrix/games.csv}; tổng hợp theo tác tử trong \repoFile{runs/arena_matrix/ranking.csv}.
+\item L5: \repoFile{runs/train/sl_policy_v3/metrics.json}.
+Đối chiếu checkpoint: \repoFile{runs/train_eval/results.csv}.
+\item L6: \repoFile{runs/train/pg_policy/20261118-125103_v3_init/}.
+\item A5: \repoFile{experiments/a5_puct_eval.py} và \repoFile{runs/eval/a5_puct/results.csv}.
+\item L8: \repoFile{runs/train/alphazero/20261124-160615_gpu-native/}, gồm cấu hình, chỉ số qua vòng, tổng kết và ván tự đấu/kiểm tra.
+\item L8--L3: \repoFile{runs/eval/tournament/l8_vs_l3/20261125-134954_round37/}.
+\item Replay chiến thuật: \repoFile{notebooks/l7_l8_duel.ipynb}; nguồn luật nằm dưới \repoFile{caro/engine/}.
+\end{itemize}
+
+\section{Đối chiếu số liệu với log}
+Khi kiểm chứng một con số, trước hết xác định mã lượt chạy và tham số trong cấu hình đã lưu.
+Với log JSONL, lọc đúng cặp tác tử hoặc vòng, chuyển kết quả tuyệt đối của X về góc nhìn
+tác tử được báo cáo, rồi cộng thắng, hòa và thua. Kiểm tra có đủ hai màu cho từng khai cuộc
+trước khi tính bootstrap theo cặp. Đối với thời gian mỗi nước, lấy bên thực sự đi sau chuỗi
+khai cuộc để chia các giá trị xen kẽ cho đúng tác tử.
+
+Các ván minh họa trong Chương~\ref{ch:thuc-nghiem} có mã ván và mã khai cuộc.
+Có thể dựng lại bằng \repoFile{CaroGame.from_moves} hoặc chọn đúng lượt trong
+\repoFile{notebooks/l7_l8_duel.ipynb}. Với log tự đấu, mã ván có thể lặp giữa các nhóm,
+nên đối chiếu đồng thời trường \repoFile{tournament_id} và \repoFile{game_id}.

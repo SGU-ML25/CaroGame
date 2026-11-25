@@ -185,7 +185,7 @@ Mục tiêu này được cụ thể hoá thành ba nhóm trong Bảng~\ref{tab:
 
 \textbf{RQ1} so sánh hai cách dùng ngân sách tính toán: đầu tư vào hàm lượng giá và duyệt có hệ thống, hay đầu tư vào số ván mô phỏng. Giả thuyết nghiêng về Alpha-Beta vì Caro có nhiều đòn chiến thuật ngắn mà rollout ngẫu nhiên khó thấy, nhưng điều này có thể thay đổi khi tăng số mô phỏng hoặc dùng rollout có luật. Câu hỏi được đặt theo \emph{cùng thời gian} chứ không theo cùng độ sâu, vì đề bài lưu ý không thể suy ra công bằng tính toán chỉ từ việc áp cùng độ sâu tìm kiếm.
 
-\textbf{RQ2} kiểm tra self-play có mang lại lợi ích so với học bắt chước không. Cấp 5 học từ nhãn của chính Alpha-Beta do nhóm viết, nên có nguy cơ học lại cả điểm yếu của heuristic; self-play về nguyên tắc không bị giới hạn bởi nguồn nhãn này, nhưng cần nhiều ván hơn. Nếu Cấp 8 không hoàn thành trong thời gian đồ án, câu hỏi sẽ chỉ được trả lời cho Cấp 6 và báo cáo sẽ ghi rõ giới hạn đó.
+\textbf{RQ2} kiểm tra self-play có mang lại lợi ích so với học bắt chước không. Cấp 5 học từ nhãn của chính Alpha-Beta do nhóm viết, nên có nguy cơ học lại cả điểm yếu của heuristic; self-play về nguyên tắc không bị giới hạn bởi nguồn nhãn này, nhưng cần nhiều ván hơn. Bản này có kết quả huấn luyện và đánh giá L8. Việc định lượng độ ổn định giữa nhiều seed vẫn là phần cần bổ sung.
 
 \textbf{RQ3} đo tác dụng của từng kỹ thuật tăng tốc. Alpha-Beta về lý thuyết không đổi giá trị gốc so với Minimax khi cùng độ sâu và cùng tập nước, nên giá trị gốc được dùng như một phép kiểm tra tính đúng đắn của phần cài đặt. Sắp xếp nước làm mỗi nút đắt hơn, nên cần đo cả số nút lẫn thời gian chứ không chỉ một trong hai.
 
@@ -262,22 +262,22 @@ Bảng~\ref{tab:gt-san-pham} liệt kê các sản phẩm theo mục 3.7 của �
 
 \begin{table}[!htb]
   \centering\small
-  \caption{Sản phẩm của đề tài và trạng thái tại ngày 04/11/2026.}
+  \caption{Sản phẩm và trạng thái theo mã và log được dùng trong bản này.}
   \label{tab:gt-san-pham}
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{.29\textwidth} >{\raggedright\arraybackslash}p{.27\textwidth} >{\raggedright\arraybackslash}X@{}}
     \toprule
     \textbf{Sản phẩm} & \textbf{Vị trí} & \textbf{Trạng thái} \\
     \midrule
-    Mã nguồn Python & \texttt{caro/} & Có engine, cấp 1--3, giao diện; arena và thống kê đang chờ hợp nhất \\
+    Mã nguồn Python & \texttt{caro/} & Có engine, tám cấp tác tử, arena, huấn luyện và giao diện \\
     Config và thư viện & \texttt{configs/}, \texttt{pyproject.toml} & Đã có \\
     Test tự động và CI & \texttt{tests/}, \texttt{.github/workflows/} & Đã có, mở rộng theo từng cấp \\
-    Demo chơi được & \texttt{caro/ui/} & Đã có với cấp 1--3; cấp chưa cài được ghi rõ trên trang \\
-    Checkpoint & Hugging Face, ghim trong \texttt{configs/models.yaml} & Đã tích hợp, chưa có checkpoint \\
-    Log thô & \texttt{runs/} & Có log A1, A2, A7; chưa có log giải đấu \\
-    Notebook tạo bảng, hình & \texttt{notebooks/} & Có bản đầu cho A1, A2, A7 \\
-    README, hướng dẫn & \texttt{README.md}, \texttt{docs/} & Đã có; phần huấn luyện và đánh giá sẽ bổ sung \\
-    Báo cáo & \texttt{report/} & Đang viết \\
-    Slide, poster & & Chưa làm \\
+    Demo chơi được & \texttt{caro/ui/} & Có người--máy, máy--máy và phát lại; cấp neural cần đúng trọng số \\
+    Checkpoint & Hugging Face, ghim trong \texttt{configs/models.yaml} & L5/L6 có revision; L8 vòng 37 có checkpoint cục bộ \\
+    Log thô & \texttt{runs/} & Có benchmark, đối đầu, tự đấu và log huấn luyện \\
+    Notebook tạo bảng, hình & \texttt{notebooks/} & Có notebook benchmark, arena và phát lại L7--L8 \\
+    README, hướng dẫn & \texttt{README.md}, \texttt{docs/} & Có hướng dẫn cài đặt, huấn luyện và đánh giá \\
+    Báo cáo & \texttt{report/} & Báo cáo và hồ sơ thực nghiệm \\
+    Slide giữa kỳ & \texttt{report/} & Có bản tiến độ \\
     Phân công, tỷ lệ đóng góp & Phụ lục~\ref{app:phan-cong} & Tổng hợp từ lịch sử GitHub khi nộp \\
     Tệp nộp & \texttt{Nhom13\_Caro\_TTNTNC\_HoTen\_MaSV.zip} & Đóng gói khi nộp \\
     \bottomrule

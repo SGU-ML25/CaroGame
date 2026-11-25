@@ -27,3 +27,4 @@ runs/scratch/
 /build/
 *.so
 caro/engine/_native.cpp
+caro/engine/_puct_native.cpp

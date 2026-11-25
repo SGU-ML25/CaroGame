@@ -1,0 +1,104 @@
+2026-11-24 16:06:15 INFO    run train/alphazero/20261124-160615_gpu-native — config training/alphazero, seed 2026
+2026-11-24 16:06:16 INFO    L8 init=/home/solozy/.cache/huggingface/hub/models--solozy--CaroGame/snapshots/a76d294b369af4440e64037a176eab3e14e2ba51/l5/best.pt, device=cuda, PUCT backend=native
+2026-11-24 16:06:16 INFO    L8 vòng 1: tự đấu 200 ván
+2026-11-24 16:27:07 INFO    L8 vòng 1: loss 2.7680 · duyệt=False · điểm đối chứng=0.43
+2026-11-24 16:27:07 INFO    L8 vòng 2: tự đấu 200 ván
+2026-11-24 16:45:25 INFO    L8 vòng 2: loss 2.8466 · duyệt=False · điểm đối chứng=0.45
+2026-11-24 16:45:25 INFO    L8 vòng 3: tự đấu 200 ván
+2026-11-24 17:01:58 INFO    L8 vòng 3: loss 2.8701 · duyệt=False · điểm đối chứng=0.495
+2026-11-24 17:01:58 INFO    L8 vòng 4: tự đấu 200 ván
+2026-11-24 17:17:21 INFO    L8 vòng 4: loss 2.8898 · duyệt=False · điểm đối chứng=0.49
+2026-11-24 17:17:21 INFO    L8 vòng 5: tự đấu 200 ván
+2026-11-24 17:33:26 INFO    L8 vòng 5: loss 2.9029 · duyệt=False · điểm đối chứng=0.5
+2026-11-24 17:33:26 INFO    L8 vòng 6: tự đấu 200 ván
+2026-11-24 17:50:33 INFO    L8 vòng 6: loss 2.9074 · duyệt=False · điểm đối chứng=0.5
+2026-11-24 17:50:33 INFO    L8 vòng 7: tự đấu 200 ván
+2026-11-24 18:07:20 INFO    L8 vòng 7: loss 2.9138 · duyệt=False · điểm đối chứng=0.51
+2026-11-24 18:07:20 INFO    L8 vòng 8: tự đấu 200 ván
+2026-11-24 18:24:34 INFO    L8 vòng 8: loss 2.9039 · duyệt=False · điểm đối chứng=0.525
+2026-11-24 18:24:34 INFO    L8 vòng 9: tự đấu 200 ván
+2026-11-24 18:41:41 INFO    L8 vòng 9: loss 2.9145 · duyệt=False · điểm đối chứng=0.545
+2026-11-24 18:41:41 INFO    L8 vòng 10: tự đấu 200 ván
+2026-11-24 18:58:05 INFO    L8 vòng 10: loss 2.9089 · duyệt=False · điểm đối chứng=0.46
+2026-11-24 18:58:05 INFO    L8 vòng 11: tự đấu 200 ván
+2026-11-24 19:14:47 INFO    L8 vòng 11: loss 2.9117 · duyệt=False · điểm đối chứng=0.49
+2026-11-24 19:14:47 INFO    L8 vòng 12: tự đấu 200 ván
+2026-11-24 19:30:30 INFO    L8 vòng 12: loss 2.9136 · duyệt=True · điểm đối chứng=0.575
+2026-11-24 19:30:30 INFO    L8 vòng 13: tự đấu 200 ván
+2026-11-24 19:46:10 INFO    L8 vòng 13: loss 2.8416 · duyệt=False · điểm đối chứng=0.5
+2026-11-24 19:46:10 INFO    L8 vòng 14: tự đấu 200 ván
+2026-11-24 20:01:08 INFO    L8 vòng 14: loss 2.8441 · duyệt=False · điểm đối chứng=0.495
+2026-11-24 20:01:08 INFO    L8 vòng 15: tự đấu 200 ván
+2026-11-24 20:16:42 INFO    L8 vòng 15: loss 2.8414 · duyệt=False · điểm đối chứng=0.48
+2026-11-24 20:16:42 INFO    L8 vòng 16: tự đấu 200 ván
+2026-11-24 20:32:08 INFO    L8 vòng 16: loss 2.8294 · duyệt=False · điểm đối chứng=0.525
+2026-11-24 20:32:08 INFO    L8 vòng 17: tự đấu 200 ván
+2026-11-24 20:47:07 INFO    L8 vòng 17: loss 2.8334 · duyệt=False · điểm đối chứng=0.525
+2026-11-24 20:47:07 INFO    L8 vòng 18: tự đấu 200 ván
+2026-11-24 21:02:34 INFO    L8 vòng 18: loss 2.8269 · duyệt=True · điểm đối chứng=0.59
+2026-11-24 21:02:34 INFO    L8 vòng 19: tự đấu 200 ván
+2026-11-24 21:17:29 INFO    L8 vòng 19: loss 2.8120 · duyệt=True · điểm đối chứng=0.555
+2026-11-24 21:17:29 INFO    L8 vòng 20: tự đấu 200 ván
+2026-11-24 21:33:01 INFO    L8 vòng 20: loss 2.8065 · duyệt=False · điểm đối chứng=0.44
+2026-11-24 21:33:01 INFO    L8 vòng 21: tự đấu 200 ván
+2026-11-24 21:48:45 INFO    L8 vòng 21: loss 2.7965 · duyệt=False · điểm đối chứng=0.455
+2026-11-24 21:48:45 INFO    L8 vòng 22: tự đấu 200 ván
+2026-11-24 22:03:02 INFO    L8 vòng 22: loss 2.7947 · duyệt=False · điểm đối chứng=0.49
+2026-11-24 22:03:02 INFO    L8 vòng 23: tự đấu 200 ván
+2026-11-24 22:19:19 INFO    L8 vòng 23: loss 2.7899 · duyệt=False · điểm đối chứng=0.52
+2026-11-24 22:19:19 INFO    L8 vòng 24: tự đấu 200 ván
+2026-11-24 22:32:00 INFO    L8 vòng 24: loss 2.7883 · duyệt=True · điểm đối chứng=0.55
+2026-11-24 22:32:00 INFO    L8 vòng 25: tự đấu 200 ván
+2026-11-24 22:45:12 INFO    L8 vòng 25: loss 2.7846 · duyệt=False · điểm đối chứng=0.535
+2026-11-24 22:45:12 INFO    L8 vòng 26: tự đấu 200 ván
+2026-11-24 22:59:12 INFO    L8 vòng 26: loss 2.7739 · duyệt=False · điểm đối chứng=0.485
+2026-11-24 22:59:12 INFO    L8 vòng 27: tự đấu 200 ván
+2026-11-24 23:13:04 INFO    L8 vòng 27: loss 2.7785 · duyệt=False · điểm đối chứng=0.515
+2026-11-24 23:13:04 INFO    L8 vòng 28: tự đấu 200 ván
+2026-11-24 23:26:02 INFO    L8 vòng 28: loss 2.7664 · duyệt=False · điểm đối chứng=0.525
+2026-11-24 23:26:02 INFO    L8 vòng 29: tự đấu 200 ván
+2026-11-24 23:38:56 INFO    L8 vòng 29: loss 2.7630 · duyệt=True · điểm đối chứng=0.62
+2026-11-24 23:38:56 INFO    L8 vòng 30: tự đấu 200 ván
+2026-11-24 23:52:29 INFO    L8 vòng 30: loss 2.7515 · duyệt=False · điểm đối chứng=0.455
+2026-11-24 23:52:29 INFO    L8 vòng 31: tự đấu 200 ván
+2026-11-25 00:04:37 INFO    L8 vòng 31: loss 2.7491 · duyệt=False · điểm đối chứng=0.545
+2026-11-25 00:04:37 INFO    L8 vòng 32: tự đấu 200 ván
+2026-11-25 00:19:20 INFO    L8 vòng 32: loss 2.7396 · duyệt=False · điểm đối chứng=0.535
+2026-11-25 00:19:20 INFO    L8 vòng 33: tự đấu 200 ván
+2026-11-25 00:33:44 INFO    L8 vòng 33: loss 2.7312 · duyệt=False · điểm đối chứng=0.545
+2026-11-25 00:33:44 INFO    L8 vòng 34: tự đấu 200 ván
+2026-11-25 00:45:55 INFO    L8 vòng 34: loss 2.7180 · duyệt=False · điểm đối chứng=0.47
+2026-11-25 00:45:55 INFO    L8 vòng 35: tự đấu 200 ván
+2026-11-25 01:00:21 INFO    L8 vòng 35: loss 2.7090 · duyệt=False · điểm đối chứng=0.465
+2026-11-25 01:00:21 INFO    L8 vòng 36: tự đấu 200 ván
+2026-11-25 01:11:09 INFO    L8 vòng 36: loss 2.7069 · duyệt=False · điểm đối chứng=0.49
+2026-11-25 01:11:09 INFO    L8 vòng 37: tự đấu 200 ván
+2026-11-25 01:24:22 INFO    L8 vòng 37: loss 2.6853 · duyệt=True · điểm đối chứng=0.61
+2026-11-25 01:24:22 INFO    L8 vòng 38: tự đấu 200 ván
+2026-11-25 01:39:27 INFO    L8 vòng 38: loss 2.6899 · duyệt=False · điểm đối chứng=0.49
+2026-11-25 01:39:27 INFO    L8 vòng 39: tự đấu 200 ván
+2026-11-25 01:52:48 INFO    L8 vòng 39: loss 2.6852 · duyệt=False · điểm đối chứng=0.445
+2026-11-25 01:52:48 INFO    L8 vòng 40: tự đấu 200 ván
+2026-11-25 02:07:36 INFO    L8 vòng 40: loss 2.6876 · duyệt=False · điểm đối chứng=0.41
+2026-11-25 02:07:36 INFO    L8 vòng 41: tự đấu 200 ván
+2026-11-25 02:19:44 INFO    L8 vòng 41: loss 2.6924 · duyệt=False · điểm đối chứng=0.46
+2026-11-25 02:19:44 INFO    L8 vòng 42: tự đấu 200 ván
+2026-11-25 02:33:14 INFO    L8 vòng 42: loss 2.6877 · duyệt=False · điểm đối chứng=0.465
+2026-11-25 02:33:14 INFO    L8 vòng 43: tự đấu 200 ván
+2026-11-25 02:47:30 INFO    L8 vòng 43: loss 2.6869 · duyệt=False · điểm đối chứng=0.46
+2026-11-25 02:47:30 INFO    L8 vòng 44: tự đấu 200 ván
+2026-11-25 03:01:00 INFO    L8 vòng 44: loss 2.6899 · duyệt=False · điểm đối chứng=0.49
+2026-11-25 03:01:00 INFO    L8 vòng 45: tự đấu 200 ván
+2026-11-25 03:14:36 INFO    L8 vòng 45: loss 2.6939 · duyệt=False · điểm đối chứng=0.475
+2026-11-25 03:14:36 INFO    L8 vòng 46: tự đấu 200 ván
+2026-11-25 03:27:55 INFO    L8 vòng 46: loss 2.6968 · duyệt=False · điểm đối chứng=0.49
+2026-11-25 03:27:55 INFO    L8 vòng 47: tự đấu 200 ván
+2026-11-25 03:41:21 INFO    L8 vòng 47: loss 2.6948 · duyệt=False · điểm đối chứng=0.48
+2026-11-25 03:41:21 INFO    L8 vòng 48: tự đấu 200 ván
+2026-11-25 03:55:40 INFO    L8 vòng 48: loss 2.6961 · duyệt=False · điểm đối chứng=0.505
+2026-11-25 03:55:40 INFO    L8 vòng 49: tự đấu 200 ván
+2026-11-25 04:09:53 INFO    L8 vòng 49: loss 2.6972 · duyệt=False · điểm đối chứng=0.475
+2026-11-25 04:09:53 INFO    L8 vòng 50: tự đấu 200 ván
+2026-11-25 04:24:35 INFO    L8 vòng 50: loss 2.6931 · duyệt=False · điểm đối chứng=0.46
+2026-11-25 04:25:03 INFO    L8 best.pt gặp L7: {'n': 20, 'wins': 16, 'draws': 1, 'losses': 3, 'score': 0.825}
+2026-11-25 04:25:03 INFO    kết thúc: ok sau 44328.0 s

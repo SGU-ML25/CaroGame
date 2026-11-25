@@ -35,9 +35,9 @@ from caro.agents import make_agent
 from caro.agents.base import BaseAgent, Limits
 from caro.arena.stats import wilson
 from caro.config import load_config
-from caro.engine.bitboard import CELLS
-from caro.engine.game import CaroGame, N, X
+from caro.engine.game import CaroGame, N
 from caro.hub import resolve_checkpoint
+from caro.nn.features import bits, encode, legal_mask  # noqa: F401  (tests/test_train_pg import từ đây)
 from caro.nn.model import CaroResNet
 from caro.runlog import Run, derive_seed
 
@@ -47,26 +47,6 @@ OPENING_REGION = range(3, 8)      # khai cuộc ngẫu nhiên trong vùng 5×5 g
 # ---------------------------------------------------------------------------
 # Đặc trưng và chọn nước theo lô
 # ---------------------------------------------------------------------------
-
-def bits(x: int) -> np.ndarray:
-    """121 bit của bitboard → mảng uint8 độ dài CELLS (bit i = ô i)."""
-    return np.unpackbits(np.frombuffer(x.to_bytes(16, "little"), dtype=np.uint8), bitorder="little")[:CELLS]
-
-
-def encode(game: CaroGame) -> np.ndarray:
-    """(4, N, N): quân mình, quân đối thủ, 1 nếu X đi, 0 — giống board_to_tensor."""
-    me, opp = game.me_opp()
-    x = np.zeros((4, CELLS), dtype=np.float32)
-    x[0] = bits(me)
-    x[1] = bits(opp)
-    if game.side == X:
-        x[2] = 1.0
-    return x.reshape(4, N, N)
-
-
-def legal_mask(game: CaroGame) -> np.ndarray:
-    return bits(game.empty).astype(bool)
-
 
 @torch.no_grad()
 def policy_step(

@@ -1,0 +1,152 @@
+\chapter{Tái lập và chỉ mục nguồn}
+\label{app:tai-lap}
+
+Phụ lục này mô tả cách dựng lại môi trường, sinh lại bảng/hình, và chạy lại từng thực nghiệm.
+Mục tiêu là để một người khác có thể kiểm tra một con số trong báo cáo mà không cần hỏi nhóm.
+
+\section{Môi trường}
+\paragraph{Công cụ.} Dự án dùng \texttt{uv} để quản lý Python và thư viện. Cài đặt:
+\begin{lstlisting}[numbers=none]
+git clone https://github.com/SGU-ML25/CaroGame
+cd CaroGame
+uv sync --group dev --extra nn --extra ui
+uv run pytest
+\end{lstlisting}
+Lệnh cuối phải in ``258 passed, 1 skipped'' tại thời điểm viết. Nếu số test khác, có thể mã
+nguồn đã thay đổi so với bản dùng trong báo cáo; kiểm tra \texttt{meta.json} của từng run để
+biết commit tương ứng.
+
+\paragraph{Lõi Cython.} Alpha-Beta và PUCT có bản Cython tùy chọn:
+\begin{lstlisting}[numbers=none]
+uv pip install cython setuptools
+uv run python setup_native.py build_ext --inplace
+\end{lstlisting}
+Nếu chưa build, code tự quay về Python. Kết quả lý thuyết giống nhau; chỉ thời gian khác. Các
+bảng thời gian trong báo cáo ghi rõ backend.
+
+\paragraph{Model.} Trọng số L5/L6 nằm trên Hugging Face, ghim trong \texttt{configs/models.yaml}.
+L8 dùng checkpoint cục bộ \repoFile{runs/train/alphazero/20261124-160615\_gpu-native/checkpoints/best.pt}.
+Nếu checkpoint không có, có thể tải L5/L6 bằng:
+\begin{lstlisting}[numbers=none]
+uv run caro-hub pull l5 l6
+\end{lstlisting}
+L8 chưa được push lên Hugging Face tại thời điểm viết; muốn tái lập đúng kết quả L8 cần file
+\texttt{best.pt} của run gốc, hoặc chạy lại 50 vòng huấn luyện (khoảng 12 giờ trên GPU laptop).
+
+\section{Bản đồ thư mục}
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Đường dẫn} & \textbf{Nội dung} \\
+\midrule
+\repoFile{caro/engine/} & Bitboard, CaroGame, Zobrist, đối xứng D4 \\
+\repoFile{caro/agents/} & Tám cấp tác tử, giao diện chung, PUCT \\
+\repoFile{caro/nn/} & Đặc trưng, mạng ResNet policy--value, dataset \\
+\repoFile{caro/training/} & Sinh dữ liệu, SL, REINFORCE, vòng lặp AlphaZero \\
+\repoFile{caro/arena/} & Trận, giải, khai cuộc, thống kê, benchmark \\
+\repoFile{caro/ui/} & FastAPI và giao diện web \\
+\repoFile{configs/} & Toàn bộ tham số thực nghiệm \\
+\repoFile{runs/} & Log thô của mọi lần chạy \\
+\repoFile{report/scripts/} & Script sinh bảng, hình, phụ lục \\
+\repoFile{report/ban-mo-rong/} & Nội dung báo cáo mở rộng và bảng sinh tự động \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Sinh lại bảng và hình}
+Từ gốc repo, chạy:
+\begin{lstlisting}[numbers=none]
+uv run python report/scripts/phan-tich-tong-hop.py
+uv run python report/scripts/phan-tich-hoc.py
+uv run python report/scripts/phu-luc-chon-loc.py
+uv run python report/scripts/ho-so-van-moi.py
+cd report && latexmk -xelatex bao-cao-caro.tex
+\end{lstlisting}
+Các script chỉ đọc log trong \repoFile{runs/} và ghi vào \repoFile{report/ban-mo-rong/}. Chúng
+không sửa log gốc. Nếu một bảng không sinh được, kiểm tra đường dẫn run tương ứng còn tồn tại
+không; báo cáo dùng đường dẫn tuyệt đối tương đối so với gốc repo.
+
+\section{Chạy lại từng thực nghiệm}
+\paragraph{Giải tám tác tử (RR8).}
+\begin{lstlisting}[numbers=none]
+uv run python -m caro.arena.tournament experiments/rr8_mode_b
+\end{lstlisting}
+Cấu hình dùng 50 khai cuộc, 4 worker mặc định. Trong báo cáo, run được chạy với
+\texttt{arena.workers=1} để không ảnh hưởng máy đang dùng; muốn nhanh hơn có thể tăng worker.
+
+\paragraph{Tự đấu từng cấp (E3).}
+\begin{lstlisting}[numbers=none]
+uv run python experiments/e3_selfplay.py --workers 4
+\end{lstlisting}
+Mỗi cấp chơi 50 khai cuộc × 2 màu. Có thể giới hạn cấp bằng \texttt{--levels}.
+
+\paragraph{Các ablation.}
+\begin{lstlisting}[numbers=none]
+uv run python -m caro.arena.bench experiments/a1_ab_pruning
+uv run python -m caro.arena.bench experiments/a2_ordering_tt
+uv run python -m caro.arena.bench experiments/a7_eval_weights
+uv run python -m caro.arena.tournament experiments/a7b_head_to_head
+uv run python -m caro.arena.tournament experiments/a8b_root_tactics
+\end{lstlisting}
+
+\paragraph{Huấn luyện.}
+\begin{lstlisting}[numbers=none]
+uv run python -m caro.training.gen_expert_data training/gen_expert_data_v2
+uv run python -m caro.training.train_sl training/sl_v3
+uv run python -m caro.training.train_pg training/pg
+uv run python -m caro.training.alphazero_loop training/alphazero
+\end{lstlisting}
+
+\section{Chỉ mục nguồn số liệu}
+\begin{small}
+\begin{longtable}{@{}p{.24\textwidth} p{.68\textwidth}@{}}
+\toprule
+\textbf{Phép đo} & \textbf{Đường dẫn log} \\
+\midrule
+RR8 & \repoFile{runs/eval/tournament/rr8\_mode\_b/latest/} \\
+E3 & \repoFile{runs/eval/tournament/e3\_selfplay/20261125-232320/} và \repoFile{20261125-233229/} \\
+A1 & \repoFile{runs/bench/a1\_ab\_pruning/20261029-200321/} \\
+A2 & \repoFile{runs/bench/a2\_ordering\_tt/20261029-212610/} \\
+A7 & \repoFile{runs/bench/a7\_eval\_weights/20261029-223250/} \\
+A3 & \repoFile{runs/tournament/a3\_mcts\_sims/20261114-232353/} \\
+A4 & \repoFile{runs/tournament/a4\_rollout/20261114-234556/} \\
+A5 & \repoFile{runs/eval/a5\_puct/results.csv} \\
+Arena cũ & \repoFile{runs/arena\_matrix/games.csv} và \repoFile{ranking.csv} \\
+SL v1/v2/v3 & \repoFile{runs/train/sl\_policy*/metrics.json} \\
+RL v2/v3 & \repoFile{runs/train/pg\_policy/20261117-224555\_v2\_init/} và \repoFile{20261118-125103\_v3\_init/} \\
+L8 & \repoFile{runs/train/alphazero/20261124-160615\_gpu-native/} \\
+L8--L3 & \repoFile{runs/eval/tournament/l8\_vs\_l3/20261125-134954\_round37/} \\
+\bottomrule
+\end{longtable}
+\end{small}
+
+\section{Đối chiếu checkpoint}
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Tên} & \textbf{Loại} & \textbf{Ghi chú} \\
+\midrule
+\texttt{model:l5} & SL v3 & Trọng số dùng cho L5 và L7; revision ghim trong \texttt{models.yaml} \\
+\texttt{model:l6} & RL v3 & Trọng số dùng cho L6; revision ghim trong \texttt{models.yaml} \\
+\texttt{model:l8} & L8 & Revision null tại thời điểm viết; dùng checkpoint cục bộ \\
+\texttt{sl\_policy/latest.pt} & SL v1 & Bản cũ, nhãn value tuyệt đối; chỉ dùng để so lịch sử \\
+\texttt{sl\_policy\_v2/latest.pt} & SL v2 & Bản cũ, nhãn value tuyệt đối; chỉ dùng để so lịch sử \\
+\texttt{sl\_policy\_v3/latest.pt} & SL v3 & Bản đã sửa quy ước; dùng làm init cho RL và PUCT \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Kiểm tra một con số}
+Muốn kiểm tra một dòng trong bảng, làm theo ba bước. Thứ nhất, mở \texttt{config.yaml} của run
+tương ứng để xem ngân sách, seed và danh sách tác tử. Thứ hai, mở \texttt{games.jsonl} và lọc
+theo \texttt{agent\_x}, \texttt{agent\_o}; mỗi dòng là một ván, \texttt{result} theo góc nhìn
+X. Thứ ba, dùng script phân tích hoặc tự tính $(W+0.5D)/n$ để đối chiếu. Nếu số khác, kiểm tra
+xem bảng có dùng bootstrap theo cặp khai cuộc hay Wilson từng ván; hai phương pháp cho khoảng
+khác nhau.
+
+\section{Giới hạn của tái lập}
+Không phải mọi thứ đều tái lập tuyệt đối. Thời gian chạy phụ thuộc máy và tải; kết quả PUCT có
+thể phụ thuộc phiên bản PyTorch/CUDA; các run cũ có thể dùng code khác bản hiện tại. Báo cáo
+ghi commit trong \texttt{meta.json} để người đọc biết. Các run dirty được đánh dấu và không
+dùng làm bằng chứng chính khi có run sạch tương đương. Khi tái lập, nên so kết quả trong cùng
+một môi trường, không so tuyệt đối với số trong báo cáo.

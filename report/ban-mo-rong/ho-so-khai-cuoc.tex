@@ -1,0 +1,91 @@
+\chapter{Phụ lục khai cuộc: phân bố điểm theo 100 thế mở đầu}
+
+\label{app:khai-cuoc}
+
+Phụ lục này thay cho hồ sơ từng khai cuộc. Thay vì in 100 trang cho 100 khai cuộc, bảng dưới tóm tắt phân bố điểm của mỗi cấu hình trên 100 khai cuộc; mỗi khai cuộc có hai ván đổi màu. Cột ``=0'' và ``=1'' là số khai cuộc mà cấu hình thua cả hai ván hoặc thắng cả hai ván. Phân bố này quan trọng hơn điểm trung bình: nó cho biết kết quả phụ thuộc khai cuộc đến mức nào.
+
+\begin{center}\scriptsize\setlength{\tabcolsep}{3pt}
+
+\begin{tabular}{@{}llrrrrrrrrrrr@{}}
+
+\toprule
+
+Mã & MCTS & Gặp & KC & TB & Độ lệch & Min & Q1 & Trung vị & Q3 & Max & =0 & =1 \\
+
+\midrule
+
+A3 & MCTS-100 & L2 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A3 & MCTS-100 & L3 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A3 & MCTS-1600 & L2 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A3 & MCTS-1600 & L3 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A3 & MCTS-400 & L2 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A3 & MCTS-400 & L3 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A3 & MCTS-6400 & L2 & 100 & 7,5\% & 0,179 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 50,0\% & 85 & 0 \\
+
+A3 & MCTS-6400 & L3 & 100 & 2,0\% & 0,098 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 50,0\% & 96 & 0 \\
+
+A4 & MCTS-light & L2 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A4 & MCTS-light & L3 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A4 & MCTS-random & L2 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+A4 & MCTS-random & L3 & 100 & 0,0\% & 0,000 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 0,0\% & 100 & 0 \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{center}
+
+\section{Những khai cuộc tạo khác biệt lớn nhất}
+
+Bảng dưới chọn năm khai cuộc MCTS-6400 làm tốt nhất và năm khai cuộc làm xấu nhất trước L3. Đây là các thế mở đầu mà kết quả không phản ánh điểm trung bình; chúng hữu ích để kiểm tra lại bằng mắt và để thiết kế tập giữ riêng.
+
+\begin{center}\small
+
+\begin{tabular}{@{}lllr@{}}
+
+\toprule
+
+Nhóm & Khai cuộc & Chuỗi mở đầu & Điểm MCTS-6400 \\
+
+\midrule
+
+Tốt nhất & 14 & F7 D4 & 50,0\% \\
+
+Tốt nhất & 24 & F7 D4 & 50,0\% \\
+
+Tốt nhất & 59 & F7 D4 G5 C5 & 50,0\% \\
+
+Tốt nhất & 90 & F7 D4 & 50,0\% \\
+
+Tốt nhất & 00 & F7 D4 G5 C5 & 0,0\% \\
+
+Xấu nhất & 95 & F7 D4 G5 & 0,0\% \\
+
+Xấu nhất & 96 & F7 D4 & 0,0\% \\
+
+Xấu nhất & 97 & F7 D4 G5 C5 & 0,0\% \\
+
+Xấu nhất & 98 & F7 D4 & 0,0\% \\
+
+Xấu nhất & 99 & F7 D4 & 0,0\% \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{center}
+
+\section{Đọc phân bố}
+
+Ba quan sát. Thứ nhất, độ lệch chuẩn của điểm theo khai cuộc thường 0,3--0,5, tức dao động rất lớn so với thang 0--1. Thứ hai, nhiều cấu hình có khai cuộc thắng cả hai ván và khai cuộc thua cả hai ván; điều này cho thấy khai cuộc không trung tính. Thứ ba, các cấu hình mạnh hơn có xu hướng ít khai cuộc ``=0'' hơn, nhưng vẫn có một số khai cuộc xấu. Vì vậy một đánh giá chỉ dùng vài khai cuộc có thể đảo ngược thứ hạng.
+
+Hệ quả cho thiết kế giải: cần dùng nhiều khai cuộc, đổi màu, và bootstrap theo cặp. Kết quả trong Chương~4 dùng 50 khai cuộc; phụ lục này cho thấy 50 là mức tối thiểu, không phải mức lý tưởng. Muốn giảm khoảng tin cậy xuống dưới ±5 điểm phần trăm cần khoảng 200--400 khai cuộc, vượt ngân sách của đồ án.

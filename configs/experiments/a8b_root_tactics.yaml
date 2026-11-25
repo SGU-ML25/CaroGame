@@ -1,0 +1,11 @@
+# A8b — kiểm chứng root_tactics của MCTS trên mẫu lớn: 50 khai cuộc × 2 màu × 2 đối thủ.
+# Giữ 800 mô phỏng, rollout light. So sánh bật/tắt xử lý chiến thuật ở gốc.
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {kind: tournament, name: a8b_root_tactics, rq: [RQ1]}
+run: {root: runs/eval}
+arena: {num_openings: 50, workers: 4}
+agents:
+  - {from: agents/l4_mcts, id: MCTS-light,        budget: {max_sims: 800}, params: {rollout: light, root_tactics: false}}
+  - {from: agents/l4_mcts, id: MCTS-light-tactic, budget: {max_sims: 800}, params: {rollout: light, root_tactics: true}}
+  - agents/l2_rule
+  - {from: agents/l3_alphabeta, id: L3-AlphaBeta, budget: {max_depth: 4}, params: {backend: native}}

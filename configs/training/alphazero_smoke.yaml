@@ -1,0 +1,7 @@
+defaults: [training/alphazero]
+experiment: {name: alphazero_smoke}
+device: cpu
+selfplay: {games_per_iter: 2, sims_per_move: 8}
+train: {batch_size: 16, steps_per_iter: 2, iterations: 1}
+gating: {games: 2, sims_per_move: 8}
+evaluation: {games: 2, sims_per_move: 8}

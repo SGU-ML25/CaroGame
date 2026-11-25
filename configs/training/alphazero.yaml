@@ -2,17 +2,19 @@
 defaults: [base, model/resnet_small]
 experiment: {kind: train, name: alphazero, rq: [RQ2]}
 selfplay:
+  backend: auto             # auto | native (Cython) | python
+  parallel_games: auto      # ghép suy luận của 4 ván trên CUDA, 1 ván trên CPU
   games_per_iter: 200
   sims_per_move: 400        # 200–800
   c_puct: 1.5
   dirichlet: {alpha: 0.3, epsilon: 0.25}
   temperature_moves: 8      # τ = 1 cho 8 nước đầu, sau đó τ → 0
-  workers: 8
+  torch_threads: 1          # số luồng nội bộ PyTorch khi chạy CPU
 buffer:
   window_games: 5000        # cửa sổ trượt
   augment_x8: true
 train:
-  init: random
+  init: model:l5            # dùng random để huấn luyện từ đầu
   optimizer: adam
   lr: 1.0e-3
   weight_decay: 1.0e-4
@@ -23,4 +25,7 @@ gating:
   games: 100
   swap_colors: true
   threshold: 0.55
+  sims_per_move: 200
+evaluation:                 # checkpoint tốt nhất gặp L7 dùng L5 ở cùng ngân sách
+  games: 20
   sims_per_move: 200

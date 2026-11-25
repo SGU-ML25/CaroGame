@@ -1,0 +1,37 @@
+{
+  "started": "2026-11-25T13:49:54",
+  "argv": [
+    "/mnt/data/1_Projects/AAI/CaroGame/caro/arena/tournament.py",
+    "experiments/main_mode_b",
+    "agents=[{from: agents/l8_alphazero, params: {checkpoint: runs/train/alphazero/20261124-160615_gpu-native/checkpoints/best.pt, backend: native}, budget: {max_sims: 200}}, {from: agents/l3_alphabeta, params: {backend: native}, budget: {max_depth: 6}}]",
+    "budget={mode: fixed}",
+    "arena.num_openings=20",
+    "arena.workers=4",
+    "experiment.kind=tournament",
+    "experiment.name=l8_vs_l3",
+    "run.root=runs/eval",
+    "run.tag=round37"
+  ],
+  "seed": 2026,
+  "config_hash": "75072ac7c36e",
+  "git": {
+    "commit": "b7b13128d1054ad4c53ca26032c5675e15d56b97",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  }
+}

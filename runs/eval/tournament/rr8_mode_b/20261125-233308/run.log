@@ -1,0 +1,4 @@
+2026-11-25 23:33:08 INFO    run tournament/rr8_mode_b/20261125-233308 — config experiments/rr8_mode_b, seed 2026
+2026-11-25 23:33:08 INFO    Bắt đầu giải đấu: 2800 ván cờ, dùng 1 workers song song.
+2026-11-25 23:52:14 INFO    Bảng điểm chung cuộc: {'L1-Random': 0.0, 'L2-Rule': 305.0, 'L3-AlphaBeta': 408.0, 'L4-MCTS': 100.0, 'L5-PolicySL': 351.5, 'L6-PolicyRL': 433.0, 'L7-PUCT': 574.0, 'L8-AlphaZero': 628.5}
+2026-11-25 23:52:14 INFO    kết thúc: ok sau 1146.1 s

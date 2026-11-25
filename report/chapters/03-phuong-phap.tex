@@ -5,15 +5,15 @@
 
 \section{Mô hình hoá trò chơi}
 \subsection{Trạng thái, hành động, hàm chuyển, phần thưởng}
-\goiy{state $s$, action $a \in \{0,\dots,120\}$, $T(s,a)$, reward theo góc nhìn người chơi}
+Trạng thái gồm hai bitboard rời nhau, bên đến lượt, lịch sử, khóa Zobrist và người thắng nếu có. Hành động là chỉ số nguyên từ 0 đến 120 của một ô trống; mỗi hành động đổi bên đến lượt. Sau một nước hợp lệ, engine kiểm tra năm quân liên tiếp của bên vừa đi; khi bàn đầy và chưa có người thắng thì ván hòa. Hàm \texttt{step} trả phần thưởng theo bên vừa đi, còn \texttt{result} trả kết quả theo X. Tách hai quy ước này là điều kiện để huấn luyện value và thống kê W/D/L đúng dấu.
 \subsection{Input / output của tác tử}
-\goiy{input: bàn cờ + bên đi; output: nước đi, phân phối xác suất, giá trị trạng thái}
+Tác tử nhận bàn cờ và \texttt{Limits}, rồi trả một chỉ số nước đi. \texttt{reset(seed)} thiết lập lại trạng thái theo ván. \texttt{last\_stats()} trả dữ liệu tùy thuật toán: số nút, độ sâu, phân phối policy, số mô phỏng hoặc biến chính. Mã arena đo thời gian bên ngoài lời gọi tác tử, do đó có cả chi phí sao chép trạng thái mà tác tử nhận.
 
 \section{Kiến trúc hệ thống}
 \subsection{Các khối chính và nguyên tắc phụ thuộc}
-\goiy{sơ đồ engine $\rightarrow$ agents $\rightarrow$ arena / training / UI}
+Các mô-đun tạo thành một đường dữ liệu một chiều: engine định nghĩa luật; tác tử biến trạng thái thành nước đi; arena ghép tác tử và ghi ván; training tái sử dụng engine, tác tử và mạng; giao diện dựng lại trạng thái từ lịch sử. Cấu trúc này cho phép phát lại bằng đúng luật dùng trong thí nghiệm và thay tác tử mà không đổi protocol của ván.
 \subsection{Cấu hình, seed và log}
-\goiy{\texttt{configs/}, \texttt{load\_config}, \texttt{derive\_seed}, thư mục \texttt{runs/}, JSONL}
+Cấu hình YAML được hợp nhất qua \texttt{defaults} rồi mới áp dụng tham số ghi đè từ dòng lệnh. Seed ván và seed màu được dẫn xuất bằng băm ổn định. Mỗi lượt lưu cấu hình đã hợp nhất, thông tin môi trường, log ván JSONL và tổng kết. Một cấu hình tồn tại chỉ mô tả thiết kế; bằng chứng đã chạy là log có số ván và trạng thái hoàn tất. Hai lượt có cùng tên nhưng khác ngân sách phải được xem là hai phép đo riêng.
 
 \section{Engine bitboard}
 \label{sec:engine}
@@ -545,29 +545,33 @@ Thân mạng gồm một tích chập $3\times3$ kèm BatchNorm và ReLU, tiếp
 \end{itemize}
 \texttt{PolicyAgent} (\texttt{caro/agents/policy\_agent.py}) bọc mạng này làm tác tử chơi không tìm kiếm: chọn nước có logit lớn nhất ($\arg\max$, tương ứng nhiệt độ 0) trong các ô hợp lệ, đồng thời giữ phân phối policy và giá trị value để giao diện vẽ heatmap qua \texttt{last\_stats()}.
 \subsection{Cấp 6 --- REINFORCE có baseline}
-\goiy{vì sao không dùng Q-learning dạng bảng; đối thủ khi tự chơi}
+L6 khởi tạo từ checkpoint SL, tự đấu theo lô và học trực tiếp chính sách bằng REINFORCE. Với kết quả ván $z$ theo góc nhìn người chọn nước, ưu thế ước lượng là $z-v(s)$. Phần policy giảm $-\log\pi(a\mid s)\,[z-\mathrm{stopgrad}(v)]$; đầu giá trị học hồi quy về $z$ và entropy được dùng để khuyến khích khám phá. Model có thể gặp bản cũ từ một nhóm checkpoint. Chơi để thu mẫu và đánh giá định kỳ được tách riêng; điểm cuối của một lượt và checkpoint được chọn theo điểm tốt nhất là hai đối tượng khác nhau.
 \subsection{Cấp 7 --- PUCT với mạng cấp 5 (AlphaGo-inspired)}
-\goiy{công thức PUCT, prior từ policy}
+L7 mở cây PUCT với prior $P$ từ đầu policy, đánh giá nút lá bằng đầu value và không cần rollout ngẫu nhiên trong cấu hình chính. Với thống kê nút con theo góc nhìn phía đến lượt ở nút đó, điểm chọn nhánh theo góc nhìn cha là
+\[
+ -\frac{W_a}{N_a}+c_{\mathrm{PUCT}}P_a\frac{\sqrt{\max(1,N_{\mathrm{cha}})}}{1+N_a}.
+\]
+Số hạng giá trị bằng 0 khi chưa thăm; mỗi bước lan ngược đổi dấu. Mã triển khai thêm virtual loss khi gom lá để hạn chế chọn lặp cùng nút trong một lô. Nước thi đấu chọn bằng số lượt thăm lớn nhất, dùng giá trị để phá hòa. Cython tùy chọn thay thao tác tạo nút và chọn nhánh; mạng vẫn do PyTorch thực thi.
 \subsection{Cấp 8 --- Vòng lặp AlphaZero-inspired}
-\goiy{self-play, cập nhật lặp, đối đầu checkpoint (gating)}
+L8 dùng cùng lớp PUCT khi thi đấu. Sự khác biệt nằm ở checkpoint: quy trình tự đấu thu trạng thái, phân phối lượt thăm $\pi$ và kết quả $z$ theo người đến lượt tại thời điểm ghi mẫu. Các nước đầu lấy mẫu theo lượt thăm; gốc có nhiễu Dirichlet trong tự đấu. Bộ nhớ phát lại giữ cửa sổ ván gần nhất. Khi huấn luyện, loss cộng cross-entropy giữa $\pi$ và phân phối policy với sai số bình phương của value so với $z$. Ứng viên mới đấu bản đương nhiệm ở cùng ngân sách và đổi màu; chỉ khi đạt ngưỡng trong cấu hình mới thay thế. Không dùng nhiễu trong đấu kiểm tra. Khi bị loại, trọng số và trạng thái tối ưu được quay lại bản đã chấp nhận, còn dữ liệu tự đấu tiếp tục được giữ.
 
 \section{Dữ liệu và quy trình huấn luyện}
 \subsection{Sinh dữ liệu chuyên gia}
-\goiy{số ván, cách ghi nhãn, loại trùng, tách train/val/test theo ván, nguy cơ học lại heuristic}
+Bộ sinh chuyên gia gọi AlphaBeta lấy top-$k$ nước và điểm ở gốc. Nhãn policy là phân phối mềm trên các nước được chọn; nhãn value đến từ kết quả cuối. Cấu hình sinh dữ liệu chia tập theo ván, không chia các thế liên tiếp của cùng ván giữa train và validation. Khóa đối xứng D4 được dùng khi khử trùng. Các kích thước trong YAML là mục tiêu chạy, không thay thế số mẫu thực tế từ log.
 \subsection{Huấn luyện có giám sát và học tăng cường}
-\goiy{loss, reward, số episode, exploration, siêu tham số, augmentation ×8}
+Học có giám sát tối ưu đồng thời phân phối policy và value. Khi tăng cường D4, bàn cờ và nhãn policy cùng biến đổi; value và bên đến lượt được giữ nguyên. Về sau REINFORCE thay mục tiêu policy bằng log-xác suất của nước đã đi có trọng số ưu thế, còn L8 thay bằng phân phối thăm PUCT. Không dùng một giá trị loss để xếp hạng các cấp có mục tiêu khác nhau.
 \subsection{Checkpoint và tài nguyên}
-\goiy{seed, checkpoint trên Hugging Face, CPU/GPU và thời gian huấn luyện}
+Cấu hình model ghim revision của trọng số từ xa; một lượt phát lại có thể chỉ đến checkpoint cục bộ chính xác. Huấn luyện lưu \texttt{last.pt} là ứng viên gần nhất và \texttt{best.pt} là bản được giữ. Để tái lập cần ghi cả checkpoint, backend, seed và corpus khai cuộc; dùng cùng tên tác tử hoặc cùng mã nguồn không đủ nếu trọng số đã thay.
 
 \section{Thiết kế giải đấu công bằng}
 \subsection{Round-robin và khai cuộc cân bằng}
-\goiy{$\ge$ 100 ván/cặp, chia đều đi trước/đi sau, nhiều seed}
+Cho mỗi khai cuộc, đấu hai ván đổi màu để lựa chọn khai cuộc xuất hiện ở cả hai phía của so sánh. X là màu đặt quân đầu tiên trên bàn; nếu khai cuộc đã gồm số lẻ nước, O là bên đánh nước đầu tiên do tác tử lựa chọn. So sánh L7 và L8 theo cùng khai cuộc làm giảm nhiễu do trạng thái mở đầu, nhưng không biến một corpus đã dùng trong gating thành tập giữ riêng.
 \subsection{Hai chế độ ngân sách}
-\goiy{chế độ A: thời gian/nước; chế độ B: độ sâu / số mô phỏng cố định}
+Chế độ thời gian cố định trả lời câu hỏi về sức chơi dưới cùng độ trễ. Chế độ ngân sách cố định giữ độ sâu hoặc số mô phỏng theo loại thuật toán; 200 mô phỏng PUCT không tương đương độ sâu 6 của AlphaBeta về thời gian, phép tính hay số lần mở rộng. Vì thế số liệu chế độ này không thay thế kết quả đối sánh theo mili giây.
 \subsection{Độ đo và khoảng tin cậy}
-\goiy{score $=(\text{thắng}+0{,}5\times\text{hoà})/\text{tổng}$, thời gian trung bình, p95, số nút/mô phỏng, Wilson, bootstrap, Elo}
+Tỷ lệ thắng là $W/n$ và điểm là $(W+D/2)/n$. Chọn đơn vị khai cuộc khi bootstrap để giữ sự phụ thuộc giữa hai ván đổi màu. Thời gian mỗi nước nên ghi riêng theo tác tử và báo trung vị cùng p95, nêu rõ chạy tuần tự hay song song. Các khoảng Wilson đã lưu trong một số log được giữ như số liệu lịch sử; chúng không phải ước lượng đã hiệu chỉnh theo cặp.
 \subsection{Ablation}
-\goiy{bảng A1--A7, E3: thay đổi, giữ cố định, độ đo, RQ}
+Mỗi ablation đổi một yếu tố: A1 cắt tỉa, A2 thứ tự nước và bảng chuyển vị, A3 số mô phỏng, A4 rollout, A5 thêm PUCT vào policy, A5b điều kiện khởi tạo, A6 đối xứng, A7 trọng số lượng giá. Với mỗi so sánh cần ghi yếu tố thực sự thay, biến nào giữ cố định và biến nào còn nhiễu. Khi thư mục chỉ có cấu hình, đề mục tương ứng được để trống.
 
 \section{Giao diện người dùng}
-\goiy{FastAPI backend, frontend; người--máy, máy--máy, replay, ``AI đang nghĩ gì''}
+FastAPI quản lý ván người--máy và máy--máy, xác thực nước hợp lệ và dùng lịch sử để phát lại. Frontend có thể hiển thị điểm, số lượt thăm và phương án chính nếu tác tử cung cấp. Dữ liệu giải thích này mô tả quá trình tìm kiếm; một prior lớn hoặc nhiều lượt thăm không chứng minh nước đó tối ưu.

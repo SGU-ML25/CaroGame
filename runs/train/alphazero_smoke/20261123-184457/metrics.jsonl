@@ -1,0 +1,2 @@
+{"step": 1, "time": 1.845, "loss": 7.189472198486328, "policy_loss": 6.709768295288086, "value_loss": 0.479703888297081, "accepted": false, "gating": {"n": 2, "wins": 1, "draws": 0, "losses": 1, "score": 0.5}, "selfplay_games": 2, "replay_positions": 41}
+{"step": 1, "time": 2.183, "evaluation": {"n": 2, "wins": 1, "draws": 0, "losses": 1, "score": 0.5}, "best_iteration": 0}

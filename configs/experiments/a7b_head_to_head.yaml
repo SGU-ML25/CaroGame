@@ -1,0 +1,9 @@
+# A7b — đối đầu trực tiếp hai bảng trọng số hàm lượng giá (cùng độ sâu 4).
+# Bổ sung cho A7 vốn chỉ so giá trị gốc trên tập thế cờ.
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {kind: tournament, name: a7b_head_to_head, rq: [RQ3]}
+run: {root: runs/eval}
+arena: {num_openings: 50, workers: 4}
+agents:
+  - {from: agents/l3_alphabeta, id: AB-default,    budget: {max_depth: 4}, params: {backend: native, eval_weights: default}}
+  - {from: agents/l3_alphabeta, id: AB-no-defense, budget: {max_depth: 4}, params: {backend: native, eval_weights: no_defense}}

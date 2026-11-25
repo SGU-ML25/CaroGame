@@ -1,0 +1,165 @@
+\chapter{Phụ lục cấu hình thực nghiệm}
+\label{app:cau-hinh}
+
+Phụ lục này ghi lại các cấu hình chính dùng trong báo cáo. Mọi tham số thực nghiệm nằm trong
+\repoFile{configs/}; không có tham số nào được hard-code trong code. Một cấu hình được ghép theo
+thứ tự \texttt{defaults} → nội dung file → override dòng lệnh. Dict ghép đệ quy; list bị thay
+nguyên khối. Đường dẫn tương đối tính từ gốc repo.
+
+\section{Cấu hình gốc}
+\begin{lstlisting}[numbers=none]
+project: caro-11x11
+seed: 2026
+device: auto
+engine: {size: 11, win_length: 5, layout: stride11}
+experiment: {kind: misc, name: null, description: "", rq: []}
+run: {root: runs, tag: null, index: runs/index.jsonl}
+log: {level: INFO, console: true, file: run.log, games: games.jsonl,
+      metrics: metrics.jsonl, per_move_stats: true, flush_every: 1}
+checkpoint: {dir: checkpoints, keep_last: 5}
+\end{lstlisting}
+\texttt{seed} là seed gốc; seed từng ván được dẫn xuất bằng
+\texttt{derive\_seed(seed, game\_id, color)}. \texttt{device} nhận \texttt{auto}, \texttt{cpu}
+hoặc \texttt{cuda}. \texttt{per\_move\_stats} bật ghi thời gian/nút/mô phỏng từng nước; tắt khi
+log quá lớn.
+
+\section{Ngân sách}
+\begin{lstlisting}[numbers=none]
+# mode_a_time.yaml
+budget: {mode: time, time_ms: 1000, max_depth: null, max_sims: null}
+# mode_b_fixed.yaml
+budget: {mode: fixed, time_ms: null, max_depth: 4, max_sims: 800}
+\end{lstlisting}
+Chế độ A dùng thời gian; chế độ B dùng độ sâu hoặc số mô phỏng. Trong RR8, ngân sách được ghi
+đè theo từng tác tử: L3 độ sâu 4, L4 400 mô phỏng, L7/L8 200 mô phỏng. Lý do: một ngân sách
+chung 800 mô phỏng cho PUCT sẽ rất chậm, trong khi 200 mô phỏng đã đủ để thấy khác biệt.
+
+\section{Tác tử}
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Cấp} & \textbf{Kind} & \textbf{Tham số chính} \\
+\midrule
+L1 & \texttt{random} & không \\
+L2 & \texttt{rule\_based} & priorities P1--P7, radius 2, eval\_weights default \\
+L3 & \texttt{alphabeta} & pruning, move\_ordering, tt, tt\_size\_mb 64, iterative\_deepening, forced\_moves, radius 2, backend auto \\
+L4 & \texttt{mcts} & c\_uct 1.4, rollout random/light, rollout\_radius 1, candidate\_radius 2, root\_tactics \\
+L5 & \texttt{policy} & checkpoint model:l5, temperature 0 \\
+L6 & \texttt{policy} & checkpoint model:l6, temperature 0 \\
+L7 & \texttt{puct} & checkpoint model:l5, c\_puct 1.5, leaf\_eval value, batch\_leaves 8 \\
+L8 & \texttt{puct} & checkpoint model:l8/local, c\_puct 1.5, leaf\_eval value, batch\_leaves 8 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Alpha-Beta.} Các cờ \texttt{pruning}, \texttt{move\_ordering}, \texttt{tt},
+\texttt{forced\_moves} tồn tại để làm ablation A1/A2. Mặc định bật hết. \texttt{backend}
+\texttt{auto} dùng Cython nếu đã build, không thì Python. \texttt{eval\_weights} nhận
+\texttt{default}, \texttt{no\_defense} hoặc dict trọng số.
+
+\paragraph{MCTS.} \texttt{rollout} nhận \texttt{random} hoặc \texttt{light}. \texttt{light}
+ưu tiên thắng ngay, rồi chặn thua ngay, còn lại ngẫu nhiên trong bán kính 1. \texttt{root\_tactics}
+kiểm tra thắng/chặn/đòn kép trước khi mô phỏng. \texttt{reuse\_tree} tái sử dụng cây giữa các
+nước; mặc định tắt để đo số mô phỏng công bằng.
+
+\paragraph{PUCT.} \texttt{leaf\_eval} nhận \texttt{value} (chỉ value của mạng) hoặc \texttt{mix}
+(trộn value với rollout, kiểu AlphaGo). \texttt{dirichlet} chỉ dùng khi tự chơi; thi đấu đặt
+\texttt{null}. \texttt{batch\_leaves} gom lá để suy luận theo lô. \texttt{temperature} 0 khi
+thi đấu, $>0$ khi tự chơi.
+
+\section{Huấn luyện}
+\paragraph{Sinh dữ liệu.}
+\begin{lstlisting}[numbers=none]
+datagen:
+  expert: {from: agents/l3_alphabeta, params: {backend: auto}}
+  expert_depth: 3
+  games: 20000
+  top_k: 3
+  prune_root: false
+  temperature: 0.5
+  split: [0.8, 0.1, 0.1]
+  dedup: d4_canonical
+  out: runs/data/expert_v1
+\end{lstlisting}
+Bản v2 đổi \texttt{temperature: 8.0}, \texttt{top\_k: 5}, \texttt{out: runs/data/expert\_v2}.
+Đây là thay đổi tạo ra bước nhảy top-1 từ 44,0\% lên 65,3\%.
+
+\paragraph{SL.}
+\begin{lstlisting}[numbers=none]
+train: {optimizer: adam, lr: 1.0e-3, weight_decay: 1.0e-4,
+        batch_size: 256, epochs: 30, value_coef: 1.0}
+data: {dir: runs/data/expert_v1, augment_x8: true}
+\end{lstlisting}
+Bản v3 dùng \texttt{epochs: 60}, \texttt{lr\_schedule: cosine}, \texttt{data.dir: expert\_v2}.
+Nhãn value được đổi sang góc nhìn người đi trong \texttt{train\_sl.py}.
+
+\paragraph{REINFORCE.}
+\begin{lstlisting}[numbers=none]
+train: {init: model:l5, episodes: 50000, batch_games: 128, lr: 2.0e-4,
+        gamma: 1.0, baseline: value_head, entropy_coef: 0.01,
+        entropy_decay: 0.999, temperature: 1.0,
+        opponent_pool: {latest: 0.5, past_checkpoints: 0.5},
+        eval_every: 1000, eval_vs: [agents/l2_rule, agents/l3_alphabeta],
+        eval_games: 100}
+\end{lstlisting}
+Mỗi vòng chơi 128 ván song song, cập nhật một bước, giảm entropy theo hệ số 0,999. Đánh giá mỗi
+1\,000 episode, 100 ván trước L2 và L3.
+
+\paragraph{AlphaZero.}
+\begin{lstlisting}[numbers=none]
+selfplay: {backend: auto, parallel_games: auto, games_per_iter: 200,
+           sims_per_move: 400, c_puct: 1.5,
+           dirichlet: {alpha: 0.3, epsilon: 0.25}, temperature_moves: 8}
+buffer: {window_games: 5000, augment_x8: true}
+train: {init: model:l5, optimizer: adam, lr: 1.0e-3, weight_decay: 1.0e-4,
+        batch_size: 256, steps_per_iter: 1000, iterations: 50}
+gating: {games: 100, swap_colors: true, threshold: 0.55, sims_per_move: 200}
+evaluation: {games: 20, sims_per_move: 200}
+\end{lstlisting}
+Mỗi vòng 200 ván tự đấu ở 400 mô phỏng, 1\,000 bước cập nhật, 100 ván gating ở 200 mô phỏng.
+Đánh giá cuối 20 ván trước L7.
+
+\section{Giải đấu}
+\begin{lstlisting}[numbers=none]
+arena:
+  format: round_robin
+  games_per_pair: 200
+  swap_colors: true
+  max_plies: 121
+  workers: 4
+  openings: {count: 100, plies: [2, 4], region: 5, seed: 7,
+             file: runs/openings/openings_v1.json}
+  stats: {ci: wilson, confidence: 0.95, bootstrap: 1000, elo: true}
+\end{lstlisting}
+RR8 dùng \texttt{num\_openings: 50}, \texttt{workers: 4} (hoặc 1 khi chạy nền). Mỗi khai cuộc
+2--4 nước trong vùng 5×5 giữa bàn, sinh một lần và dùng chung.
+
+\section{Model}
+\begin{lstlisting}[numbers=none]
+model: {arch: resnet_pv, in_planes: 4, channels: 64, blocks: 6,
+        policy_head: {conv_out: 2, fc_out: 121},
+        value_head: {conv_out: 1, fc_hidden: 64}}
+\end{lstlisting}
+Code thực tế dùng \texttt{value\_fc1} 32 nơ-ron, không phải 64 như file YAML ghi. Khi lệch,
+code là chuẩn. Mạng có khoảng 0,48 triệu tham số.
+
+\section{Con trỏ model}
+\begin{lstlisting}[numbers=none]
+repo: solozy/CaroGame
+models:
+  l5: {file: l5/best.pt, revision: a76d294b...}
+  l6: {file: l6/best.pt, revision: 3ecb6fda...}
+  l8: {file: l8/best.pt, revision: null}
+\end{lstlisting}
+\texttt{model:l5} tải đúng revision đã ghim. L8 chưa push tại thời điểm viết, nên báo cáo dùng
+checkpoint cục bộ. Muốn tái lập L8 cần file \texttt{best.pt} của run gốc.
+
+\section{Ghi đè khi chạy}
+Ví dụ:
+\begin{lstlisting}[numbers=none]
+uv run caro-config experiments/rr8_mode_b arena.workers=1
+uv run python -m caro.arena.tournament experiments/rr8_mode_b arena.workers=1
+uv run python -m caro.training.train_pg training/pg train.init=random run.tag=from_random
+\end{lstlisting}
+Override dùng dạng \texttt{a.b=c}; giá trị đọc theo YAML. Trong file YAML, số mũ phải có dấu
+chấm (\texttt{3.0e-4}), không viết \texttt{3e-4} vì PyYAML đọc thành chuỗi.

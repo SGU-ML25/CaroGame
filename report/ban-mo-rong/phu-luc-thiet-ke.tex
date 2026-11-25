@@ -1,0 +1,118 @@
+\chapter{Phụ lục thiết kế thay thế và độ nhạy}
+\label{app:thiet-ke}
+
+Phụ lục này phân tích các lựa chọn thiết kế và phương án thay thế. Mục đích không phải tuyên bố
+phương án đã chọn là tối ưu, mà để người đọc biết kết quả có thể thay đổi thế nào nếu đổi tham
+số. Những chỗ có số liệu được ghi rõ; những chỗ chỉ là phân tích lý thuyết được ghi là giả
+thuyết.
+
+\section{Tập ứng viên và bán kính}
+\paragraph{Hiện tại.} Các cấp 2--4 dùng \texttt{candidates(radius=2)}, tức ô trống cách quân gần
+nhất không quá 2 theo Chebyshev. Đây là cắt tỉa tiến: nó giảm hệ số rẽ nhánh nhưng có thể loại
+nước tốt.
+\paragraph{Phương án.} Bán kính 1 (hẹp hơn), 3 (rộng hơn), hoặc toàn bàn (không cắt).
+\paragraph{Phân tích.} Với bán kính 1, số ứng viên giảm khoảng một nửa, nhưng các nước tấn công
+xa (ví dụ chặn một dãy chéo ở khoảng cách 2) có thể bị bỏ. Với bán kính 3, số ứng viên tăng
+mạnh, làm cây sâu hơn nhưng chậm hơn. Trong Caro, hầu hết nước chiến thuật nằm trong bán kính
+2 của một quân đã có; bán kính 2 là cân bằng hợp lý. Tuy nhiên, báo cáo chưa đo ablation bán
+kính, nên không thể nói bán kính 2 tốt hơn 1 hay 3 một cách định lượng.
+\paragraph{Khuyến nghị.} Nếu có thời gian, chạy A9: Alpha-Beta độ sâu 4 với bán kính 1, 2, 3
+trên cùng 100 khai cuộc. Đây là ablation rẻ và trả lời trực tiếp câu hỏi cắt tỉa tiến có hại
+không.
+
+\section{Trọng số hàm lượng giá}
+\paragraph{Hiện tại.} \texttt{WEIGHT = (0, 1, 8, 64, 512)} cho số quân 0--4 trong cửa sổ sống.
+\paragraph{Phương án.} Trọng số tuyến tính, bậc hai, hoặc học được; bỏ thành phần phòng thủ
+(\texttt{no\_defense}).
+\paragraph{Bằng chứng.} A7 cho thấy bỏ phòng thủ thay đổi giá trị gốc trên 9/10 thế, tức thành
+phần này có tác dụng. Tuy nhiên, A7 không đo sức chơi; A7b được thiết kế để làm việc đó nhưng
+chưa chạy xong. Trọng số hiện tại là lựa chọn của người thiết kế, không phải kết quả tối ưu.
+\paragraph{Phân tích.} Trọng số tăng theo cấp số nhân phản ánh việc một tứ hở nguy hiểm hơn
+nhiều ba hở. Nếu dùng trọng số tuyến tính, tác tử có thể đánh giá thấp đe doạ 4 quân. Nếu dùng
+trọng số quá lớn, tác tử có thể bỏ qua vị trí trung tâm. Báo cáo không tối ưu trọng số; đây là
+hướng mở rộng.
+
+\section{Hệ số khám phá UCT}
+\paragraph{Hiện tại.} \texttt{c\_uct = 1.4}.
+\paragraph{Phương án.} 0.5 (khai thác mạnh), 1.0, 2.0 (khám phá mạnh).
+\paragraph{Phân tích.} $c$ nhỏ làm MCTS tập trung vào nước đang có kết quả tốt; $c$ lớn làm nó
+thử nhiều nước hơn. Với phần thưởng thưa và phương sai lớn như Caro, $c$ quá nhỏ dễ kẹt ở một
+nhánh; $c$ quá lớn dễ lãng phí mô phỏng. Giá trị 1.4 là mặc định phổ biến, nhưng chưa được
+tối ưu trong dự án. A3/A4 giữ cố định 1.4, nên không đo độ nhạy.
+\paragraph{Khuyến nghị.} Chạy A10: MCTS 400 mô phỏng với $c \in \{0.5, 1.0, 1.4, 2.0\}$ trước
+L2. Rẻ và có thể cho thấy một phần lý do MCTS yếu.
+
+\section{Hệ số PUCT và tiên nghiệm}
+\paragraph{Hiện tại.} \texttt{c\_puct = 1.5}, \texttt{leaf\_eval = value}, \texttt{batch\_leaves = 8}.
+\paragraph{Phương án.} $c_{\text{puct}} \in \{0.5, 1.0, 2.5\}$; \texttt{leaf\_eval = mix} với
+$\lambda=0.5$; \texttt{batch\_leaves} 1 hoặc 32.
+\paragraph{Phân tích.} $c_{\text{puct}}$ điều chỉnh mức tin vào prior. Nếu prior tốt, $c$ nhỏ
+giúp khai thác; nếu prior kém, $c$ lớn giúp tìm kiếm sửa sai. Trong dự án, prior đến từ SL v3
+(top-1 67,8\%), không hoàn hảo, nên $c=1.5$ là lựa chọn trung dung. \texttt{leaf\_eval=mix}
+trộn value với rollout, có thể giảm phương sai nhưng thêm chi phí; chưa đo. \texttt{batch\_leaves}
+ảnh hưởng thông lượng, không ảnh hưởng kết quả lý thuyết nếu virtual loss đúng.
+\paragraph{Khuyến nghị.} Chạy A11: L7 200 mô phỏng với $c_{\text{puct}} \in \{0.5,1.0,1.5,2.5\}$
+trước L3, 100 ván mỗi mức. Đây là ablation có khả năng tạo khác biệt lớn.
+
+\section{Dữ liệu chuyên gia}
+\paragraph{Hiện tại.} \texttt{expert\_v2}: 20\,000 ván, top-k 5, temperature 8.0, depth 3.
+\paragraph{Phương án.} Top-k 3 với temperature 0.5 (v1), top-k 5 với temperature 1, depth 4.
+\paragraph{Bằng chứng.} SL v1 (v1 data) top-1 44,0\%; SL v2 (v2 data) top-1 65,3\%. Đây là bằng
+chứng mạnh rằng đa dạng dữ liệu quan trọng hơn số epoch. Tuy nhiên, chưa tách riêng tác dụng
+của top-k và temperature; cả hai thay đổi cùng lúc.
+\paragraph{Phân tích.} Temperature cao làm nhãn mềm hơn, mạng học nhiều nước hơn nhưng có thể
+học cả nước kém. Top-k lớn tăng đa dạng nhưng giảm chất lượng trung bình. Cân bằng tốt phụ
+thuộc mục tiêu: nếu dùng policy cho PUCT, đa dạng có ích; nếu dùng policy-only, nhãn sắc có
+thể tốt hơn.
+\paragraph{Khuyến nghị.} Chạy A12: huấn luyện 4 mô hình với các cặp (top-k, temperature)
+(3; 0,5), (3; 8), (5; 0,5) và (5; 8), 15 epoch, đấu 100 ván. Đây là ablation đắt nhưng trả lời
+câu hỏi quan trọng về dữ liệu.
+
+\section{Tự chơi và gating}
+\paragraph{Hiện tại.} 200 ván/vòng, 400 mô phỏng, Dirichlet $\alpha=0.3$, $\varepsilon=0.25$,
+temperature 1 cho 8 nước đầu, gating 100 ván ngưỡng 55\%.
+\paragraph{Phương án.} Nhiều ván hơn, ít mô phỏng hơn, Dirichlet khác, ngưỡng 50\% hoặc 60\%.
+\paragraph{Bằng chứng.} L8 chỉ duyệt 6/50 vòng. Ngưỡng 55\% trên 100 ván có lực lượng thấp:
+với chênh lệch thật 5 điểm, xác suất vượt 55\% không cao. Điều này có thể làm quá trình bảo
+thủ, giữ bản cũ dù ứng viên tốt hơn. Ngược lại, ngưỡng thấp có thể chấp nhận ứng viên kém.
+\paragraph{Phân tích.} Gating là một kiểm định thống kê có sai số. Với 100 ván, khoảng Wilson
+của 55\% là khoảng 45--65\%, nên một ứng viên thật 55\% có thể chỉ đạt 45\%. Đây là lý do nên
+dùng nhiều ván hơn hoặc tiêu chí mềm hơn (ví dụ trung bình trượt).
+\paragraph{Khuyến nghị.} Nếu chạy lại L8, tăng gating lên 200 ván và dùng ngưỡng 52--55\%, hoặc
+đánh giá trên tập khai cuộc giữ riêng. Chi phí tăng không lớn so với tự đấu.
+
+\section{Nhiệt độ và chọn nước khi thi đấu}
+\paragraph{Hiện tại.} Policy-only dùng argmax; PUCT dùng nước nhiều lượt thăm nhất; tự chơi
+dùng temperature 1 cho 8 nước đầu.
+\paragraph{Phương án.} Lấy mẫu theo $\pi^{1/\tau}$ khi thi đấu, hoặc temperature thấp.
+\paragraph{Phân tích.} Argmax tối đa hoá xác suất nhưng có thể bỏ qua nước có xác suất thấp mà
+thắng. Lấy mẫu tăng đa dạng nhưng giảm sức mạnh trung bình. Trong thi đấu, argmax thường tốt
+hơn; trong tự chơi, lấy mẫu cần thiết để khám phá. Đây là lý do cấu hình tách hai chế độ.
+
+\section{Kích thước bàn và luật}
+\paragraph{Hiện tại.} Bàn 11×11, luật tự do.
+\paragraph{Phương án.} Bàn 9×9, 15×15, luật chặn hai đầu, Renju.
+\paragraph{Phân tích.} Bàn lớn hơn làm hệ số rẽ nhánh và độ dài ván tăng; bàn nhỏ hơn làm lợi
+thế đi trước mạnh hơn. Luật chặn hai đầu làm mẫu đe doạ phức tạp hơn, có thể làm Alpha-Beta
+mạnh hơn tương đối vì tri thức viết tay quan trọng hơn. Renju có luật cấm, cần mô hình hoá
+trạng thái phức tạp hơn. Báo cáo không thử các biến thể này; kết quả chỉ áp dụng cho cấu hình
+đã dùng.
+
+\section{Bảng tóm tắt}
+\begin{small}
+\begin{longtable}{@{}p{.22\textwidth} p{.18\textwidth} p{.14\textwidth} p{.34\textwidth}@{}}
+\toprule
+\textbf{Tham số} & \textbf{Hiện tại} & \textbf{Đã đo?} & \textbf{Nhận xét} \\
+\midrule
+Bán kính ứng viên & 2 & Không & Nên chạy A9 \\
+Trọng số lượng giá & (1,8,64,512) & A7 một phần & Cần A7b \\
+$c_{\text{uct}}$ & 1.4 & Không & Nên chạy A10 \\
+$c_{\text{puct}}$ & 1.5 & Không & Nên chạy A11 \\
+Dữ liệu expert & top-5, T=8 & Có (SL v1/v2) & Đa dạng giúp top-1 \\
+Dirichlet & 0.3/0.25 & Không & Ảnh hưởng đa dạng tự chơi \\
+Gating & 100 ván, 55\% & Có (L8) & Có thể quá bảo thủ \\
+Nhiệt độ thi đấu & argmax & Không & Hợp lý cho thi đấu \\
+Bàn/luật & 11×11 tự do & Không & Ngoài phạm vi \\
+\bottomrule
+\end{longtable}
+\end{small}

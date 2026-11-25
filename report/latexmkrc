@@ -18,7 +18,8 @@ $bibtex_use = 1.5;
 # Sau mỗi lần chạy latexmk, bản PDF mới được chép thành "<tên>.pdf" cạnh file .tex, với <tên> lấy từ
 # \TenFilePDF (main) hoặc \TenFilePDFProposal (proposal) trong config/metadata.tex. Để trống thì không chép.
 END {
-  my %lenh = (main => 'TenFilePDF', proposal => 'TenFilePDFProposal');
+  my %lenh = (main => 'TenFilePDF', proposal => 'TenFilePDFProposal',
+              'bao-cao-caro' => 'TenFilePDFDayDu');
   my $metadata = '';
   if (open(my $fh, '<', 'config/metadata.tex')) {
     local $/;

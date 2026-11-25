@@ -1,0 +1,227 @@
+\chapter{Phụ lục mã nguồn chọn lọc}
+\label{app:ma-nguon}
+
+Phụ lục này trích các đoạn mã quan trọng để người đọc đối chiếu với mô tả thuật toán. Mã đầy đủ
+nằm trong \repoFile{caro/}. Các đoạn dưới giữ nguyên tên biến và cấu trúc, chỉ lược bớt phần
+không liên quan.
+
+\section{Engine bitboard}
+\subsection{Kiểm tra thắng}
+\begin{lstlisting}[numbers=left]
+def has_five(x: int) -> bool:
+    for d, start in LINES:
+        t = x & (x >> d)             # cặp 2
+        t &= t >> (2 * d)            # dãy 4
+        t &= x >> (4 * d)            # dãy 5
+        if t & start:
+            return True
+    return False
+\end{lstlisting}
+Ba phép dịch và bốn phép AND cho mỗi hướng. Mặt nạ \texttt{start} loại dãy giả do lọt hàng.
+Chi phí tối đa 12 phép dịch cho cả bàn, không phụ thuộc số quân.
+
+\subsection{Đếm cửa sổ song song}
+\begin{lstlisting}[numbers=left]
+def window_counts(me: int, opp: int, d: int, start: int):
+    free = start
+    for k in range(WIN):
+        free &= ~(opp >> (k * d))
+    c0 = c1 = c2 = 0
+    for k in range(WIN):
+        p = (me >> (k * d)) & free
+        carry = c0 & p
+        c0 ^= p
+        carry2 = c1 & carry
+        c1 ^= carry
+        c2 |= carry2                 # tối đa 5 = 101b, không tràn
+    return c0, c1, c2, free
+\end{lstlisting}
+Mỗi cửa sổ có một bộ đếm 3 bit, nhưng các bit được gom theo trọng số (bit-sliced). Phép cộng có
+nhớ thực hiện đồng thời cho mọi cửa sổ.
+
+\subsection{Ô thắng và hàm lượng giá}
+\begin{lstlisting}[numbers=left]
+def winning_squares(me: int, opp: int) -> int:
+    empty = ~(me | opp) & FULL
+    res = 0
+    for d, start in LINES:
+        w4 = exactly(4, *window_counts(me, opp, d, start))
+        for j in range(WIN):
+            res |= (w4 << (j * d)) & empty
+    return res
+
+WEIGHT = (0, 1, 8, 64, 512)
+def evaluate(me: int, opp: int, weight=WEIGHT) -> int:
+    return side_score(me, opp, weight) - side_score(opp, me, weight)
+\end{lstlisting}
+\texttt{winning\_squares} là đầu vào của luật P1/P2, nước bắt buộc của Alpha-Beta và phân tích
+chiến thuật. \texttt{evaluate} là hàm lượng giá của Alpha-Beta; trọng số tăng theo cấp số nhân
+để ưu tiên cửa sổ nhiều quân.
+
+\section{Alpha-Beta}
+\begin{lstlisting}[numbers=left]
+def _negamax(self, me, opp, key, side, depth, alpha, beta, ply, deadline):
+    self._nodes += 1
+    if has_five(opp):
+        return -(WIN_SCORE - ply), []
+    if self.use_tt:
+        entry = self._tt.get(key)
+        if entry is not None:
+            tt_val, tt_depth, tt_flag, tt_move = entry
+            if tt_depth >= depth:
+                if tt_flag == EXACT:
+                    return tt_val, [tt_move] if tt_move >= 0 else []
+                elif tt_flag == LOWER:
+                    alpha = max(alpha, tt_val)
+                elif tt_flag == UPPER:
+                    beta = min(beta, tt_val)
+                if self.pruning and alpha >= beta:
+                    return tt_val, [tt_move] if tt_move >= 0 else []
+    if depth == 0 or deadline.expired():
+        return self._eval_leaf(me, opp), []
+    moves = list(iter_bits(bb_candidates(me, opp, self.radius)))
+    if self.forced_moves:
+        forced = self._forced(me, opp, moves)
+        if forced:
+            moves = forced
+    ordered = self._order_moves(moves, me, opp, key, ply)
+    orig_alpha = alpha
+    best_score = -INF
+    best_pv = []
+    for m in ordered:
+        new_opp = me | (1 << m)
+        new_key = key ^ ZOBRIST[side][m] ^ SIDE_KEY
+        score, pv = self._negamax(opp, new_opp, new_key, side ^ 1,
+                                  depth - 1, -beta, -alpha, ply + 1, deadline)
+        score = -score
+        if score > best_score:
+            best_score, best_pv = score, [m] + pv
+        alpha = max(alpha, score)
+        if self.pruning and alpha >= beta:
+            self._update_killer(m, ply)
+            break
+    if self.use_tt and not deadline.expired():
+        flag = EXACT if orig_alpha < best_score < beta else (LOWER if best_score >= beta else UPPER)
+        self._tt.put(key, best_score, depth, flag, best_pv[0] if best_pv else -1)
+    return best_score, best_pv
+\end{lstlisting}
+Đoạn này chứa đủ bốn thành phần: kiểm tra thắng, tra TT, nước bắt buộc, sắp xếp và cắt tỉa. Chú
+ý thứ tự: kiểm tra thắng trước TT, vì TT không lưu trạng thái kết thúc; và không ghi TT khi hết
+giờ, vì giá trị có thể chưa trọn vẹn.
+
+\section{MCTS}
+\begin{lstlisting}[numbers=left]
+while True:
+    if max_sims is not None and sims >= max_sims:
+        break
+    if deadline.expired() and sims > 0:
+        break
+    g = game.clone()
+    node = root
+    while not node.untried and node.children:
+        node = max(node.children, key=lambda ch: ch.W / ch.N + c_uct * math.sqrt(math.log(node.N) / ch.N))
+        g.step(node.move)
+    if node.untried and not g.is_terminal():
+        m = node.untried.pop(rng.randrange(len(node.untried)))
+        g.step(m)
+        node = node.add_child(move=m, mover=g.side ^ 1,
+                              untried=candidate_moves(g, candidate_radius), key=g.key)
+    z = g.result() if g.is_terminal() else rollout_fast(g.bb[0], g.bb[1], g.side, rng,
+                                                        rollout_mode, rollout_radius)
+    curr = node
+    while curr is not None:
+        curr.N += 1
+        if curr.mover is not None:
+            curr.W += z if curr.mover == 0 else -z
+        curr = curr.parent
+    sims += 1
+\end{lstlisting}
+Đoạn này là lõi bốn bước. \texttt{mover} lưu bên đã đi nước dẫn tới nút, để lan ngược đúng dấu.
+\texttt{rollout\_fast} chỉ kiểm tra \texttt{has\_five} trên bitboard của người vừa đi, không
+kiểm tra lại toàn bàn.
+
+\section{PUCT}
+\begin{lstlisting}[numbers=left]
+def select_child(node, c_puct):
+    sqrt_n = math.sqrt(max(1, node.N + node.vl))
+    best, best_score = node.children[0], -math.inf
+    for ch in node.children:
+        n = ch.N + ch.vl
+        q = -(ch.W + ch.vl) / n if n else 0.0
+        score = q + c_puct * ch.prior * sqrt_n / (1 + n)
+        if score > best_score:
+            best, best_score = ch, score
+    return best
+
+@staticmethod
+def _backup(path, value, release):
+    for node in reversed(path):
+        node.N += 1
+        node.W += value
+        if release:
+            node.vl -= 1
+        value = -value
+\end{lstlisting}
+\texttt{Q} của con theo góc nhìn cha là $-\frac{W+vl}{N+vl}$ vì $W$ lưu theo góc nhìn bên đi ở
+con. \texttt{vl} là virtual loss, giúp các lá trong cùng lô khác nhau. \texttt{\_backup} đổi dấu
+mỗi tầng.
+
+\section{Huấn luyện}
+\subsection{SL}
+\begin{lstlisting}[numbers=left]
+for epoch in range(epochs):
+    model.train()
+    for states, policies, values in train_loader:
+        states, policies, values = states.to(device), policies.to(device), values.to(device)
+        optimizer.zero_grad()
+        pred_policies, pred_values = model(states)
+        loss_p = criterion_policy(pred_policies, policies)
+        loss_v = criterion_value(pred_values.squeeze(-1), values)
+        loss = loss_p + c_weight * loss_v
+        loss.backward()
+        optimizer.step()
+    if avg_val_loss < best_val_loss:
+        torch.save(model.state_dict(), out_dir / "latest.pt")
+\end{lstlisting}
+Điểm quan trọng: \texttt{values} đã được đổi sang góc nhìn người đi trước khi vào vòng lặp
+(\texttt{mover\_relative\_values}). Nếu bỏ bước này, value head học sai dấu ở thế O đi.
+
+\subsection{REINFORCE}
+\begin{lstlisting}[numbers=left]
+logits, v = model(x, mask)
+v = v.squeeze(1)
+logp = F.log_softmax(logits / temperature, dim=1)
+chosen = logp.gather(1, action[:, None]).squeeze(1)
+advantage = z - v.detach()
+policy_loss = -(advantage * chosen).mean()
+value_loss = F.mse_loss(v, z)
+entropy = -(logp.exp() * logp.masked_fill(~mask, 0.0)).sum(dim=1).mean()
+loss = policy_loss + value_coef * value_loss - entropy_coef * entropy
+\end{lstlisting}
+\texttt{advantage} dùng \texttt{v.detach()} để baseline không chảy gradient vào policy. Entropy
+được tính trên các ô hợp lệ.
+
+\subsection{AlphaZero}
+\begin{lstlisting}[numbers=left]
+logits, pred = model(states, legal)
+log_probs = F.log_softmax(logits, dim=1).masked_fill(~legal, 0.0)
+policy_loss = -(policy * log_probs).sum(dim=1).mean()
+value_loss = F.mse_loss(pred.squeeze(1), values)
+loss = policy_loss + value_loss
+optimizer.zero_grad(set_to_none=True)
+loss.backward()
+optimizer.step()
+\end{lstlisting}
+Khác SL ở chỗ nhãn policy là phân phối thăm $\pi$ của PUCT, không phải nhãn chuyên gia. Value
+học từ kết quả ván $z$ theo góc nhìn người đi.
+
+\section{Ghi chú đọc mã}
+Ba điểm dễ nhầm khi đọc mã:
+\begin{enumerate}
+  \item \texttt{result()} trả theo X (+1 X thắng), còn \texttt{step()} trả reward theo người
+        vừa đi. Hai quy ước này khác nhau; mọi chỗ dùng phải kiểm tra.
+  \item \texttt{W} trong MCTS lưu theo góc nhìn \texttt{mover} của nút, không theo X. Khi tính
+        Q cho cha, phải đổi dấu.
+  \item \texttt{board\_to\_tensor} dùng góc nhìn người đang đi; kênh 2 bằng 1 nếu X đi. Nếu đổi
+        quy ước này, phải đổi cả nhãn value và policy.
+\end{enumerate}

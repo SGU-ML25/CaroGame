@@ -1,0 +1,50 @@
+{
+  "status": "ok",
+  "ended": "2026-11-25T23:39:47",
+  "duration_s": 437.617,
+  "games": 400,
+  "metrics": 0,
+  "elapsed_s": 437.6,
+  "per_level": {
+    "L5-PolicySL": {
+      "n": 100,
+      "x_wins": 62,
+      "o_wins": 36,
+      "draws": 2,
+      "x_rate": 0.63,
+      "o_rate": 0.37,
+      "advantage": 0.26,
+      "plies_mean": 32.6
+    },
+    "L6-PolicyRL": {
+      "n": 100,
+      "x_wins": 50,
+      "o_wins": 36,
+      "draws": 14,
+      "x_rate": 0.57,
+      "o_rate": 0.43,
+      "advantage": 0.14,
+      "plies_mean": 41.72
+    },
+    "L7-PUCT": {
+      "n": 100,
+      "x_wins": 80,
+      "o_wins": 14,
+      "draws": 6,
+      "x_rate": 0.83,
+      "o_rate": 0.17,
+      "advantage": 0.66,
+      "plies_mean": 33.7
+    },
+    "L8-AlphaZero": {
+      "n": 100,
+      "x_wins": 50,
+      "o_wins": 22,
+      "draws": 28,
+      "x_rate": 0.64,
+      "o_rate": 0.36,
+      "advantage": 0.28,
+      "plies_mean": 56.86
+    }
+  }
+}

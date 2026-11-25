@@ -1,0 +1,36 @@
+2026-11-23 19:45:50 INFO    run train/alphazero/20261123-194550_gpu — config training/alphazero, seed 2026
+2026-11-23 19:45:52 INFO    L8 init=/home/solozy/.cache/huggingface/hub/models--solozy--CaroGame/snapshots/a76d294b369af4440e64037a176eab3e14e2ba51/l5/best.pt, device=cuda
+2026-11-23 19:45:52 INFO    L8 vòng 1: tự đấu 200 ván
+2026-11-23 20:02:41 INFO    L8 vòng 1: loss 2.7671 · duyệt=False · điểm đối chứng=0.395
+2026-11-23 20:02:41 INFO    L8 vòng 2: tự đấu 200 ván
+2026-11-23 20:19:12 INFO    L8 vòng 2: loss 2.8461 · duyệt=False · điểm đối chứng=0.455
+2026-11-23 20:19:12 INFO    L8 vòng 3: tự đấu 200 ván
+2026-11-23 20:36:09 INFO    L8 vòng 3: loss 2.8701 · duyệt=False · điểm đối chứng=0.485
+2026-11-23 20:36:09 INFO    L8 vòng 4: tự đấu 200 ván
+2026-11-23 20:52:43 INFO    L8 vòng 4: loss 2.8895 · duyệt=False · điểm đối chứng=0.49
+2026-11-23 20:52:43 INFO    L8 vòng 5: tự đấu 200 ván
+2026-11-23 21:10:03 INFO    L8 vòng 5: loss 2.9040 · duyệt=False · điểm đối chứng=0.525
+2026-11-23 21:10:03 INFO    L8 vòng 6: tự đấu 200 ván
+2026-11-23 21:27:14 INFO    L8 vòng 6: loss 2.9073 · duyệt=True · điểm đối chứng=0.595
+2026-11-23 21:27:14 INFO    L8 vòng 7: tự đấu 200 ván
+2026-11-23 21:42:22 INFO    L8 vòng 7: loss 2.8302 · duyệt=False · điểm đối chứng=0.425
+2026-11-23 21:42:22 INFO    L8 vòng 8: tự đấu 200 ván
+2026-11-23 21:58:15 INFO    L8 vòng 8: loss 2.8258 · duyệt=False · điểm đối chứng=0.505
+2026-11-23 21:58:15 INFO    L8 vòng 9: tự đấu 200 ván
+2026-11-23 22:15:06 INFO    L8 vòng 9: loss 2.8229 · duyệt=False · điểm đối chứng=0.475
+2026-11-23 22:15:06 INFO    L8 vòng 10: tự đấu 200 ván
+2026-11-23 22:29:31 INFO    L8 vòng 10: loss 2.8198 · duyệt=False · điểm đối chứng=0.47
+2026-11-23 22:29:31 INFO    L8 vòng 11: tự đấu 200 ván
+2026-11-23 22:29:49 ERROR   run lỗi
+Traceback (most recent call last):
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/training/alphazero_loop.py", line 171, in train
+    run.log.info("L8 vòng %d: tự đấu %d ván", iteration, sp["games_per_iter"])
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/training/alphazero_loop.py", line 36, in selfplay_game
+    move = agent.select_action(game, agent.limits)
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/puct.py", line 202, in select_action
+    while node.expanded:
+            ^^^^^^^^^^^^
+  File "/mnt/data/1_Projects/AAI/CaroGame/caro/agents/puct.py", line 136, in _expand
+KeyboardInterrupt
+2026-11-23 22:29:49 INFO    kết thúc: interrupted sau 9839.0 s
