@@ -1,0 +1,5 @@
+2026-11-26 14:39:55 INFO    run tournament/smoke_l7_l8/20261126-143954 — config experiments/smoke_l7_l8, seed 2026
+2026-11-26 14:39:55 INFO    Bắt đầu giải đấu: 10 ván cờ, 1 workers, chế độ round_robin.
+2026-11-26 14:46:30 INFO    Bảng điểm chung cuộc: {'L7-PUCT': 6.0, 'L8-AlphaZero': 4.0}
+2026-11-26 14:46:30 INFO    Đã lưu báo cáo thống kê tại: C:\Users\ASUS VIVOBOOK\CaroGame\runs\tournament\smoke_l7_l8\20261126-143954\reports
+2026-11-26 14:46:30 INFO    kết thúc: ok sau 395.2 s

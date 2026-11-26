@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "ended": "2026-11-26T22:12:39",
+  "duration_s": 7503.523,
+  "games": 1200,
+  "metrics": 0,
+  "score": {
+    "L7-PUCT": 1136.5,
+    "L1-Random": 0.0,
+    "L2-Rule": 8.5,
+    "L3-AlphaBeta": 29.0,
+    "L4-MCTS": 0.0,
+    "L5-PolicySL": 5.5,
+    "L6-PolicyRL": 20.5
+  }
+}
