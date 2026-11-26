@@ -1,2 +1,5 @@
 2026-11-26 04:21:06 INFO    run tournament/l8_vs_katagomo_empty_10/20261126-042106 — config experiments/main_mode_a, seed 2026
 2026-11-26 04:21:06 INFO    Bắt đầu giải đấu: 10 ván cờ, 2 workers, chế độ round_robin.
+2026-11-26 04:27:41 INFO    Bảng điểm chung cuộc: {'KataGomo-11': 6.5, 'L8-AlphaZero': 3.5}
+2026-11-26 04:27:41 INFO    Đã lưu báo cáo thống kê tại: /mnt/data/1_Projects/AAI/CaroGame/runs/tournament/l8_vs_katagomo_empty_10/20261126-042106/reports
+2026-11-26 04:27:41 INFO    kết thúc: ok sau 395.5 s
