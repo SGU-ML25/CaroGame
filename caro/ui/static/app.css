@@ -148,6 +148,28 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .budget { margin-bottom: 8px; }
 .note { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
 
+.eve-group {
+  min-width: 0;
+  margin: 0 0 10px;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafc;
+}
+.eve-group legend { padding: 0 5px; font-weight: 600; }
+.eve-group-x legend { color: var(--x); }
+.eve-group-o legend { color: var(--o); }
+.eve-group .field { font-size: 14px; }
+.eve-group .field select, .eve-group input[type="number"] { flex: 0 1 58%; min-width: 0; }
+.eve-group input[type="range"] { width: clamp(48px, 15vw, 100px); margin: 0; }
+.eve-group output { min-width: 0; white-space: nowrap; }
+.eve-group .field:last-child, .eve-group .budget, .eve-group .note { margin-bottom: 0; }
+.eve-actions { flex-wrap: wrap; }
+#eve-review { margin: 12px 0 0; }
+.eve-review-controls { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.eve-review-controls button { padding-inline: 6px; }
+.eve-review-controls output { color: var(--muted); text-align: center; }
+
 .stats { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 0; font-size: 14px; }
 .stats dt { color: var(--muted); }
 .stats dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }

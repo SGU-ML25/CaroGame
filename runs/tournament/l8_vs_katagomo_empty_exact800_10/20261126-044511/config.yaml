@@ -1,0 +1,87 @@
+project: caro-11x11
+seed: 2026
+device: auto
+engine:
+  size: 11
+  win_length: 5
+  layout: stride11
+experiment:
+  kind: tournament
+  name: l8_vs_katagomo_empty_exact800_10
+  description: ''
+  rq:
+  - RQ1
+  - RQ2
+  - RQ4
+  config: experiments/main_mode_b
+run:
+  root: runs
+  tag: null
+  index: runs/index.jsonl
+log:
+  level: INFO
+  console: true
+  file: run.log
+  games: games.jsonl
+  metrics: metrics.jsonl
+  per_move_stats: true
+  flush_every: 1
+checkpoint:
+  dir: checkpoints
+  keep_last: 5
+budget:
+  mode: fixed
+  time_ms: null
+  max_depth: 4
+  max_sims: 800
+arena:
+  format: round_robin
+  games_per_pair: 10
+  swap_colors: true
+  max_plies: 121
+  workers: 4
+  openings:
+    count: 1
+    plies:
+    - 0
+    - 0
+    region: 5
+    seed: 7
+    file: null
+  stats:
+    ci: wilson
+    confidence: 0.95
+    bootstrap: 1000
+    elo: false
+agents:
+- id: L8-AlphaZero
+  level: 8
+  kind: puct
+  params:
+    checkpoint: model:l8
+    c_puct: 1.5
+    leaf_eval: value
+    dirichlet: null
+    batch_leaves: 8
+  source: agents/l8_alphazero
+  limits:
+    mode: fixed
+    time_ms: null
+    max_depth: 4
+    max_sims: 800
+- id: KataGomo-11
+  level: 8
+  kind: katagomo
+  params:
+    binary: null
+    model: null
+    config: /tmp/caro-katagomo-fixed800-5zn7qqkf.cfg
+    max_visits: 800
+    threads: 1
+    move_timeout: 120
+  limits:
+    mode: fixed
+    time_ms: null
+    max_depth: 4
+    max_sims: 800
+  source: agents/l9_katagomo

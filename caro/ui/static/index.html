@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Caro 11×11</title>
-  <link rel="stylesheet" href="/static/app.css">
+  <link rel="stylesheet" href="/static/app.css?v=2">
 </head>
 <body>
   <header class="topbar">
@@ -39,7 +39,7 @@
             <label><input type="radio" name="pve-side" value="O"> O (đi sau)</label>
           </div>
         </div>
-        <div class="budget" data-agents="pve-agent"></div>
+        <div class="budget" data-agent="pve-agent"></div>
         <label class="field">Seed <input id="pve-seed" type="number" min="0" step="1"></label>
         <div class="actions">
           <button id="pve-new" class="primary">Ván mới</button>
@@ -50,17 +50,44 @@
       <!-- Máy – máy -->
       <section id="panel-eve" class="card" hidden>
         <h2>Ván máy – máy</h2>
-        <label class="field">Bên X <select id="eve-x"></select></label>
-        <label class="field">Bên O <select id="eve-o"></select></label>
-        <label class="field">Khai cuộc <select id="eve-opening"></select></label>
-        <div class="budget" data-agents="eve-x eve-o"></div>
-        <label class="field">Seed <input id="eve-seed" type="number" min="0" step="1"></label>
-        <label class="field">Chờ giữa hai nước <span><input id="eve-speed" type="range" min="0" max="2000" step="100" value="400"> <output id="eve-speed-out"></output></span></label>
-        <div class="actions">
+        <fieldset class="eve-group">
+          <legend>Cấu hình chung</legend>
+          <label class="field">Khai cuộc
+            <select id="eve-opening">
+              <option value="plies:0">Bàn trống</option>
+              <option value="plies:2" selected>Ngẫu nhiên 2 nước</option>
+              <option value="plies:4">Ngẫu nhiên 4 nước</option>
+            </select>
+          </label>
+          <label class="field">Seed <input id="eve-seed" type="number" min="0" step="1"></label>
+          <div class="field">
+            <label for="eve-speed">Chờ giữa hai nước</label>
+            <span><input id="eve-speed" type="range" min="0" max="2000" step="100" value="400"> <output id="eve-speed-out" for="eve-speed"></output></span>
+          </div>
+        </fieldset>
+        <fieldset class="eve-group eve-group-x">
+          <legend>Tác tử X</legend>
+          <label class="field">Tác tử <select id="eve-x"></select></label>
+          <div class="budget" data-agent="eve-x"></div>
+        </fieldset>
+        <fieldset class="eve-group eve-group-o">
+          <legend>Tác tử O</legend>
+          <label class="field">Tác tử <select id="eve-o"></select></label>
+          <div class="budget" data-agent="eve-o"></div>
+        </fieldset>
+        <div class="actions eve-actions">
           <button id="eve-new" class="primary">Ván mới</button>
           <button id="eve-run">Chạy</button>
           <button id="eve-step">Từng nước</button>
         </div>
+        <fieldset id="eve-review" class="eve-group" hidden>
+          <legend>Xem lại ván</legend>
+          <div class="eve-review-controls">
+            <button id="eve-prev">← Nước trước</button>
+            <output id="eve-ply" aria-label="Nước đang xem" aria-live="polite"></output>
+            <button id="eve-next">Nước sau →</button>
+          </div>
+        </fieldset>
       </section>
 
       <!-- Xem lại -->
@@ -94,6 +121,6 @@
       </section>
     </aside>
   </main>
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=2"></script>
 </body>
 </html>

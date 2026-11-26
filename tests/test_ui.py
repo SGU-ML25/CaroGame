@@ -147,6 +147,25 @@ def test_ai_vs_ai_alphabeta_is_deterministic_for_seed(client):
     assert b["moves"] == a["moves"]                # cùng seed + ngân sách fixed → cùng ván
 
 
+def test_same_agent_uses_separate_budgets_by_side(client):
+    game = new_game(client, x="L3-AlphaBeta", o="L3-AlphaBeta", seed=7, opening_plies=2,
+                    budget_x={"mode": "fixed", "max_depth": 1},
+                    budget_o={"mode": "fixed", "max_depth": 2})
+    gid = game["id"]
+    for depth in (1, 2):
+        response = client.post(f"/games/{gid}/ai-move")
+        assert response.status_code == 200, response.text
+        assert response.json()["last_stats"]["depth"] == depth
+
+
+def test_side_budget_override_can_use_a_different_mode(client):
+    game = new_game(client, budget={"mode": "fixed", "max_depth": 2},
+                    budget_o={"mode": "time", "time_ms": 50})
+    assert game["budget_x"] == game["budget"]
+    assert game["budget_o"] == {"mode": "time", "time_ms": 50, "max_depth": None, "max_sims": None}
+    assert client.post("/games", json={"budget_x": {"mode": "time"}}).status_code == 400
+
+
 def test_time_budget_is_accepted_and_invalid_budgets_rejected(client):
     game = new_game(client, x="L3-AlphaBeta", budget={"mode": "time", "time_ms": 50})
     assert game["budget"]["time_ms"] == 50

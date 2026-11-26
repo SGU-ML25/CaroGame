@@ -19,9 +19,11 @@ const ui = {
   agents: [],
   budgets: null,
   game: null,        // ván đang chơi, đúng dạng GET /games/{id}
+  evePly: null,      // vị trí đang xem lại; null = hiển thị nước mới nhất
   replay: null,      // {record, ply}
   busy: false,       // đang chờ tác tử đi
-  running: false,    // máy – máy đang tự chạy
+  creatingEve: false,
+  running: null,     // định danh lượt chạy tự động hiện tại
   playing: false,    // đang phát replay
   token: 0,          // tăng mỗi khi đổi ván / chế độ, để bỏ qua phản hồi của ván cũ
   heat: null,        // lựa chọn bản đồ nhiệt của người dùng; null = tự chọn
@@ -99,6 +101,14 @@ function view() {
   }
   const g = ui.game;
   if (!g) return { moves: [], stats: [], winning: [], opening: 0 };
+  if (ui.mode === "eve" && ui.evePly !== null && ui.evePly < g.moves.length) {
+    return {
+      moves: g.moves.slice(0, ui.evePly),
+      stats: g.stats.slice(0, ui.evePly),
+      winning: [],
+      opening: g.opening_plies,
+    };
+  }
   return { moves: g.moves, stats: g.stats, winning: g.winning_line, opening: g.opening_plies };
 }
 
@@ -280,8 +290,17 @@ function renderControls() {
     $("pve-undo").disabled = ui.busy || !undoable;
   }
   $("eve-run").textContent = ui.running ? "Tạm dừng" : "Chạy";
-  $("eve-run").disabled = Boolean(g) && !live;     // chưa có ván: nút Chạy tự tạo ván mới
-  $("eve-step").disabled = !live || ui.running || ui.busy;
+  $("eve-new").disabled = ui.creatingEve;
+  $("eve-run").disabled = ui.creatingEve || Boolean(g && !live) || (ui.busy && !ui.running);
+  $("eve-step").disabled = ui.creatingEve || !live || Boolean(ui.running) || ui.busy;
+  const reviewable = ui.mode === "eve" && g?.to_play === null;
+  $("eve-review").hidden = !reviewable;
+  if (reviewable) {
+    const ply = ui.evePly ?? g.moves.length;
+    $("eve-ply").textContent = `${ply} / ${g.moves.length}`;
+    $("eve-prev").disabled = ui.creatingEve || ply === 0;
+    $("eve-next").disabled = ui.creatingEve || ply === g.moves.length;
+  }
   $("replay-play").textContent = ui.playing ? "Tạm dừng" : "Phát";
   if (ui.replay) {
     const { record, ply } = ui.replay;
@@ -304,7 +323,7 @@ function render() {
 
 // ---- ngân sách --------------------------------------------------------------
 function buildBudget(container) {
-  const id = container.dataset.agents.split(" ")[0];
+  const id = container.dataset.agent;
   container.innerHTML = `
     <div class="field budget-mode">
       <span>Ngân sách</span>
@@ -319,28 +338,25 @@ function buildBudget(container) {
       <input type="number" min="1" max="8" step="1" value="${ui.budgets.fixed.max_depth}"></label>
     <label class="field" data-key="max_sims">Số mô phỏng
       <input type="number" min="1" max="100000" step="100" value="${ui.budgets.fixed.max_sims}"></label>
-    <p class="note">Tác tử đã chọn không dùng ngân sách: đi ngay theo luật.</p>`;
+    <p class="note">Tác tử này không dùng ngân sách tìm kiếm.</p>`;
   container.addEventListener("change", () => refreshBudget(container));
-}
-
-function selectedAgents(container) {
-  return container.dataset.agents.split(" ")
-    .map((id) => ui.agents.find((a) => a.id === $(id).value))
-    .filter(Boolean);
+  $(id).addEventListener("change", () => refreshBudget(container));
 }
 
 function refreshBudget(container) {
-  const keys = new Set(selectedAgents(container).flatMap((a) => a.budget));
+  const agent = ui.agents.find((a) => a.id === $(container.dataset.agent).value);
+  const keys = agent?.budget ?? [];
   const mode = container.querySelector('input[type="radio"]:checked').value;
   const active = mode === "time" ? ["time_ms"] : ["max_depth", "max_sims"];
-  container.querySelector(".budget-mode").hidden = keys.size === 0;
-  container.querySelector(".note").hidden = keys.size !== 0;
+  container.querySelector(".budget-mode").hidden = keys.length === 0;
+  container.querySelector(".note").hidden = keys.length !== 0;
   for (const label of container.querySelectorAll("[data-key]")) {
-    label.hidden = !(keys.has(label.dataset.key) && active.includes(label.dataset.key));
+    label.hidden = !(keys.includes(label.dataset.key) && active.includes(label.dataset.key));
   }
 }
 
-function readBudget(container) {
+function readBudget(id) {
+  const container = document.querySelector(`[data-agent="${id}"]`);
   // Tác tử không dùng ngân sách thì ô chọn chế độ bị ẩn nhưng vẫn giữ lựa chọn cũ: không gửi lựa chọn đó đi.
   if (container.querySelector(".budget-mode").hidden) return { mode: "fixed" };
   const mode = container.querySelector('input[type="radio"]:checked').value;
@@ -401,7 +417,7 @@ async function newPve() {
       x: human === "X" ? HUMAN : agent,
       o: human === "O" ? HUMAN : agent,
       seed: readSeed("pve-seed"),
-      budget: readBudget(document.querySelector('[data-agents="pve-agent"]')),
+      budget: readBudget("pve-agent"),
     };
     ui.busy = false;
     const g = await api("/games", { method: "POST", body });
@@ -453,61 +469,72 @@ async function undo() {
 // ---- máy – máy --------------------------------------------------------------
 async function fillOpenings() {
   const select = $("eve-opening");
-  select.replaceChildren(
-    new Option("Bàn trống", "plies:0"),
-    new Option("Ngẫu nhiên 2 nước", "plies:2"),
-    new Option("Ngẫu nhiên 4 nước", "plies:4"),
-  );
-  const openings = await api("/openings");
-  for (const o of openings) select.add(new Option(`Khai cuộc ${o.id} (${o.moves.length} nước)`, `id:${o.id}`));
-  select.value = "plies:2";
+  try {
+    const openings = await api("/openings");
+    for (const o of openings) select.add(new Option(`Khai cuộc ${o.id} (${o.moves.length} nước)`, `id:${o.id}`));
+  } catch {
+    const unavailable = new Option("Không tải được khai cuộc từ giải đấu");
+    unavailable.disabled = true;
+    select.add(unavailable);
+  }
 }
 
 async function newEve() {
   const token = ++ui.token;
-  ui.running = false;
+  ui.running = null;
   ui.busy = false;
+  ui.creatingEve = true;
   showError(null);
+  render();
   try {
     const [kind, value] = $("eve-opening").value.split(/:(.*)/s);
     const body = {
       x: $("eve-x").value,
       o: $("eve-o").value,
       seed: readSeed("eve-seed"),
-      budget: readBudget(document.querySelector('[data-agents="eve-x eve-o"]')),
+      budget_x: readBudget("eve-x"),
+      budget_o: readBudget("eve-o"),
     };
     if (kind === "id") body.opening_id = value;
     else body.opening_plies = Number(value);
     const g = await api("/games", { method: "POST", body });
     if (token !== ui.token) return;
     ui.game = g;
+    ui.evePly = null;
+    return g;
   } catch (error) {
     if (token === ui.token) showError(error);
+  } finally {
+    if (token === ui.token) {
+      ui.creatingEve = false;
+      render();
+    }
   }
-  render();
 }
 
 async function runEve() {
+  if (!ui.game || ui.game.to_play === null || ui.busy || ui.running) return;
   const token = ui.token;
-  ui.running = true;
+  const run = Symbol();
+  ui.running = run;
   render();
   try {
-    while (ui.running && token === ui.token && ui.game && ui.game.to_play !== null) {
+    while (ui.running === run && ui.game.to_play !== null) {
       await aiTurn(token);
-      if (token !== ui.token || !ui.running || ui.game.to_play === null) break;
+      if (ui.running !== run || ui.game.to_play === null) break;
       await sleep(Number($("eve-speed").value));
     }
   } catch (error) {
     if (token === ui.token) showError(error);
   }
-  if (token === ui.token) {
-    ui.running = false;
+  if (ui.running === run) {
+    ui.running = null;
     render();
   }
 }
 
 async function stepEve() {
-  if (!ui.game || ui.running || ui.busy || ui.game.to_play === null) return;
+  if (ui.creatingEve || !ui.game || ui.running || ui.busy || ui.game.to_play === null) return;
   const token = ui.token;
   showError(null);
   try {
@@ -515,6 +542,14 @@ async function stepEve() {
   } catch (error) {
     if (token === ui.token) showError(error);
   }
+}
+
+function seekEve(offset) {
+  const g = ui.game;
+  if (ui.mode !== "eve" || ui.creatingEve || g?.to_play !== null) return;
+  const ply = (ui.evePly ?? g.moves.length) + offset;
+  ui.evePly = Math.max(0, Math.min(ply, g.moves.length));
+  render();
 }
 
 // ---- xem lại ----------------------------------------------------------------
@@ -605,8 +640,10 @@ function setMode(mode) {
   ui.token++;
   ui.mode = mode;
   ui.game = null;
+  ui.evePly = null;
   ui.busy = false;
-  ui.running = false;
+  ui.creatingEve = false;
+  ui.running = null;
   ui.playing = false;
   showError(null);
   for (const tab of document.querySelectorAll(".tabs button")) {
@@ -633,7 +670,6 @@ async function main() {
     fillAgents($("pve-agent"), 2);
     fillAgents($("eve-x"), 3);
     fillAgents($("eve-o"), 2);
-    await fillOpenings();
   } catch (error) {
     showError(error);
     $("status").textContent = "Không tải được dữ liệu";
@@ -648,27 +684,22 @@ async function main() {
   $("pve-new").addEventListener("click", newPve);
   $("pve-undo").addEventListener("click", undo);
   $("eve-new").addEventListener("click", newEve);
-  $("eve-run").addEventListener("click", () => {
+  $("eve-run").addEventListener("click", async () => {
     if (ui.running) {
-      ui.running = false;
+      ui.running = null;
       render();
-    } else if (ui.game) {
-      showError(null);
-      runEve();
-    } else {
-      newEve().then(() => { if (ui.game) runEve(); });
+      return;
     }
+    showError(null);
+    if (ui.game || await newEve()) runEve();
   });
   $("eve-step").addEventListener("click", stepEve);
+  $("eve-prev").addEventListener("click", () => seekEve(-1));
+  $("eve-next").addEventListener("click", () => seekEve(1));
   $("heat").addEventListener("change", (e) => {
     ui.heat = e.target.value;
     render();
   });
-  for (const id of ["pve-agent", "eve-x", "eve-o"]) {
-    $(id).addEventListener("change", () => {
-      for (const container of document.querySelectorAll(".budget")) refreshBudget(container);
-    });
-  }
   let filterTimer;
   $("replay-q").addEventListener("input", () => {
     clearTimeout(filterTimer);
@@ -686,6 +717,7 @@ async function main() {
   bindOutput($("eve-speed"), $("eve-speed-out"), (v) => `${v} ms`);
   bindOutput($("replay-speed"), $("replay-speed-out"), (v) => `${v} ms`);
   render();
+  fillOpenings();
   newPve();
 }
 

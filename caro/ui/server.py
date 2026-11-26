@@ -17,7 +17,7 @@ import time
 import uuid
 from collections import OrderedDict
 from collections.abc import Callable, Iterator
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +52,8 @@ class NewGame(BaseModel):
     o: str = HUMAN
     seed: int = 0
     budget: dict[str, Any] | None = None
+    budget_x: dict[str, Any] | None = None                # ngân sách riêng cho X; mặc định dùng budget
+    budget_o: dict[str, Any] | None = None                # ngân sách riêng cho O; mặc định dùng budget
     opening_id: int | str | None = None                  # một khai cuộc trong file của arena
     opening_plies: int = Field(default=0, ge=0, le=8)    # hoặc sinh ngẫu nhiên theo seed trong vùng giữa bàn
 
@@ -67,6 +69,7 @@ class Session:
     players: tuple[str, str]
     agents: tuple[Agent | None, Agent | None]
     limits: Limits
+    side_limits: tuple[Limits, Limits]
     seed: int
     opening_id: int | str | None
     floor: int                             # số nước khai cuộc; không lùi qua mốc này
@@ -216,8 +219,9 @@ def create_app(
         return {
             "id": s.id,
             "players": {"X": s.players[X], "O": s.players[O]},
-            "budget": {"mode": s.limits.mode, "time_ms": s.limits.time_ms,
-                       "max_depth": s.limits.max_depth, "max_sims": s.limits.max_sims},
+            "budget": asdict(s.limits),
+            "budget_x": asdict(s.side_limits[X]),
+            "budget_o": asdict(s.side_limits[O]),
             "seed": s.seed,
             "opening_id": s.opening_id,
             "opening_plies": s.floor,
@@ -247,13 +251,18 @@ def create_app(
     @app.post("/games", status_code=201)
     async def new_game(body: NewGame) -> dict:
         limits = parse_budget(body.budget, fixed)
+        side_limits = (
+            parse_budget(body.budget_x, fixed) if body.budget_x is not None else limits,
+            parse_budget(body.budget_o, fixed) if body.budget_o is not None else limits,
+        )
         try:
             game = await run_in_threadpool(CaroGame.from_moves, opening_moves(body))
         except IllegalMoveError as e:
             raise HTTPException(400, f"khai cuộc không hợp lệ: {e}") from None
         built = await run_in_threadpool(
             lambda: (build_agent(body.x, body.seed, "X"), build_agent(body.o, body.seed, "O")))
-        session = Session(uuid.uuid4().hex[:12], game, (body.x, body.o), built, limits, body.seed, body.opening_id,
+        session = Session(uuid.uuid4().hex[:12], game, (body.x, body.o), built, limits, side_limits,
+                          body.seed, body.opening_id,
                           floor=len(game.history), stats=[{} for _ in game.history])
         games[session.id] = session
         while len(games) > MAX_GAMES:
@@ -295,7 +304,7 @@ def create_app(
                 raise HTTPException(409, "đang là lượt của người chơi")
             t0 = time.perf_counter()
             try:
-                action = await run_in_threadpool(agent.select_action, g.clone(), s.limits)
+                action = await run_in_threadpool(agent.select_action, g.clone(), s.side_limits[side])
             except ConfigError as e:      # vd. KataGomo chưa cài
                 raise HTTPException(400, str(e)) from None
             elapsed = (time.perf_counter() - t0) * 1000
