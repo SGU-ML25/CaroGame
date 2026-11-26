@@ -93,7 +93,25 @@ def test_performance_old_log_defaults_to_even_opening():
     assert result["A"]["time_mean_ms"] == 10
     assert result["B"]["time_mean_ms"] == 20
 
+def test_performance_separates_nodes_and_sims():
+    df = pd.DataFrame([
+        {
+            "agent_x": "L7-PUCT",
+            "agent_o": "L8-AlphaZero",
+            "opening_plies": 0,
+            "time_ms": [10, 20],
+            "nodes": [0, 0],
+            "sims": [800, 600],
+        }
+    ])
 
+    result = calculate_performance(df)
+
+    assert result["L7-PUCT"]["nodes_mean"] == 0
+    assert result["L7-PUCT"]["sims_mean"] == 800
+
+    assert result["L8-AlphaZero"]["nodes_mean"] == 0
+    assert result["L8-AlphaZero"]["sims_mean"] == 600
 def test_detailed_record_by_turn():
     df = pd.DataFrame([
         {

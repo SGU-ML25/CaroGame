@@ -1,0 +1,54 @@
+{
+  "detailed_record_by_turn": {
+    "L7-PUCT": {
+      "first_hand_X": {
+        "wins": 2,
+        "draws": 2,
+        "losses": 1
+      },
+      "second_hand_O": {
+        "wins": 3,
+        "draws": 0,
+        "losses": 2
+      },
+      "total": {
+        "wins": 5,
+        "draws": 2,
+        "losses": 3,
+        "score": 0.6
+      }
+    },
+    "L8-AlphaZero": {
+      "first_hand_X": {
+        "wins": 2,
+        "draws": 0,
+        "losses": 3
+      },
+      "second_hand_O": {
+        "wins": 1,
+        "draws": 2,
+        "losses": 2
+      },
+      "total": {
+        "wins": 3,
+        "draws": 2,
+        "losses": 5,
+        "score": 0.4
+      }
+    }
+  },
+  "performance": {
+    "L7-PUCT": {
+      "time_mean_ms": 766.601906614786,
+      "time_p95_ms": 924.626,
+      "nodes_mean": 0.0,
+      "sims_mean": 800.0
+    },
+    "L8-AlphaZero": {
+      "time_mean_ms": 765.2270980392157,
+      "time_p95_ms": 931.39,
+      "nodes_mean": 0.0,
+      "sims_mean": 800.0
+    }
+  }
+}
