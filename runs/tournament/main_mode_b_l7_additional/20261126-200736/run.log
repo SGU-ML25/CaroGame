@@ -1,0 +1,5 @@
+2026-11-26 20:07:36 INFO    run tournament/main_mode_b_l7_additional/20261126-200736 — config experiments/main_mode_b_l7_additional, seed 2026
+2026-11-26 20:07:36 INFO    Bắt đầu giải đấu: 1200 ván cờ, 4 workers, chế độ challengers_vs_baselines.
+2026-11-26 22:12:39 INFO    Bảng điểm chung cuộc: {'L7-PUCT': 1136.5, 'L1-Random': 0.0, 'L2-Rule': 8.5, 'L3-AlphaBeta': 29.0, 'L4-MCTS': 0.0, 'L5-PolicySL': 5.5, 'L6-PolicyRL': 20.5}
+2026-11-26 22:12:39 INFO    Đã lưu báo cáo thống kê tại: C:\Users\ASUS VIVOBOOK\CaroGame\runs\tournament\main_mode_b_l7_additional\20261126-200736\reports
+2026-11-26 22:12:39 INFO    kết thúc: ok sau 7503.5 s

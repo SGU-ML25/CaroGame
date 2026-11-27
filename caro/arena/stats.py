@@ -344,6 +344,7 @@ def summarize_self_play(
 
     return records
 
+
 def calculate_performance(games_df):
     """Thống kê hiệu năng theo đúng tác tử thực hiện từng lượt."""
 
@@ -353,7 +354,7 @@ def calculate_performance(games_df):
     )
 
     collected = {
-        agent: {"times": [], "nodes": []}
+        agent: {"times": [], "nodes": [], "sims": []}
         for agent in agents
     }
 
@@ -371,22 +372,22 @@ def calculate_performance(games_df):
 
             collected[agent]["times"].append(elapsed)
 
-            # match.py luôn ghi cả hai danh sách, tác tử không dùng đại lượng nào thì ghi 0:
-            # Alpha-Beta có `nodes`, MCTS / PUCT có `sims`.
             node_value = nodes[index] if index < len(nodes) else 0
-            if not node_value and index < len(sims):
-                node_value = sims[index]
+            sim_value = sims[index] if index < len(sims) else 0
 
             collected[agent]["nodes"].append(node_value)
+            collected[agent]["sims"].append(sim_value)
 
     for agent, values in collected.items():
         times = values["times"]
         nodes = values["nodes"]
+        sims = values["sims"]
 
         stats[agent] = {
             "time_mean_ms": float(np.mean(times)) if times else 0.0,
             "time_p95_ms": float(np.percentile(times, 95)) if times else 0.0,
             "nodes_mean": float(np.mean(nodes)) if nodes else 0.0,
+            "sims_mean": float(np.mean(sims)) if sims else 0.0,
         }
 
     return stats

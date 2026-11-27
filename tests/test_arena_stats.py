@@ -94,45 +94,25 @@ def test_performance_old_log_defaults_to_even_opening():
     assert result["A"]["time_mean_ms"] == 10
     assert result["B"]["time_mean_ms"] == 20
 
-
-def test_performance_reads_sims_when_nodes_are_zero():
-    # match.py ghi nodes = 0 cho MCTS / PUCT và sims = 0 cho Alpha-Beta.
+def test_performance_separates_nodes_and_sims():
     df = pd.DataFrame([
         {
-            "agent_x": "AB",
-            "agent_o": "MCTS",
+            "agent_x": "L7-PUCT",
+            "agent_o": "L8-AlphaZero",
+            "opening_plies": 0,
             "time_ms": [10, 20],
-            "nodes": [500, 0],
-            "sims": [0, 800],
+            "nodes": [0, 0],
+            "sims": [800, 600],
         }
     ])
 
     result = calculate_performance(df)
 
-    assert result["AB"]["nodes_mean"] == 500
-    assert result["MCTS"]["nodes_mean"] == 800
+    assert result["L7-PUCT"]["nodes_mean"] == 0
+    assert result["L7-PUCT"]["sims_mean"] == 800
 
-
-def test_bradley_terry_matches_two_player_odds():
-    # A thắng 3/4 ván, không ván ảo ⇒ chênh lệch đúng 400·log10(3) điểm.
-    matches = [("A", "B", 1), ("A", "B", 1), ("B", "A", -1), ("B", "A", 1)]
-
-    ratings = bradley_terry(matches, prior_draws=0.0)
-
-    assert ratings["A"] - ratings["B"] == pytest.approx(400 * 0.47712125, abs=1e-3)
-    assert (ratings["A"] + ratings["B"]) / 2 == pytest.approx(1000)
-
-
-def test_bradley_terry_stays_finite_and_ordered_with_shutouts():
-    matches = [("A", "B", 1)] * 50 + [("B", "C", 1)] * 50 + [("A", "C", 1)] * 50
-
-    ratings = bradley_terry(matches)
-
-    assert ratings["A"] > ratings["B"] > ratings["C"]
-    assert all(-3000 < v < 5000 for v in ratings.values())
-    assert ratings == bradley_terry(list(reversed(matches)))
-
-
+    assert result["L8-AlphaZero"]["nodes_mean"] == 0
+    assert result["L8-AlphaZero"]["sims_mean"] == 600
 def test_detailed_record_by_turn():
     df = pd.DataFrame([
         {

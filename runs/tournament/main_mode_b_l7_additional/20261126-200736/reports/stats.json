@@ -1,0 +1,183 @@
+{
+  "detailed_record_by_turn": {
+    "L1-Random": {
+      "first_hand_X": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "total": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 200,
+        "score": 0.0
+      }
+    },
+    "L2-Rule": {
+      "first_hand_X": {
+        "wins": 8,
+        "draws": 1,
+        "losses": 91
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "total": {
+        "wins": 8,
+        "draws": 1,
+        "losses": 191,
+        "score": 0.0425
+      }
+    },
+    "L3-AlphaBeta": {
+      "first_hand_X": {
+        "wins": 20,
+        "draws": 10,
+        "losses": 70
+      },
+      "second_hand_O": {
+        "wins": 2,
+        "draws": 4,
+        "losses": 94
+      },
+      "total": {
+        "wins": 22,
+        "draws": 14,
+        "losses": 164,
+        "score": 0.145
+      }
+    },
+    "L4-MCTS": {
+      "first_hand_X": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "total": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 200,
+        "score": 0.0
+      }
+    },
+    "L5-PolicySL": {
+      "first_hand_X": {
+        "wins": 5,
+        "draws": 1,
+        "losses": 94
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "total": {
+        "wins": 5,
+        "draws": 1,
+        "losses": 194,
+        "score": 0.0275
+      }
+    },
+    "L6-PolicyRL": {
+      "first_hand_X": {
+        "wins": 14,
+        "draws": 7,
+        "losses": 79
+      },
+      "second_hand_O": {
+        "wins": 2,
+        "draws": 2,
+        "losses": 96
+      },
+      "total": {
+        "wins": 16,
+        "draws": 9,
+        "losses": 175,
+        "score": 0.1025
+      }
+    },
+    "L7-PUCT": {
+      "first_hand_X": {
+        "wins": 590,
+        "draws": 6,
+        "losses": 4
+      },
+      "second_hand_O": {
+        "wins": 534,
+        "draws": 19,
+        "losses": 47
+      },
+      "total": {
+        "wins": 1124,
+        "draws": 25,
+        "losses": 51,
+        "score": 0.9470833333333334
+      }
+    }
+  },
+  "performance": {
+    "L1-Random": {
+      "time_mean_ms": 0.062057553956834544,
+      "time_p95_ms": 0.07,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L2-Rule": {
+      "time_mean_ms": 3.3501720335244816,
+      "time_p95_ms": 8.61,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L3-AlphaBeta": {
+      "time_mean_ms": 702.0261309702614,
+      "time_p95_ms": 2305.834,
+      "nodes_mean": 6073.138780414539,
+      "sims_mean": 0.0
+    },
+    "L4-MCTS": {
+      "time_mean_ms": 307.021881443299,
+      "time_p95_ms": 365.51250000000005,
+      "nodes_mean": 0.0,
+      "sims_mean": 800.0
+    },
+    "L5-PolicySL": {
+      "time_mean_ms": 7.628063175394845,
+      "time_p95_ms": 8.75,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L6-PolicyRL": {
+      "time_mean_ms": 11.034775608084962,
+      "time_p95_ms": 21.562999999999995,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L7-PUCT": {
+      "time_mean_ms": 2110.57185497601,
+      "time_p95_ms": 5044.576499999998,
+      "nodes_mean": 0.0,
+      "sims_mean": 800.0
+    }
+  },
+  "elo": {
+    "L7-PUCT": 1514.2238528674914,
+    "L1-Random": 629.6429625060438,
+    "L2-Rule": 911.7896139027289,
+    "L3-AlphaBeta": 1011.404580684418,
+    "L4-MCTS": 837.4273708787307,
+    "L5-PolicySL": 1010.2422134298826,
+    "L6-PolicyRL": 1085.2694057307003
+  }
+}

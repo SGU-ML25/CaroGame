@@ -1,0 +1,208 @@
+{
+  "detailed_record_by_turn": {
+    "L1-Random": {
+      "first_hand_X": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "total": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 200,
+        "score": 0.0
+      }
+    },
+    "L2-Rule": {
+      "first_hand_X": {
+        "wins": 7,
+        "draws": 0,
+        "losses": 93
+      },
+      "second_hand_O": {
+        "wins": 1,
+        "draws": 1,
+        "losses": 98
+      },
+      "total": {
+        "wins": 8,
+        "draws": 1,
+        "losses": 191,
+        "score": 0.0425
+      }
+    },
+    "L3-AlphaBeta": {
+      "first_hand_X": {
+        "wins": 13,
+        "draws": 9,
+        "losses": 78
+      },
+      "second_hand_O": {
+        "wins": 4,
+        "draws": 1,
+        "losses": 95
+      },
+      "total": {
+        "wins": 17,
+        "draws": 10,
+        "losses": 173,
+        "score": 0.11
+      }
+    },
+    "L4-MCTS": {
+      "first_hand_X": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "second_hand_O": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 100
+      },
+      "total": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 200,
+        "score": 0.0
+      }
+    },
+    "L5-PolicySL": {
+      "first_hand_X": {
+        "wins": 7,
+        "draws": 3,
+        "losses": 90
+      },
+      "second_hand_O": {
+        "wins": 1,
+        "draws": 0,
+        "losses": 99
+      },
+      "total": {
+        "wins": 8,
+        "draws": 3,
+        "losses": 189,
+        "score": 0.0475
+      }
+    },
+    "L6-PolicyRL": {
+      "first_hand_X": {
+        "wins": 15,
+        "draws": 15,
+        "losses": 70
+      },
+      "second_hand_O": {
+        "wins": 3,
+        "draws": 1,
+        "losses": 96
+      },
+      "total": {
+        "wins": 18,
+        "draws": 16,
+        "losses": 166,
+        "score": 0.13
+      }
+    },
+    "L7-PUCT": {
+      "first_hand_X": {
+        "wins": 26,
+        "draws": 33,
+        "losses": 41
+      },
+      "second_hand_O": {
+        "wins": 13,
+        "draws": 8,
+        "losses": 79
+      },
+      "total": {
+        "wins": 39,
+        "draws": 41,
+        "losses": 120,
+        "score": 0.2975
+      }
+    },
+    "L8-AlphaZero": {
+      "first_hand_X": {
+        "wins": 667,
+        "draws": 11,
+        "losses": 22
+      },
+      "second_hand_O": {
+        "wins": 572,
+        "draws": 60,
+        "losses": 68
+      },
+      "total": {
+        "wins": 1239,
+        "draws": 71,
+        "losses": 90,
+        "score": 0.9103571428571429
+      }
+    }
+  },
+  "performance": {
+    "L1-Random": {
+      "time_mean_ms": 0.05870738636363638,
+      "time_p95_ms": 0.07,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L2-Rule": {
+      "time_mean_ms": 3.492108955839868,
+      "time_p95_ms": 8.689,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L3-AlphaBeta": {
+      "time_mean_ms": 849.056081645773,
+      "time_p95_ms": 990.44,
+      "nodes_mean": 7410.450980392156,
+      "sims_mean": 0.0
+    },
+    "L4-MCTS": {
+      "time_mean_ms": 995.2628799149841,
+      "time_p95_ms": 995.56,
+      "nodes_mean": 0.0,
+      "sims_mean": 3041.799149840595
+    },
+    "L5-PolicySL": {
+      "time_mean_ms": 7.707345099511829,
+      "time_p95_ms": 9.098,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L6-PolicyRL": {
+      "time_mean_ms": 8.197493364789148,
+      "time_p95_ms": 10.55,
+      "nodes_mean": 0.0,
+      "sims_mean": 0.0
+    },
+    "L7-PUCT": {
+      "time_mean_ms": 1009.3284178284748,
+      "time_p95_ms": 1020.711,
+      "nodes_mean": 0.0,
+      "sims_mean": 1797.9062103929025
+    },
+    "L8-AlphaZero": {
+      "time_mean_ms": 1008.1573753847814,
+      "time_p95_ms": 1019.94,
+      "nodes_mean": 0.0,
+      "sims_mean": 2599.8617486633902
+    }
+  },
+  "elo": {
+    "L8-AlphaZero": 1310.7029747203894,
+    "L1-Random": 629.6429625060438,
+    "L2-Rule": 934.5019706955111,
+    "L3-AlphaBeta": 1051.3226758355142,
+    "L4-MCTS": 810.5303178484013,
+    "L5-PolicySL": 1036.1305669927042,
+    "L6-PolicyRL": 1089.3971841348693,
+    "L7-PUCT": 1137.7713472665616
+  }
+}
