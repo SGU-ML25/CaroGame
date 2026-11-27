@@ -19,7 +19,7 @@ from pathlib import Path
 from caro.agents.alphabeta import AlphaBetaAgent
 from caro.agents.base import Limits
 from caro.engine import CaroGame
-from caro.engine.bitboard import winning_squares, popcount
+from caro.engine.bitboard import popcount, winning_squares
 
 # ---------------------------------------------------------------------------
 # Hằng số
@@ -112,14 +112,13 @@ def analyze_game(record: dict, agent: AlphaBetaAgent) -> list[dict]:
 
         # Phát hiện lỗi
         error_type = None
-        if move != best_move:
-            if best_score - actual_score > abs(BLUNDER_THRESHOLD):
-                error_type = classify_error(game, move)
+        if move != best_move and best_score - actual_score > abs(BLUNDER_THRESHOLD):
+            error_type = classify_error(game, move)
 
         if error_type:
             # Xác định bên thua
-            loser_side = side
-            winner = 1 - loser_side
+            
+            
             errors.append({
                 "game_id":    game_id,
                 "agent_x":    agent_x,
