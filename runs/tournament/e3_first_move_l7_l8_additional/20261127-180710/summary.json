@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "ended": "2026-11-27T22:32:13",
+  "duration_s": 15902.981,
+  "games": 400,
+  "metrics": 0,
+  "score": {
+    "L7-PUCT": 200.0,
+    "L8-AlphaZero": 200.0
+  }
+}
