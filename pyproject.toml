@@ -44,3 +44,5 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 110
 target-version = "py311"
+# Mã trích cho báo cáo và bản sao mã trong minh chứng không phải mã nguồn để lint.
+extend-exclude = ["report/chuyen-sau/ma", "runs/chuyen_sau"]

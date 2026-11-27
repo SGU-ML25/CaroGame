@@ -15,7 +15,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from caro.config import load_config
 from caro.nn.model import CaroResNet
+from caro.training.train_sl import split_groups
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "report/ban-mo-rong/so-lieu-hoc-moi.json"
@@ -25,14 +27,6 @@ CKPTS = {
     "SL v3": "runs/train/sl_policy_v3/latest.pt",
     "A6 no-aug": "runs/train/a6_noaug/best.pt",
 }
-
-
-def split_by_game(states, game_ids, seed=42):
-    rng = np.random.default_rng(seed)
-    unique = rng.permutation(np.unique(game_ids))
-    _, n_val = int(len(unique) * 0.8), int(len(unique) * 0.9)
-    test_ids = unique[n_val:]
-    return np.isin(game_ids, test_ids)
 
 
 def stats(pred, target):
@@ -50,7 +44,10 @@ def main():
     torch.set_num_threads(2)
     data = np.load(ROOT / "runs/data/expert_v2/expert_dataset.npz")
     states, policies, values, game_ids = data["states"], data["policies"], data["values"], data["game_ids"]
-    test = split_by_game(states, game_ids)
+    # Đúng phép chia và seed lúc huấn luyện (configs/training/sl_v3.yaml). SL v1 học trên expert_v1,
+    # nên với SL v1 đây là phép đo chéo trên tập test của expert_v2.
+    seed = load_config("training/sl_v3")["seed"]
+    test = split_groups(game_ids, seed) == 2
     xs = torch.from_numpy(states[test].astype(np.float32))
     pol = policies[test]
     val_abs = values[test]
@@ -66,7 +63,8 @@ def main():
     phase = order / np.maximum(1, lengths - 1)
     phase = phase[test]
 
-    report = {"n_test": int(test.sum()), "n_games_test": len(np.unique(game_ids[test])), "models": {}}
+    report = {"n_test": int(test.sum()), "n_games_test": len(np.unique(game_ids[test])),
+              "split_seed": int(seed), "models": {}}
     for name, rel in CKPTS.items():
         if not (ROOT / rel).is_file():
             print(f"bỏ qua {name}: chưa có {rel}", flush=True)

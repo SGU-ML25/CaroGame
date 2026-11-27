@@ -1,0 +1,8 @@
+$ .venv/bin/python report/scripts/chuyen_sau/phan_tich_du_lieu.py
+22:40:37 {'n': 200, 'all_equal': 200, 'same_support': 200}
+22:40:55 SL v3 (L5, L7) {'all': (0.668, 0.152), 'clean': (0.753, 0.094), 'tie': (0.216, 0.459), 'lost': (0.168, 0.583)}
+22:41:12 SL v3 không augment {'all': (0.562, 0.199), 'clean': (0.611, 0.118), 'tie': (0.304, 0.634), 'lost': (0.288, 0.802)}
+22:41:30 REINFORCE (L6) {'all': (0.557, 0.053), 'clean': (0.635, 0.02), 'tie': (0.14, 0.227), 'lost': (0.072, 0.284)}
+22:41:45 AlphaZero vòng 37 (L8) {'all': (0.531, 0.066), 'clean': (0.597, 0.043), 'tie': (0.182, 0.185), 'lost': (0.129, 0.229)}
+22:41:45 expert_v1 {'samples': 27720, 'tie': 12601, 'lost': 902, 'tie_given_lost': 1.0, 'row1_all': 0.1704906204906205, 'row1_tie': 0.3097373224347274, 'row1_clean': 0.05443481711753423, 'row1_lost': 0.8259423503325942, 'tie_given_row1': 0.8258569614896318, 'games_total': 20000, 'games_empty': 17242, 'games_le2': 19009, 'games_median': 0.0}
+22:41:45 expert_v2 {'samples': 297098, 'tie': 48043, 'lost': 35045, 'tie_given_lost': 1.0, 'row1_all': 0.14678658220519827, 'row1_tie': 0.7377973898382699, 'row1_clean': 0.03277990805243822, 'row1_lost': 0.9193893565415894, 'tie_given_row1': 0.8127952304517313, 'games_total': 20000, 'games_empty': 1178, 'games_le2': 3643, 'games_median': 12.0}

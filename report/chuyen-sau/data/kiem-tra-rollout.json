@@ -1,0 +1,2330 @@
+{
+ "summary": {
+  "positions": 100,
+  "rollouts": 200,
+  "block_value": 0.0695,
+  "other_value": -1.0,
+  "budgets": {
+   "400": {
+    "blocked": 4,
+    "missed": 96,
+    "missed_score": 0.8406875,
+    "missed_visits": 33.510416666666664,
+    "missed_expanded": 32.479166666666664,
+    "missed_replies": 69.98958333333333,
+    "missed_found_win": 26
+   },
+   "1600": {
+    "blocked": 4,
+    "missed": 96,
+    "missed_score": 0.4371614583333333,
+    "missed_visits": 91.16666666666667,
+    "missed_expanded": 69.64583333333333,
+    "missed_replies": 71.82291666666667,
+    "missed_found_win": 93
+   }
+  }
+ },
+ "positions": [
+  {
+   "id": "C2-001",
+   "block_value": 0.39,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9048,
+     "visits": 21,
+     "expanded": 20,
+     "replies": 69,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.7179,
+     "visits": 78,
+     "expanded": 69,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-002",
+   "block_value": 0.39,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 68,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6667,
+     "visits": 84,
+     "expanded": 72,
+     "replies": 72,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-003",
+   "block_value": 0.105,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9286,
+     "visits": 28,
+     "expanded": 27,
+     "replies": 73,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4898,
+     "visits": 98,
+     "expanded": 73,
+     "replies": 73,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-004",
+   "block_value": -0.2,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9355,
+     "visits": 31,
+     "expanded": 30,
+     "replies": 82,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4087,
+     "visits": 115,
+     "expanded": 82,
+     "replies": 82,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-005",
+   "block_value": 0.365,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9333,
+     "visits": 30,
+     "expanded": 29,
+     "replies": 63,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6203,
+     "visits": 79,
+     "expanded": 64,
+     "replies": 64,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-006",
+   "block_value": -0.035,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8947,
+     "visits": 57,
+     "expanded": 56,
+     "replies": 60,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2889,
+     "visits": 90,
+     "expanded": 60,
+     "replies": 60,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-007",
+   "block_value": 0.075,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.4375,
+     "visits": 16,
+     "expanded": 15,
+     "replies": 67,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2131,
+     "visits": 61,
+     "expanded": 60,
+     "replies": 67,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-008",
+   "block_value": -1.0,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9375,
+     "visits": 32,
+     "expanded": 31,
+     "replies": 67,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.1892,
+     "visits": 111,
+     "expanded": 67,
+     "replies": 67,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-009",
+   "block_value": -0.03,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9231,
+     "visits": 26,
+     "expanded": 25,
+     "replies": 70,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4737,
+     "visits": 95,
+     "expanded": 70,
+     "replies": 70,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-010",
+   "block_value": 0.12,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9149,
+     "visits": 47,
+     "expanded": 46,
+     "replies": 75,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.46,
+     "visits": 100,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-011",
+   "block_value": -0.115,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8871,
+     "visits": 62,
+     "expanded": 60,
+     "replies": 60,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2292,
+     "visits": 96,
+     "expanded": 60,
+     "replies": 60,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-012",
+   "block_value": -0.11,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.2308,
+     "visits": 13,
+     "expanded": 12,
+     "replies": 77,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": true,
+     "score": 0.0806,
+     "visits": 62,
+     "expanded": 61,
+     "replies": 73,
+     "winning_reply_expanded": false
+    }
+   }
+  },
+  {
+   "id": "C2-013",
+   "block_value": -0.15,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9184,
+     "visits": 49,
+     "expanded": 48,
+     "replies": 65,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3168,
+     "visits": 101,
+     "expanded": 68,
+     "replies": 68,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-014",
+   "block_value": 0.41,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9091,
+     "visits": 22,
+     "expanded": 21,
+     "replies": 56,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6757,
+     "visits": 74,
+     "expanded": 63,
+     "replies": 63,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-015",
+   "block_value": -0.155,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9167,
+     "visits": 48,
+     "expanded": 47,
+     "replies": 66,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.301,
+     "visits": 103,
+     "expanded": 68,
+     "replies": 68,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-016",
+   "block_value": -0.05,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.3636,
+     "visits": 11,
+     "expanded": 10,
+     "replies": 92,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.1591,
+     "visits": 44,
+     "expanded": 43,
+     "replies": 92,
+     "winning_reply_expanded": false
+    }
+   }
+  },
+  {
+   "id": "C2-017",
+   "block_value": -0.145,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9091,
+     "visits": 44,
+     "expanded": 43,
+     "replies": 81,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4087,
+     "visits": 115,
+     "expanded": 81,
+     "replies": 81,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-018",
+   "block_value": 0.0,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": true,
+     "score": 0.0,
+     "visits": 24,
+     "expanded": 21,
+     "replies": 21,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": true,
+     "score": 0.0,
+     "visits": 768,
+     "expanded": 21,
+     "replies": 21,
+     "winning_reply_expanded": false
+    }
+   }
+  },
+  {
+   "id": "C2-019",
+   "block_value": -0.41,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": -0.0833,
+     "visits": 12,
+     "expanded": 11,
+     "replies": 86,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": -0.25,
+     "visits": 44,
+     "expanded": 43,
+     "replies": 86,
+     "winning_reply_expanded": false
+    }
+   }
+  },
+  {
+   "id": "C2-020",
+   "block_value": 0.315,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.931,
+     "visits": 29,
+     "expanded": 28,
+     "replies": 60,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.55,
+     "visits": 80,
+     "expanded": 63,
+     "replies": 63,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-021",
+   "block_value": -0.195,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9245,
+     "visits": 53,
+     "expanded": 52,
+     "replies": 52,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.1458,
+     "visits": 96,
+     "expanded": 56,
+     "replies": 56,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-022",
+   "block_value": -0.24,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9118,
+     "visits": 68,
+     "expanded": 66,
+     "replies": 66,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.1552,
+     "visits": 116,
+     "expanded": 66,
+     "replies": 66,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-023",
+   "block_value": 0.07,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9355,
+     "visits": 31,
+     "expanded": 30,
+     "replies": 58,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.425,
+     "visits": 80,
+     "expanded": 58,
+     "replies": 58,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-024",
+   "block_value": 0.0,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": true,
+     "score": 0.0,
+     "visits": 116,
+     "expanded": 13,
+     "replies": 13,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": true,
+     "score": 0.0,
+     "visits": 1197,
+     "expanded": 13,
+     "replies": 13,
+     "winning_reply_expanded": false
+    }
+   }
+  },
+  {
+   "id": "C2-025",
+   "block_value": 0.075,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.3889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 56,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2034,
+     "visits": 59,
+     "expanded": 56,
+     "replies": 56,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-026",
+   "block_value": -0.025,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.4118,
+     "visits": 17,
+     "expanded": 16,
+     "replies": 73,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2857,
+     "visits": 77,
+     "expanded": 76,
+     "replies": 78,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-027",
+   "block_value": 0.2,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9574,
+     "visits": 47,
+     "expanded": 46,
+     "replies": 72,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5319,
+     "visits": 94,
+     "expanded": 72,
+     "replies": 72,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-028",
+   "block_value": 0.24,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9524,
+     "visits": 42,
+     "expanded": 41,
+     "replies": 69,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4316,
+     "visits": 95,
+     "expanded": 69,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-029",
+   "block_value": 0.195,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.84,
+     "visits": 25,
+     "expanded": 24,
+     "replies": 65,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5854,
+     "visits": 82,
+     "expanded": 67,
+     "replies": 67,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-030",
+   "block_value": -0.12,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.4737,
+     "visits": 19,
+     "expanded": 18,
+     "replies": 80,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.1273,
+     "visits": 55,
+     "expanded": 54,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-031",
+   "block_value": 0.12,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.931,
+     "visits": 29,
+     "expanded": 28,
+     "replies": 65,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.39,
+     "visits": 100,
+     "expanded": 70,
+     "replies": 70,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-032",
+   "block_value": -0.05,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.913,
+     "visits": 46,
+     "expanded": 45,
+     "replies": 80,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.371,
+     "visits": 124,
+     "expanded": 85,
+     "replies": 85,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-033",
+   "block_value": 0.12,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8788,
+     "visits": 33,
+     "expanded": 32,
+     "replies": 83,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5327,
+     "visits": 107,
+     "expanded": 83,
+     "replies": 83,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-034",
+   "block_value": 0.115,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 36,
+     "expanded": 35,
+     "replies": 64,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5059,
+     "visits": 85,
+     "expanded": 65,
+     "replies": 65,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-035",
+   "block_value": 0.545,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9167,
+     "visits": 24,
+     "expanded": 23,
+     "replies": 52,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5882,
+     "visits": 68,
+     "expanded": 55,
+     "replies": 55,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-036",
+   "block_value": 0.25,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 70,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6552,
+     "visits": 87,
+     "expanded": 74,
+     "replies": 74,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-037",
+   "block_value": 0.125,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9245,
+     "visits": 53,
+     "expanded": 52,
+     "replies": 59,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3182,
+     "visits": 88,
+     "expanded": 59,
+     "replies": 59,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-038",
+   "block_value": 0.35,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.5714,
+     "visits": 14,
+     "expanded": 13,
+     "replies": 86,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.463,
+     "visits": 54,
+     "expanded": 53,
+     "replies": 85,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-039",
+   "block_value": 0.275,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9091,
+     "visits": 22,
+     "expanded": 21,
+     "replies": 77,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6,
+     "visits": 95,
+     "expanded": 77,
+     "replies": 77,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-040",
+   "block_value": 0.0,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9149,
+     "visits": 47,
+     "expanded": 46,
+     "replies": 72,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3846,
+     "visits": 104,
+     "expanded": 72,
+     "replies": 72,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-041",
+   "block_value": -0.04,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 36,
+     "expanded": 35,
+     "replies": 67,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4141,
+     "visits": 99,
+     "expanded": 72,
+     "replies": 72,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-042",
+   "block_value": -0.135,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9259,
+     "visits": 27,
+     "expanded": 26,
+     "replies": 69,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5333,
+     "visits": 90,
+     "expanded": 69,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-043",
+   "block_value": 0.095,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9412,
+     "visits": 34,
+     "expanded": 33,
+     "replies": 60,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5059,
+     "visits": 85,
+     "expanded": 66,
+     "replies": 66,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-044",
+   "block_value": 0.295,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9167,
+     "visits": 24,
+     "expanded": 23,
+     "replies": 70,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5699,
+     "visits": 93,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-045",
+   "block_value": -0.07,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9655,
+     "visits": 58,
+     "expanded": 57,
+     "replies": 76,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3455,
+     "visits": 110,
+     "expanded": 76,
+     "replies": 76,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-046",
+   "block_value": -0.19,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9104,
+     "visits": 67,
+     "expanded": 65,
+     "replies": 65,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.1532,
+     "visits": 111,
+     "expanded": 65,
+     "replies": 65,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-047",
+   "block_value": 0.38,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 65,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6744,
+     "visits": 86,
+     "expanded": 73,
+     "replies": 73,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-048",
+   "block_value": -0.22,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9355,
+     "visits": 62,
+     "expanded": 61,
+     "replies": 69,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2477,
+     "visits": 109,
+     "expanded": 69,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-049",
+   "block_value": 0.155,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9318,
+     "visits": 44,
+     "expanded": 43,
+     "replies": 53,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2892,
+     "visits": 83,
+     "expanded": 53,
+     "replies": 53,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-050",
+   "block_value": 0.22,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9091,
+     "visits": 22,
+     "expanded": 21,
+     "replies": 85,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.697,
+     "visits": 99,
+     "expanded": 85,
+     "replies": 85,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-051",
+   "block_value": 0.02,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.6667,
+     "visits": 24,
+     "expanded": 23,
+     "replies": 78,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4409,
+     "visits": 93,
+     "expanded": 78,
+     "replies": 78,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-052",
+   "block_value": -0.105,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9487,
+     "visits": 39,
+     "expanded": 38,
+     "replies": 75,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4272,
+     "visits": 103,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-053",
+   "block_value": 0.17,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9565,
+     "visits": 46,
+     "expanded": 45,
+     "replies": 75,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3889,
+     "visits": 108,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-054",
+   "block_value": -0.095,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9273,
+     "visits": 55,
+     "expanded": 54,
+     "replies": 66,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2692,
+     "visits": 104,
+     "expanded": 68,
+     "replies": 68,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-055",
+   "block_value": -0.035,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8667,
+     "visits": 45,
+     "expanded": 44,
+     "replies": 63,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3608,
+     "visits": 97,
+     "expanded": 68,
+     "replies": 68,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-056",
+   "block_value": 0.27,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9091,
+     "visits": 22,
+     "expanded": 21,
+     "replies": 71,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5909,
+     "visits": 88,
+     "expanded": 71,
+     "replies": 71,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-057",
+   "block_value": -0.07,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9385,
+     "visits": 65,
+     "expanded": 64,
+     "replies": 64,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2574,
+     "visits": 101,
+     "expanded": 64,
+     "replies": 64,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-058",
+   "block_value": 0.29,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.5294,
+     "visits": 17,
+     "expanded": 16,
+     "replies": 67,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3623,
+     "visits": 69,
+     "expanded": 68,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-059",
+   "block_value": -0.025,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.931,
+     "visits": 29,
+     "expanded": 28,
+     "replies": 73,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4579,
+     "visits": 107,
+     "expanded": 78,
+     "replies": 78,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-060",
+   "block_value": 0.045,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9231,
+     "visits": 52,
+     "expanded": 51,
+     "replies": 68,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3019,
+     "visits": 106,
+     "expanded": 70,
+     "replies": 70,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-061",
+   "block_value": 0.245,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.92,
+     "visits": 25,
+     "expanded": 24,
+     "replies": 67,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5484,
+     "visits": 93,
+     "expanded": 73,
+     "replies": 73,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-062",
+   "block_value": -0.1,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9259,
+     "visits": 27,
+     "expanded": 26,
+     "replies": 73,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5102,
+     "visits": 98,
+     "expanded": 76,
+     "replies": 76,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-063",
+   "block_value": 0.145,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9444,
+     "visits": 36,
+     "expanded": 35,
+     "replies": 74,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5,
+     "visits": 96,
+     "expanded": 74,
+     "replies": 74,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-064",
+   "block_value": -0.005,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9677,
+     "visits": 62,
+     "expanded": 61,
+     "replies": 70,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3269,
+     "visits": 104,
+     "expanded": 70,
+     "replies": 70,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-065",
+   "block_value": 0.015,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.3571,
+     "visits": 14,
+     "expanded": 13,
+     "replies": 69,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3077,
+     "visits": 65,
+     "expanded": 64,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-066",
+   "block_value": 0.07,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.931,
+     "visits": 29,
+     "expanded": 28,
+     "replies": 71,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5208,
+     "visits": 96,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-067",
+   "block_value": 0.375,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.913,
+     "visits": 46,
+     "expanded": 45,
+     "replies": 64,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5,
+     "visits": 84,
+     "expanded": 64,
+     "replies": 64,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-068",
+   "block_value": 0.125,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9474,
+     "visits": 38,
+     "expanded": 37,
+     "replies": 75,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5417,
+     "visits": 96,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-069",
+   "block_value": 0.375,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9091,
+     "visits": 22,
+     "expanded": 21,
+     "replies": 75,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6444,
+     "visits": 90,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-070",
+   "block_value": 0.08,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9167,
+     "visits": 48,
+     "expanded": 47,
+     "replies": 69,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3846,
+     "visits": 104,
+     "expanded": 74,
+     "replies": 74,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-071",
+   "block_value": 0.125,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.4375,
+     "visits": 16,
+     "expanded": 15,
+     "replies": 69,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2429,
+     "visits": 70,
+     "expanded": 69,
+     "replies": 71,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-072",
+   "block_value": -0.12,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.931,
+     "visits": 29,
+     "expanded": 28,
+     "replies": 72,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4639,
+     "visits": 97,
+     "expanded": 72,
+     "replies": 72,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-073",
+   "block_value": 0.03,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9216,
+     "visits": 51,
+     "expanded": 50,
+     "replies": 70,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3333,
+     "visits": 108,
+     "expanded": 73,
+     "replies": 73,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-074",
+   "block_value": 0.16,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9535,
+     "visits": 43,
+     "expanded": 42,
+     "replies": 75,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4808,
+     "visits": 104,
+     "expanded": 77,
+     "replies": 77,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-075",
+   "block_value": 0.11,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9184,
+     "visits": 49,
+     "expanded": 48,
+     "replies": 76,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4563,
+     "visits": 103,
+     "expanded": 76,
+     "replies": 76,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-076",
+   "block_value": 0.19,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9091,
+     "visits": 22,
+     "expanded": 21,
+     "replies": 71,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5556,
+     "visits": 90,
+     "expanded": 71,
+     "replies": 71,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-077",
+   "block_value": 0.035,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9429,
+     "visits": 35,
+     "expanded": 34,
+     "replies": 64,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4433,
+     "visits": 97,
+     "expanded": 70,
+     "replies": 70,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-078",
+   "block_value": -0.1,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 36,
+     "expanded": 35,
+     "replies": 75,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4653,
+     "visits": 101,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-079",
+   "block_value": 0.2,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.913,
+     "visits": 23,
+     "expanded": 22,
+     "replies": 66,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6962,
+     "visits": 79,
+     "expanded": 69,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-080",
+   "block_value": 0.06,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.2857,
+     "visits": 14,
+     "expanded": 13,
+     "replies": 56,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2,
+     "visits": 50,
+     "expanded": 49,
+     "replies": 56,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-081",
+   "block_value": 0.095,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.913,
+     "visits": 23,
+     "expanded": 22,
+     "replies": 72,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5368,
+     "visits": 95,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-082",
+   "block_value": 0.03,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9048,
+     "visits": 42,
+     "expanded": 41,
+     "replies": 73,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4314,
+     "visits": 102,
+     "expanded": 73,
+     "replies": 73,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-083",
+   "block_value": 0.28,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8824,
+     "visits": 17,
+     "expanded": 16,
+     "replies": 80,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.8022,
+     "visits": 91,
+     "expanded": 84,
+     "replies": 84,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-084",
+   "block_value": 0.065,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9048,
+     "visits": 21,
+     "expanded": 20,
+     "replies": 74,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6129,
+     "visits": 93,
+     "expanded": 76,
+     "replies": 76,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-085",
+   "block_value": 0.13,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.931,
+     "visits": 29,
+     "expanded": 28,
+     "replies": 61,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.5172,
+     "visits": 87,
+     "expanded": 68,
+     "replies": 68,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-086",
+   "block_value": 0.32,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 79,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.7363,
+     "visits": 91,
+     "expanded": 80,
+     "replies": 80,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-087",
+   "block_value": -0.185,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9273,
+     "visits": 55,
+     "expanded": 54,
+     "replies": 75,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3304,
+     "visits": 115,
+     "expanded": 78,
+     "replies": 78,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-088",
+   "block_value": 0.025,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.3333,
+     "visits": 15,
+     "expanded": 14,
+     "replies": 67,
+     "winning_reply_expanded": true
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2037,
+     "visits": 54,
+     "expanded": 53,
+     "replies": 74,
+     "winning_reply_expanded": false
+    }
+   }
+  },
+  {
+   "id": "C2-089",
+   "block_value": -0.19,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9375,
+     "visits": 32,
+     "expanded": 31,
+     "replies": 74,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3578,
+     "visits": 109,
+     "expanded": 74,
+     "replies": 74,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-090",
+   "block_value": -0.19,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9333,
+     "visits": 30,
+     "expanded": 29,
+     "replies": 68,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.3524,
+     "visits": 105,
+     "expanded": 73,
+     "replies": 73,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-091",
+   "block_value": 0.465,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 81,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.7778,
+     "visits": 90,
+     "expanded": 81,
+     "replies": 81,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-092",
+   "block_value": -0.07,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9231,
+     "visits": 26,
+     "expanded": 25,
+     "replies": 68,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.4783,
+     "visits": 92,
+     "expanded": 69,
+     "replies": 69,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-093",
+   "block_value": 0.195,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.913,
+     "visits": 23,
+     "expanded": 22,
+     "replies": 81,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.6364,
+     "visits": 99,
+     "expanded": 81,
+     "replies": 81,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-094",
+   "block_value": 0.56,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8824,
+     "visits": 17,
+     "expanded": 16,
+     "replies": 70,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.7831,
+     "visits": 83,
+     "expanded": 75,
+     "replies": 75,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-095",
+   "block_value": 0.09,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": true,
+     "score": 0.3846,
+     "visits": 13,
+     "expanded": 12,
+     "replies": 82,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2031,
+     "visits": 64,
+     "expanded": 63,
+     "replies": 82,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-096",
+   "block_value": 0.22,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 74,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.8462,
+     "visits": 91,
+     "expanded": 86,
+     "replies": 86,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-097",
+   "block_value": 0.04,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9375,
+     "visits": 64,
+     "expanded": 63,
+     "replies": 71,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2661,
+     "visits": 109,
+     "expanded": 71,
+     "replies": 71,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-098",
+   "block_value": 0.075,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.9677,
+     "visits": 62,
+     "expanded": 61,
+     "replies": 62,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.2784,
+     "visits": 97,
+     "expanded": 62,
+     "replies": 62,
+     "winning_reply_expanded": true
+    }
+   }
+  },
+  {
+   "id": "C2-099",
+   "block_value": 0.0,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": true,
+     "score": 0.0,
+     "visits": 26,
+     "expanded": 19,
+     "replies": 19,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": true,
+     "score": 0.0,
+     "visits": 873,
+     "expanded": 19,
+     "replies": 19,
+     "winning_reply_expanded": false
+    }
+   }
+  },
+  {
+   "id": "C2-100",
+   "block_value": 0.205,
+   "other_value": -1.0,
+   "search": {
+    "400": {
+     "blocked": false,
+     "score": 0.8889,
+     "visits": 18,
+     "expanded": 17,
+     "replies": 73,
+     "winning_reply_expanded": false
+    },
+    "1600": {
+     "blocked": false,
+     "score": 0.7882,
+     "visits": 85,
+     "expanded": 77,
+     "replies": 77,
+     "winning_reply_expanded": true
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+\begin{enumerate}
+\item \textbf{Dữ liệu huấn luyện mang hai lỗi nhãn} (Mục~\ref{sec:cs-du-lieu}), cùng gốc ở cách chấm top-$k$: thế đã thua
+cho nhãn đều trên các ô chỉ số nhỏ, và thế thắng ngay được cho nước thắng chậm gần ngang nước thắng ngay. Mạng học cả
+hai; hai vòng tự đấu (L6, L8) sửa được phần lớn.
+\item \textbf{MCTS với rollout có luật vẫn bỏ nước chặn} vì nút mở rộng trong cây không dùng cùng tri thức: rollout chặn
+hộ sau một đáp trả ngẫu nhiên của đối thủ (Bảng~\ref{tab:cs-ct-rollout}). Đây là lời giải thích cơ chế cho quan sát ở A4.
+\item \textbf{Thứ tự luật gây xung đột}: phòng thủ đòn kép tiềm năng đứng trước tạo tứ làm L2 và tuỳ chọn chiến thuật gốc
+của MCTS bỏ lỡ chuỗi tứ thắng ép.
+\item \textbf{Cấp 3 không duyệt nước tốt nhất của độ sâu trước đầu tiên} ở gốc trong phần lớn lượt ở độ sâu 4; sửa thứ tự
+giảm khoảng một phần mười số nút mà giữ nguyên điểm gốc (Bảng~\ref{tab:cs-goc}).
+\item \textbf{Khác biệt giữa các cấp mạnh nằm ở nước yên tĩnh}: trên 500 thế chiến thuật L3, L7, L8 gần ngang nhau, nhưng
+khi đấu thì cách nhau rõ; trong ván thật, L8 để hở đường thắng ép ít nhất (Bảng~\ref{tab:cs-nuoc-loi}).
+\item \textbf{Xếp hạng ổn định}: thứ tự Bradley-Terry không đổi với tiên nghiệm từ 0,1 đến 5 ván ảo, không có vòng thắng
+ba tác tử; còn Elo tuần tự dao động hàng chục điểm theo thứ tự ván.
+\end{enumerate}

@@ -1,0 +1,39 @@
+2026-11-26 19:35:07 INFO    run bench/a2_fixed_depth/20261126-193507_d4 — config experiments/a2_fixed_depth, seed 2026
+2026-11-26 19:35:07 INFO    bench 10 thế × 3 lần × 3 tác tử
+2026-11-26 19:35:10 INFO      thế   0 | AB-plain        | nodes_med=3386867 | time_med= 739.6 ms | move=69 | score=-696
+2026-11-26 19:35:10 INFO      thế   0 | AB-order        | nodes_med=  10293 | time_med=   9.5 ms | move=69 | score=-696
+2026-11-26 19:35:10 INFO      thế   0 | AB-order-tt     | nodes_med=   9780 | time_med=   8.8 ms | move=69 | score=-696
+2026-11-26 19:35:17 INFO      thế   1 | AB-plain        | nodes_med=10772824 | time_med=2355.1 ms | move=63 | score=-198
+2026-11-26 19:35:17 INFO      thế   1 | AB-order        | nodes_med=  39342 | time_med=  90.0 ms | move=63 | score=-198
+2026-11-26 19:35:17 INFO      thế   1 | AB-order-tt     | nodes_med=  36487 | time_med=  73.6 ms | move=63 | score=-198
+2026-11-26 19:35:21 INFO      thế   2 | AB-plain        | nodes_med=5111380 | time_med=1130.2 ms | move=59 | score=-68
+2026-11-26 19:35:21 INFO      thế   2 | AB-order        | nodes_med=  60891 | time_med= 119.9 ms | move=59 | score=-68
+2026-11-26 19:35:21 INFO      thế   2 | AB-order-tt     | nodes_med=  45260 | time_med=  89.5 ms | move=59 | score=-68
+2026-11-26 19:35:23 INFO      thế   3 | AB-plain        | nodes_med=1952293 | time_med= 442.7 ms | move=52 | score=-73
+2026-11-26 19:35:23 INFO      thế   3 | AB-order        | nodes_med=  24311 | time_med=  64.6 ms | move=52 | score=-73
+2026-11-26 19:35:23 INFO      thế   3 | AB-order-tt     | nodes_med=  29334 | time_med=  55.0 ms | move=52 | score=-73
+2026-11-26 19:35:23 INFO      thế   4 | AB-plain        | nodes_med= 152955 | time_med=  34.8 ms | move=36 | score=177
+2026-11-26 19:35:23 INFO      thế   4 | AB-order        | nodes_med=  26450 | time_med=  59.4 ms | move=36 | score=177
+2026-11-26 19:35:23 INFO      thế   4 | AB-order-tt     | nodes_med=  22621 | time_med=  35.7 ms | move=36 | score=177
+2026-11-26 19:35:24 INFO      thế   5 | AB-plain        | nodes_med= 783956 | time_med= 236.8 ms | move=58 | score=-191
+2026-11-26 19:35:24 INFO      thế   5 | AB-order        | nodes_med=  39055 | time_med= 102.7 ms | move=58 | score=-191
+2026-11-26 19:35:25 INFO      thế   5 | AB-order-tt     | nodes_med=  35876 | time_med=  76.3 ms | move=58 | score=-191
+2026-11-26 19:35:25 INFO      thế   6 | AB-plain        | nodes_med= 646575 | time_med= 144.2 ms | move=49 | score=9
+2026-11-26 19:35:25 INFO      thế   6 | AB-order        | nodes_med=  29062 | time_med=  49.0 ms | move=49 | score=9
+2026-11-26 19:35:25 INFO      thế   6 | AB-order-tt     | nodes_med=  23275 | time_med=  30.9 ms | move=49 | score=9
+2026-11-26 19:35:25 INFO      thế   7 | AB-plain        | nodes_med=     95 | time_med=   0.0 ms | move=24 | score=999999
+2026-11-26 19:35:25 INFO      thế   7 | AB-order        | nodes_med=     95 | time_med=   0.0 ms | move=24 | score=999999
+2026-11-26 19:35:25 INFO      thế   7 | AB-order-tt     | nodes_med=     95 | time_med=   0.0 ms | move=24 | score=999999
+2026-11-26 19:35:31 INFO      thế   8 | AB-plain        | nodes_med=9009301 | time_med=2008.9 ms | move=74 | score=-221
+2026-11-26 19:35:32 INFO      thế   8 | AB-order        | nodes_med=  66274 | time_med= 147.7 ms | move=74 | score=-221
+2026-11-26 19:35:32 INFO      thế   8 | AB-order-tt     | nodes_med=  68309 | time_med= 131.1 ms | move=74 | score=-221
+2026-11-26 19:35:32 INFO      thế   9 | AB-plain        | nodes_med= 348908 | time_med=  79.2 ms | move=17 | score=73
+2026-11-26 19:35:33 INFO      thế   9 | AB-order        | nodes_med=  30001 | time_med=  91.5 ms | move=17 | score=73
+2026-11-26 19:35:33 INFO      thế   9 | AB-order-tt     | nodes_med=  26356 | time_med=  55.3 ms | move=17 | score=73
+2026-11-26 19:35:33 INFO    
+======================================================================
+2026-11-26 19:35:33 INFO    Agent            nodes_med   time_med   time_p95 %same_move
+2026-11-26 19:35:33 INFO    AB-plain           1368124     339.8 ms    2355.1 ms
+2026-11-26 19:35:33 INFO    AB-order             29532      77.3 ms     147.7 ms
+2026-11-26 19:35:33 INFO    AB-order-tt          27845      55.1 ms     131.1 ms
+2026-11-26 19:35:33 INFO    kết thúc: ok sau 25.4 s

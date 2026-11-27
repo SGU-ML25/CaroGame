@@ -1,0 +1,61 @@
+{
+  "started": "2026-11-26T22:50:36",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/kiem_tra_goc.py"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "kiem-tra-goc",
+  "title": "L3: nước tốt nhất của độ sâu trước có được duyệt đầu ở gốc không",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "runs/openings/midgame_positions_v1.json",
+      "bytes": 8137,
+      "sha256": "2e696836859d568e635be6dcbc99e5e8a0790a5c5606bfaa0045b1134aa76b73"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/kiem_tra_goc.py",
+      "bytes": 3295,
+      "sha256": "ae55cf742a158b8d6bc0ad8da37f50627f313a800f556506ff2ceaf331a62c45"
+    },
+    {
+      "path": "caro/agents/alphabeta.py",
+      "bytes": 21464,
+      "sha256": "3dccf8180d071d634f21c1d86c0a0301e188e0c197e91ba00f65a1b188f98deb"
+    }
+  ],
+  "ended": "2026-11-26T22:55:38",
+  "duration_s": 301.9,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/data/kiem-tra-goc.json",
+      "bytes": 25710,
+      "sha256": "d1335a886c696002840e489caffe9ee834f83e7a63a2842e46535ca27d8cdd82"
+    }
+  ]
+}

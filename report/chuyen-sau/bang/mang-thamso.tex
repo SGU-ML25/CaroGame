@@ -1,0 +1,29 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{Phân bố tham số của CaroResNet (64 kênh, 6 khối)}
+  \label{tab:cs-mang-thamso}
+  \begin{tabular}{lrr}
+    \toprule
+    Khối & Tham số & \% \\
+    \midrule
+    \texttt{conv\_in} & 2.304 & 0,5 \\
+    \texttt{bn\_in} & 128 & 0,0 \\
+    \texttt{res\_blocks.0} & 73.984 & 15,4 \\
+    \texttt{res\_blocks.1} & 73.984 & 15,4 \\
+    \texttt{res\_blocks.2} & 73.984 & 15,4 \\
+    \texttt{res\_blocks.3} & 73.984 & 15,4 \\
+    \texttt{res\_blocks.4} & 73.984 & 15,4 \\
+    \texttt{res\_blocks.5} & 73.984 & 15,4 \\
+    \texttt{policy\_conv} & 128 & 0,0 \\
+    \texttt{policy\_bn} & 4 & 0,0 \\
+    \texttt{policy\_fc} & 29.403 & 6,1 \\
+    \texttt{value\_conv} & 64 & 0,0 \\
+    \texttt{value\_bn} & 2 & 0,0 \\
+    \texttt{value\_fc1} & 3.904 & 0,8 \\
+    \texttt{value\_fc2} & 33 & 0,0 \\
+    \midrule
+    Tổng & 479.874 & 100,0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

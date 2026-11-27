@@ -3,31 +3,44 @@
 % Đề mục 4: Câu trả lời cho câu hỏi nghiên cứu; thành tựu, hạn chế, khả năng tái lập và mở rộng.
 
 \section{Câu trả lời cho câu hỏi nghiên cứu}
-\paragraph{RQ1. Tìm kiếm mô phỏng so với AlphaBeta.}
-UCT thuần ở các thiết lập A3/A4 ghi ít điểm trước AlphaBeta. Kết quả chứng minh sự chênh lệch ở các đối sánh đã đo, với độ sâu và số mô phỏng riêng. Chưa có đủ kết quả cùng thời gian mỗi nước để khẳng định giả thuyết RQ1 ở chế độ thời gian.
+\paragraph{RQ1. Tìm kiếm mô phỏng so với Alpha-Beta.}
+Trong cùng 1\,000 ms mỗi nước (giải chính, chế độ A), Alpha-Beta đạt 99{,}0\% trước UCT trên 200 ván, dù UCT chạy trung bình khoảng 5\,500 mô phỏng mỗi nước. Ở ngân sách cố định, A3 và A4 cho thấy UCT thua gần hết trước L2 và L3 ở 100--6400 mô phỏng, với lỗi chủ đạo là không ngăn đe doạ kép sớm. Thêm xử lý chiến thuật ở gốc (A8) nâng điểm của UCT rollout có luật từ 0 lên 23{,}0\% trước L2 và 5{,}5\% trước L3, vẫn xa mức cân bằng. Giả thuyết RQ1 được ủng hộ ở mức thời gian đã đo. Đề tài đặt ra ba mức thời gian nhưng mới chạy một mức, nên chưa biết khoảng cách thay đổi thế nào khi ngân sách tăng.
 
 \paragraph{RQ2. Tác động của tự đấu và tìm kiếm có mạng.}
-RL v3 cải thiện điểm trước các đối thủ được đo khi so với SL v3 trong bảng đánh giá checkpoint. Cùng mạng L5, thêm PUCT thay đổi mạnh sức chơi trước L3. L8 vòng 37 thắng L7 ở cùng thiết lập PUCT qua 20 ván. Ba phép đo tách các mức đóng góp khác nhau: cập nhật policy bằng RL, thêm tìm kiếm tại lúc chơi và huấn luyện policy--value bằng tự đấu có tìm kiếm. Chưa có lặp nhiều seed để định lượng độ ổn định của từng thay đổi.
+Trên RR8 giữ riêng, L6 đạt 59{,}5\% trước L5 (khoảng Wilson 95\% 49{,}7--68{,}6\%, sát mức 50\%) và L8 đạt 93{,}5\%. Trong A5, cùng mạng L5, thêm PUCT ở 200 mô phỏng nâng điểm trước L3 từ 21{,}0\% lên 58{,}5\%. Vì L8 vừa có trọng số mới vừa tìm kiếm, phần đóng góp riêng của tự đấu nên so L8 với L7 (cùng PUCT, khác trọng số): L8 đạt 64{,}0\%. A5b cho thấy ở ngân sách \num{49920} episode, REINFORCE từ ngẫu nhiên không vượt được L2, nên tự đấu bằng REINFORCE ở đây là tinh chỉnh một policy đã học từ chuyên gia. Mỗi mô hình chỉ huấn luyện một seed.
 
 \paragraph{RQ3. Giảm chi phí tìm kiếm.}
-A1 có sự giảm rõ về số nút và thời gian, đồng thời đạt tiêu chí nhất quán của benchmark. A2 cho thấy số nút thấp hơn nhưng thiết kế giới hạn thời gian yêu cầu thận trọng khi diễn giải. Ưu tiên thí nghiệm cùng độ sâu và báo cả số nút, tốc độ nút mỗi giây và kết quả lựa chọn nước.
+Ở độ sâu 3, cắt tỉa giảm số nút trung vị khoảng 20 lần, giá trị gốc và nước chọn trùng trên 50/50 thế. Sắp xếp nước giảm thêm 5{,}7, 46 và 190 lần ở độ sâu 3, 4 và 5, trùng nước chọn và giá trị trên 10/10 thế. Giả thuyết ``số nút giảm mạnh dần theo độ sâu, giá trị gốc không đổi'' được ủng hộ trên bộ thế đã dùng. Thời gian giảm ít hơn số nút do chi phí sắp xếp.
 
 \paragraph{RQ4. Lợi thế đi trước.}
-Các trận L7--L8 và L8--L3 cho thấy điểm L8 cao hơn khi cầm X. Với L7--L8, chênh lệch tỷ lệ thắng gộp theo màu chưa có khoảng bootstrap tách khỏi 0. Kết luận hiện tại chỉ áp dụng cho các đối sánh và tập khai cuộc đã dùng. Để trả lời câu hỏi về tự đấu từng cấp, cần chạy E3 trên các tập khai cuộc giữ riêng và đổi bên nhận trạng thái mở đầu theo protocol định trước.
+Trên khai cuộc giữ riêng, mỗi tác tử tự đấu 100 ván, điểm của X nằm từ 49{,}0\% (L4) đến 70{,}5\% (L3, L7). Khoảng Wilson 95\% nằm trên 50\% ở L2, L3, L6, L7 và L8, còn chứa 50\% ở L1, L4 và L5. Phần đầu của giả thuyết (bên đi trước có điểm trên 0,5) được ủng hộ ở năm trong tám tác tử. Phần sau (lợi thế tăng theo sức mạnh) không được ủng hộ: L8 mạnh nhất nhưng chỉ đạt 62{,}0\%, với nhiều ván hoà. Lợi thế đi trước đo được vì thế phụ thuộc vào tác tử, và các số này đi từ thế đã có 2--4 quân ngẫu nhiên chứ không từ bàn trống.
+
+\section{Phát hiện từ phân tích chuyên sâu}
+Ngoài bốn câu hỏi nghiên cứu, phần phân tích ở Chương~\ref{ch:thuc-nghiem} rút ra các điểm sau.
+\input{chapters/05b-phat-hien}
 
 \section{Thành tựu}
-Dự án đã hiện thực tám cấp, có engine dùng chung, log ván đủ để phát lại, cấu hình ngân sách và checkpoint cho các phép đo chính. Các bảng và biểu đồ có chỉ mục nguồn để đối chiếu với log gốc. Một số log chạy trên working tree có thay đổi, một số cấu hình hiện tại đã khác cấu hình khi chạy, và bàn 11×11 dùng luật năm quân liên tiếp của đề tài. Không ngoại suy trực tiếp sang bàn khác hoặc luật cấm nước của Renju.
+Dự án đã hiện thực tám cấp trên một engine dùng chung, có log ván đủ để phát lại, cấu hình ngân sách, checkpoint ghim theo revision và script sinh bảng từ log cho phần lớn kết quả chính. Bàn 11×11 dùng luật năm quân liên tiếp của đề tài; không ngoại suy trực tiếp sang bàn khác hoặc luật cấm nước của Renju.
 
 \section{Hạn chế}
-Nguồn khai cuộc được dùng nhiều lần và kích thước bàn cố định. Dữ liệu chuyên gia
-lấy từ AlphaBeta, nên chất lượng nhãn phụ thuộc heuristic của cùng hệ thống.
-Một số logs thiếu thời gian từng nước hoặc revision của mã đúng lúc chạy. Vì vậy chỉ so sánh
-điểm, thời gian và độ sâu trong những điều kiện có đối chứng phù hợp.
+\begin{itemize}
+\item Mỗi mô hình huấn luyện một seed; chưa đo độ dao động giữa các lần huấn luyện.
+\item Bộ khai cuộc dùng cho dữ liệu huấn luyện cũng được dùng cho giải chính, A5 và RR8 đầu. RR8 giữ riêng không cho thấy chênh lệch đáng kể, nhưng giải chính và A5 chưa chạy lại.
+\item Dữ liệu chuyên gia lấy từ Alpha-Beta độ sâu 3, nên chất lượng nhãn phụ thuộc hàm lượng giá của cùng hệ thống.
+\item Dữ liệu huấn luyện có hai lỗi nhãn (Mục~\ref{sec:cs-du-lieu}): $16{,}2\%$ mẫu mang nhãn hoà điểm dồn về các ô chỉ số
+nhỏ, và ở thế thắng ngay được, nhãn chỉ đặt trung bình $47{,}4\%$ xác suất lên nước thắng. Mạng L5 đã học cả hai. Mức
+ảnh hưởng lên sức chơi chưa đo vì chưa sinh lại dữ liệu và huấn luyện lại.
+\item Cấp 3 có hai sai khác so với thiết kế: nước tốt nhất của độ sâu trước không phải lúc nào cũng được duyệt đầu ở gốc
+(Mục~\ref{sec:cs-goc}), và điểm thắng trong bảng chuyển vị không hiệu chỉnh theo ply (Mục~\ref{sec:cs-mate-tt}).
+\item Mới có một mức thời gian cho so sánh cùng thời gian; chưa phân tích độ nhạy theo độ sâu của L3.
+\item L8 không lưu checkpoint trung gian, nên không có learning curve trước đối thủ cố định.
+\item Nhiều lượt chạy ghi \texttt{dirty: true}; giải chính và các lượt trên khai cuộc giữ riêng chạy trên máy hoặc phiên bản mã khác nhau.
+\end{itemize}
 
 \section{Khả năng tái lập}
-Đối với L7, checkpoint L5 đã ghim là trọng số của tác tử PUCT đã đánh giá. Đối với L8, lựa chọn có căn cứ trong log là \repoFile{best.pt} vòng 37. Việc phát hành checkpoint là một bước triển khai riêng, cần kiểm tra revision thật trên dịch vụ và khả năng tải lại. Nên lưu toàn bộ log và mã SHA-256 khi phát hành để người đọc biết chính xác trọng số nào tạo ra kết quả. Xem Phụ lục~\ref{app:tai-lap} để tái lập bảng, biểu đồ và ván minh họa.
+Checkpoint L5, L6 và L8 (vòng 37) được ghim revision trong \repoFile{configs/models.yaml}; L7 dùng chung checkpoint L5. Mỗi lượt chạy lưu cấu hình, seed, commit và log thô. Chế độ ngân sách cố định cho phép chạy lại theo cùng seed; chế độ thời gian phụ thuộc máy. Xem Phụ lục~\ref{app:tai-lap} để tái lập bảng và hình.
 
 \section{Hướng phát triển}
-Ưu tiên giải đủ L1--L8 với khai cuộc giữ riêng, đo theo cả thời gian và ngân sách cố định.
-Sau đó kiểm tra tự đấu từng cấp, lặp huấn luyện với nhiều seed, và đo phần giảm thời gian
-do Cython và gom suy luận với cùng checkpoint và cùng máy.
+Việc nên làm đầu tiên là sửa hai lỗi nhãn theo đề xuất ở Mục~\ref{sec:cs-du-lieu}, sinh lại dữ liệu, huấn luyện lại L5 và
+đấu với L5 hiện tại trên khai cuộc giữ riêng; đó là phép đo trực tiếp cái giá của lỗi. Tiếp theo là sửa thứ tự gốc của
+cấp 3 và thêm test cho nó. Sau đó ưu tiên huấn luyện lại với nhiều seed, thêm hai mức thời gian cho RQ1, chạy lại giải chính trên khai cuộc giữ riêng, đối đầu cho A7, và đo phần giảm thời gian do Cython và gom suy luận trên cùng máy, cùng checkpoint. Với engine ngoài KataGomo đã tích hợp, một giải đủ số ván sẽ cho một mốc tham chiếu độc lập.

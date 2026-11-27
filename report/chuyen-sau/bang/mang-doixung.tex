@@ -1,0 +1,17 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{Độ nhất quán dưới 8 phép đối xứng D4 (4.000 thế test)}
+  \label{tab:cs-mang-doixung}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    Mạng & TV & Trùng top-1 & $\sigma_v$ & Biên độ $v$ & Top-1 đơn & Top-1 TB 8 \\
+    \midrule
+    SL v3 (L5, L7) & 0,141 & 71,8 & 0,109 & 0,339 & 67,8 & 69,9 \\
+    SL v3 không augment & 0,406 & 52,1 & 0,308 & 0,899 & 56,1 & 60,1 \\
+    REINFORCE (L6) & 0,277 & 68,6 & 0,087 & 0,270 & 55,6 & 56,1 \\
+    AlphaZero vòng 37 (L8) & 0,170 & 71,8 & 0,087 & 0,269 & 52,8 & 54,5 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize TV: khoảng cách biến phân toàn phần giữa policy gốc và policy của thế đã biến đổi (đưa về hệ toạ độ gốc). Mạng đẳng biến hoàn hảo có TV bằng 0 và trùng top-1 100\%.}
+\end{table}

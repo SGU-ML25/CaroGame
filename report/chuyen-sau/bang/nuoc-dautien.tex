@@ -1,0 +1,21 @@
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Ván mà tác tử là bên đầu tiên có đường thắng ép}
+  \label{tab:cs-nuoc-dautien}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Tác tử & Số ván & Thắng (\%) & Nước (trung vị) & Còn lại (trung vị) \\
+    \midrule
+    L1 Random & 19 & 5,3 & 16 & 14 \\
+    L2 Rule & 327 & 94,2 & 8 & 3 \\
+    L3 AlphaBeta & 398 & 98,0 & 13 & 3 \\
+    L4 MCTS & 81 & 100,0 & 15 & 15 \\
+    L5 PolicySL & 356 & 94,7 & 9 & 3 \\
+    L6 PolicyRL & 407 & 97,1 & 12 & 3 \\
+    L7 PUCT & 557 & 99,6 & 16 & 3 \\
+    L8 AlphaZero & 601 & 99,7 & 17 & 3 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Đường thắng ép gồm thắng ngay và VCF. ``Còn lại'' là số nước từ lúc đó đến hết ván.}
+\end{table}

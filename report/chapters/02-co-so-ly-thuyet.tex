@@ -413,24 +413,29 @@ Một nước đi của $x$ là \emph{đe doạ bắt buộc} nếu sau nước 
 lượt đối thủ chỉ chặn được một ô, nên $x$ thắng ở lượt kế tiếp.
 \end{dinhnghia}
 
-Các mẫu thường gặp trong Caro có thể diễn đạt bằng số quân trong cửa sổ sống:
+Các mẫu thường gặp được phân loại theo \emph{số ô thắng} mà chúng tạo ra, ngay lập tức hoặc sau
+một nước nữa (Hình~\ref{fig:gt-mau}). Số quân trong một cửa sổ riêng lẻ chưa đủ để phân loại, vì
+nhiều cửa sổ chồng lên nhau:
 \begin{itemize}
-  \item \textbf{Ba hở:} một cửa sổ sống có đúng 3 quân $x$ và 2 ô trống. Nước đi vào một trong
-        hai ô trống tạo ra cửa sổ 4 quân, tức một đe doạ bắt buộc (một ô thắng ngay). Ba hở
-        \emph{không} thắng ngay, nhưng buộc đối thủ phải trả lời.
-  \item \textbf{Tứ hở:} cửa sổ sống có 4 quân $x$ và 1 ô trống. Đây là đe doạ mạnh nhất trước
-        khi thắng: đối thủ phải chặn ô trống đó, nhưng nếu có hai tứ hở cùng lúc thì không chặn
-        hết được.
-  \item \textbf{Đòn kép:} một nước tạo ra từ hai ô thắng ngay trở lên. Đòn kép có thể hình
-        thành từ hai ba hở cắt nhau, từ một tứ hở cộng một ba hở, hoặc từ một nước vừa chặn vừa
-        tạo đe doạ.
+  \item \textbf{Tứ (bốn):} có ít nhất một cửa sổ sống chứa 4 quân $x$, tức $x$ có ít nhất một ô
+        thắng ngay. Nếu chỉ có một ô thắng (ví dụ \texttt{OXXXX.} hoặc \texttt{XX.XX}), đối thủ buộc
+        phải chặn ô đó, trừ khi họ thắng được ngay.
+  \item \textbf{Tứ hở:} dạng \texttt{.XXXX.}: bốn quân liền với hai đầu trống, tạo \emph{hai} ô thắng
+        ngay. Đối thủ chỉ chặn được một ô, nên $x$ thắng nếu đối thủ không có ô thắng ngay.
+  \item \textbf{Ba hở:} thế ba quân mà thêm một quân thì thành tứ hở, ví dụ \texttt{..XXX..}. Ba hở
+        chưa tạo ô thắng ngay, nhưng đối thủ thường phải trả lời ngay, trừ khi họ tạo được tứ
+        trước. Một cửa sổ sống có 3 quân chưa chắc là ba hở: từ \texttt{OXXX..} chỉ tạo được tứ một
+        đầu, không tạo được tứ hở.
+  \item \textbf{Đòn kép:} một nước tạo đồng thời hai đe doạ độc lập (hai ô thắng ngay, tứ cùng ba
+        hở, hoặc hai ba hở) khiến đối thủ không đỡ hết được.
 \end{itemize}
 
 \begin{nhanxet}
-Với luật tự do, một cửa sổ có 4 quân $x$ luôn cho một ô thắng ngay, bất kể hai đầu cửa sổ có
-bị chặn hay không. Đây là khác biệt căn bản so với luật chặn hai đầu: trong luật tự do, ``tứ bị
-chặn một đầu'' vẫn là đe doạ bắt buộc, còn ``tứ bị chặn hai đầu'' vẫn thắng nếu đủ 5 quân. Vì
-vậy hàm lượng giá chỉ cần đếm số quân trong cửa sổ sống, không cần trạng thái ``đầu bị chặn''.
+Với luật tự do, điều kiện thắng không xét hai đầu dãy. Vì vậy một cửa sổ có 4 quân $x$ và 1 ô
+trống luôn cho một ô thắng ngay, kể cả khi quân đối thủ chặn sát hai đầu cửa sổ (ví dụ
+\texttt{OXX.XXO}: đi vào ô trống giữa vẫn thắng). Ngược lại, bốn quân liền bị chặn sát cả hai đầu
+(\texttt{OXXXXO}) không còn ô thắng nào trên hàng đó. Hàm lượng giá chỉ đếm quân trong cửa sổ sống
+nên tự xử lý đúng cả hai trường hợp, không cần trạng thái ``đầu bị chặn''.
 \end{nhanxet}
 
 \subsection{Chuỗi ép và tìm kiếm không gian đe doạ}
@@ -444,8 +449,9 @@ duyệt mọi nước, engine chỉ duyệt các nước tạo đe doạ, nên c
 Về mặt lý thuyết, nếu một thế cờ có chuỗi ép thắng dài $k$ nước, tác tử chỉ nhìn trước $d < k$
 nước sẽ không thấy chuỗi đó. Đây là \emph{hiệu ứng chân trời} đã nêu ở Mục~\ref{sec:lt-negamax}.
 Trong Caro, các chuỗi ép thắng thường dài 4--10 nước, nên tác tử có độ sâu 3--4 vẫn có thể bỏ
-sót. Đây là lý do thực nghiệm A3/A4 quan sát MCTS thua Alpha-Beta ngay cả khi số mô phỏng tăng:
-cây phải đủ sâu để thấy cấu trúc 4 ply, trong khi ngân sách bị chia cho hàng chục nước gốc.
+sót. Hiệu ứng tương tự là một cách giải thích phù hợp cho kết quả A3/A4, trong đó MCTS vẫn thua
+Alpha-Beta khi số mô phỏng tăng: cây phải đủ sâu để thấy cấu trúc 4 ply, trong khi ngân sách bị chia
+cho hàng chục nước gốc.
 
 \subsection{Lợi thế đi trước và lập luận đánh cắp chiến lược}
 \label{sec:lt-di-truoc}
@@ -501,8 +507,8 @@ nước có khả năng cao, thay vì thử đều. Đây là điểm khác bi�
 Khi gom nhiều lá trong một lô để suy luận mạng, các lá trong cùng lô có thể chọn trùng nhau vì
 cây chưa cập nhật. \emph{Virtual loss} khắc phục bằng cách tạm thời cộng một giá trị thua cho
 mỗi nút trên đường đi, làm nó kém hấp dẫn ở lần chọn tiếp theo; sau khi suy luận xong, giá trị
-tạm này được gỡ. Trong code, mỗi nút có biến `vl` đếm số virtual loss đang treo, và công thức
-chọn con dùng $N+vl$ ở mẫu số.
+tạm này được gỡ. Trong code, mỗi nút có biến \texttt{vl} đếm số virtual loss đang treo, và công
+thức chọn con dùng $N+\texttt{vl}$ thay cho $N$.
 
 \subsection{Sai số của giá trị lá và tầm quan trọng của calibration}
 \label{sec:lt-calibration}
@@ -546,8 +552,9 @@ dạng tự chơi. Trong đề tài, $\beta$ bắt đầu 0,01 và giảm dần 
 Trong self-play, đối thủ là phiên bản cũ của chính tác tử, nên môi trường không dừng. Các đảm
 bảo hội tụ của MDP cố định không áp dụng trực tiếp. Ba biện pháp giảm rủi ro: (i) giữ một pool
 các checkpoint cũ để tránh quên; (ii) đánh giá định kỳ trước đối thủ cố định để đo tiến bộ thật;
-(iii) dùng gating để chỉ thay bản tốt nhất khi ứng viên thắng đủ tỷ lệ. Cả ba được cài trong
-cấp 6 và cấp 8.
+(iii) dùng gating để chỉ thay bản tốt nhất khi ứng viên thắng đủ tỷ lệ. Trong đề tài, cấp 6 dùng
+(i) và (ii); cấp 8 dùng (iii), cộng với cửa sổ dữ liệu trượt, và chỉ đấu một đối thủ cố định (L7) sau
+khi huấn luyện xong.
 
 \section{Phương pháp thống kê đánh giá}
 \label{sec:lt-thong-ke}
@@ -578,7 +585,8 @@ Mô hình Bradley-Terry giả định xác suất $i$ thắng $j$ là
 trong đó $r_i$ là điểm Elo. Ước lượng $r_i$ bằng cực đại hoá likelihood của toàn bộ kết quả.
 Khác với Elo cập nhật tuần tự, Bradley-Terry dùng toàn bộ dữ liệu và ít phụ thuộc thứ tự trận.
 Báo cáo dùng Bradley-Terry làm thang xấp xỉ, nhưng không coi chênh lệch Elo là đo lường tuyệt
-đối: với 8 tác tử và vài trăm ván mỗi cặp, khoảng bất định của Elo có thể hàng trăm điểm.
+đối: khi một tác tử thắng hoặc thua gần như tuyệt đối, điểm của nó phụ thuộc mạnh vào tiên nghiệm
+(Mục~\ref{sec:lt-bt-uoc-luong}) và vào tập đối thủ.
 
 \subsection{Lực lượng thống kê và so sánh nhiều lần}
 Với 100 ván mỗi cặp, khoảng Wilson 95\% của tỷ lệ 50\% là khoảng 40--60\%. Vì vậy chênh lệch
@@ -633,14 +641,16 @@ chọn 4, và nhánh này có thể tốt hơn 3; khi đó không được bỏ,
 \subsection{Ước lượng hồi quy của UCB1}
 Với $K$ máy và phần thưởng trong $[0,1]$, UCB1 có hồi quy kỳ vọng sau $n$ lần kéo:
 \begin{equation}
-  \mathbb{E}[R_n] \le \mu^* n + \sum_{a:\mu_a<\mu^*} \frac{8\ln n}{\Delta_a} + O(K),
+  \mathbb{E}[R_n] \le \sum_{a:\mu_a<\mu^*} \frac{8\ln n}{\Delta_a}
+  + \left(1+\frac{\pi^2}{3}\right)\sum_a \Delta_a,
   \label{eq:ucb-regret}
 \end{equation}
 trong đó $\Delta_a=\mu^*-\mu_a$ là khoảng cách tới máy tốt nhất. Cận này nói rằng số lần chọn
-máy dưới tối ưu tăng theo $\ln n$, không theo $n$. Với UCT, kết quả tương tự áp dụng cho từng
-nút nếu phần thưởng trong $[0,1]$ và cây hữu hạn. Trong Caro, phần thưởng là $\{0,1\}$ sau khi
-đổi góc nhìn, nên điều kiện thoả; nhưng hằng số phụ thuộc số nút và có thể rất lớn ở ngân sách
-thực tế.
+máy dưới tối ưu tăng theo $\ln n$, không theo $n$. Bên trong cây UCT, phân phối phần thưởng của
+mỗi nút thay đổi khi cây con lớn dần, nên cận này không áp dụng trực tiếp; kết quả của Kocsis và
+Szepesvári là hội tụ tiệm cận \cite{kocsis2006uct}. Cài đặt của đề tài dùng phần thưởng
+$\{-1,0,+1\}$ (thua, hoà, thắng) với $c=1{,}4$. Đổi về thang $[0,1]$ bằng $(r+1)/2$ thì quy tắc chọn
+này tương đương hệ số $c=0{,}7$, nhỏ hơn $\sqrt2$ của UCB1; đề tài không dò hệ số này.
 
 \subsection{Đạo hàm policy gradient}
 Lấy gradient của $J(\theta)=\sum_s d(s)\sum_a \pi_\theta(a|s)Q(s,a)$:
@@ -665,23 +675,26 @@ quyết bằng cách giải bất phương trình $( \hat p-p )^2 \le z^2 p(1-p)
 thể có tỷ lệ nhỏ chưa quan sát; khoảng chuẩn cho $[0;0]$, sai. Vì vậy báo cáo dùng Wilson.
 
 \subsection{Ước lượng Bradley-Terry}
-Với dữ liệu $y_{ij}$ là số lần $i$ thắng $j$, log-likelihood:
+\label{sec:lt-bt-uoc-luong}
+Với $y_{ij}$ là tổng điểm của $i$ trước $j$ (thắng 1, hoà 0,5), log-likelihood là
 \begin{equation}
   \ell(r)=\sum_{i<j}\left[y_{ij}\log\frac{1}{1+10^{(r_j-r_i)/400}}+
   y_{ji}\log\frac{1}{1+10^{(r_i-r_j)/400}}\right].
   \label{eq:bt-ll}
 \end{equation}
-Hàm lõm theo $r$ sau khi chuẩn hoá $\sum_i r_i=0$, nên cực đại hoá bằng gradient ascent hoặc
-Newton. Báo cáo dùng gradient ascent 5\,000 bước, lr 2,0, chuẩn hoá trung bình 1\,000. Với 8 tác
-tử và 2\,800 ván, nghiệm hội tụ nhanh; nhưng khoảng bất định của $r$ không được tính, nên Elo
-chỉ là minh hoạ thang đo.
+Hàm lõm theo $r$ và không đổi khi cộng cùng một hằng số vào mọi $r_i$, nên báo cáo chuẩn hoá trung
+bình bằng 1\,000. Khi một tác tử thua (hoặc thắng) mọi ván, ước lượng hợp lý cực đại là vô hạn; để
+nghiệm hữu hạn, mỗi cặp đã gặp nhau được cộng thêm một ván hoà ảo. Nghiệm tìm bằng phương pháp
+Newton (hàm \texttt{bradley\_terry} trong \texttt{caro/arena/stats.py}). Khoảng bất định lấy bằng
+bootstrap theo khai cuộc.
 
 \subsection{Ví dụ tính độ phức tạp}
 Giả sử hệ số rẽ nhánh $b=40$ và độ sâu $d=4$. Minimax duyệt $40^4=2{,}56$ triệu lá. Với thứ tự
 hoàn hảo, Alpha-Beta duyệt $b^{\lceil d/2\rceil}+b^{\lfloor d/2\rfloor}-1=40^2+40^2-1=3{,}199$
-lá, giảm khoảng 800 lần. Trong thực tế, A1 (không sắp xếp) chỉ giảm 20 lần; A2 (có sắp xếp)
-giảm 24,5 lần số nút so với không sắp xếp. Khoảng cách giữa lý thuyết và thực tế là do thứ tự
-không hoàn hảo và chi phí sắp xếp.
+lá, giảm khoảng 800 lần. Trong thực tế, ở độ sâu 3, A1 (không sắp xếp) giảm khoảng 20 lần so với
+không cắt tỉa; A2 ở độ sâu cố định cho thấy sắp xếp nước giảm thêm 5,7 lần số nút ở độ sâu 3 và
+hơn 100 lần ở độ sâu 5 (Bảng~\ref{tab:a2}). Khoảng cách với cận lý thuyết đến từ thứ tự chưa hoàn
+hảo và hệ số rẽ nhánh khác nhau giữa các thế.
 
 \subsection{Ví dụ tính điểm cửa sổ}
 Xét hàng 5 có dạng \texttt{.XX.XX.O...}, tức X ở cột 1, 2, 4, 5; O ở cột 7. Có bảy cửa sổ
@@ -700,3 +713,6 @@ cột 1 còn một ô trống ở cột 3, nên ô $(5,3)$ là ô thắng ngay c
 sao phải lọc cửa sổ chứa O trước khi đếm: nếu đếm cả cửa sổ chết, điểm sẽ sai và hàm lượng giá
 sẽ đánh giá quá cao một thế đã bị chặn. Engine làm phép lọc này bằng bit; test đối chiếu với
 bản duyệt mảng để bảo đảm không sai ở mép bàn.
+
+% Chỉ bản nộp (main.tex đặt \ChuyenSau): phần này tham chiếu các mục thực nghiệm không có trong bản mở rộng.
+\ifdefined\ChuyenSau\input{chapters/02b-ly-thuyet-bo-sung}\fi

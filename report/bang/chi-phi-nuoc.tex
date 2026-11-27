@@ -1,0 +1,22 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{Thời gian mỗi nước (ms) ở hai lượt RR8 trên cùng máy (một tiến trình, CPU Intel Core i7-11800H; L3, L7, L8 dùng lõi Cython) và khối lượng tìm kiếm trung bình mỗi nước ở lượt giữ riêng.}
+  \label{tab:chi-phi-nuoc}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lrrrrrrr@{}}
+    \toprule
+     & \multicolumn{3}{c}{RR8 cũ} & \multicolumn{3}{c}{RR8 giữ riêng} &  \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7}
+    Tác tử & TB & P50 & P95 & TB & P50 & P95 & Tìm kiếm \\
+    \midrule
+    L1-Random & 0{,}0 & 0{,}0 & 0{,}0 & 0{,}0 & 0{,}0 & 0{,}0 & --- \\
+    L2-Rule & 1{,}3 & 1{,}0 & 3{,}4 & 1{,}4 & 1{,}1 & 3{,}6 & --- \\
+    L3-AlphaBeta & 10{,}3 & 5{,}2 & 33{,}9 & 10{,}7 & 5{,}7 & 34{,}0 & 6\,658 nút \\
+    L4-MCTS & 63{,}4 & 64{,}5 & 81{,}6 & 62{,}3 & 63{,}0 & 80{,}7 & 400 mô phỏng \\
+    L5-PolicySL & 1{,}4 & 1{,}3 & 2{,}1 & 1{,}2 & 1{,}1 & 1{,}5 & --- \\
+    L6-PolicyRL & 1{,}4 & 1{,}3 & 2{,}1 & 1{,}2 & 1{,}2 & 1{,}5 & --- \\
+    L7-PUCT & 43{,}7 & 36{,}0 & 94{,}4 & 94{,}9 & 91{,}6 & 170{,}3 & 200 mô phỏng \\
+    L8-AlphaZero & 43{,}6 & 37{,}0 & 97{,}3 & 92{,}5 & 91{,}0 & 169{,}1 & 200 mô phỏng \\
+    \bottomrule
+  \end{tabular}
+\end{table}

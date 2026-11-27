@@ -1,0 +1,5 @@
+2026-11-26 20:35:03 INFO    run tournament/a8_heldout/20261126-203503 — config experiments/a8_heldout, seed 2026
+2026-11-26 20:35:03 INFO    Bắt đầu giải đấu: 400 ván cờ, 4 workers, chế độ challengers_vs_baselines.
+2026-11-26 20:44:00 INFO    Bảng điểm chung cuộc: {'L2-Rule': 177.0, 'MCTS-light': 0.0, 'L3-AlphaBeta': 194.5, 'MCTS-light-tactic': 28.5}
+2026-11-26 20:44:00 INFO    Đã lưu báo cáo thống kê tại: /mnt/data/1_Projects/AAI/CaroGame/runs/eval/tournament/a8_heldout/20261126-203503/reports
+2026-11-26 20:44:00 INFO    kết thúc: ok sau 536.9 s

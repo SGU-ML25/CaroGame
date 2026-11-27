@@ -203,6 +203,89 @@ GitHub Actions: đặt `HF_TOKEN` trong Environment hoặc Repository secrets; b
 | `experiments/a7_eval_weights` | Heuristic mặc định / bỏ phòng thủ | |
 | `experiments/e3_first_move` | Lợi thế đi trước | RQ4 |
 
+## Chạy lại thí nghiệm trong báo cáo
+
+Mọi lệnh chạy từ gốc repo. Cài đủ phụ thuộc và build lõi Cython một lần (L3, L7, L8 dùng `backend: native`;
+cần `gcc` hoặc `clang`):
+
+```bash
+uv sync --group dev --extra nn --extra analysis --extra ui --extra native
+uv run python setup_native.py build_ext --inplace
+uv run caro-hub pull                      # tải trọng số L5, L6, L8 đã ghim
+```
+
+### Giải đấu và benchmark
+
+Thời gian là của các lượt đã chạy trên CPU i7-11800H, chỉ để ước lượng.
+
+| Lệnh (thêm `uv run python` ở đầu) | Nội dung | Thời gian |
+|---|---|---|
+| `-m caro.arena.tournament experiments/rr8_heldout` | Tám cấp, 2.800 ván, khai cuộc giữ riêng | 20–35 phút |
+| `-m caro.arena.tournament experiments/e3_heldout` | Mỗi cấp tự đấu, 800 ván | khoảng 18 phút |
+| `-m caro.arena.tournament experiments/a8_heldout` | A8: MCTS tắt / bật chiến thuật ở gốc, 400 ván, 4 tiến trình | khoảng 9 phút |
+| `-m caro.arena.tournament experiments/main_mode_a_l1_l6` | Giải chính L1–L6, 1.000 ms/nước | khoảng 56 phút (máy Intel Model 154) |
+| `-m caro.arena.tournament experiments/main_mode_b_l1_l6` | Giải chính L1–L6, ngân sách cố định | khoảng 30 phút (máy Intel Model 154) |
+| `-m caro.arena.bench experiments/a2_fixed_depth budget.max_depth=3 run.tag=d3` | A2 độ sâu 3 | vài giây |
+| `-m caro.arena.bench experiments/a2_fixed_depth budget.max_depth=4 run.tag=d4` | A2 độ sâu 4 | dưới 1 phút |
+| `-m caro.arena.bench experiments/a2_fixed_depth budget.max_depth=5 run.tag=d5` | A2 độ sâu 5 | khoảng 7 phút |
+| `experiments/do_bo_nho.py` | Đỉnh RAM của từng tác tử | khoảng 1 phút |
+
+Ví dụ:
+
+```bash
+uv run python -m caro.arena.tournament experiments/rr8_heldout
+```
+
+Xem tiến độ ở một terminal khác (mỗi ván là một dòng, so với tổng số ván ở bảng trên):
+
+```bash
+wc -l runs/eval/tournament/rr8_heldout/latest/games.jsonl
+```
+
+Khi xong, `summary.json` trong thư mục run ghi `status` (`ok` / `error` / `interrupted`) và `duration_s`.
+Giải bị ngắt giữa chừng không chạy tiếp được, phải chạy lại từ đầu.
+
+Bộ khai cuộc giữ riêng đã có sẵn (`runs/openings/openings_heldout_v2.json`). Sinh lại bằng
+`uv run python experiments/sinh_khai_cuoc_giu_rieng.py` (cần dữ liệu huấn luyện trong `runs/data/`, không có trên git).
+
+### Bảng, hình và PDF
+
+```bash
+uv run python report/scripts/phan_tich_hoc.py    # top-1/top-3 (cần runs/data/ và checkpoint SL cục bộ)
+uv run python report/scripts/bang_chuong4.py     # sinh report/bang/*.tex từ log
+cd report && latexmk main.tex                    # PDF ở report/build/main.pdf
+```
+
+`bang_chuong4.py` lấy lượt chạy hoàn chỉnh mới nhất của mỗi thí nghiệm trên khai cuộc giữ riêng.
+
+### Phân tích chuyên sâu và minh chứng
+
+Mỗi bước chạy qua `report/scripts/chuyen_sau/chay.py`, lưu log vào `runs/chuyen_sau/<bước>/<thời điểm>/`
+(`meta.json`, `run.log`, `ma-nguon/`, `data/`); chỉ mục ở `runs/chuyen_sau/README.md`. Cần `runs/data/` và checkpoint
+SL cục bộ cho `phan-tich-du-lieu` và `phan-tich-mang`.
+
+| Lệnh (thêm `.venv/bin/python report/scripts/chuyen_sau/chay.py` ở đầu) | Thời gian đã chạy (CPU 16 luồng) |
+|---|---|
+| `--list` | liệt kê các bước |
+| `kiem-thu-vcf bo-chien-thuat phan-tich-van phan-tich-thong-ke phu-luc-van` | khoảng 2 phút |
+| `phan-tich-du-lieu phan-tich-mang kiem-tra-rollout` | khoảng 5 phút |
+| `kiem-tra-goc` | khoảng 5 phút |
+| `kiem-thu-vct phan-tich-van-sau kiem-tra-thay-the` (cần KataGomo, xem `docs/KATAGOMO.md`) | khoảng 12 phút |
+| `cham-chien-thuat` | khoảng 1 giờ |
+| `giai-sims-l8` | rất lâu ở mức 3200 mô phỏng; mức 1–800 khoảng 40 phút khi máy bận |
+| `giai-cpuct` | khoảng 17 phút khi máy bận |
+| `phan-tich-tim-kiem` (chạy khi máy rảnh) | khoảng 10 phút |
+
+Sinh bảng, hình, đoạn mã rồi build:
+
+```bash
+.venv/bin/python report/scripts/chuyen_sau/bang.py
+.venv/bin/python report/scripts/chuyen_sau/trich_ma.py
+uv run --no-sync --with matplotlib python report/scripts/chuyen_sau/ve_hinh.py
+uv run --no-sync --with matplotlib python report/scripts/chuyen_sau/bang_van_sau.py
+cd report && latexmk main.tex
+```
+
 ## Giấy phép
 
 Mã nguồn và tài liệu trong repo này dùng **MIT License** — xem [`LICENSE`](LICENSE).

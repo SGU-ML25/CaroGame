@@ -90,6 +90,56 @@ def elo(matches, base_rating=1000, k_factor=32):
     return dict(ratings)
 
 
+def bradley_terry(matches, base_rating=1000.0, prior_draws=1.0, max_iter=100, tol=1e-9):
+    """Elo ước lượng đồng thời theo mô hình Bradley-Terry (không phụ thuộc thứ tự ván).
+
+    `matches`: dãy (agent_x, agent_o, result) với result ∈ {1, 0, -1} theo góc nhìn X; hoà tính nửa điểm.
+    Mỗi cặp đã gặp nhau được cộng `prior_draws` ván hoà ảo, nên tác tử thắng hoặc thua tuyệt đối vẫn có
+    điểm hữu hạn; điểm của các tác tử đó phụ thuộc mạnh vào số ván ảo. Trung bình các điểm bằng base_rating.
+    """
+    matches = list(matches)
+    agents = sorted({a for m in matches for a in m[:2]})
+    if not agents:
+        return {}
+    index = {a: i for i, a in enumerate(agents)}
+    n = len(agents)
+    games = np.zeros((n, n))
+    score = np.zeros((n, n))
+    for agent_x, agent_o, result in matches:
+        i, j = index[agent_x], index[agent_o]
+        if i == j:
+            continue
+        s = (result + 1) / 2
+        games[i, j] += 1
+        games[j, i] += 1
+        score[i, j] += s
+        score[j, i] += 1 - s
+    met = games > 0
+    games += prior_draws * met
+    score += 0.5 * prior_draws * met
+
+    def log_likelihood(r):
+        diff = r[:, None] - r[None, :]
+        return float(-(score * np.logaddexp(0.0, -diff)).sum())
+
+    # Newton trên thang log-odds. Số hạng 1/n cố định phương tịnh tiến chung (chỉ hiệu điểm có nghĩa).
+    r = np.zeros(n)
+    for _ in range(max_iter):
+        p = 1 / (1 + np.exp(r[None, :] - r[:, None]))
+        grad = (score - games * p).sum(axis=1)
+        if np.abs(grad).max() < tol:
+            break
+        w = games * p * (1 - p)
+        hessian = np.diag(w.sum(axis=1)) - w + 1.0 / n
+        step = np.linalg.solve(hessian + 1e-12 * np.eye(n), grad)
+        scale = 1.0
+        while scale > 1e-6 and log_likelihood(r + scale * step) < log_likelihood(r):
+            scale /= 2
+        r = r + scale * step
+        r -= r.mean()
+    return {a: float(base_rating + 400 / math.log(10) * r[index[a]]) for a in agents}
+
+
 def detailed_record_by_turn(games_df):
     """Thống kê thắng, hòa, thua theo bên X và bên O."""
 
@@ -188,6 +238,7 @@ def summarize_self_play(
             )
 
         opening_pairs = []
+        first_results = []
 
         if total:
             if "game_id" not in agent_games.columns:
@@ -196,15 +247,17 @@ def summarize_self_play(
                     "để xác định thứ tự hai ván."
                 )
 
+            sizes = set(agent_games.groupby("opening_id").size())
+            if sizes not in ({1}, {2}):
+                raise ValueError(
+                    "Self-play cần mọi opening có đúng 1 ván, hoặc mọi opening "
+                    "có đúng 2 ván, để bootstrap theo opening."
+                )
+
             for _, opening_games in agent_games.groupby(
                 "opening_id",
                 sort=True,
             ):
-                if len(opening_games) != 2:
-                    raise ValueError(
-                        "Mỗi opening trong self-play phải có "
-                        "đúng 2 ván để bootstrap theo cặp."
-                    )
 
                 opening_games = opening_games.sort_values("game_id")
 
@@ -212,11 +265,11 @@ def summarize_self_play(
                     int(value)
                     for value in opening_games.get(
                         "opening_plies",
-                        pd.Series([0, 0], index=opening_games.index),
+                        pd.Series(0, index=opening_games.index),
                     )
                 ]
 
-                if opening_plies[0] != opening_plies[1]:
+                if len(set(opening_plies)) != 1:
                     raise ValueError(
                         "Hai ván cùng opening phải có số nước "
                         "opening giống nhau."
@@ -232,15 +285,12 @@ def summarize_self_play(
                     for result in results
                 ]
 
+                first_results.extend(adjusted_results)
+                # Một ván mỗi opening (tác tử tất định không sinh hai ván trùng nhau): lặp lại
+                # giá trị để đơn vị bootstrap vẫn là opening, trung bình cụm không đổi.
                 opening_pairs.append(
-                    (adjusted_results[0], adjusted_results[1])
+                    (adjusted_results[0], adjusted_results[-1])
                 )
-
-        first_results = [
-            result
-            for pair in opening_pairs
-            for result in pair
-        ]
 
         first_wins = sum(result == 1 for result in first_results)
         first_draws = sum(result == 0 for result in first_results)
@@ -321,12 +371,11 @@ def calculate_performance(games_df):
 
             collected[agent]["times"].append(elapsed)
 
-            if index < len(nodes):
-                node_value = nodes[index]
-            elif index < len(sims):
+            # match.py luôn ghi cả hai danh sách, tác tử không dùng đại lượng nào thì ghi 0:
+            # Alpha-Beta có `nodes`, MCTS / PUCT có `sims`.
+            node_value = nodes[index] if index < len(nodes) else 0
+            if not node_value and index < len(sims):
                 node_value = sims[index]
-            else:
-                node_value = 0
 
             collected[agent]["nodes"].append(node_value)
 

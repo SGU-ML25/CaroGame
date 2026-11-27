@@ -1,0 +1,18 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{Sức chơi của L8 (200 mô phỏng) theo $c_{puct}$, đối thủ cố định L7}
+  \label{tab:cs-dn-cpuct}
+  \begin{tabular}{lcrcrrrr}
+    \toprule
+    Cấu hình L8 & T/H/B & Điểm & KTC 95\% & Khi X & Khi O & $p$ & Dài \\
+    \midrule
+    $c_{puct}=0{,}5$ & 49/14/37 & 56,0 & [46; 66] & 61 & 51 & 0,311 & 30 \\
+    $c_{puct}=1{,}0$ & 59/14/27 & 66,0 & [57; 74] & 81 & 51 & 0,003 & 28 \\
+    $c_{puct}=1{,}5$ & 58/12/30 & 64,0 & [55; 72] & 81 & 47 & 0,005 & 28 \\
+    $c_{puct}=3{,}0$ & 52/15/33 & 59,5 & [51; 68] & 76 & 43 & 0,050 & 29 \\
+    $c_{puct}=5{,}0$ & 52/14/34 & 59,0 & [50; 68] & 82 & 36 & 0,043 & 29 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Mỗi dòng 100 ván gặp L7 (200 mô phỏng, $c_{puct}=1{,}5$) trên 50 khai cuộc giữ riêng đổi màu. $p$: kiểm định dấu theo khai cuộc, chưa hiệu chỉnh so sánh nhiều lần.}
+\end{table}

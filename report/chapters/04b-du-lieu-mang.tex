@@ -1,0 +1,205 @@
+% Phân tích chuyên sâu (1): phương pháp, dữ liệu huấn luyện, mạng. \input trong 04-thuc-nghiem.tex.
+% Bảng và hình sinh bởi report/scripts/chuyen_sau/{bang,ve_hinh}.py; số trong lời phải khớp các bảng đó.
+\section{Phân tích chuyên sâu: phương pháp và minh chứng}
+\label{sec:cs-phuong-phap}
+Các mục trước trả lời tác tử nào thắng. Phần còn lại của chương hỏi \emph{vì sao}: dữ liệu huấn luyện dạy mạng điều
+gì, mỗi tác tử mắc lỗi gì ở nước nào, tìm kiếm sâu hơn sửa được loại lỗi nào, và các con số xếp hạng ổn định đến
+đâu. Mọi phân tích chạy trên log và checkpoint đã có, trừ hai giải nhỏ ở Mục~\ref{sec:cs-do-nhay}. Chúng đều chạy
+trên CPU của máy ở Mục~\ref{sec:cs-moi-truong}, với seed cố định.
+
+\subsection{Môi trường và minh chứng}
+\label{sec:cs-moi-truong}
+Mỗi bước được chạy qua \repoFile{report/scripts/chuyen_sau/chay.py}, ghi vào
+\repoFile{runs/chuyen_sau/<bước>/<thời điểm>/}: lệnh, giờ bắt đầu và kết thúc, mã thoát, commit và trạng thái cây
+làm việc, phiên bản thư viện, phần cứng, bản sao mã đã chạy, toàn bộ đầu ra và mã SHA-256 của dữ liệu vào và ra.
+Bảng chỉ mục các lượt ở Phụ lục~\ref{app:minh-chung}. Các bảng và hình sinh lại từ dữ liệu này, không chép tay.
+
+\subsection{Trọng tài: bộ giải VCF}
+Nhiều số đo dưới đây cần một đáp án khách quan cho câu hỏi ``thế này có thắng ép không''. Đề tài dùng bộ giải VCF ở
+Mục~\ref{sec:cs-vcf-lt}: tìm theo chiều sâu, tăng dần số nước tấn công để lấy lời giải ngắn nhất, nhớ các thế đã
+thất bại.
+\begin{algorithm}[H]
+  \caption{Tìm chuỗi VCF trong tối đa $n$ nước tấn công}
+  \label{alg:cs-vcf}
+  \begin{algorithmic}[1]
+    \REQUIRE bên đi $M$, đối thủ $O$, số nước tấn công $n$
+    \IF{$W(M,O)\neq\emptyset$}
+      \RETURN thắng ngay
+    \ENDIF
+    \IF{$n\le1$}
+      \RETURN không có
+    \ENDIF
+    \STATE $C\gets$ các nước tứ của $M$
+    \IF{$W(O,M)\neq\emptyset$}
+      \STATE $C\gets C\cap W(O,M)$ nếu $|W(O,M)|=1$, ngược lại $C\gets\emptyset$
+    \ENDIF
+    \FOR{$m\in C$ sao cho $W(O,M\cup\{m\})=\emptyset$}
+      \IF{$|W(M\cup\{m\},O)|\ge2$}
+        \RETURN thắng bằng đòn kép bắt đầu bởi $m$
+      \ENDIF
+      \STATE $b\gets$ ô thắng duy nhất; tìm đệ quy từ $(M\cup\{m\},\,O\cup\{b\})$ với $n-1$
+      \IF{tìm được chuỗi con}
+        \RETURN $m$, $b$ và chuỗi con
+      \ENDIF
+    \ENDFOR
+    \RETURN không có
+  \end{algorithmic}
+\end{algorithm}
+Tính chắc chắn đã chứng minh ở định lý~\ref{dl:cs-vcf}. Ngoài chứng minh, \repoFile{tests/test_vcf.py} kiểm bằng vét
+cạn: trên các thế ngẫu nhiên có VCF từ hai nước trở lên, với \emph{mọi} đáp trả của bên thủ, bên công vẫn còn nước
+thắng. Giới hạn độ dài là 10 nước tấn công cho bộ thế và 8 cho phân tích từng nước. Giới hạn này, cùng với việc
+không xét ba hở, làm mọi số đo ``bỏ lỡ'' và ``để hở'' là cận dưới.
+
+\section{Dữ liệu huấn luyện: hai lỗi nhãn và ảnh hưởng}
+\label{sec:cs-du-lieu}
+\subsection{Tổng quan tập expert\_v2}
+Tập dùng để huấn luyện SL v3 (cấp 5, và gián tiếp cấp 6--8 khởi tạo từ nó) gồm các thế từ 20\,000 ván tự đấu của
+Alpha-Beta độ sâu 3, sau khi loại trùng theo đối xứng. Bảng~\ref{tab:cs-mang-dulieu} và
+Hình~\ref{fig:cs-mang-du-lieu} tóm tắt.
+\input{chuyen-sau/bang/mang-dulieu}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/mang-du-lieu.png}
+  \caption{Tập expert\_v2: phân bố số quân, số thế giữ lại của mỗi ván sau loại trùng, và nhãn policy trung bình trên
+  bàn. Hàng 1 sáng bất thường dù ván diễn ra quanh tâm.}
+  \label{fig:cs-mang-du-lieu}
+\end{figure}
+Bản đồ nhiệt bên phải là manh mối đầu tiên. Các ván bắt đầu trong vùng $5\times5$ ở giữa và nước ứng viên chỉ trong
+bán kính 2 quanh quân đã có, nên xác suất cao ở hàng 1 không thể đến từ lối chơi.
+
+\subsection{Lỗi 1: nhãn hoà điểm ở thế đã thua}
+\label{sec:cs-hoa-diem}
+Khi đối thủ có từ hai ô thắng và bên đi không thắng ngay được, mọi nước đều thua sau đúng một nước của đối thủ, nên
+bộ tìm kiếm chấm \emph{mọi} nước cùng điểm $-(W-2)$. Hàm \texttt{scored\_moves} sắp xếp ổn định theo điểm trên danh
+sách ứng viên đã theo chỉ số tăng dần (Mục~\ref{sec:cs-fail-soft} và định lý~\ref{dl:cs-topk}), nên top-5 là năm ứng
+viên chỉ số nhỏ nhất; softmax của năm điểm bằng nhau là phân bố đều. Mạng được dạy rằng, khi sắp thua, nước tốt nằm
+ở góc trên bên trái.
+
+\input{chuyen-sau/bang/dl-hoadiem}
+Bảng~\ref{tab:cs-dl-hoadiem} cho thấy ở tập v2, $16{,}2\%$ mẫu có nhãn đều trên nhiều nước. Mọi thế đã thua đều thuộc
+loại này, và $91{,}9\%$ trong số đó có nước nhãn cao nhất nằm ở hàng 1. Tính ngược lại, $81{,}3\%$ các nhãn ``hàng 1''
+của cả tập là do hoà điểm. Nguyên nhân được tái hiện trực tiếp: gọi lại cấp 3 ở độ sâu 3 trên 200 thế đã thua lấy
+ngẫu nhiên từ tập, cả 200 thế mọi nước cùng một điểm và tập nước nhãn trùng đúng với tập trong dữ liệu.
+
+\input{chuyen-sau/bang/dl-theoquan}
+Tỷ lệ nhãn hoà tăng theo số quân (Bảng~\ref{tab:cs-dl-theoquan}): càng về cuối ván càng nhiều thế đã định đoạt. Ở
+tập v1 (nhiệt độ $0{,}5$), phần lớn nhãn hoà ở thế đông quân đến từ ván hoà, và 17\,242 trên 20\,000 ván không còn mẫu
+nào sau loại trùng: nhiệt độ thấp khiến các ván gần như trùng nhau. Đó là lý do v2 tăng nhiệt độ lên 8.
+
+\subsection{Lỗi 2: nhãn pha loãng ở thế thắng ngay được}
+Ở thế bên đi thắng ngay được, điểm của nước thắng ngay là $W-1$, còn một nước không liên quan cũng được chấm $W-3$ vì
+ván sau đó vẫn thắng ở lượt kế tiếp. Với nhiệt độ $T=8$, tỷ số trọng số softmax giữa hai mức chỉ là
+$e^{-2/8}\approx0{,}78$: nước thắng chậm gần như được dạy ngang nước thắng ngay. Một thế điển hình trong dữ liệu có
+hai ô thắng được chấm 999\,999, các ô chỉ số nhỏ nhất tiếp theo được chấm 999\,997 và chen vào top-5.
+
+\input{chuyen-sau/bang/dl-thangngay}
+Bảng~\ref{tab:cs-dl-thangngay} cho thấy $13{,}2\%$ mẫu thuộc loại này, và trung bình nhãn chỉ đặt $47{,}4\%$ xác suất
+lên các ô thắng; $94{,}7\%$ mẫu đặt dưới một nửa. Nước nhãn cao nhất luôn là nước thắng, nên argmax không bị ảnh hưởng
+trong dữ liệu, nhưng mạng học phân bố, không chỉ argmax. Một dấu hiệu của vòng xoáy: chỉ $1{,}4\%$ mẫu này có đúng một
+ô thắng, tức expert thường bỏ qua nước thắng đủ lâu để tích thêm đe doạ, rồi chính các thế đó lại vào tập huấn luyện.
+
+\subsection{Mạng đã học gì từ hai lỗi}
+\input{chuyen-sau/bang/dl-mang}
+\input{chuyen-sau/bang/dl-mang-thang}
+Bảng~\ref{tab:cs-dl-mang} tách số đo trên tập test theo hai nhóm. SL v3 đạt top-1 $75{,}3\%$ trên mẫu không hoà nhưng
+chỉ $21{,}6\%$ trên mẫu hoà (nơi nhãn đúng chỉ là một quy ước tuỳ ý trong năm ô ngang nhau). Con số $66{,}8\%$ báo cáo
+ở Mục~\ref{sec:lt-mang} và Bảng~\ref{tab:cs-mang-tong} là trung bình của hai nhóm, nên \emph{thấp hơn} khả năng dự đoán
+trên các thế có đáp án thật. Cũng trên các thế đã thua, SL v3 dồn $58{,}3\%$ xác suất vào hàng 1, mạng không augment
+$80{,}2\%$: mạng đã học lỗi. Hai mạng được huấn luyện tiếp bằng tự đấu dồn ít hơn hẳn (L6 $28{,}4\%$, L8
+$22{,}9\%$), vì kết quả ván không thưởng cho quy ước đó.
+
+Với thế thắng ngay (Bảng~\ref{tab:cs-dl-mang-thang}), argmax của SL v3 là một ô thắng ở $88{,}1\%$ mẫu, và nó chỉ đặt
+$49\%$ xác suất lên các ô thắng, sát với $47{,}4\%$ của nhãn: mạng bắt chước nhãn khá trung thực. L6 và L8 đạt trên
+$99\%$. Điều này khớp với số đo thi đấu ở Bảng~\ref{tab:cs-nuoc-loi}: L5 bỏ lỡ 60 trên 408 cơ hội thắng ngay, L6 chỉ
+14/422, L8 1/603.
+
+\paragraph{Điều chưa biết.} Các số đo trên chứng minh lỗi tồn tại và mạng học nó. Chúng \emph{không} cho biết sức
+chơi sẽ tăng bao nhiêu nếu sửa: việc đó cần sinh lại dữ liệu và huấn luyện lại, ngoài phạm vi lượt này. Mọi kết quả
+đấu trong báo cáo vẫn đúng với các tác tử đã đo.
+
+\paragraph{Cách sửa đề xuất.} (i) Ở gốc \texttt{scored\_moves}, nếu có nước thắng ngay thì nhãn chỉ gồm các nước đó;
+(ii) khi nhiều nước cùng điểm, chia đều xác suất cho \emph{tất cả} nước hoà thay vì $k$ nước đầu, hoặc loại thế đã
+định đoạt khỏi phần học policy nhưng giữ cho value; (iii) giải hoà bằng điểm vị trí hoặc ngẫu nhiên theo seed;
+(iv) bổ sung test khẳng định phân bố nhãn đối xứng trái--phải, trên--dưới khi lấy trung bình. Phép (iv) sẽ bắt được
+cả hai lỗi ngay từ lần sinh dữ liệu đầu tiên.
+
+\section{Phân tích bốn mạng policy--value}
+\label{sec:cs-mang}
+Bốn mạng cùng kiến trúc, khác cách huấn luyện: SL v3 có và không tăng cường đối xứng, mạng REINFORCE (L6) và mạng
+AlphaZero vòng 37 (L8). Cả bốn được đo trên cùng 28\,655 thế test của expert\_v2 (chia theo ván, seed lúc huấn luyện).
+
+\subsection{Độ khớp expert, entropy và sai số value}
+\input{chuyen-sau/bang/mang-tong}
+Ba điểm nổi bật trong Bảng~\ref{tab:cs-mang-tong}. Thứ nhất, tăng cường đối xứng nâng top-1 hơn mười điểm và giảm MSE
+từ $0{,}619$ xuống $0{,}440$; đây là phiên bản đo ngoại tuyến của A6. Thứ hai, entropy phản ánh mục tiêu huấn luyện:
+REINFORCE làm policy sắc ($0{,}55$ nat), còn huấn luyện theo phân bố lượt thăm có nhiễu Dirichlet làm L8 phân tán
+($2{,}17$ nat). Thứ ba, top-1 thấp của L6 và L8 \emph{không} đồng nghĩa yếu: chúng mạnh hơn L5 khi đấu, nghĩa là đã
+rời khỏi lựa chọn của expert theo hướng có lợi.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/mang-giai-doan.png}
+  \caption{Trái: tỷ lệ nước của expert nằm trong $k$ nước đầu của mạng. Giữa và phải: top-1 và MSE value theo số quân
+  trên bàn.}
+  \label{fig:cs-mang-giai-doan}
+\end{figure}
+\input{chuyen-sau/bang/mang-giaidoan-top1}
+\input{chuyen-sau/bang/mang-giaidoan-mse}
+Top-1 đạt đỉnh ở 10--14 quân ($81{,}8\%$ với SL v3) rồi giảm: cuối ván có nhiều thế hoà điểm (Lỗi 1) và nhiều nước
+tương đương. MSE value giảm đều theo số quân, từ khoảng 1 ở đầu ván, tức không hơn đoán 0, xuống $0{,}30$ khi bàn
+đông. Điều này đúng như định lý~\ref{dl:cs-mse}: đầu ván, phương sai không giảm được của kết quả chiếm gần hết sai số.
+
+\subsection{Calibration của value}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/mang-calib.png}
+  \caption{Trái: kết quả trung bình thực tế theo giá trị dự đoán (đường chéo là calibrated hoàn hảo). Phải: phân bố giá
+  trị dự đoán.}
+  \label{fig:cs-mang-calib}
+\end{figure}
+\input{chuyen-sau/bang/mang-calib}
+Phân bố dự đoán của cả bốn mạng dồn về hai đầu, vì nhiều thế cuối ván đã định đoạt. Mạng không augment lệch rõ nhất:
+trong khoảng dự đoán $[0{,}6;0{,}8)$, kết quả thực trung bình chỉ $0{,}31$, tức quá tự tin. SL v3 bám đường chéo tốt hơn,
+vẫn hơi quá tự tin ở khoảng $[0{,}4;0{,}6)$ (thực tế $0{,}35$). L6 và L8 gần đường chéo hơn ở các khoảng dương giữa. Lưu ý
+nhãn ở đây là kết quả của \emph{expert} đánh tiếp; một mạng mạnh hơn expert có thể ``sai'' theo nhãn này mà đúng với lối
+chơi của chính nó.
+
+\subsection{Đối xứng D4: tăng cường dữ liệu làm được gì}
+\input{chuyen-sau/bang/mang-doixung}
+Bảng~\ref{tab:cs-mang-doixung} đo điều mà A6 chỉ thấy gián tiếp. Không augment, cùng một thế quay hay lật cho nước
+top-1 khác nhau gần một nửa số lần (trùng $52{,}1\%$) và value dao động trung bình $0{,}90$ giữa hướng cao nhất và thấp
+nhất. Augment giảm khoảng cách biến phân từ $0{,}406$ xuống $0{,}141$, nhưng chưa về 0: đẳng biến học được chỉ là xấp
+xỉ. Một quan sát ngoài dự kiến: L6 xuất phát từ SL v3 ($0{,}141$) nhưng có TV $0{,}277$. Vòng REINFORCE không dùng phép
+đối xứng nào, và đã làm mất một phần tính đối xứng học được trước đó. L8, có augment trong replay, giữ ở $0{,}170$.
+
+Lấy trung bình tám hướng (định lý~\ref{dl:cs-d4}) tăng top-1 của mọi mạng, nhiều nhất ở mạng ít đối xứng (không augment
+$56{,}1\to60{,}1\%$), ít ở mạng đã đối xứng. Cái giá là tám lần suy luận; đề tài không dùng nó khi thi đấu và chưa đo
+tác động lên sức chơi.
+
+\subsection{Mạng trên bộ thế chiến thuật}
+Bộ thế mô tả ở Mục~\ref{sec:cs-chien-thuat}. Ở đây chỉ dùng đầu ra thô của mạng, không tìm kiếm.
+\input{chuyen-sau/bang/mang-ct-khoiluong}
+\input{chuyen-sau/bang/mang-ct-top1}
+\input{chuyen-sau/bang/mang-ct-value}
+Trên các thế thắng ngay (C1), SL v3 chỉ chọn đúng $80\%$ dù đáp án là nước hiển nhiên nhất của luật chơi: dấu vết trực
+tiếp của Lỗi 2. Chặn (C2) và tạo đòn kép (C3) gần như hoàn hảo ở cả bốn mạng. Value nhận đúng dấu ở C1, C3, C4 (bên đi
+đang thắng ép), nhưng trung bình chỉ $0{,}46$--$0{,}71$ ở C4, các chuỗi dài. Ở C2, giá trị đúng không xác định (chặn
+xong có thể vẫn cân bằng), và mạng trả giá trị gần 0 hơi âm.
+
+\input{chuyen-sau/bang/hinh-policy-c1}
+\input{chuyen-sau/bang/hinh-policy-c3}
+\input{chuyen-sau/bang/hinh-policy-c4}
+\input{chuyen-sau/bang/hinh-policy-c5}
+
+\subsection{Quỹ đạo giá trị trong ván L7 gặp L8}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/mang-quy-dao.png}
+  \caption{Giá trị (đổi về góc nhìn X) của hai mạng theo từng nước trong bốn ván L7 gặp L8, chọn theo phân vị độ dài
+  25\%, 50\%, 75\% và 95\%. Đường đỏ đứt: thế đầu tiên có bên đi có VCF.}
+  \label{fig:cs-mang-quy-dao}
+\end{figure}
+Bốn ván được chọn theo độ dài, không theo kết quả. Mạng L5 dao động mạnh giữa hai nước liên tiếp (đổi góc nhìn làm lộ
+ra phần đánh giá phụ thuộc bên đi), còn mạng L8 mượt hơn ở đầu ván. Ở các ván có thắng thua, cả hai mạng thường chỉ
+nghiêng hẳn về bên thắng gần thời điểm VCF xuất hiện. Bốn ván không đủ để so định lượng hai value head; chúng minh hoạ
+vì sao một giá trị lá chính xác ở trung cuộc khó hơn nhiều ở thế đã có đe doạ.

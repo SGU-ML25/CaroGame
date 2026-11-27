@@ -21,7 +21,7 @@ from caro.arena.match import play_match
 from caro.config import load_config, project_path
 from caro.runlog import Run
 
-L8_BEST = "runs/train/alphazero/20261124-160615_gpu-native/checkpoints/best.pt"
+L8_BEST = "model:l8"   # vòng 37, ghim trong configs/models.yaml
 
 SPECS: dict[str, object] = {
     "L1-Random": "agents/l1_random",

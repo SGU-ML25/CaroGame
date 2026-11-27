@@ -1,0 +1,19 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{Giải chính, chế độ A (1\,000 ms/nước): điểm của từng tác tử trên 1000 ván (\%), khoảng Wilson 95\%, điểm theo màu và thời gian mỗi nước.}
+  \label{tab:giai-a}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lrrrrrrr@{}}
+    \toprule
+    Tác tử & T/H/B & Điểm & Wilson 95\% & Cầm X & Cầm O & P50 (ms) & P95 (ms) \\
+    \midrule
+    L6-PolicyRL & 769/21/210 & 78{,}0 & 75{,}3--80{,}4 & 84{,}5 & 71{,}4 & 6{,}3 & 7{,}6 \\
+    L3-AlphaBeta & 763/27/210 & 77{,}6 & 75{,}0--80{,}1 & 86{,}0 & 69{,}3 & 990{,}0 & 990{,}3 \\
+    L5-PolicySL & 656/9/335 & 66{,}0 & 63{,}1--68{,}9 & 72{,}7 & 59{,}4 & 5{,}4 & 7{,}4 \\
+    L2-Rule & 564/13/423 & 57{,}0 & 54{,}0--60{,}1 & 66{,}7 & 47{,}4 & 2{,}0 & 7{,}7 \\
+    L4-MCTS & 213/0/787 & 21{,}3 & 18{,}9--23{,}9 & 21{,}8 & 20{,}8 & 995{,}1 & 995{,}4 \\
+    L1-Random & 0/0/1000 & 0{,}0 & 0{,}0--0{,}4 & 0{,}0 & 0{,}0 & 0{,}0 & 0{,}1 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

@@ -1,0 +1,61 @@
+{
+  "started": "2026-11-26T23:39:42",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/kiem_tra_rollout.py"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "kiem-tra-rollout",
+  "title": "Vì sao MCTS rollout light bỏ nước chặn (100 thế C2)",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "report/chuyen-sau/data/bo-chien-thuat.json",
+      "bytes": 245836,
+      "sha256": "0dea45dd25f9310e8466b21f17e265cd6082f560ae6dcdedd9817fad3f23a04a"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/kiem_tra_rollout.py",
+      "bytes": 3688,
+      "sha256": "605d5a6d1ad9276b27093203e56a5360026cfca95efbbc1bc06e7fc2b7a8ce66"
+    },
+    {
+      "path": "caro/agents/mcts.py",
+      "bytes": 12726,
+      "sha256": "ff5448ade14477d3cc58269b56a2bee5876f9dd5ac3b756627d1d38ef05edeaf"
+    }
+  ],
+  "ended": "2026-11-26T23:40:31",
+  "duration_s": 49.6,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/data/kiem-tra-rollout.json",
+      "bytes": 42545,
+      "sha256": "3a09321203f5d3aa1fdc6231a603d02bbac8f2a653d03218abe1becf3fc50247"
+    }
+  ]
+}

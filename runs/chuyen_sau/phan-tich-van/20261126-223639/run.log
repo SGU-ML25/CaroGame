@@ -1,0 +1,2 @@
+$ .venv/bin/python report/scripts/chuyen_sau/phan_tich_van.py --workers 4
+22:37:36 2800 ván, 56688 nước

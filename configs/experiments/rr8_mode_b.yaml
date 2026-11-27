@@ -14,5 +14,4 @@ agents:
   - agents/l6_policy_rl
   - {from: agents/l7_puct, budget: {max_sims: 200}, params: {backend: native}}
   - {from: agents/l8_alphazero, id: L8-AlphaZero, budget: {max_sims: 200},
-     params: {checkpoint: runs/train/alphazero/20261124-160615_gpu-native/checkpoints/best.pt,
-              backend: native}}
+     params: {checkpoint: model:l8, backend: native}}

@@ -1,0 +1,5 @@
+2026-11-26 20:35:03 INFO    run tournament/e3_heldout/20261126-203503 — config experiments/e3_heldout, seed 2026
+2026-11-26 20:35:03 INFO    Bắt đầu giải đấu: 800 ván cờ, 1 workers, chế độ self_play.
+2026-11-26 20:57:29 INFO    Bảng điểm chung cuộc: {'L1-Random': 100.0, 'L2-Rule': 100.0, 'L3-AlphaBeta': 100.0, 'L4-MCTS': 100.0, 'L5-PolicySL': 100.0, 'L6-PolicyRL': 100.0, 'L7-PUCT': 100.0, 'L8-AlphaZero': 100.0}
+2026-11-26 20:57:29 INFO    Đã lưu báo cáo thống kê tại: /mnt/data/1_Projects/AAI/CaroGame/runs/eval/tournament/e3_heldout/20261126-203503/reports
+2026-11-26 20:57:29 INFO    kết thúc: ok sau 1345.8 s

@@ -1,0 +1,18 @@
+\begin{table}[H]
+  \centering
+  \small
+  \caption{MCTS rollout light ở 100 thế phải chặn: cây thấy gì khi chọn sai}
+  \label{tab:cs-ct-rollout}
+  \begin{tabular}{lrr}
+    \toprule
+    Đại lượng & 400 mô phỏng & 1.600 mô phỏng \\
+    \midrule
+    Chọn đúng nước chặn & 4/100 & 4/100 \\
+    Điểm $Q$ của nước sai được chọn (TB) & 0,84 & 0,44 \\
+    Lượt thăm nút đó (TB) & 33,5 & 91,2 \\
+    Đáp trả đã mở rộng / tổng (TB) & 32,5 / 70,0 & 69,6 / 71,8 \\
+    Đã mở rộng nước thắng của đối thủ & 26/96 & 93/96 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Rollout light chạy trực tiếp (200 lần mỗi nước): sau nước chặn trung bình 0,07, sau một nước không chặn trung bình -1,00.}
+\end{table}

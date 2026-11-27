@@ -1,0 +1,19 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{L3 (lõi Cython, đủ tính năng) theo độ sâu trên 50 thế trung cuộc}
+  \label{tab:cs-tk-dosau}
+  \begin{tabular}{rrrrrrrr}
+    \toprule
+    Độ sâu & Nút TB & Trung vị & Max & Tỷ số & ms P50 & ms P95 & Trùng d=6 \\
+    \midrule
+    1 & 94 & 95 & 106 & --- & 0,1 & 0,1 & 46 \\
+    2 & 384 & 377 & 627 & 4,10 & 1,0 & 1,2 & 38 \\
+    3 & 7.820 & 9.250 & 14.494 & 20,34 & 5,9 & 10,9 & 50 \\
+    4 & 27.040 & 27.868 & 69.644 & 3,46 & 55,7 & 99,5 & 64 \\
+    5 & 179.804 & 118.440 & 671.529 & 6,65 & 215,2 & 434,6 & 54 \\
+    6 & 625.013 & 477.316 & 4.055.072 & 3,48 & 639,6 & 2392,0 & 100 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Nút và thời gian tính cho cả chuỗi lặp sâu dần tới độ sâu đó.}
+\end{table}

@@ -29,6 +29,7 @@ RUNS = ROOT / "runs"
 import sys
 
 sys.path.insert(0, str(ROOT))
+from caro.arena.stats import bradley_terry
 from caro.engine import CaroGame, winning_squares
 
 plt.rcParams.update({
@@ -132,37 +133,6 @@ def score(records: list[dict], agent: str) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Bradley-Terry (Elo xấp xỉ) bằng gradient ascent
-# ---------------------------------------------------------------------------
-
-def bradley_terry(records: list[dict], agents: list[str], iters: int = 20000,
-                  lr: float = 0.5, reg: float = 1e-3) -> dict[str, float]:
-    """Bradley-Terry có điều chuẩn nhẹ; chặn ±8 log-odds vì kỷ lục tuyệt đối cho MLE vô hạn."""
-    idx = {a: i for i, a in enumerate(agents)}
-    rating = np.zeros(len(agents))
-    games = []
-    for r in records:
-        if r["agent_x"] not in idx or r["agent_o"] not in idx:
-            continue
-        s = 0.5 if r["result"] == 0 else (1.0 if r["result"] == 1 else 0.0)
-        games.append((idx[r["agent_x"]], idx[r["agent_o"]], s))
-    if not games:
-        return {a: 1000.0 for a in agents}
-    for _ in range(iters):
-        grad = -2.0 * reg * rating
-        for i, j, s in games:
-            p = 1.0 / (1.0 + 10 ** ((rating[j] - rating[i]) / 400.0))
-            g = s - p
-            grad[i] += g
-            grad[j] -= g
-        rating += lr * grad / max(1, len(games))
-        rating -= rating.mean()
-        rating = np.clip(rating, -8.0, 8.0)
-    scale = 400.0 / math.log(10)
-    return {a: float(1000 + scale * rating[idx[a]]) for a in agents}
-
-
-# ---------------------------------------------------------------------------
 # Thống kê một giải
 # ---------------------------------------------------------------------------
 
@@ -177,7 +147,8 @@ def summarise_tournament(records: list[dict], agents: list[str], tag: str) -> di
         lo, hi = wilson(w + 0.5 * d, n)
         ranking.append({"agent": a, "n": n, "w": w, "d": d, "l": l, "score": (w + 0.5 * d) / n,
                         "ci_low": lo, "ci_high": hi})
-    bt = bradley_terry(records, agents)
+    bt = bradley_terry((r["agent_x"], r["agent_o"], r["result"]) for r in records
+                       if r["agent_x"] in agents and r["agent_o"] in agents)
     for entry in ranking:
         entry["bt"] = bt[entry["agent"]]
     ranking.sort(key=lambda x: (-x["score"], x["agent"]))

@@ -1,0 +1,27 @@
+$ .venv/bin/python report/scripts/chuyen_sau/phan_tich_van_sau.py
+00:51:12 [(13, 'L7', 'L8', 'L8', 36, 2), (26, 'L3', 'L8', 'L3', 21, 3), (1202, 'L2', 'L8', 'L2', 25, 4), (2726, 'L7', 'L8', 'L7', 27, 4)]
+00:52:43 KataGomo xong ván 13
+00:53:21 KataGomo xong ván 26
+00:54:06 KataGomo xong ván 1202
+00:54:30 KataGomo xong ván 2726
+00:54:30 KataGomo 198s
+00:54:30 ván 13 chứng minh từng nước
+00:54:45   lùi tới nước 30 độ sâu 3
+00:55:14   tìm nước an toàn ở nước 31 độ sâu 2
+00:55:14 ván 13: thắng ép từ nước 32; sai lầm 31; số nước an toàn 3; bỏ lỡ []
+00:55:14   đã chạy 243s
+00:55:14 ván 26 chứng minh từng nước
+00:55:23   lùi tới nước 15 độ sâu 3
+00:59:08   tìm nước an toàn ở nước 16 độ sâu 2
+00:59:13 ván 26: thắng ép từ nước 17; sai lầm 16; số nước an toàn 1; bỏ lỡ []
+00:59:13   đã chạy 481s
+00:59:13 ván 1202 chứng minh từng nước
+00:59:14   lùi tới nước 13 độ sâu 3
+00:59:14   tìm nước an toàn ở nước 14 độ sâu 2
+00:59:31 ván 1202: thắng ép từ nước 15; sai lầm 14; số nước an toàn 4; bỏ lỡ []
+00:59:31   đã chạy 500s
+00:59:31 ván 2726 chứng minh từng nước
+00:59:43   lùi tới nước 13 độ sâu 3
+00:59:50   tìm nước an toàn ở nước 14 độ sâu 2
+01:00:06 ván 2726: thắng ép từ nước 15; sai lầm 14; số nước an toàn 7; bỏ lỡ []
+01:00:06   đã chạy 534s

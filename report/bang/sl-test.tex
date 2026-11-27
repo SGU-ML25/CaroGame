@@ -1,0 +1,17 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{Đo trên tập test của expert\_v2 (28\,655 mẫu, 1883 ván, tách theo ván đúng như lúc huấn luyện, seed 2026). Value theo góc nhìn người đi. SL v1 học trên expert\_v1 nên dòng đó là phép đo chéo dữ liệu.}
+  \label{tab:sl-test}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lrrrrrr@{}}
+    \toprule
+    Mạng & Top-1 (\%) & Top-3 (\%) & CE policy & MSE value & Tương quan & Đúng dấu (\%) \\
+    \midrule
+    SL v1 & 44{,}8 & 72{,}2 & 2{,}360 & 1{,}493 & $-$0{,}017 & 46{,}9 \\
+    SL v2 & 65{,}3 & 89{,}4 & 1{,}140 & 1{,}407 & 0{,}008 & 47{,}5 \\
+    SL v3 & 66{,}8 & 89{,}0 & 1{,}036 & 0{,}440 & 0{,}729 & 77{,}0 \\
+    SL v3 không augment & 56{,}2 & 82{,}1 & 1{,}284 & 0{,}619 & 0{,}613 & 72{,}0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

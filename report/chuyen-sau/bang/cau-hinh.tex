@@ -1,0 +1,48 @@
+\par{\footnotesize
+\renewcommand{\arraystretch}{0.95}
+\begin{longtable}{llrrrl}
+  \caption{Mọi cấu hình thí nghiệm trong \texttt{configs/experiments}}\label{tab:cs-cau-hinh}\\
+    \toprule
+    Cấu hình & Loại & Tác tử & Ván/cặp & Seed & Chú thích đầu tệp \\
+    \midrule
+  \endfirsthead
+    \toprule
+    Cấu hình & Loại & Tác tử & Ván/cặp & Seed & Chú thích đầu tệp \\
+    \midrule
+  \endhead
+    \bottomrule
+  \endfoot
+    \texttt{a1\_ab\_pruning} & bench & 2 & --- & 2026 & có \\
+    \texttt{a2\_fixed\_depth} & bench & 3 & --- & 2026 & có \\
+    \texttt{a2\_ordering\_tt} & bench & 3 & --- & 2026 & có \\
+    \texttt{a3\_mcts\_sims} & tournament & 4 & 200 & 2026 & có \\
+    \texttt{a4\_rollout} & tournament & 2 & 200 & 2026 & có \\
+    \texttt{a5\_policy\_vs\_puct} & tournament & 4 & 200 & 2026 & có \\
+    \texttt{a5b\_from\_random} & train & --- & --- & 2026 & có \\
+    \texttt{a5b\_rl\_init} & train & --- & --- & 2026 & có \\
+    \texttt{a6\_augment} & train & --- & --- & 2026 & có \\
+    \texttt{a6\_augment\_v3} & train & --- & --- & 2026 & có \\
+    \texttt{a7\_eval\_weights} & tournament & 2 & 200 & 2026 & có \\
+    \texttt{a7b\_head\_to\_head} & tournament & 2 & 200 & 2026 & có \\
+    \texttt{a8\_heldout} & tournament & 2 & 100 & 2026 & có \\
+    \texttt{a8\_root\_tactics} & tournament & 2 & 200 & 2026 & có \\
+    \texttt{a8b\_root\_tactics} & tournament & 4 & 200 & 2026 & có \\
+    \texttt{cpuct\_heldout} & tournament & 4 & 100 & 2026 & có \\
+    \texttt{e3\_first\_move} & tournament & 8 & 200 & 2026 & có \\
+    \texttt{e3\_first\_move\_l1\_l5} & tournament & 5 & 200 & 2026 & không \\
+    \texttt{e3\_first\_move\_l1\_l6} & tournament & 6 & 200 & 2026 & không \\
+    \texttt{e3\_heldout} & tournament & 8 & 100 & 2026 & có \\
+    \texttt{e3\_selfplay} & tournament & --- & 200 & 2026 & có \\
+    \texttt{e3\_smoke\_self\_play} & tournament & 1 & 10 & 2026 & không \\
+    \texttt{l8\_sims\_heldout} & tournament & 5 & 100 & 2026 & có \\
+    \texttt{main\_mode\_a} & tournament & 8 & 200 & 2026 & có \\
+    \texttt{main\_mode\_a\_l1\_l6} & tournament & 6 & 200 & 2026 & không \\
+    \texttt{main\_mode\_b} & tournament & 8 & 200 & 2026 & có \\
+    \texttt{main\_mode\_b\_l1\_l6} & tournament & 6 & 200 & 2026 & không \\
+    \texttt{rr8\_heldout} & tournament & 8 & 100 & 2026 & có \\
+    \texttt{rr8\_mode\_b} & tournament & 8 & 200 & 2026 & có \\
+    \texttt{smoke} & tournament & 2 & 10 & 2026 & có \\
+    \texttt{smoke\_l1\_l6} & tournament & 6 & 10 & 2026 & không \\
+    \texttt{smoke\_l1\_l7} & tournament & 7 & 10 & 2026 & không \\
+\end{longtable}
+}

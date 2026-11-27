@@ -1,0 +1,17 @@
+$ .venv/bin/python -m pytest tests/test_vct.py -v
+00:43:07 ============================= test session starts ==============================
+00:43:07 platform linux -- Python 3.13.16, pytest-9.1.1, pluggy-1.7.0 -- /mnt/data/1_Projects/AAI/CaroGame/.venv/bin/python
+00:43:07 cachedir: .pytest_cache
+00:43:07 rootdir: /mnt/data/1_Projects/AAI/CaroGame
+00:43:07 configfile: pyproject.toml
+00:43:07 plugins: anyio-4.15.1
+00:43:07 collecting ... collected 6 items
+00:43:07 
+00:43:08 tests/test_vct.py::test_double_open_three_wins_although_no_vcf PASSED    [ 16%]
+00:43:08 tests/test_vct.py::test_defender_four_refutes_the_threat PASSED          [ 33%]
+00:43:08 tests/test_vct.py::test_quiet_position_has_no_forced_win PASSED          [ 50%]
+00:43:09 tests/test_vct.py::test_trees_are_sound_on_random_positions[0] PASSED    [ 66%]
+00:43:10 tests/test_vct.py::test_trees_are_sound_on_random_positions[1] PASSED    [ 83%]
+00:43:15 tests/test_vct.py::test_trees_are_sound_on_random_positions[2] PASSED    [100%]
+00:43:15 
+00:43:15 ============================== 6 passed in 7.44s ===============================

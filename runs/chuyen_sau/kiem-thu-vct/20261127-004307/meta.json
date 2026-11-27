@@ -1,0 +1,57 @@
+{
+  "started": "2026-11-27T00:43:07",
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_vct.py",
+    "-v"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "kiem-thu-vct",
+  "title": "Test bộ giải VCT",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/vct.py",
+      "bytes": 4426,
+      "sha256": "1d3fc215387f835fe61f1517ffe04077dfdb7cb64832f059835564f63ba07da9"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/vcf.py",
+      "bytes": 4756,
+      "sha256": "b62049548276e40bc40925ce0288bc0ce432283efcda3a8be85d45b1216666af"
+    },
+    {
+      "path": "tests/test_vct.py",
+      "bytes": 2646,
+      "sha256": "a227984d95fdc55e66ff2202b1164462db69d943b19ff958aac8d01187b16cfb"
+    }
+  ],
+  "ended": "2026-11-27T00:43:15",
+  "duration_s": 7.6,
+  "exit_code": 0,
+  "outputs": []
+}

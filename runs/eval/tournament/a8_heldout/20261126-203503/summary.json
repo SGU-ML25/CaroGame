@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "ended": "2026-11-26T20:44:00",
+  "duration_s": 536.904,
+  "games": 400,
+  "metrics": 0,
+  "score": {
+    "L2-Rule": 177.0,
+    "MCTS-light": 0.0,
+    "L3-AlphaBeta": 194.5,
+    "MCTS-light-tactic": 28.5
+  }
+}

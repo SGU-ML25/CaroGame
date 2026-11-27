@@ -1,0 +1,153 @@
+% Phân tích chuyên sâu (3): từng nước và thống kê ván đấu. \input trong 04-thuc-nghiem.tex.
+\section{Phân tích từng nước trên 2.800 ván}
+\label{sec:cs-tung-nuoc}
+Bộ chiến thuật đo trên thế chọn sẵn. Mục này đo trong ván thật: mọi nước sau khai cuộc của RR8 giữ riêng, tổng 56\,688
+nước, được gắn tối đa một nhãn theo thứ tự ưu tiên: bỏ lỡ nước thắng ngay; bỏ sót chặn ô thắng duy nhất; thế đã thua
+(đối thủ có hai ô thắng); bỏ lỡ VCF; và cuối cùng, ở thế yên tĩnh, ``để hở VCF'' khi còn nước an toàn mà vẫn chọn
+nước cho đối thủ một VCF. Hai loại cuối dùng trọng tài VCF nên là cận dưới.
+
+\subsection{Lỗi theo tác tử}
+\input{chuyen-sau/bang/nuoc-loi}
+Đọc Bảng~\ref{tab:cs-nuoc-loi} theo cột:
+\begin{itemize}
+  \item \textbf{Bỏ thắng ngay.} L2 và L3 bằng 0 nhờ luật P1 và nước bắt buộc. L5 bỏ 60/408 ($14{,}7\%$), khớp với lỗi
+  nhãn ở Mục~\ref{sec:cs-du-lieu}. L7 vẫn bỏ 23/586 dù có tìm kiếm: PUCT không có bước kiểm tra nước thắng ở gốc, và
+  khi tiên nghiệm của nước thắng thấp trong khi nhiều nước khác cũng thắng sau đó, lượt thăm bị chia.
+  \item \textbf{Sót chặn.} L5 không sót lần nào trong 912 tình huống, nhưng L6 sót 20 và L7 sót 21. REINFORCE tinh
+  chỉnh policy theo thắng thua và có thể đánh đổi phản xạ chặn học từ expert lấy các nước tấn công.
+  \item \textbf{Để hở VCF.} Đây là cột phân biệt các cấp mạnh: L8 $0{,}68\%$, L7 $1{,}28\%$, L3 $1{,}45\%$, L5 và L6 khoảng
+  $3{,}2\%$, L2 $5{,}9\%$, MCTS $27{,}9\%$.
+  \item \textbf{Bỏ VCF.} L7 và L8 bỏ khoảng $6\%$ cơ hội, cao hơn L5 ($4{,}7\%$): khi có nhiều đường thắng, tìm kiếm có thể
+  chọn đường chậm hơn mà không phải đường tứ liên tiếp. Nhãn ``bỏ VCF'' không có nghĩa nước đó làm mất thế thắng.
+\end{itemize}
+Tổng số lỗi trên 100 nước xếp L8 ($1{,}28$) trước L3 ($1{,}73$), L7 ($2{,}11$), L6, L5, L2 rồi MCTS và ngẫu nhiên. Thứ tự
+này gần trùng xếp hạng giải đấu, ngoại trừ L3 đứng trên L7 về lỗi trong khi L7 mạnh hơn rõ khi đấu: lỗi VCF không đo
+được chất lượng nước yên tĩnh, vốn là chỗ mạng giúp L7.
+
+\input{chuyen-sau/bang/nuoc-vcf}
+\input{chuyen-sau/bang/nuoc-giaidoan}
+Bảng~\ref{tab:cs-nuoc-giaidoan} cho thấy hầu như không có lỗi ở 8 nước đầu với các tác tử có kiến thức, và đỉnh lỗi
+rơi vào nước 17--32, giai đoạn các đe doạ dày lên. Với MCTS và ngẫu nhiên, tỷ lệ tăng liên tục.
+
+\subsection{Ai tạo được đường thắng ép trước}
+\input{chuyen-sau/bang/nuoc-dautien}
+Bên đầu tiên có đường thắng ép gần như luôn thắng: L7 và L8 chuyển hoá trên $99\%$, L3 $98\%$, L5 và L2 khoảng
+$94$--$95\%$. Vì vậy khác biệt sức mạnh chủ yếu nằm ở \emph{ai tạo được đe doạ trước}, thể hiện qua số ván: L8 là bên
+đầu tiên trong 601 ván, L2 chỉ 327. MCTS khi tạo được đường thắng thì thắng cả 81 ván nhưng cần trung vị 15 nước để
+kết thúc, so với 3 nước của các tác tử khác: rollout không tìm ra nước kết liễu ngắn.
+
+\subsection{Ván kết thúc ra sao}
+\input{chuyen-sau/bang/nuoc-ketthuc}
+Hầu hết ván có thắng thua kết thúc bằng đòn kép không đỡ được. Phần ``sót chặn'' nhỏ nhưng khác nhau giữa các cấp:
+ngẫu nhiên 48 ván, MCTS 28, L7 19, L6 15, L8 chỉ 2, L2 và L3 không có. Kết hợp với Bảng~\ref{tab:cs-nuoc-loi}: lỗi
+quyết định thường xảy ra \emph{trước} nước cuối, lúc bên thua để đối thủ dựng được đòn kép.
+
+\section{Thống kê ván đấu và độ ổn định của xếp hạng}
+\label{sec:cs-thong-ke-van}
+\subsection{Hai mươi tám cặp đấu}
+\input{chuyen-sau/bang/tk-capdau}
+Cột KC ghi số khai cuộc nghiêng về tác tử đứng trước / hoà điểm / nghiêng về đối thủ; $p$ là kiểm định dấu hai phía đã
+hiệu chỉnh Holm trên 28 phép thử (Mục~\ref{sec:cs-tk-lt}). 26 trong 28 cặp có khác biệt ở mức $0{,}05$. Hai cặp chưa phân
+biệt được là L3--L6 ($p=0{,}52$; 42/7/51) và L5--L6 ($p\approx0{,}06$), đúng các cặp mà Mục~\ref{sec:lt-thong-ke} gọi là
+``chưa phân biệt được''. L7--L8 đạt mức ý nghĩa ($p\approx0{,}02$) nhưng chỉ nhờ 100 ván và biên độ $14$ điểm.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{chuyen-sau/hinh/tk-khoang.png}
+  \caption{Điểm và khoảng bootstrap 95\% theo khai cuộc của 28 cặp. Cặp toàn thắng cho khoảng suy biến.}
+  \label{fig:cs-tk-khoang}
+\end{figure}
+Cột ``Khi X'' và ``Khi O'' cho thấy lợi thế đi trước ngay trong cặp: giữa L6 và L7, L6 đạt $47\%$ khi cầm X nhưng chỉ
+$4\%$ khi cầm O. Do đó mọi so sánh không đổi màu sẽ lệch nghiêm trọng.
+
+\subsection{Độ nhạy của Bradley-Terry}
+\input{chuyen-sau/bang/tk-prior}
+Khi số ván ảo mỗi cặp tăng từ $0{,}1$ lên 5, điểm L1 đổi từ khoảng $-600$ lên $270$ và khoảng cách giữa L8 và L2 thu
+hẹp, nhưng \emph{thứ tự} tám tác tử không đổi. Vì vậy báo cáo diễn giải thứ hạng, còn chênh lệch Elo tuyệt đối chỉ có
+nghĩa với tiên nghiệm cố định (1 ván).
+
+\input{chuyen-sau/bang/tk-elo}
+Elo tuần tự áp theo thứ tự ván trong log cho L8 khoảng 1\,718 và L6 cao hơn L3 gần 300 điểm, trong khi Bradley-Terry
+cho L6 và L3 gần nhau, đúng với kết quả trực tiếp. Nguyên nhân: log chạy lần lượt từng cặp, các cặp cuối có ảnh hưởng
+lớn nhất đến Elo tuần tự. Xáo trộn thứ tự 200 lần, độ lệch chuẩn khoảng 30 điểm với $K=16$ và 45 điểm với $K=32$, và
+khoảng cực trị của một tác tử có thể rộng trên 200 điểm. Đây là lý do \texttt{stats.json} (Elo tuần tự) không được dùng
+làm số báo cáo.
+
+\subsection{Cần bao nhiêu khai cuộc}
+\input{chuyen-sau/bang/tk-hoitu}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/tk-hoi-tu.png}
+  \caption{Độ rộng khoảng 95\% của điểm Bradley-Terry theo số khai cuộc (bootstrap 400 lần).}
+  \label{fig:cs-tk-hoi-tu}
+\end{figure}
+Từ 5 lên 50 khai cuộc, khoảng tin cậy của các tác tử giữa bảng thu hẹp hơn một nửa, gần với tốc độ $1/\sqrt n$. Ở 50
+khai cuộc, khoảng còn rộng cỡ 30--105 điểm; để giảm một nửa nữa cần khoảng bốn lần số khai cuộc.
+
+\subsection{Mức khớp của mô hình Bradley-Terry}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.55\linewidth]{chuyen-sau/hinh/tk-phan-du.png}
+  \caption{Điểm quan sát so với điểm Bradley-Terry dự đoán cho 28 cặp.}
+  \label{fig:cs-tk-phan-du}
+\end{figure}
+\input{chuyen-sau/bang/tk-phandu}
+Sai số căn trung bình bình phương giữa dự đoán và quan sát chỉ khoảng $2{,}6$ điểm phần trăm, và không có bộ ba nào tạo
+vòng tròn thắng (A thắng B, B thắng C, C thắng A). Mô hình một chiều mô tả giải này tốt. Cặp lệch nhất là L5--L7: L5 đạt
+$6{,}5\%$ trong khi mô hình dự đoán $13{,}3\%$; L7 dùng cùng mạng với L5 nên khai thác điểm yếu của chính chính sách đó
+mạnh hơn mức một thang sức mạnh chung dự đoán.
+
+\subsection{Cỡ mẫu cần thiết}
+\input{chuyen-sau/bang/tk-luc}
+Với 100 ván mỗi cặp, đề tài đủ lực để phát hiện chênh lệch từ khoảng $65\%$ (hơn 100 Elo). Chênh lệch cỡ $55\%$ (35 Elo)
+cần gần 800 ván độc lập; vì tác tử tất định chỉ cho một ván mỗi cặp khai cuộc--màu, con số đó đòi bộ khai cuộc lớn hơn
+nhiều.
+
+\subsection{Khai cuộc}
+Điểm của X trung bình trên 50 khai cuộc dùng trong RR8 là $57{,}1\%$, dao động từ khoảng $47\%$ đến $69\%$ giữa các khai
+cuộc (Bảng~\ref{tab:cs-tk-khaicuoc}). Số quân khai cuộc (2, 3 hay 4) không cho khác biệt đáng kể (59, 55 và 59\%). Mỗi
+khai cuộc có 56 ván nên độ dao động này một phần là nhiễu mẫu; chơi đổi màu loại bỏ lợi thế khai cuộc khỏi so sánh
+giữa hai tác tử.
+\input{chuyen-sau/bang/tk-khaicuoc}
+
+\subsection{Độ dài ván và phân bố nước đi}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/van-do-dai.png}
+  \caption{Phân bố độ dài các ván có tác tử đó tham gia.}
+  \label{fig:cs-van-do-dai}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.66\linewidth]{chuyen-sau/hinh/van-do-dai-ma-tran.png}
+  \caption{Trung vị độ dài ván theo cặp (hàng cầm X, cột cầm O).}
+  \label{fig:cs-van-do-dai-mt}
+\end{figure}
+Các ván dài nhất thuộc về cặp ngang sức giữa các cấp có kiến thức; trừ cặp L1--L4, ván giữa L1 hoặc L4 với một cấp
+có kiến thức thường kết thúc quanh nước 10--12, tức bên mạnh thắng bằng đòn đầu tiên.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/van-nuoc-dau.png}
+  \caption{Phân bố nước đầu tiên (sau khai cuộc) của từng tác tử.}
+  \label{fig:cs-van-nuoc-dau}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/van-moi-nuoc.png}
+  \caption{Phân bố mọi nước đi của từng tác tử.}
+  \label{fig:cs-van-moi-nuoc}
+\end{figure}
+\input{chuyen-sau/bang/tk-khonggian}
+Phân bố nước đi phản ánh cách tìm: ngẫu nhiên phủ đều bàn; MCTS rollout trải rộng và chỉ $11\%$ nước kề nước vừa đi
+của đối thủ; các tác tử còn lại tập trung ở giữa và chơi sát. L8 kề nhiều nhất ($33{,}7\%$).
+
+\subsection{Thời gian theo giai đoạn}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/van-thoi-gian.png}
+  \caption{Trung vị thời gian mỗi nước theo giai đoạn ván (thang log); chỉ vẽ nhóm có từ 30 nước.}
+  \label{fig:cs-van-thoi-gian}
+\end{figure}
+\input{chuyen-sau/bang/tk-thoigian}
+Với ngân sách số mô phỏng cố định, L7 và L8 tốn gần như không đổi theo giai đoạn. Alpha-Beta nhanh dần khi bàn đông vì
+nước bắt buộc thu hẹp cây; L2 rẻ nhất ở trung cuộc muộn khi các luật đầu khớp sớm.

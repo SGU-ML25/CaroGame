@@ -1,0 +1,71 @@
+{
+  "started": "2026-11-26T22:36:43",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/phan_tich_thong_ke.py"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "phan-tich-thong-ke",
+  "title": "Thống kê bổ sung trên log RR8 giữ riêng",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "runs/eval/tournament/rr8_heldout/20261126-194315/games.jsonl",
+      "bytes": 1962914,
+      "sha256": "a3e6b19239dd4171fcd45c77cc2c178cfd83eded2eaef753a03b6bcf2767d4d0"
+    },
+    {
+      "path": "runs/openings/openings_heldout_v2.json",
+      "bytes": 3379,
+      "sha256": "9d5f00f04bea652299a4b5695044a0cb93c9168065d964bc3f49615b72c40c74"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/phan_tich_thong_ke.py",
+      "bytes": 9088,
+      "sha256": "177aa44838a117a108b6199f39bcefc7955197973b44ba8567d9d745be1a04c3"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/chung.py",
+      "bytes": 5597,
+      "sha256": "3c5303c165092db6f6ca851adc5504fba59c1cdd32e55c25b833ab71b903ae6b"
+    },
+    {
+      "path": "caro/arena/stats.py",
+      "bytes": 14066,
+      "sha256": "d7c91deccab4170ea4ae3fad7aaddd2ab281dca66393a6380f629cc4d81046bf"
+    }
+  ],
+  "ended": "2026-11-26T22:36:49",
+  "duration_s": 6.1,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/data/phan-tich-thong-ke.json",
+      "bytes": 65938,
+      "sha256": "56844a28a81a7cf3583daf6c0c9a6a9db9681eaa543c31e849d35eee7b761b10"
+    }
+  ]
+}

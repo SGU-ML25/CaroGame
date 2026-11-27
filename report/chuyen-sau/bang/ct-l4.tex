@@ -1,0 +1,27 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{MCTS: tỷ lệ chọn đúng (\%) theo kiểu rollout và số mô phỏng}
+  \label{tab:cs-ct-l4}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    Tác tử / cấu hình & C1 & C2 & C3 & C4 & C5 & Tổng \\
+    \midrule
+    ngẫu nhiên, 100 & 7 & 5 & 8 & 9 & 17 & 9,2 \\
+    ngẫu nhiên, 400 & 76 & 15 & 24 & 13 & 22 & 30,0 \\
+    ngẫu nhiên, 800 & 95 & 20 & 42 & 27 & 35 & 43,8 \\
+    ngẫu nhiên, 1600 & 100 & 40 & 76 & 42 & 41 & 59,8 \\
+    ngẫu nhiên, 6400 & 100 & 73 & 98 & 76 & 65 & 82,4 \\
+    \midrule
+    light, 100 & 23 & 19 & 21 & 24 & 18 & 21,0 \\
+    light, 400 & 23 & 3 & 84 & 76 & 65 & 50,2 \\
+    light, 800 & 24 & 4 & 96 & 83 & 76 & 56,6 \\
+    light, 1600 & 24 & 4 & 100 & 88 & 81 & 59,4 \\
+    light, 6400 & 60 & 74 & 93 & 76 & 92 & 79,0 \\
+    \midrule
+    light + gốc, 100 & 100 & 100 & 100 & 11 & 80 & 78,2 \\
+    light + gốc, 800 & 100 & 100 & 100 & 39 & 89 & 85,6 \\
+    light + gốc, 6400 & 100 & 100 & 100 & 34 & 90 & 84,8 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

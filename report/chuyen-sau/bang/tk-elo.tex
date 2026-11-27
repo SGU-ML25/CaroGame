@@ -1,0 +1,20 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{Elo tuần tự phụ thuộc thứ tự ván; Bradley-Terry thì không}
+  \label{tab:cs-tk-elo}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Tác tử & B-T & Elo theo log & K=16 (200 hoán vị) & K=32 & Khoảng K=32 \\
+    \midrule
+    L1 Random & -128 & 225 & 218 $\pm$ 7 & 42 $\pm$ 10 & 19--68 \\
+    L2 Rule & 1089 & 705 & 1013 $\pm$ 29 & 1046 $\pm$ 47 & 908--1174 \\
+    L3 AlphaBeta & 1229 & 1011 & 1151 $\pm$ 30 & 1189 $\pm$ 48 & 1039--1312 \\
+    L4 MCTS & 415 & 533 & 546 $\pm$ 9 & 472 $\pm$ 12 & 435--492 \\
+    L5 PolicySL & 1142 & 1001 & 1064 $\pm$ 29 & 1101 $\pm$ 44 & 959--1249 \\
+    L6 PolicyRL & 1238 & 1303 & 1159 $\pm$ 30 & 1196 $\pm$ 43 & 1082--1336 \\
+    L7 PUCT & 1467 & 1504 & 1388 $\pm$ 29 & 1436 $\pm$ 41 & 1332--1543 \\
+    L8 AlphaZero & 1546 & 1718 & 1461 $\pm$ 27 & 1518 $\pm$ 41 & 1411--1652 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

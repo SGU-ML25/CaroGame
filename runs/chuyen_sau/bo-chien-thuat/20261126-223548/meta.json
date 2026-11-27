@@ -1,0 +1,67 @@
+{
+  "started": "2026-11-26T22:35:48",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/bo_chien_thuat.py",
+    "build"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "bo-chien-thuat",
+  "title": "Dựng bộ 500 thế chiến thuật",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "runs/eval/tournament/rr8_heldout/20261126-194315/games.jsonl",
+      "bytes": 1962914,
+      "sha256": "a3e6b19239dd4171fcd45c77cc2c178cfd83eded2eaef753a03b6bcf2767d4d0"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/bo_chien_thuat.py",
+      "bytes": 8459,
+      "sha256": "4b40d50de59594955ea52a1b04808b16b3ddfdfb060926d94a2bf050de001f99"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/vcf.py",
+      "bytes": 4756,
+      "sha256": "b62049548276e40bc40925ce0288bc0ce432283efcda3a8be85d45b1216666af"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/chung.py",
+      "bytes": 5597,
+      "sha256": "3c5303c165092db6f6ca851adc5504fba59c1cdd32e55c25b833ab71b903ae6b"
+    }
+  ],
+  "ended": "2026-11-26T22:36:39",
+  "duration_s": 50.7,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/data/bo-chien-thuat.json",
+      "bytes": 245836,
+      "sha256": "0dea45dd25f9310e8466b21f17e265cd6082f560ae6dcdedd9817fad3f23a04a"
+    }
+  ]
+}

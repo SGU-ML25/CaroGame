@@ -1,0 +1,11 @@
+# A2 ở độ sâu cố định — bật / tắt sắp xếp nước và TT. Đo số nút, thời gian, giá trị gốc, nước chọn.
+# Không giới hạn thời gian, để chênh lệch số nút phản ánh cắt tỉa chứ không phản ánh tốc độ mỗi nút.
+defaults: [base, budgets/mode_b_fixed, arena/bench_positions]
+experiment: {kind: bench, name: a2_fixed_depth, rq: [RQ3]}
+budget: {max_depth: 3}
+bench:
+  positions: {count: 10}
+agents:
+  - {from: agents/l3_alphabeta, id: AB-plain,    params: {move_ordering: false, tt: false}}
+  - {from: agents/l3_alphabeta, id: AB-order,    params: {move_ordering: true,  tt: false}}
+  - {from: agents/l3_alphabeta, id: AB-order-tt, params: {move_ordering: true,  tt: true}}

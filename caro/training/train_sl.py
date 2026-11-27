@@ -23,6 +23,21 @@ def mover_relative_values(states, values):
     return (values * sign).astype(values.dtype)
 
 
+def split_groups(game_ids, seed):
+    """Chia 80/10/10 THEO VÁN: mỗi mẫu nhận 0 (train), 1 (val) hoặc 2 (test).
+
+    Các nước của cùng một ván không rơi vào hai tập khác nhau. Script phân tích phải gọi đúng hàm này với
+    đúng seed lúc huấn luyện, nếu không "test" sẽ chứa mẫu đã học.
+    """
+    rng = np.random.default_rng(int(seed))
+    unique_games = rng.permutation(np.unique(game_ids))
+    n_train, n_val = int(len(unique_games) * 0.8), int(len(unique_games) * 0.9)
+    group = np.zeros(len(game_ids), dtype=np.int8)
+    group[np.isin(game_ids, unique_games[n_train:n_val])] = 1
+    group[np.isin(game_ids, unique_games[n_val:])] = 2
+    return group
+
+
 def train_model(config_path, overrides=()):
     config = load_config(config_path, overrides)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -60,14 +75,8 @@ def train_model(config_path, overrides=()):
     # File dữ liệu lưu nhãn tuyệt đối; huấn luyện theo góc nhìn người đi (xem docs/GHI_CHU_value_head.md)
     values = mover_relative_values(states, values)
 
-    # Chia 80/10/10 THEO VÁN (các nước của cùng một ván không rơi vào hai tập khác nhau)
-    rng = np.random.default_rng(int(config.get("seed", 42)))
-    unique_games = rng.permutation(np.unique(game_ids))
-    n_train, n_val = int(len(unique_games) * 0.8), int(len(unique_games) * 0.9)
-    group = np.zeros(len(game_ids), dtype=np.int8)
-    group[np.isin(game_ids, unique_games[n_train:n_val])] = 1
-    group[np.isin(game_ids, unique_games[n_val:])] = 2
-    print(f"Dữ liệu: {len(values):,} mẫu / {len(unique_games):,} ván "
+    group = split_groups(game_ids, config.get("seed", 42))
+    print(f"Dữ liệu: {len(values):,} mẫu / {len(np.unique(game_ids)):,} ván "
           f"(train {np.sum(group == 0):,} | val {np.sum(group == 1):,} | test {np.sum(group == 2):,})")
 
     def subset(g, augment):

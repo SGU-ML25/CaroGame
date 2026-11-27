@@ -1,0 +1,17 @@
+$ .venv/bin/python report/scripts/chuyen_sau/kiem_tra_thay_the.py
+01:03:11 KataGomo xong 15 nước
+01:03:11 ván 13 nước 31 thay bằng H3: KataGomo 45%, độ sâu 3 không tìm thấy đường thắng
+01:03:11 ván 13 nước 31 thay bằng H4: KataGomo 44%, độ sâu 3 không tìm thấy đường thắng
+01:03:17 ván 13 nước 31 thay bằng C6: KataGomo 46%, độ sâu 3 không tìm thấy đường thắng
+01:03:35 ván 26 nước 16 thay bằng C8: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:03:35 ván 1202 nước 14 thay bằng H1: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 1202 nước 14 thay bằng H3: KataGomo 0%, độ sâu 3 không tìm thấy đường thắng
+01:04:45 ván 1202 nước 14 thay bằng H4: KataGomo 0%, độ sâu 3 không tìm thấy đường thắng
+01:04:45 ván 1202 nước 14 thay bằng H6: KataGomo 1%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 2726 nước 14 thay bằng F4: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 2726 nước 14 thay bằng A5: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 2726 nước 14 thay bằng B5: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 2726 nước 14 thay bằng F6: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 2726 nước 14 thay bằng H6: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 2726 nước 14 thay bằng B7: KataGomo 0%, độ sâu 3 bị bác bỏ VCT
+01:04:45 ván 2726 nước 14 thay bằng A8: KataGomo 0%, độ sâu 3 bị bác bỏ VCT

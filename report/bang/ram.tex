@@ -1,0 +1,21 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\small
+  \caption{Đỉnh bộ nhớ thường trú (RSS) của một tiến trình chỉ nạp một tác tử và tìm nước trên 10 thế giữa ván, ngân sách như RR8, CPU. Gồm cả trình thông dịch và thư viện (PyTorch với L5--L8).}
+  \label{tab:ram}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lr@{}}
+    \toprule
+    Tác tử & RSS đỉnh (MB) \\
+    \midrule
+    L1-Random & 21 \\
+    L2-Rule & 21 \\
+    L3-AlphaBeta & 24 \\
+    L4-MCTS & 24 \\
+    L5-PolicySL & 535 \\
+    L6-PolicyRL & 535 \\
+    L7-PUCT & 546 \\
+    L8-AlphaZero & 546 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

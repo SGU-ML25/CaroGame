@@ -1,0 +1,19 @@
+$ .venv/bin/python -m pytest tests/test_vcf.py -v
+00:06:09 ============================= test session starts ==============================
+00:06:09 platform linux -- Python 3.13.16, pytest-9.1.1, pluggy-1.7.0 -- /mnt/data/1_Projects/AAI/CaroGame/.venv/bin/python
+00:06:09 cachedir: .pytest_cache
+00:06:09 rootdir: /mnt/data/1_Projects/AAI/CaroGame
+00:06:09 configfile: pyproject.toml
+00:06:09 plugins: anyio-4.15.1
+00:06:09 collecting ... collected 8 items
+00:06:09 
+00:06:09 tests/test_vcf.py::test_win_in_one PASSED                                [ 12%]
+00:06:09 tests/test_vcf.py::test_open_three_becomes_double_threat PASSED          [ 25%]
+00:06:09 tests/test_vcf.py::test_defender_five_first_refutes_attack PASSED        [ 37%]
+00:06:09 tests/test_vcf.py::test_no_threat_no_solution PASSED                     [ 50%]
+00:06:09 tests/test_vcf.py::test_solutions_are_sound_on_random_positions[0] PASSED [ 62%]
+00:06:09 tests/test_vcf.py::test_solutions_are_sound_on_random_positions[1] PASSED [ 75%]
+00:06:09 tests/test_vcf.py::test_solutions_are_sound_on_random_positions[2] PASSED [ 87%]
+00:06:09 tests/test_vcf.py::test_solutions_are_sound_on_random_positions[3] PASSED [100%]
+00:06:09 
+00:06:09 ============================== 8 passed in 0.10s ===============================

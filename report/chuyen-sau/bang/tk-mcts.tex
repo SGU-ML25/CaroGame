@@ -1,0 +1,20 @@
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Thông lượng MCTS (Python) theo kiểu rollout}
+  \label{tab:cs-tk-mcts}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Rollout & Mô phỏng & P50 (ms) & Mô phỏng/s & µs/mô phỏng \\
+    \midrule
+    random & 100 & 21,4 & 4.673 & 214 \\
+    random & 400 & 77,9 & 5.132 & 195 \\
+    random & 800 & 163,9 & 4.881 & 205 \\
+    random & 1.600 & 320,0 & 5.000 & 200 \\
+    light & 100 & 82,3 & 1.215 & 823 \\
+    light & 400 & 290,5 & 1.377 & 726 \\
+    light & 800 & 542,9 & 1.474 & 679 \\
+    light & 1.600 & 1055,6 & 1.516 & 660 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

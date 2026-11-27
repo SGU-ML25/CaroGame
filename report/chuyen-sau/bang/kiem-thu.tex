@@ -1,0 +1,40 @@
+\par{\footnotesize
+\renewcommand{\arraystretch}{0.95}
+\begin{longtable}{lrp{8.2cm}}
+  \caption{Tệp kiểm thử, số hàm test và nội dung kiểm}\label{tab:cs-kiem-thu}\\
+    \toprule
+    Tệp & Hàm test & Nội dung \\
+    \midrule
+  \endfirsthead
+    \toprule
+    Tệp & Hàm test & Nội dung \\
+    \midrule
+  \endhead
+    \bottomrule
+  \endfoot
+    \texttt{test\_agents} & 11 & Interface và bảng đăng ký tác tử \\
+    \texttt{test\_alphabeta} & 18 & Negamax, TT, thứ tự nước, top-k \\
+    \texttt{test\_arena\_stats} & 17 & Wilson, bootstrap, Elo, Bradley-Terry, self-play \\
+    \texttt{test\_bitboard} & 15 & Đối chiếu bitboard với bản duyệt mảng \\
+    \texttt{test\_config} & 9 & Ghép config, override, tham chiếu \\
+    \texttt{test\_game} & 14 & API ván, undo, nước sai, kết thúc \\
+    \texttt{test\_gen\_expert\_progress} & 4 & Ghi / nạp lại tiến độ sinh dữ liệu \\
+    \texttt{test\_hub} & 9 & Tải checkpoint theo revision \\
+    \texttt{test\_katagomo} & 4 & Đổi toạ độ và giao thức GTP \\
+    \texttt{test\_mcts} & 18 & UCT, rollout, tái sử dụng cây, chiến thuật gốc \\
+    \texttt{test\_native} & 7 & Lõi Cython trùng bản Python \\
+    \texttt{test\_nn} & 3 & Kích thước và mặt nạ của mạng \\
+    \texttt{test\_openings} & 10 & Sinh và nạp khai cuộc \\
+    \texttt{test\_perft} & 1 & Đếm cây trò chơi qua step/undo \\
+    \texttt{test\_puct} & 15 & PUCT, dấu giá trị, virtual loss, backend \\
+    \texttt{test\_rule\_agent} & 20 & Từng luật P1--P7 \\
+    \texttt{test\_runlog} & 6 & Thư mục run và meta \\
+    \texttt{test\_symmetry} & 4 & Tám phép D4 và khoá chuẩn hoá \\
+    \texttt{test\_tournament\_report} & 2 & Báo cáo giải đấu \\
+    \texttt{test\_tournament\_schedule} & 12 & Lịch đấu, đổi màu \\
+    \texttt{test\_train\_pg} & 4 & Đặc trưng theo lô, cập nhật REINFORCE \\
+    \texttt{test\_train\_sl} & 2 & Nhãn value và chia theo ván \\
+    \texttt{test\_ui} & 25 & API web: tạo ván, đi, lùi, xem lại \\
+    \texttt{test\_vcf} & 5 & Bộ giải VCF dùng trong phân tích \\
+\end{longtable}
+}

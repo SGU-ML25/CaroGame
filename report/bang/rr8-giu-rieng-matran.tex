@@ -1,0 +1,21 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{RR8 trên khai cuộc giữ riêng: ma trận điểm (\%) của tác tử ở hàng trước tác tử ở cột, 100 ván mỗi cặp.}
+  \label{tab:rr8-giu-rieng-matran}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lrrrrrrrr@{}}
+    \toprule
+    Tác tử & L1 & L2 & L3 & L4 & L5 & L6 & L7 & L8 \\
+    \midrule
+    L1-Random & --- & 0{,}0 & 0{,}0 & 1{,}0 & 0{,}0 & 0{,}0 & 0{,}0 & 0{,}0 \\
+    L2-Rule & 100{,}0 & --- & 32{,}5 & 100{,}0 & 36{,}5 & 32{,}0 & 9{,}0 & 7{,}5 \\
+    L3-AlphaBeta & 100{,}0 & 67{,}5 & --- & 100{,}0 & 64{,}5 & 45{,}5 & 19{,}0 & 17{,}5 \\
+    L4-MCTS & 99{,}0 & 0{,}0 & 0{,}0 & --- & 0{,}0 & 0{,}0 & 0{,}0 & 0{,}0 \\
+    L5-PolicySL & 100{,}0 & 63{,}5 & 35{,}5 & 100{,}0 & --- & 40{,}5 & 6{,}5 & 6{,}5 \\
+    L6-PolicyRL & 100{,}0 & 68{,}0 & 54{,}5 & 100{,}0 & 59{,}5 & --- & 25{,}5 & 13{,}0 \\
+    L7-PUCT & 100{,}0 & 91{,}0 & 81{,}0 & 100{,}0 & 93{,}5 & 74{,}5 & --- & 36{,}0 \\
+    L8-AlphaZero & 100{,}0 & 92{,}5 & 82{,}5 & 100{,}0 & 93{,}5 & 87{,}0 & 64{,}0 & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}

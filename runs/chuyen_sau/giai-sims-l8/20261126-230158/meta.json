@@ -1,0 +1,53 @@
+{
+  "started": "2026-11-26T23:01:58",
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "caro.arena.tournament",
+    "experiments/l8_sims_heldout"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "giai-sims-l8",
+  "title": "L8 ở 1/50/200/800/3200 mô phỏng gặp L7 (200), 500 ván",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1"
+  },
+  "inputs": [
+    {
+      "path": "runs/openings/openings_heldout_v2.json",
+      "bytes": 3379,
+      "sha256": "9d5f00f04bea652299a4b5695044a0cb93c9168065d964bc3f49615b72c40c74"
+    }
+  ],
+  "code": [
+    {
+      "path": "configs/experiments/l8_sims_heldout.yaml",
+      "bytes": 1177,
+      "sha256": "829a36ccf6f96e5d82da03da832f4a6ec20547e4029d45a9fd1e8e0de2ae0382"
+    }
+  ],
+  "ended": "2026-11-26T23:42:11",
+  "duration_s": 2412.8,
+  "exit_code": -15,
+  "outputs": []
+}

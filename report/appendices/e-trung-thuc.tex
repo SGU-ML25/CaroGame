@@ -7,4 +7,7 @@ PyTorch cung cấp phép toán mạng và tối ưu tự động. NumPy phục v
 các đoạn duyệt native, FastAPI cung cấp tầng API. Thuật toán và công trình tham khảo
 được dẫn tại chương cơ sở lý thuyết. Hồ sơ thực nghiệm lấy trực tiếp từ log của dự án.
 
+\paragraph{Mã và mô hình bên ngoài.} Repo có một tác tử đối chiếu dùng \textbf{KataGomo} \cite{katagomo}: script \repoFile{scripts/setup_katagomo.sh} tải mã nguồn nhánh Caro2024, áp bản vá luật tự do của nhóm (\repoFile{configs/katagomo/freestyle-five.patch}), build engine và tải mô hình \texttt{b10\_freestyle15x} đã huấn luyện sẵn của dự án đó. Phần do nhóm viết là lớp nối \repoFile{caro/agents/katagomo.py}, cấu hình và bản vá. KataGomo không thuộc thang L1--L8, không dùng để huấn luyện hay chọn checkpoint, và không nằm trong các bảng kết quả của báo cáo. Các lượt thử với L8 lưu ở \repoFile{runs/tournament/} (tiền tố \texttt{l8\_vs\_katagomo}), mỗi lượt không quá 10 ván.
+
 \section{Sử dụng công cụ AI}
+\chualam{khai báo công cụ AI đã dùng (tên công cụ, dùng cho phần nào: mã, test, tài liệu, báo cáo) và cách nhóm kiểm tra lại kết quả}
