@@ -1,0 +1,15 @@
+{
+  "tournament_dir": "runs/tournament/main_mode_a_l7_additional",
+  "total_games": 600,
+  "total_errors": 83,
+  "by_type": {
+    "lỗi_chiến_lược": 9,
+    "bỏ_sót_thắng_ngay": 61,
+    "bỏ_sót_chặn_tứ": 13
+  },
+  "by_agent": {
+    "L7-PUCT": 80,
+    "L2-Rule": 3
+  },
+  "eval_depth": 2
+}

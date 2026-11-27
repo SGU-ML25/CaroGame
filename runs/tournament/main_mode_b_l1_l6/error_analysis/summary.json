@@ -1,0 +1,17 @@
+{
+  "tournament_dir": "runs/tournament/main_mode_b_l1_l6",
+  "total_games": 1500,
+  "total_errors": 137,
+  "by_type": {
+    "lỗi_chiến_lược": 56,
+    "bỏ_sót_thắng_ngay": 64,
+    "bỏ_sót_chặn_tứ": 17
+  },
+  "by_agent": {
+    "L2-Rule": 56,
+    "L1-Random": 14,
+    "L4-MCTS": 37,
+    "L5-PolicySL": 30
+  },
+  "eval_depth": 2
+}

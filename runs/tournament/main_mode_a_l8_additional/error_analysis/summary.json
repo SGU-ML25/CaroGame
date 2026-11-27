@@ -1,0 +1,15 @@
+{
+  "tournament_dir": "runs/tournament/main_mode_a_l8_additional",
+  "total_games": 700,
+  "total_errors": 28,
+  "by_type": {
+    "bỏ_sót_chặn_tứ": 19,
+    "bỏ_sót_thắng_ngay": 8,
+    "lỗi_chiến_lược": 1
+  },
+  "by_agent": {
+    "L2-Rule": 3,
+    "L8-AlphaZero": 25
+  },
+  "eval_depth": 2
+}
