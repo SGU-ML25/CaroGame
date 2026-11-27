@@ -1,0 +1,17 @@
+\begin{table}[H]
+  \centering
+  \scriptsize
+  \caption{Top-1 (\%) và khối lượng policy ở hàng 1 (\%) theo nhóm mẫu test}
+  \label{tab:cs-dl-mang}
+  \begin{tabular}{lrrrrrrr}
+    \toprule
+    Mạng & Tất cả & Không hoà & Hoà & Đã thua & H1: không hoà & H1: hoà & H1: thua \\
+    \midrule
+    SL v3 (L5, L7) & 66,8 & 75,3 & 21,6 & 16,8 & 9,4 & 45,9 & 58,3 \\
+    SL v3 không augment & 56,2 & 61,1 & 30,4 & 28,8 & 11,8 & 63,4 & 80,2 \\
+    REINFORCE (L6) & 55,7 & 63,5 & 14,0 & 7,2 & 2,0 & 22,7 & 28,4 \\
+    AlphaZero vòng 37 (L8) & 53,1 & 59,7 & 18,2 & 12,9 & 4,3 & 18,5 & 22,9 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Cỡ nhóm: tất cả 28.655, không hoà 24.119, hoà 4.536, đã thua 3.487.}
+\end{table}

@@ -1,0 +1,1 @@
+Dung chu dong sau khi xong game_id 0..399 (L8 1/50/200/800 mo phong). Muc 3200 khong hoan tat va khong dung trong bao cao vi thoi gian chay.

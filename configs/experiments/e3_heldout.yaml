@@ -1,0 +1,10 @@
+# E3 trên khai cuộc giữ riêng — mỗi cấp tự đấu, MỖI khai cuộc đúng một ván (100 khai cuộc khác nhau),
+# nên tác tử tất định không sinh hai ván trùng nhau như khi đổi màu trong tự đấu.
+defaults: [experiments/rr8_mode_b]
+experiment: {kind: tournament, name: e3_heldout, rq: [RQ4]}
+arena:
+  pairs: self_play
+  games_per_pair: 100
+  swap_colors: false
+  workers: 1
+  openings: {file: runs/openings/openings_heldout_v2.json, seed: 20261126}

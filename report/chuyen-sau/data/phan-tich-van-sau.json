@@ -1,0 +1,3056 @@
+{
+ "visits": 1600,
+ "depth": 2,
+ "deep": 3,
+ "games": [
+  {
+   "log": "runs/train/alphazero/20261124-160615_gpu-native/games.jsonl",
+   "game_id": 13,
+   "x": "L7",
+   "o": "L8",
+   "moves": [
+    71,
+    37,
+    70,
+    72,
+    59,
+    81,
+    83,
+    47,
+    69,
+    49,
+    95,
+    107,
+    58,
+    61,
+    73,
+    50,
+    46,
+    48,
+    51,
+    82,
+    34,
+    22,
+    67,
+    68,
+    62,
+    84,
+    60,
+    25,
+    13,
+    27,
+    56,
+    57,
+    17,
+    28,
+    45,
+    39
+   ],
+   "result": -1,
+   "winner": "L8",
+   "opening_plies": 2,
+   "engine": [
+    {
+     "ply": 2,
+     "best": 59,
+     "winrate": 0.9396,
+     "draw": 0.0507,
+     "visits": 1607,
+     "pv": [
+      59,
+      61,
+      47,
+      83,
+      49
+     ]
+    },
+    {
+     "ply": 3,
+     "best": 73,
+     "winrate": 0.0863,
+     "draw": 0.046900000000000004,
+     "visits": 1607,
+     "pv": [
+      73,
+      61,
+      81,
+      60,
+      62
+     ]
+    },
+    {
+     "ply": 4,
+     "best": 81,
+     "winrate": 0.9581000000000001,
+     "draw": 0.0425,
+     "visits": 1607,
+     "pv": [
+      81,
+      82,
+      92,
+      59,
+      91
+     ]
+    },
+    {
+     "ply": 5,
+     "best": 67,
+     "winrate": 0.0513,
+     "draw": 0.054900000000000004,
+     "visits": 1607,
+     "pv": [
+      67,
+      60,
+      57,
+      77,
+      47
+     ]
+    },
+    {
+     "ply": 6,
+     "best": 69,
+     "winrate": 0.9626,
+     "draw": 0.0409,
+     "visits": 1607,
+     "pv": [
+      69,
+      78,
+      79,
+      49,
+      47
+     ]
+    },
+    {
+     "ply": 7,
+     "best": 47,
+     "winrate": 0.049699999999999994,
+     "draw": 0.0495,
+     "visits": 1607,
+     "pv": [
+      47,
+      93,
+      104,
+      73,
+      63
+     ]
+    },
+    {
+     "ply": 8,
+     "best": 93,
+     "winrate": 0.9467,
+     "draw": 0.056299999999999996,
+     "visits": 1607,
+     "pv": [
+      93,
+      106,
+      92,
+      94,
+      60
+     ]
+    },
+    {
+     "ply": 9,
+     "best": 49,
+     "winrate": 0.6401,
+     "draw": 0.4874,
+     "visits": 1607,
+     "pv": [
+      49,
+      46,
+      58,
+      68,
+      67
+     ]
+    },
+    {
+     "ply": 10,
+     "best": 95,
+     "winrate": 0.2018,
+     "draw": 0.23120000000000002,
+     "visits": 1607,
+     "pv": [
+      95,
+      107,
+      46,
+      58,
+      68
+     ]
+    },
+    {
+     "ply": 11,
+     "best": 107,
+     "winrate": 0.7675,
+     "draw": 0.32689999999999997,
+     "visits": 1607,
+     "pv": [
+      107,
+      46,
+      58,
+      57,
+      67
+     ]
+    },
+    {
+     "ply": 12,
+     "best": 46,
+     "winrate": 0.2477,
+     "draw": 0.3396,
+     "visits": 1607,
+     "pv": [
+      46,
+      58,
+      57,
+      67,
+      38
+     ]
+    },
+    {
+     "ply": 13,
+     "best": 46,
+     "winrate": 0.965,
+     "draw": 0.031200000000000002,
+     "visits": 1607,
+     "pv": [
+      46,
+      50,
+      60,
+      45,
+      13
+     ]
+    },
+    {
+     "ply": 14,
+     "best": 25,
+     "winrate": 0.1875,
+     "draw": 0.21239999999999998,
+     "visits": 1606,
+     "pv": [
+      25,
+      57,
+      67,
+      68,
+      46
+     ]
+    },
+    {
+     "ply": 15,
+     "best": 46,
+     "winrate": 0.9899,
+     "draw": 0.0045000000000000005,
+     "visits": 1607,
+     "pv": [
+      46,
+      50,
+      35,
+      25,
+      36
+     ]
+    },
+    {
+     "ply": 16,
+     "best": 46,
+     "winrate": 0.9568000000000001,
+     "draw": 0.0088,
+     "visits": 1607,
+     "pv": [
+      46,
+      82,
+      53,
+      63,
+      68
+     ]
+    },
+    {
+     "ply": 17,
+     "best": 82,
+     "winrate": 0.028900000000000002,
+     "draw": 0.005,
+     "visits": 1607,
+     "pv": [
+      82,
+      53,
+      63,
+      68,
+      67
+     ]
+    },
+    {
+     "ply": 18,
+     "best": 51,
+     "winrate": 0.9926999999999999,
+     "draw": 0.0011,
+     "visits": 1607,
+     "pv": [
+      51,
+      34,
+      57,
+      25,
+      13
+     ]
+    },
+    {
+     "ply": 19,
+     "best": 34,
+     "winrate": 0.0040999999999999995,
+     "draw": 0.0009,
+     "visits": 1605,
+     "pv": [
+      34,
+      57,
+      25,
+      13,
+      28
+     ]
+    },
+    {
+     "ply": 20,
+     "best": 56,
+     "winrate": 0.9956999999999999,
+     "draw": 0.001,
+     "visits": 1607,
+     "pv": [
+      56,
+      25,
+      13,
+      60,
+      34
+     ]
+    },
+    {
+     "ply": 21,
+     "best": 22,
+     "winrate": 0.0026,
+     "draw": 0.0005,
+     "visits": 1605,
+     "pv": [
+      22,
+      57,
+      39,
+      28,
+      25
+     ]
+    },
+    {
+     "ply": 22,
+     "best": 56,
+     "winrate": 0.997,
+     "draw": 0.0005,
+     "visits": 1607,
+     "pv": [
+      56,
+      28,
+      39,
+      13,
+      25
+     ]
+    },
+    {
+     "ply": 23,
+     "best": 68,
+     "winrate": 0.0025,
+     "draw": 0.0006,
+     "visits": 1606,
+     "pv": [
+      68,
+      56,
+      39,
+      28,
+      25
+     ]
+    },
+    {
+     "ply": 24,
+     "best": 56,
+     "winrate": 0.9973000000000001,
+     "draw": 0.0007000000000000001,
+     "visits": 1607,
+     "pv": [
+      56,
+      39,
+      28,
+      25,
+      13
+     ]
+    },
+    {
+     "ply": 25,
+     "best": 84,
+     "winrate": 0.5156000000000001,
+     "draw": 0.8809999999999999,
+     "visits": 1607,
+     "pv": [
+      84,
+      60,
+      27,
+      57,
+      56
+     ]
+    },
+    {
+     "ply": 26,
+     "best": 60,
+     "winrate": 0.4744,
+     "draw": 0.8643000000000001,
+     "visits": 1607,
+     "pv": [
+      60,
+      25,
+      13,
+      27,
+      57
+     ]
+    },
+    {
+     "ply": 27,
+     "best": 27,
+     "winrate": 0.5111,
+     "draw": 0.8909,
+     "visits": 1607,
+     "pv": [
+      27,
+      57,
+      56,
+      40,
+      29
+     ]
+    },
+    {
+     "ply": 28,
+     "best": 13,
+     "winrate": 0.4661,
+     "draw": 0.8023,
+     "visits": 1607,
+     "pv": [
+      13,
+      27,
+      57,
+      56,
+      26
+     ]
+    },
+    {
+     "ply": 29,
+     "best": 27,
+     "winrate": 0.5263,
+     "draw": 0.7836,
+     "visits": 1607,
+     "pv": [
+      27,
+      57,
+      56,
+      26,
+      63
+     ]
+    },
+    {
+     "ply": 30,
+     "best": 57,
+     "winrate": 0.44229999999999997,
+     "draw": 0.7889,
+     "visits": 1607,
+     "pv": [
+      57,
+      56,
+      28,
+      92,
+      40
+     ]
+    },
+    {
+     "ply": 31,
+     "best": 57,
+     "winrate": 0.9991,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      57,
+      17,
+      28,
+      39,
+      26
+     ]
+    },
+    {
+     "ply": 32,
+     "best": 17,
+     "winrate": 0.0001,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      17,
+      28,
+      39,
+      26,
+      29
+     ]
+    },
+    {
+     "ply": 33,
+     "best": 28,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      28,
+      39,
+      26,
+      29,
+      24
+     ]
+    },
+    {
+     "ply": 34,
+     "best": 39,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      39,
+      26,
+      29,
+      24
+     ]
+    },
+    {
+     "ply": 35,
+     "best": 39,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      39
+     ]
+    }
+   ],
+   "plies": [
+    {
+     "ply": 2,
+     "side": 0,
+     "move": 70,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 3,
+     "side": 1,
+     "move": 72,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 4,
+     "side": 0,
+     "move": 59,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 5,
+     "side": 1,
+     "move": 81,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 6,
+     "side": 0,
+     "move": 83,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        47,
+        95
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 7,
+     "side": 1,
+     "move": 47,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 8,
+     "side": 0,
+     "move": 69,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 9,
+     "side": 1,
+     "move": 49,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 10,
+     "side": 0,
+     "move": 95,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "four",
+       "cells": [
+        107
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 11,
+     "side": 1,
+     "move": 107,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 12,
+     "side": 0,
+     "move": 58,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 13,
+     "side": 1,
+     "move": 61,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        25,
+        73
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 14,
+     "side": 0,
+     "move": 73,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 15,
+     "side": 1,
+     "move": 50,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "open_three",
+       "cells": [
+        48
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 16,
+     "side": 0,
+     "move": 46,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        34,
+        82
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 17,
+     "side": 1,
+     "move": 48,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        51
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 18,
+     "side": 0,
+     "move": 51,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 19,
+     "side": 1,
+     "move": 82,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 20,
+     "side": 0,
+     "move": 34,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "four",
+       "cells": [
+        22
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 21,
+     "side": 1,
+     "move": 22,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 22,
+     "side": 0,
+     "move": 67,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        68
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 23,
+     "side": 1,
+     "move": 68,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 24,
+     "side": 0,
+     "move": 62,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "four",
+       "cells": [
+        84
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 25,
+     "side": 1,
+     "move": 84,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        60
+       ]
+      }
+     ],
+     "blocked": "five"
+    },
+    {
+     "ply": 26,
+     "side": 0,
+     "move": 60,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 27,
+     "side": 1,
+     "move": 25,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "four",
+       "cells": [
+        13
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 28,
+     "side": 0,
+     "move": 13,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 29,
+     "side": 1,
+     "move": 27,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        17
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 30,
+     "side": 0,
+     "move": 56,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        57
+       ]
+      },
+      {
+       "dir": "dọc",
+       "kind": "open_three",
+       "cells": [
+        45
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 31,
+     "side": 1,
+     "move": 57,
+     "proof": {
+      "move": 57,
+      "depth": 0,
+      "line": [
+       57,
+       17,
+       28,
+       39,
+       26,
+       24,
+       29
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "four",
+       "cells": [
+        17
+       ]
+      }
+     ],
+     "blocked": "five"
+    },
+    {
+     "ply": 32,
+     "side": 0,
+     "move": 17,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 33,
+     "side": 1,
+     "move": 28,
+     "proof": {
+      "move": 28,
+      "depth": 0,
+      "line": [
+       28,
+       39,
+       26,
+       24,
+       29
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "open_three",
+       "cells": [
+        26
+       ]
+      },
+      {
+       "dir": "dọc",
+       "kind": "four",
+       "cells": [
+        39
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 34,
+     "side": 0,
+     "move": 45,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "open_four",
+       "cells": [
+        23,
+        78
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 35,
+     "side": 1,
+     "move": 39,
+     "proof": {
+      "move": 39,
+      "depth": 0,
+      "line": [
+       39
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "five",
+       "cells": []
+      }
+     ],
+     "blocked": "double"
+    }
+   ],
+   "turning": {
+    "first_proven": 31,
+    "proof": {
+     "move": 57,
+     "depth": 0,
+     "line": [
+      57,
+      17,
+      28,
+      39,
+      26,
+      24,
+      29
+     ],
+     "kind": "VCF",
+     "replies": []
+    },
+    "mistake": {
+     "ply": 30,
+     "played": 56,
+     "safe": [
+      29,
+      40,
+      57
+     ],
+     "depth": 2,
+     "empty": 91
+    },
+    "no_escape": []
+   },
+   "missed_wins": []
+  },
+  {
+   "log": "runs/eval/tournament/l8_vs_l3/20261125-134954_round37/games.jsonl",
+   "game_id": 26,
+   "x": "L3",
+   "o": "L8",
+   "moves": [
+    51,
+    82,
+    72,
+    83,
+    84,
+    60,
+    73,
+    62,
+    71,
+    74,
+    61,
+    81,
+    49,
+    37,
+    50,
+    52,
+    39,
+    28,
+    69,
+    79,
+    70
+   ],
+   "result": 1,
+   "winner": "L3",
+   "opening_plies": 3,
+   "engine": [
+    {
+     "ply": 3,
+     "best": 71,
+     "winrate": 0.1815,
+     "draw": 0.18600000000000003,
+     "visits": 1607,
+     "pv": [
+      71,
+      49,
+      59,
+      47,
+      81
+     ]
+    },
+    {
+     "ply": 4,
+     "best": 84,
+     "winrate": 0.9312,
+     "draw": 0.08460000000000001,
+     "visits": 1607,
+     "pv": [
+      84,
+      73,
+      63,
+      60,
+      39
+     ]
+    },
+    {
+     "ply": 5,
+     "best": 71,
+     "winrate": 0.0795,
+     "draw": 0.1085,
+     "visits": 1607,
+     "pv": [
+      71,
+      60,
+      48,
+      95,
+      62
+     ]
+    },
+    {
+     "ply": 6,
+     "best": 73,
+     "winrate": 0.983,
+     "draw": 0.0213,
+     "visits": 1607,
+     "pv": [
+      73,
+      40,
+      71,
+      74,
+      61
+     ]
+    },
+    {
+     "ply": 7,
+     "best": 40,
+     "winrate": 0.009300000000000001,
+     "draw": 0.0128,
+     "visits": 1605,
+     "pv": [
+      40,
+      71,
+      74,
+      61,
+      41
+     ]
+    },
+    {
+     "ply": 8,
+     "best": 71,
+     "winrate": 0.9937999999999999,
+     "draw": 0.0084,
+     "visits": 1607,
+     "pv": [
+      71,
+      74,
+      61,
+      81,
+      49
+     ]
+    },
+    {
+     "ply": 9,
+     "best": 74,
+     "winrate": 0.0025,
+     "draw": 0.0032,
+     "visits": 1604,
+     "pv": [
+      74,
+      61,
+      81,
+      49,
+      79
+     ]
+    },
+    {
+     "ply": 10,
+     "best": 61,
+     "winrate": 0.9889,
+     "draw": 0.0159,
+     "visits": 1605,
+     "pv": [
+      61,
+      81,
+      49,
+      37,
+      50
+     ]
+    },
+    {
+     "ply": 11,
+     "best": 81,
+     "winrate": 0.0062,
+     "draw": 0.009300000000000001,
+     "visits": 1602,
+     "pv": [
+      81,
+      49,
+      37,
+      85,
+      97
+     ]
+    },
+    {
+     "ply": 12,
+     "best": 49,
+     "winrate": 0.988,
+     "draw": 0.0175,
+     "visits": 1607,
+     "pv": [
+      49,
+      85,
+      50,
+      79,
+      80
+     ]
+    },
+    {
+     "ply": 13,
+     "best": 85,
+     "winrate": 0.0072,
+     "draw": 0.009899999999999999,
+     "visits": 1606,
+     "pv": [
+      85,
+      38,
+      79,
+      80,
+      50
+     ]
+    },
+    {
+     "ply": 14,
+     "best": 50,
+     "winrate": 0.9962000000000001,
+     "draw": 0.0048,
+     "visits": 1604,
+     "pv": [
+      50,
+      48,
+      70,
+      69,
+      41
+     ]
+    },
+    {
+     "ply": 15,
+     "best": 52,
+     "winrate": 0.0006,
+     "draw": 0.0008,
+     "visits": 1604,
+     "pv": [
+      52,
+      69,
+      70,
+      39,
+      28
+     ]
+    },
+    {
+     "ply": 16,
+     "best": 69,
+     "winrate": 1.0,
+     "draw": 0.0001,
+     "visits": 1605,
+     "pv": [
+      69,
+      70,
+      39,
+      28,
+      59
+     ]
+    },
+    {
+     "ply": 17,
+     "best": 28,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      28,
+      69,
+      70,
+      59,
+      79
+     ]
+    },
+    {
+     "ply": 18,
+     "best": 69,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1605,
+     "pv": [
+      69,
+      70,
+      59,
+      79,
+      29
+     ]
+    },
+    {
+     "ply": 19,
+     "best": 70,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      70,
+      59,
+      79,
+      29
+     ]
+    },
+    {
+     "ply": 20,
+     "best": 70,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      70
+     ]
+    }
+   ],
+   "plies": [
+    {
+     "ply": 3,
+     "side": 1,
+     "move": 83,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 4,
+     "side": 0,
+     "move": 84,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 5,
+     "side": 1,
+     "move": 60,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 6,
+     "side": 0,
+     "move": 73,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "open_three",
+       "cells": [
+        62
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 7,
+     "side": 1,
+     "move": 62,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 8,
+     "side": 0,
+     "move": 71,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "open_three",
+       "cells": [
+        70,
+        74
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 9,
+     "side": 1,
+     "move": 74,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 10,
+     "side": 0,
+     "move": 61,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        41,
+        81
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 11,
+     "side": 1,
+     "move": 81,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 12,
+     "side": 0,
+     "move": 49,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        37,
+        85
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 13,
+     "side": 1,
+     "move": 37,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 14,
+     "side": 0,
+     "move": 50,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "open_three",
+       "cells": [
+        48,
+        52
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 15,
+     "side": 1,
+     "move": 52,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 16,
+     "side": 0,
+     "move": 39,
+     "proof": {
+      "move": 39,
+      "depth": 0,
+      "line": [
+       39,
+       28,
+       69,
+       70,
+       59,
+       29,
+       79
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "four",
+       "cells": [
+        28
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 17,
+     "side": 1,
+     "move": 28,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 18,
+     "side": 0,
+     "move": 69,
+     "proof": {
+      "move": 69,
+      "depth": 0,
+      "line": [
+       69,
+       70,
+       59,
+       29,
+       79
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        70
+       ]
+      },
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        59
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 19,
+     "side": 1,
+     "move": 79,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        80
+       ]
+      }
+     ],
+     "blocked": "double"
+    },
+    {
+     "ply": 20,
+     "side": 0,
+     "move": 70,
+     "proof": {
+      "move": 70,
+      "depth": 0,
+      "line": [
+       70
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "five",
+       "cells": []
+      }
+     ],
+     "blocked": null
+    }
+   ],
+   "turning": {
+    "first_proven": 16,
+    "proof": {
+     "move": 39,
+     "depth": 0,
+     "line": [
+      39,
+      28,
+      69,
+      70,
+      59,
+      29,
+      79
+     ],
+     "kind": "VCF",
+     "replies": []
+    },
+    "mistake": {
+     "ply": 15,
+     "played": 52,
+     "safe": [
+      79
+     ],
+     "depth": 2,
+     "empty": 106
+    },
+    "no_escape": []
+   },
+   "missed_wins": []
+  },
+  {
+   "log": "runs/eval/tournament/rr8_heldout/20261126-194315/games.jsonl",
+   "game_id": 1202,
+   "x": "L2",
+   "o": "L8",
+   "moves": [
+    38,
+    51,
+    58,
+    80,
+    48,
+    68,
+    28,
+    18,
+    60,
+    92,
+    56,
+    104,
+    116,
+    59,
+    36,
+    72,
+    24,
+    12,
+    26,
+    46,
+    27,
+    25,
+    49,
+    16,
+    71
+   ],
+   "result": 1,
+   "winner": "L2",
+   "opening_plies": 4,
+   "engine": [
+    {
+     "ply": 4,
+     "best": 25,
+     "winrate": 0.9534,
+     "draw": 0.042300000000000004,
+     "visits": 1607,
+     "pv": [
+      25,
+      70,
+      47,
+      36,
+      48
+     ]
+    },
+    {
+     "ply": 5,
+     "best": 68,
+     "winrate": 0.0183,
+     "draw": 0.008100000000000001,
+     "visits": 1607,
+     "pv": [
+      68,
+      40,
+      92,
+      104,
+      56
+     ]
+    },
+    {
+     "ply": 6,
+     "best": 40,
+     "winrate": 0.9699,
+     "draw": 0.0132,
+     "visits": 1607,
+     "pv": [
+      40,
+      92,
+      104,
+      56,
+      44
+     ]
+    },
+    {
+     "ply": 7,
+     "best": 18,
+     "winrate": 0.0582,
+     "draw": 0.011699999999999999,
+     "visits": 1607,
+     "pv": [
+      18,
+      60,
+      92,
+      56,
+      116
+     ]
+    },
+    {
+     "ply": 8,
+     "best": 60,
+     "winrate": 0.9545999999999999,
+     "draw": 0.0108,
+     "visits": 1605,
+     "pv": [
+      60,
+      40,
+      62,
+      29,
+      7
+     ]
+    },
+    {
+     "ply": 9,
+     "best": 40,
+     "winrate": 0.0171,
+     "draw": 0.0054,
+     "visits": 1607,
+     "pv": [
+      40,
+      62,
+      29,
+      7,
+      56
+     ]
+    },
+    {
+     "ply": 10,
+     "best": 56,
+     "winrate": 0.9876999999999999,
+     "draw": 0.0032,
+     "visits": 1607,
+     "pv": [
+      56,
+      36,
+      49,
+      104,
+      116
+     ]
+    },
+    {
+     "ply": 11,
+     "best": 36,
+     "winrate": 0.0023,
+     "draw": 0.0022,
+     "visits": 1607,
+     "pv": [
+      36,
+      59,
+      57,
+      26,
+      116
+     ]
+    },
+    {
+     "ply": 12,
+     "best": 116,
+     "winrate": 0.9904999999999999,
+     "draw": 0.0024,
+     "visits": 1607,
+     "pv": [
+      116,
+      81,
+      36,
+      72,
+      46
+     ]
+    },
+    {
+     "ply": 13,
+     "best": 79,
+     "winrate": 0.0068000000000000005,
+     "draw": 0.002,
+     "visits": 1607,
+     "pv": [
+      79,
+      27,
+      16,
+      26,
+      25
+     ]
+    },
+    {
+     "ply": 14,
+     "best": 26,
+     "winrate": 0.9915,
+     "draw": 0.0033,
+     "visits": 1607,
+     "pv": [
+      26,
+      29,
+      62,
+      40,
+      7
+     ]
+    },
+    {
+     "ply": 15,
+     "best": 24,
+     "winrate": 0.001,
+     "draw": 0.0006,
+     "visits": 1607,
+     "pv": [
+      24,
+      35,
+      37,
+      49,
+      27
+     ]
+    },
+    {
+     "ply": 16,
+     "best": 24,
+     "winrate": 0.9984999999999999,
+     "draw": 0.0005,
+     "visits": 1607,
+     "pv": [
+      24,
+      12,
+      37,
+      39,
+      26
+     ]
+    },
+    {
+     "ply": 17,
+     "best": 12,
+     "winrate": 0.0011,
+     "draw": 0.0005,
+     "visits": 1607,
+     "pv": [
+      12,
+      26,
+      16,
+      25,
+      27
+     ]
+    },
+    {
+     "ply": 18,
+     "best": 25,
+     "winrate": 0.9989,
+     "draw": 0.0005,
+     "visits": 1607,
+     "pv": [
+      25,
+      47,
+      27,
+      26,
+      49
+     ]
+    },
+    {
+     "ply": 19,
+     "best": 16,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      16,
+      25,
+      27,
+      47,
+      69
+     ]
+    },
+    {
+     "ply": 20,
+     "best": 27,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      27,
+      25,
+      49,
+      16,
+      71
+     ]
+    },
+    {
+     "ply": 21,
+     "best": 25,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      25,
+      49,
+      16,
+      71
+     ]
+    },
+    {
+     "ply": 22,
+     "best": 49,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      49,
+      16,
+      71
+     ]
+    },
+    {
+     "ply": 23,
+     "best": 16,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      16,
+      71
+     ]
+    },
+    {
+     "ply": 24,
+     "best": 71,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      71
+     ]
+    }
+   ],
+   "plies": [
+    {
+     "ply": 4,
+     "side": 0,
+     "move": 48,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        28,
+        68
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 5,
+     "side": 1,
+     "move": 68,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 6,
+     "side": 0,
+     "move": 28,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "four",
+       "cells": [
+        18
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 7,
+     "side": 1,
+     "move": 18,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 8,
+     "side": 0,
+     "move": 60,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 9,
+     "side": 1,
+     "move": 92,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        56,
+        104
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 10,
+     "side": 0,
+     "move": 56,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 11,
+     "side": 1,
+     "move": 104,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "four",
+       "cells": [
+        116
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 12,
+     "side": 0,
+     "move": 116,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 13,
+     "side": 1,
+     "move": 59,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 14,
+     "side": 0,
+     "move": 36,
+     "proof": {
+      "move": 49,
+      "depth": 2,
+      "line": [
+       49,
+       27,
+       46
+      ],
+      "kind": "VCT",
+      "replies": [
+       27,
+       71
+      ]
+     },
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        24,
+        72
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 15,
+     "side": 1,
+     "move": 72,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 16,
+     "side": 0,
+     "move": 24,
+     "proof": {
+      "move": 25,
+      "depth": 1,
+      "line": [
+       25
+      ],
+      "kind": "VCT",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "four",
+       "cells": [
+        12
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 17,
+     "side": 1,
+     "move": 12,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 18,
+     "side": 0,
+     "move": 26,
+     "proof": {
+      "move": 25,
+      "depth": 1,
+      "line": [
+       25
+      ],
+      "kind": "VCT",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        46
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 19,
+     "side": 1,
+     "move": 46,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 20,
+     "side": 0,
+     "move": 27,
+     "proof": {
+      "move": 25,
+      "depth": 0,
+      "line": [
+       25,
+       27,
+       47,
+       14,
+       69
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        25
+       ]
+      },
+      {
+       "dir": "dọc",
+       "kind": "open_three",
+       "cells": [
+        49
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 21,
+     "side": 1,
+     "move": 25,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 22,
+     "side": 0,
+     "move": 49,
+     "proof": {
+      "move": 49,
+      "depth": 0,
+      "line": [
+       49,
+       16,
+       71
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "open_four",
+       "cells": [
+        16,
+        71
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 23,
+     "side": 1,
+     "move": 16,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 24,
+     "side": 0,
+     "move": 71,
+     "proof": {
+      "move": 71,
+      "depth": 0,
+      "line": [
+       71
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "five",
+       "cells": []
+      }
+     ],
+     "blocked": null
+    }
+   ],
+   "turning": {
+    "first_proven": 14,
+    "proof": {
+     "move": 49,
+     "depth": 2,
+     "line": [
+      49,
+      27,
+      46
+     ],
+     "kind": "VCT",
+     "replies": [
+      27,
+      71
+     ]
+    },
+    "mistake": {
+     "ply": 13,
+     "played": 59,
+     "safe": [
+      7,
+      29,
+      40,
+      62
+     ],
+     "depth": 2,
+     "empty": 108
+    },
+    "no_escape": []
+   },
+   "missed_wins": []
+  },
+  {
+   "log": "runs/eval/tournament/rr8_heldout/20261126-194315/games.jsonl",
+   "game_id": 2726,
+   "x": "L7",
+   "o": "L8",
+   "moves": [
+    73,
+    37,
+    71,
+    48,
+    72,
+    70,
+    59,
+    47,
+    61,
+    57,
+    27,
+    46,
+    49,
+    58,
+    85,
+    97,
+    74,
+    75,
+    60,
+    38,
+    62,
+    63,
+    82,
+    93,
+    92,
+    68,
+    52
+   ],
+   "result": 1,
+   "winner": "L7",
+   "opening_plies": 4,
+   "engine": [
+    {
+     "ply": 4,
+     "best": 83,
+     "winrate": 0.9716,
+     "draw": 0.015700000000000002,
+     "visits": 1607,
+     "pv": [
+      83,
+      26,
+      15,
+      36,
+      93
+     ]
+    },
+    {
+     "ply": 5,
+     "best": 70,
+     "winrate": 0.07519999999999999,
+     "draw": 0.0067,
+     "visits": 1603,
+     "pv": [
+      70,
+      59,
+      47,
+      61,
+      46
+     ]
+    },
+    {
+     "ply": 6,
+     "best": 59,
+     "winrate": 0.9357,
+     "draw": 0.005699999999999999,
+     "visits": 1607,
+     "pv": [
+      59,
+      47,
+      61,
+      46,
+      49
+     ]
+    },
+    {
+     "ply": 7,
+     "best": 46,
+     "winrate": 0.053200000000000004,
+     "draw": 0.0055000000000000005,
+     "visits": 1607,
+     "pv": [
+      46,
+      82,
+      49,
+      47,
+      83
+     ]
+    },
+    {
+     "ply": 8,
+     "best": 61,
+     "winrate": 0.946,
+     "draw": 0.0015,
+     "visits": 1607,
+     "pv": [
+      61,
+      46,
+      49,
+      27,
+      57
+     ]
+    },
+    {
+     "ply": 9,
+     "best": 46,
+     "winrate": 0.0571,
+     "draw": 0.0017000000000000001,
+     "visits": 1607,
+     "pv": [
+      46,
+      49,
+      27,
+      57,
+      44
+     ]
+    },
+    {
+     "ply": 10,
+     "best": 27,
+     "winrate": 0.9881,
+     "draw": 0.0013,
+     "visits": 1607,
+     "pv": [
+      27,
+      77,
+      67,
+      45,
+      49
+     ]
+    },
+    {
+     "ply": 11,
+     "best": 77,
+     "winrate": 0.0125,
+     "draw": 0.0011,
+     "visits": 1607,
+     "pv": [
+      77,
+      67,
+      49,
+      50,
+      46
+     ]
+    },
+    {
+     "ply": 12,
+     "best": 49,
+     "winrate": 0.9971,
+     "draw": 0.0001,
+     "visits": 1607,
+     "pv": [
+      49,
+      38,
+      85,
+      97,
+      74
+     ]
+    },
+    {
+     "ply": 13,
+     "best": 38,
+     "winrate": 0.0007000000000000001,
+     "draw": 0.0001,
+     "visits": 1606,
+     "pv": [
+      38,
+      85,
+      97,
+      74,
+      75
+     ]
+    },
+    {
+     "ply": 14,
+     "best": 60,
+     "winrate": 0.9997,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      60,
+      38,
+      62,
+      63,
+      82
+     ]
+    },
+    {
+     "ply": 15,
+     "best": 97,
+     "winrate": 0.0001,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      97,
+      60,
+      38,
+      63,
+      62
+     ]
+    },
+    {
+     "ply": 16,
+     "best": 60,
+     "winrate": 0.9998,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      60,
+      38,
+      82,
+      93,
+      62
+     ]
+    },
+    {
+     "ply": 17,
+     "best": 75,
+     "winrate": 0.0002,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      75,
+      60,
+      38,
+      63,
+      62
+     ]
+    },
+    {
+     "ply": 18,
+     "best": 60,
+     "winrate": 0.9998999999999999,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      60,
+      38,
+      63,
+      62,
+      96
+     ]
+    },
+    {
+     "ply": 19,
+     "best": 38,
+     "winrate": 0.0001,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      38,
+      63,
+      62,
+      96,
+      107
+     ]
+    },
+    {
+     "ply": 20,
+     "best": 63,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      63,
+      62,
+      96,
+      107,
+      52
+     ]
+    },
+    {
+     "ply": 21,
+     "best": 63,
+     "winrate": 0.0001,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      63,
+      82,
+      93,
+      52,
+      42
+     ]
+    },
+    {
+     "ply": 22,
+     "best": 82,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      82,
+      93,
+      52,
+      42,
+      92
+     ]
+    },
+    {
+     "ply": 23,
+     "best": 93,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      93,
+      52,
+      42,
+      92
+     ]
+    },
+    {
+     "ply": 24,
+     "best": 52,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      52,
+      42,
+      92
+     ]
+    },
+    {
+     "ply": 25,
+     "best": 102,
+     "winrate": 0.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      102,
+      52
+     ]
+    },
+    {
+     "ply": 26,
+     "best": 102,
+     "winrate": 1.0,
+     "draw": 0.0,
+     "visits": 1607,
+     "pv": [
+      102
+     ]
+    }
+   ],
+   "plies": [
+    {
+     "ply": 4,
+     "side": 0,
+     "move": 72,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "open_three",
+       "cells": [
+        70,
+        74
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 5,
+     "side": 1,
+     "move": 70,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "open_three",
+       "cells": [
+        59
+       ]
+      }
+     ],
+     "blocked": "double"
+    },
+    {
+     "ply": 6,
+     "side": 0,
+     "move": 59,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 7,
+     "side": 1,
+     "move": 47,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 8,
+     "side": 0,
+     "move": 61,
+     "proof": null,
+     "shapes": [],
+     "blocked": null
+    },
+    {
+     "ply": 9,
+     "side": 1,
+     "move": 57,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        27,
+        67
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 10,
+     "side": 0,
+     "move": 27,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 11,
+     "side": 1,
+     "move": 46,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "open_three",
+       "cells": [
+        45,
+        49
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 12,
+     "side": 0,
+     "move": 49,
+     "proof": null,
+     "shapes": [],
+     "blocked": "double"
+    },
+    {
+     "ply": 13,
+     "side": 1,
+     "move": 58,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "open_three",
+       "cells": [
+        34,
+        82
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 14,
+     "side": 0,
+     "move": 85,
+     "proof": {
+      "move": 60,
+      "depth": 0,
+      "line": [
+       60,
+       38,
+       62,
+       63,
+       82,
+       93,
+       52,
+       42,
+       92
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "chéo xuôi",
+       "kind": "four",
+       "cells": [
+        97
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 15,
+     "side": 1,
+     "move": 97,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 16,
+     "side": 0,
+     "move": 74,
+     "proof": {
+      "move": 60,
+      "depth": 0,
+      "line": [
+       60,
+       38,
+       62,
+       63,
+       82,
+       93,
+       52,
+       42,
+       92
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        75
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 17,
+     "side": 1,
+     "move": 75,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 18,
+     "side": 0,
+     "move": 60,
+     "proof": {
+      "move": 60,
+      "depth": 0,
+      "line": [
+       60,
+       38,
+       63,
+       62,
+       52,
+       41,
+       96
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "four",
+       "cells": [
+        38
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 19,
+     "side": 1,
+     "move": 38,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        28,
+        68
+       ]
+      }
+     ],
+     "blocked": "five"
+    },
+    {
+     "ply": 20,
+     "side": 0,
+     "move": 62,
+     "proof": {
+      "move": 63,
+      "depth": 0,
+      "line": [
+       63,
+       62,
+       52,
+       41,
+       96
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "ngang",
+       "kind": "four",
+       "cells": [
+        63
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 21,
+     "side": 1,
+     "move": 63,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 22,
+     "side": 0,
+     "move": 82,
+     "proof": {
+      "move": 82,
+      "depth": 0,
+      "line": [
+       82,
+       93,
+       52,
+       42,
+       92
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "four",
+       "cells": [
+        93
+       ]
+      },
+      {
+       "dir": "chéo ngược",
+       "kind": "open_three",
+       "cells": [
+        52,
+        92
+       ]
+      }
+     ],
+     "blocked": "double"
+    },
+    {
+     "ply": 23,
+     "side": 1,
+     "move": 93,
+     "proof": null,
+     "shapes": [],
+     "blocked": "five"
+    },
+    {
+     "ply": 24,
+     "side": 0,
+     "move": 92,
+     "proof": {
+      "move": 52,
+      "depth": 0,
+      "line": [
+       52,
+       42,
+       92
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "open_four",
+       "cells": [
+        52,
+        102
+       ]
+      }
+     ],
+     "blocked": null
+    },
+    {
+     "ply": 25,
+     "side": 1,
+     "move": 68,
+     "proof": null,
+     "shapes": [
+      {
+       "dir": "dọc",
+       "kind": "open_three",
+       "cells": [
+        35,
+        79
+       ]
+      },
+      {
+       "dir": "chéo ngược",
+       "kind": "open_four",
+       "cells": [
+        28,
+        78
+       ]
+      }
+     ],
+     "blocked": "double"
+    },
+    {
+     "ply": 26,
+     "side": 0,
+     "move": 52,
+     "proof": {
+      "move": 52,
+      "depth": 0,
+      "line": [
+       52
+      ],
+      "kind": "VCF",
+      "replies": []
+     },
+     "shapes": [
+      {
+       "dir": "chéo ngược",
+       "kind": "five",
+       "cells": []
+      }
+     ],
+     "blocked": "double"
+    }
+   ],
+   "turning": {
+    "first_proven": 14,
+    "proof": {
+     "move": 60,
+     "depth": 0,
+     "line": [
+      60,
+      38,
+      62,
+      63,
+      82,
+      93,
+      52,
+      42,
+      92
+     ],
+     "kind": "VCF",
+     "replies": []
+    },
+    "mistake": {
+     "ply": 13,
+     "played": 58,
+     "safe": [
+      38,
+      44,
+      45,
+      60,
+      62,
+      67,
+      77
+     ],
+     "depth": 2,
+     "empty": 108
+    },
+    "no_escape": []
+   },
+   "missed_wins": []
+  }
+ ]
+}

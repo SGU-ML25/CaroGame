@@ -351,17 +351,12 @@ có chủ đích: A1 đo riêng tác dụng của cắt tỉa, không trộn v�
 của sắp xếp.
 
 \subsection{A2: sắp xếp nước và bảng chuyển vị}
-A2 chạy ba cấu hình với ngân sách thời gian 1 giây mỗi nước trên 10 thế cờ. Không sắp xếp
-(AB-plain) duyệt trung vị 9\,106 nút; có sắp xếp (AB-order) chỉ duyệt 372 nút, giảm khoảng 24,5
-lần; thêm bảng chuyển vị (AB-order-tt) duyệt 486 nút. Thời gian trung vị gần nhau (990--995
-ms) vì cả ba đều dừng theo ngân sách 1 giây. Kết quả này cho thấy sắp xếp nước giúp \emph{đi
-sâu hơn trong cùng thời gian}, chứ không nhất thiết giúp \emph{chạy nhanh hơn}. Muốn đo tăng
-tốc, phải cố định độ sâu; muốn đo chất lượng, phải đo độ sâu đạt được hoặc điểm đấu.
-
-AB-order-tt duyệt nhiều nút hơn AB-order một chút. Điều này không có nghĩa TT làm chậm; nó có
-thể do TT cho phép tìm sâu hơn trong cùng 1 giây, nên số nút tăng. Log benchmark không ghi độ
-sâu đạt được, nên không thể tách hai khả năng. Đây là một giới hạn của phép đo A2, được ghi ở
-Mục~\ref{sec:tn-han-che}.
+Lượt A2 đầu tiên chạy ba cấu hình với ngân sách 1 giây mỗi nước bằng mã cũ (thử từng ứng viên khi
+sắp xếp): trung vị 9\,106, 372 và 486 nút. Vì cả ba đều dừng theo giờ và log không ghi độ sâu, các số
+đó chủ yếu phản ánh chi phí mỗi nút, không đo được mức giảm số nút do sắp xếp. Đo lại bằng mã hiện tại
+ở độ sâu cố định (Bảng dưới, \repoFile{runs/bench/a2_fixed_depth/}) cho cùng giá trị gốc và cùng nước
+chọn trên 10/10 thế ở độ sâu 3, 4, 5; sắp xếp nước giảm số nút 5,7; 46 và 190 lần.
+\input{bang/a2}
 
 \subsection{A7: trọng số hàm lượng giá}
 A7 so hai bảng trọng số: mặc định (tính cả tấn công và phòng thủ) và \texttt{no\_defense} (chỉ
@@ -393,12 +388,10 @@ Kết quả hiện có:
   \input{ban-mo-rong/so-lieu-a6}
 \end{table}
 
-Augmentation giúp policy và sức chơi rõ rệt: top-1 67,8\% so với 60,5\%, top-3 89,4\% so với
-84,9\%, L2 66,0\% so với 54,0\%, L3 21,0\% so với 7,0\%. Ngược lại, value head của no-aug có
-MSE thấp hơn (0,281 so với 0,356) và tương quan cao hơn (+0,831 so với +0,778). Đây có thể là
-do early stopping (13 epoch) giữ value head ít overfit hơn, không nhất thiết do bỏ augmentation.
-Vì vậy báo cáo chỉ kết luận augmentation giúp policy/sức chơi; ảnh hưởng lên calibration value
-cần run 60 epoch công bằng mới tách được.
+Bản có augment tốt hơn ở mọi độ đo: top-1 66,8\% so với 56,2\%, top-3 89,0\% so với 82,1\%, MSE
+value 0,440 so với 0,619, tương quan +0,729 so với +0,613, L2 66,0\% so với 54,0\%, L3 21,0\% so
+với 7,0\%. Bản không augment dừng sớm ở epoch 13 (train tối đa 60), nên chênh lệch gồm cả tác động
+của việc bỏ augment và hệ quả overfit sớm đi kèm; mỗi nhánh mới có một seed.
 
 \section{MCTS thuần: số mô phỏng và rollout}
 \label{sec:tn-mcts}
@@ -504,13 +497,13 @@ mạng nhỏ hơn nhiều so với khoảng tin cậy, nên không xếp hạng 
   \input{ban-mo-rong/so-lieu-hoc-moi}
 \end{table}
 \subsection{Độ chính xác policy}
-Trên tập test tách theo ván của \texttt{expert\_v2} (29\,161 mẫu, 1\,883 ván), SL v1 đạt top-1
-44,0\% và top-3 71,2\%; SL v2 đạt 65,3\% và 89,3\%; SL v3 đạt 67,8\% và 89,4\%. Sự nhảy vọt từ
-v1 sang v2 đến từ dữ liệu: v1 dùng 27\,720 mẫu với temperature 0,5 và top-k 3, gần như luôn
-chọn nước tốt nhất; v2 dùng 297\,098 mẫu với temperature 8,0 và top-k 5, đa dạng hơn nhiều.
-Mạng học được nhiều tình huống hơn, nên top-1 tăng 21 điểm phần trăm.
+Trên tập test tách theo ván của \texttt{expert\_v2} (28\,655 mẫu, 1\,883 ván, đúng phép chia lúc
+huấn luyện), SL v1 đạt top-1 44,8\% và top-3 72,2\% (đo chéo, vì v1 học trên \texttt{expert\_v1}); SL
+v2 đạt 65,3\% và 89,4\%; SL v3 đạt 66,8\% và 89,0\%. Chênh lệch lớn giữa v1 và v2 đi cùng thay đổi
+dữ liệu: v1 dùng 27\,720 mẫu với temperature 0,5 và top-k 3, gần như luôn chọn nước tốt nhất; v2 dùng
+297\,098 mẫu với temperature 8,0 và top-k 5, đa dạng hơn nhiều.
 
-Từ v2 sang v3, top-1 chỉ tăng 2,5 điểm, dù v3 huấn luyện 60 epoch thay vì 30 và dùng cosine
+Từ v2 sang v3, top-1 chỉ tăng 1,5 điểm, dù v3 huấn luyện 60 epoch thay vì 30 và dùng cosine
 learning rate. Điều này cho thấy trần của việc bắt chước Alpha-Beta độ sâu 3 đã gần đạt: thêm
 epoch không tạo thêm thông tin. Muốn vượt trần, phải đổi nguồn nhãn (RL hoặc self-play) hoặc
 tăng chất lượng chuyên gia.
@@ -518,14 +511,14 @@ tăng chất lượng chuyên gia.
 \subsection{Value head và lỗi quy ước dấu}
 Bảng~\ref{tab:tn-value} tóm tắt calibration của value head. SL v1 và v2 được huấn luyện với
 nhãn \emph{tuyệt đối} (+1 nếu X thắng), trong khi đầu vào mạng và RL cần nhãn \emph{theo góc
-nhìn người đi}. Vì vậy, khi đánh giá theo nhãn người đi, MSE của v1/v2 cao (1,44 và 1,38) và
-tương quan gần 0; tách theo màu cho thấy tương quan +0,73 ở thế X đi nhưng −0,73 ở thế O đi.
+nhìn người đi}. Vì vậy, khi đánh giá theo nhãn người đi, MSE của v1/v2 cao (1,49 và 1,41) và
+tương quan gần 0; với v2, tương quan là +0,70 ở thế X đi nhưng −0,70 ở thế O đi.
 Đây là dấu hiệu kinh điển của lỗi đảo dấu ở một nửa số thế.
 
-SL v3 sửa lỗi bằng cách đổi nhãn ngay khi nạp dữ liệu. Kết quả: MSE giảm còn 0,356, tương quan
-+0,778, độ chính xác dấu 77,6\%, và đối xứng giữa X đi và O đi (0,355/0,358; +0,770/+0,774).
-Tách theo giai đoạn ván, MSE giảm từ 0,635 ở đầu ván xuống 0,362 ở giữa và 0,083 ở cuối ván;
-tương quan tăng từ +0,552 lên +0,774 và +0,953. Điều này hợp lý: cuối ván, kết quả gần như đã
+SL v3 sửa lỗi bằng cách đổi nhãn ngay khi nạp dữ liệu. Kết quả: MSE giảm còn 0,440, tương quan
++0,729, độ chính xác dấu 77,0\%, và đối xứng giữa X đi và O đi (0,441/0,439; +0,714/+0,724).
+Tách theo giai đoạn ván, MSE giảm từ 0,739 ở đầu ván xuống 0,475 ở giữa và 0,121 ở cuối ván;
+tương quan tăng từ +0,478 lên +0,702 và +0,933. Điều này hợp lý: cuối ván, kết quả gần như đã
 định đoạt nên value dễ dự đoán; đầu ván, có nhiều nhánh và value khó hơn.
 
 \begin{table}[H]
@@ -538,9 +531,9 @@ tương quan tăng từ +0,552 lên +0,774 và +0,953. Điều này hợp lý: c
     \textbf{Mạng} & \textbf{MSE (người đi)} & \textbf{Tương quan} & \textbf{Đúng dấu} &
     \textbf{MSE (tuyệt đối)} & \textbf{r (X đi)} & \textbf{r (O đi)} \\
     \midrule
-    SL v1 & 1,441 & −0,012 & 45,7\% & 0,846 & +0,390 & −0,415 \\
-    SL v2 & 1,377 & +0,005 & 45,8\% & 0,418 & +0,730 & −0,729 \\
-    SL v3 & 0,356 & +0,778 & 77,6\% & 1,451 & +0,770 & +0,774 \\
+    SL v1 & 1,493 & −0,017 & 46,9\% & 0,885 & +0,370 & −0,404 \\
+    SL v2 & 1,407 & +0,008 & 47,5\% & 0,473 & +0,697 & −0,696 \\
+    SL v3 & 0,440 & +0,729 & 77,0\% & 1,488 & +0,714 & +0,724 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -735,7 +728,7 @@ MCTS rollout ngẫu nhiên. L5 và L6 bỏ 12/90 và 4/89 lần thắng, nhưng 
 0/61 lần thắng; L8 bỏ 1/82 lần chặn.
 
 Kết quả này định lượng một điểm mà phân tích định tính thường bỏ qua: \emph{policy-only không
-đảm bảo thắng ngay}. Một mạng có top-1 67,8\% vẫn có thể chọn sai 12 trong 90 cơ hội thắng
+đảm bảo thắng ngay}. Một mạng có top-1 66,8\% vẫn có thể chọn sai 12 trong 90 cơ hội thắng
 ngay, vì argmax tối ưu xác suất chứ không tối ưu luật thắng. PUCT sửa phần lớn lỗi này nhờ tìm
 kiếm, nhưng không sửa hoàn toàn: L7 vẫn bỏ 5/94. Đây là lý do các engine mạnh thường thêm lớp
 luật chiến thuật trước khi gọi mạng.
@@ -812,7 +805,7 @@ từ SL cải thiện khoảng 12--16 điểm phần trăm so với SL v3 trư�
 cải thiện 37,5 điểm phần trăm trước L3. L8 vòng 37 thắng L7 82,5\% trên 20 ván và thắng L3
 68,75\% trên 40 ván. Trong RR8, L6 đạt 61,9\% so với L5 50,2\%; L7 đạt 82,0\% và L8 đạt 89,8\%
 so với L3 58,3\%. Hai đối chứng mới làm rõ biên: (i) A6 cho thấy augmentation giúp policy và sức
-chơi (top-1 67,8\% so với 60,5\%; L3 21,0\% so với 7,0\%); (ii) A5b cho thấy RL from-random
+chơi (top-1 66,8\% so với 56,2\%; L3 21,0\% so với 7,0\%); (ii) A5b cho thấy RL from-random
 thua L2/L3/L5 toàn bộ 100 ván, trong khi from-SL đạt L2 81,0\%, L3 37,0\%, L5 66,5\%. Vì vậy
 self-play không thay thế dữ liệu/khởi tạo chuyên gia ở ngân sách 50k; nó \emph{tinh chỉnh} một
 policy đã có tri thức. Năm phép đo tách năm mức đóng góp: dữ liệu/augmentation, khởi tạo, cập
@@ -820,8 +813,8 @@ nhật policy bằng RL, thêm tìm kiếm khi chơi, và chất lượng checkp
 
 \paragraph{RQ3. Cắt tỉa và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nước đi?}
 A1 cho thấy cắt tỉa giảm khoảng 20 lần số nút và thời gian, giữ nguyên giá trị gốc trên 100\%
-số thế. A2 cho thấy sắp xếp nước giảm khoảng 24,5 lần số nút trong cùng 1 giây, nhưng không
-giảm thời gian vì ngân sách thời gian cố định; nó giúp tìm sâu hơn. A7 cho thấy bỏ thành phần
+số thế. A2 ở độ sâu cố định cho thấy sắp xếp nước giảm số nút từ 5,7 lần (độ sâu 3) đến 190 lần (độ sâu 5)
+mà giữ nguyên giá trị và nước chọn trên 10/10 thế. A7 cho thấy bỏ thành phần
 phòng thủ thay đổi giá trị gốc trên 90\% số thế. Chưa đo được tỷ lệ chọn cùng nước khi có nhiều
 nước đồng hạng, và chưa có A7b/A8b đủ lớn nếu chưa chạy xong.
 

@@ -1,0 +1,81 @@
+{
+  "started": "2026-11-27T00:51:11",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/phan_tich_van_sau.py"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "phan-tich-van-sau",
+  "title": "Phân tích sâu 4 ván: nước quyết định và sai lầm (VCT + KataGomo)",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "runs/eval/tournament/rr8_heldout/20261126-194315/games.jsonl",
+      "bytes": 1962914,
+      "sha256": "a3e6b19239dd4171fcd45c77cc2c178cfd83eded2eaef753a03b6bcf2767d4d0"
+    },
+    {
+      "path": "runs/train/alphazero/20261124-160615_gpu-native/games.jsonl",
+      "bytes": 13678366,
+      "sha256": "77bc59cddc2d4963981a2cedce00b8ba478ed7472408b2f35cd9e1e7f2335441"
+    },
+    {
+      "path": "runs/eval/tournament/l8_vs_l3/20261125-134954_round37/games.jsonl",
+      "bytes": 47045,
+      "sha256": "8267e89798e85fb0e6b6b90e19cc626f1bfbaade2cb5c55688fad611dddf117a"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/phan_tich_van_sau.py",
+      "bytes": 10838,
+      "sha256": "1350aa011ea6216cec8b6521c728ade15ce956c311e426ce4130843d83e009a8"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/vct.py",
+      "bytes": 4426,
+      "sha256": "1d3fc215387f835fe61f1517ffe04077dfdb7cb64832f059835564f63ba07da9"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/vcf.py",
+      "bytes": 4756,
+      "sha256": "b62049548276e40bc40925ce0288bc0ce432283efcda3a8be85d45b1216666af"
+    },
+    {
+      "path": "caro/agents/katagomo.py",
+      "bytes": 10557,
+      "sha256": "2022c5c3b64a280e64de4e99d037a9e00d543591188d5f3901d064a838533af7"
+    }
+  ],
+  "ended": "2026-11-27T01:00:06",
+  "duration_s": 534.4,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/data/phan-tich-van-sau.json",
+      "bytes": 42309,
+      "sha256": "e44f5e27c5774888c913f154efa9024d86e9961485f114cfbddd78badb26966a"
+    }
+  ]
+}

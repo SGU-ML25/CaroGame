@@ -2,7 +2,7 @@
 \label{app:tai-lap}
 
 \section{Cài đặt}
-Từ gốc repo, chạy \repoFile{uv sync --group dev --extra analysis} để chuẩn bị môi trường.
+Từ gốc repo, chạy \repoFile{uv sync --group dev --extra analysis --extra ui} để chuẩn bị môi trường (nhóm phụ thuộc \texttt{ui} cần cho giao diện web).
 Chạy \repoFile{uv run pytest} để kiểm tra. Nếu cần backend native, cài nhóm phụ thuộc
 \repoFile{native} và build theo \repoFile{setup_native.py}.
 
@@ -11,6 +11,31 @@ Notebook \repoFile{notebooks/arena_analysis.ipynb} đọc giải cũ.
 \par
 Notebook \repoFile{notebooks/l7_l8_duel.ipynb} đọc log L7--L8 và có tùy chọn chạy arena đủ tám cấp.
 Với từng lượt đấu mới, lưu seed, cấu hình, khai cuộc, backend và checksum checkpoint.
+
+Các giải trong báo cáo chạy bằng những lệnh sau (cấu hình nằm ở \repoFile{configs/experiments/}):
+\begin{lstlisting}[language=bash]
+# Giải chính L1-L6, hai chế độ ngân sách
+uv run python -m caro.arena.tournament experiments/main_mode_a_l1_l6
+uv run python -m caro.arena.tournament experiments/main_mode_b_l1_l6
+# Bổ sung L7, L8 cho đủ tám cấp (cần trọng số L5, L8)
+uv run python -m caro.arena.tournament experiments/main_mode_a_l7_additional
+uv run python -m caro.arena.tournament experiments/main_mode_a_l8_additional
+uv run python -m caro.arena.tournament experiments/main_mode_b_l7_additional
+uv run python -m caro.arena.tournament experiments/main_mode_b_l8_additional
+# Phân tích lỗi theo cấp trên sáu lượt trên (vài giây)
+uv run python -m caro.analysis.error_analysis
+# Bộ khai cuộc giữ riêng, rồi RR8 và E3 trên bộ đó
+uv run python experiments/sinh_khai_cuoc_giu_rieng.py   # cần runs/data/expert_v1, v2
+uv run python -m caro.arena.tournament experiments/rr8_heldout
+uv run python -m caro.arena.tournament experiments/e3_heldout
+uv run python -m caro.arena.tournament experiments/a8_heldout
+# A2 ở độ sâu cố định (lặp với d = 3, 4, 5)
+uv run python -m caro.arena.bench experiments/a2_fixed_depth budget.max_depth=3 run.tag=d3
+# Tự đấu tám cấp trên bộ cũ và A5
+uv run python experiments/e3_selfplay.py
+uv run python experiments/a5_puct_eval.py
+\end{lstlisting}
+Chế độ A đo theo thời gian nên phụ thuộc máy; chạy lại không cho đúng cùng chuỗi nước.
 
 \section{Huấn luyện}
 Bộ sinh chuyên gia, học có giám sát, REINFORCE và AlphaZero lần lượt nằm ở
@@ -22,17 +47,28 @@ uv run python -m caro.training.alphazero_loop training/alphazero
 Dùng config \repoFile{training/alphazero_smoke} để kiểm tra đường chạy nhanh.
 
 \section{Sinh bảng và hình}
-Từ gốc repo, chạy \repoFile{python report/scripts/sinh-ho-so-caro.py} với môi trường của dự án
-để sinh lại bảng và hình từ log gốc. Từ thư mục \repoFile{report/}, chạy
+Từ gốc repo, chạy \repoFile{uv run python report/scripts/phan_tich_hoc.py} (đo checkpoint trên tập test),
+rồi \repoFile{uv run python report/scripts/bang_chuong4.py} để sinh các bảng và bàn cờ trong
+\repoFile{report/bang/} từ log. Một số bảng và hình khác lấy từ \repoFile{report/ban-mo-rong/}, sinh bằng
+\repoFile{report/scripts/sinh-ho-so-caro.py} và \repoFile{report/scripts/phan-tich-tong-hop.py};
+một số bảng nhỏ trong Chương~\ref{ch:thuc-nghiem} (A3, arena cũ, các mốc REINFORCE, phân loại lỗi MCTS, hai bảng về ván L8) được chép tay
+từ log và đã đối chiếu lại ngày 27/11/2026. Từ thư mục \repoFile{report/}, chạy
 \repoFile{latexmk main.tex}. Mục lục, danh mục hình, danh mục bảng và trích dẫn vẫn theo template.
 
 \section{Demo}
-Từ gốc repo, chạy \repoFile{uv run uvicorn caro.ui.server:app}. Giao diện có hai chế độ
-đối đầu và phát lại. Tác tử neural chỉ sẵn sàng khi nạp đúng checkpoint.
+Từ gốc repo, chạy \repoFile{uv run uvicorn caro.ui.server:app}. Giao diện có ba chế độ:
+người--máy, máy--máy và xem lại ván. Tác tử neural chỉ sẵn sàng khi nạp đúng checkpoint.
 
 \section{Chỉ mục nguồn thực nghiệm}
+\sloppy
 \begin{itemize}
-\item A1, A2, A7: các \repoFile{summary.json} và \repoFile{metrics.jsonl} dưới \repoFile{runs/bench/}.
+\item A1, A2, A7: \repoFile{run.log} dưới \repoFile{runs/bench/} (A2 báo cáo dùng \repoFile{runs/bench/a2_fixed_depth/}).
+\item Giải chính: sáu thư mục \repoFile{runs/tournament/main_mode_*} (hậu tố \texttt{l1\_l6}, \texttt{l7\_additional}, \texttt{l8\_additional}).
+\item Phân tích lỗi theo cấp: \repoFile{runs/analysis/error_analysis/}; hình và ván minh hoạ: \repoFile{notebooks/error_analysis.ipynb}.
+Các thư mục \texttt{error\_analysis} nằm trong từng giải là kết quả của bản script cũ, không dùng.
+\item RR8 và E3: \repoFile{runs/eval/tournament/} (\texttt{rr8\_mode\_b}, \texttt{rr8\_heldout}, \texttt{e3\_heldout}, \texttt{e3\_selfplay}) và \repoFile{runs/tournament/e3_first_move_l1_l6/}.
+\item A5b, A6: \repoFile{runs/eval/} (\texttt{a5b\_*.csv}, \texttt{a6\_*.csv}); A8: \repoFile{runs/eval/tournament/a8_heldout/}.
+\item Phân loại lỗi MCTS: \repoFile{report/scripts/phan_tich_loi_mcts.py}, truyền đường dẫn hai lượt A3, A4 ở trên vì liên kết \texttt{latest} không được commit.
 \item A3, A4: log ván dưới \repoFile{runs/tournament/a3_mcts_sims/} và \repoFile{runs/tournament/a4_rollout/}.
 \item Arena cũ: \repoFile{runs/arena_matrix/games.csv}; tổng hợp theo tác tử trong \repoFile{runs/arena_matrix/ranking.csv}.
 \item L5: \repoFile{runs/train/sl_policy_v3/metrics.json}.
@@ -43,6 +79,7 @@ Từ gốc repo, chạy \repoFile{uv run uvicorn caro.ui.server:app}. Giao diệ
 \item L8--L3: \repoFile{runs/eval/tournament/l8_vs_l3/20261125-134954_round37/}.
 \item Replay chiến thuật: \repoFile{notebooks/l7_l8_duel.ipynb}; nguồn luật nằm dưới \repoFile{caro/engine/}.
 \end{itemize}
+\fussy
 
 \section{Đối chiếu số liệu với log}
 Khi kiểm chứng một con số, trước hết xác định mã lượt chạy và tham số trong cấu hình đã lưu.

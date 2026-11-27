@@ -1,0 +1,8 @@
+2026-11-27 10:08:16 INFO    run analysis/error_analysis/20261127-100816 — config base, seed 2026
+2026-11-27 10:08:17 INFO    runs/tournament/main_mode_a_l1_l6/20261124-212727: 3000 ván, 2163 lỗi
+2026-11-27 10:08:18 INFO    runs/tournament/main_mode_a_l7_additional/20261126-154639: 1200 ván, 641 lỗi
+2026-11-27 10:08:19 INFO    runs/tournament/main_mode_a_l8_additional/20261126-174418: 1400 ván, 588 lỗi
+2026-11-27 10:08:20 INFO    runs/tournament/main_mode_b_l1_l6/20261124-222606: 3000 ván, 2606 lỗi
+2026-11-27 10:08:21 INFO    runs/tournament/main_mode_b_l7_additional/20261126-200736: 1200 ván, 672 lỗi
+2026-11-27 10:08:22 INFO    runs/tournament/main_mode_b_l8_additional/20261126-221554: 1400 ván, 573 lỗi
+2026-11-27 10:08:22 INFO    kết thúc: ok sau 6.2 s

@@ -1,0 +1,21 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\small
+  \caption{Điểm Elo ước lượng theo Bradley-Terry (một ván hoà ảo mỗi cặp, trung bình mỗi cột là 1000). Chỉ so sánh trong cùng một cột. Khoảng 95\% lấy bootstrap theo khai cuộc, 1000 lần.}
+  \label{tab:elo}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Tác tử & Chế độ A & Chế độ B & RR8 cũ & RR8 giữ riêng & Khoảng 95\% \\
+    \midrule
+    L8-AlphaZero & 1619 & 1693 & 1578 & 1546 & 1513 đến 1586 \\
+    L7-PUCT & 1522 & 1597 & 1476 & 1467 & 1434 đến 1502 \\
+    L6-PolicyRL & 1233 & 1272 & 1262 & 1238 & 1210 đến 1270 \\
+    L3-AlphaBeta & 1222 & 1238 & 1227 & 1229 & 1202 đến 1257 \\
+    L5-PolicySL & 1109 & 1153 & 1145 & 1142 & 1115 đến 1168 \\
+    L2-Rule & 1040 & 1078 & 1071 & 1089 & 1053 đến 1124 \\
+    L4-MCTS & 486 & 338 & 415 & 415 & 398 đến 428 \\
+    L1-Random & $-$232 & $-$369 & $-$173 & $-$128 & $-$175 đến $-$65 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

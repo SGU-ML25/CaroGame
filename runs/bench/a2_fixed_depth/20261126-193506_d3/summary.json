@@ -1,0 +1,28 @@
+{
+  "status": "ok",
+  "ended": "2026-11-26T19:35:07",
+  "duration_s": 0.864,
+  "games": 0,
+  "metrics": 10,
+  "agents": [
+    "AB-plain",
+    "AB-order",
+    "AB-order-tt"
+  ],
+  "n_positions": 10,
+  "AB-plain": {
+    "nodes_median": 54300,
+    "time_ms_median": 11.8,
+    "time_ms_p95": 78.8
+  },
+  "AB-order": {
+    "nodes_median": 9516,
+    "time_ms_median": 5.7,
+    "time_ms_p95": 10.8
+  },
+  "AB-order-tt": {
+    "nodes_median": 9490,
+    "time_ms_median": 5.8,
+    "time_ms_p95": 10.9
+  }
+}

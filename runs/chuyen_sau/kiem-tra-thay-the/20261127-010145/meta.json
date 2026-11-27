@@ -1,0 +1,66 @@
+{
+  "started": "2026-11-27T01:01:45",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/kiem_tra_thay_the.py"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "kiem-tra-thay-the",
+  "title": "Kiểm các nước thay thế cho sai lầm: tìm sâu hơn và hỏi KataGomo",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "report/chuyen-sau/data/phan-tich-van-sau.json",
+      "bytes": 42309,
+      "sha256": "e44f5e27c5774888c913f154efa9024d86e9961485f114cfbddd78badb26966a"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/kiem_tra_thay_the.py",
+      "bytes": 2139,
+      "sha256": "8009975dbe0c249f22e366002bf0a24466542af1f1d1f5829e24fc4a795aa0e4"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/vct.py",
+      "bytes": 4426,
+      "sha256": "1d3fc215387f835fe61f1517ffe04077dfdb7cb64832f059835564f63ba07da9"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/vcf.py",
+      "bytes": 4756,
+      "sha256": "b62049548276e40bc40925ce0288bc0ce432283efcda3a8be85d45b1216666af"
+    }
+  ],
+  "ended": "2026-11-27T01:04:45",
+  "duration_s": 180.3,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/data/kiem-tra-thay-the.json",
+      "bytes": 3222,
+      "sha256": "4a9d6633afe5e67eae7bfc742edaf26a12cdab6a0d217d1687b59e798582e41a"
+    }
+  ]
+}

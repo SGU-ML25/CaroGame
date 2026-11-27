@@ -1,0 +1,24 @@
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Thời gian một lần gọi các phép toán cốt lõi (Python thuần, một luồng)}
+  \label{tab:cs-tk-vi-mo}
+  \begin{tabular}{lr}
+    \toprule
+    Phép toán & µs \\
+    \midrule
+    has\_five & 0,73 \\
+    candidates (bán kính 2) & 0,83 \\
+    winning\_squares & 8,27 \\
+    evaluate & 21,82 \\
+    step + undo & 1,70 \\
+    clone & 0,25 \\
+    full\_key (Zobrist từ đầu) & 2,51 \\
+    encode (đặc trưng mạng) & 4,16 \\
+    rollout random & 167,48 \\
+    rollout light & 662,19 \\
+    vcf.solve & 99,20 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Lấy lần lặp nhanh nhất trong 5 lần, trung bình trên 50 thế trung cuộc.}
+\end{table}

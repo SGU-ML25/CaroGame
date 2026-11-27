@@ -1,0 +1,33 @@
+\chapter{Minh chứng các lượt chạy}
+\label{app:minh-chung}
+Mọi số liệu của phần phân tích chuyên sâu đi từ một lượt chạy có ghi log. Mỗi thư mục
+\repoFile{runs/chuyen_sau/<bước>/<thời điểm>/} chứa \texttt{meta.json}, \texttt{run.log}, \texttt{ma-nguon/} (bản sao mã
+đã chạy) và \texttt{data/} (dữ liệu đầu ra). Hai giải đấu thử độ nhạy còn có thư mục run của arena trong
+\repoFile{runs/eval/tournament/} với \texttt{games.jsonl} từng ván.
+
+\section{Chạy lại}
+Từ gốc kho, sau khi đã cài phụ thuộc, build lõi Cython và tải trọng số (Phụ lục~\ref{app:tai-lap}):
+\begin{lstlisting}[language=bash]
+.venv/bin/python report/scripts/chuyen_sau/chay.py --list
+.venv/bin/python report/scripts/chuyen_sau/chay.py kiem-thu-vcf bo-chien-thuat \
+    cham-chien-thuat phan-tich-van phan-tich-du-lieu phan-tich-mang phan-tich-thong-ke \
+    kiem-tra-rollout kiem-tra-goc giai-sims-l8 giai-cpuct phu-luc-van
+.venv/bin/python report/scripts/chuyen_sau/chay.py kiem-thu-vct phan-tich-van-sau kiem-tra-thay-the
+.venv/bin/python report/scripts/chuyen_sau/chay.py phan-tich-tim-kiem   # khi máy rảnh
+.venv/bin/python report/scripts/chuyen_sau/bang.py
+.venv/bin/python report/scripts/chuyen_sau/trich_ma.py
+uv run --no-sync --with matplotlib python report/scripts/chuyen_sau/ve_hinh.py
+uv run --no-sync --with matplotlib python report/scripts/chuyen_sau/bang_van_sau.py
+cd report && latexmk main.tex
+\end{lstlisting}
+Các bước phân tích dữ liệu và mạng cần \repoFile{runs/data/} và hai checkpoint cục bộ (SL v3, bản không augment),
+không nằm trong git. Số đo thời gian phụ thuộc máy và tải; mọi số đo còn lại tất định theo seed.
+
+\section{Chỉ mục lượt chạy}
+Khi một bước có nhiều lượt, báo cáo dùng lượt mới nhất; các lượt trước được giữ để đối chiếu. Mã thoát $-15$ ở bước
+\texttt{giai-sims-l8} là lượt được dừng chủ động sau ván thứ 400 (mức 3\,200 mô phỏng không hoàn tất), kèm tệp ghi chú
+trong thư mục run của arena.
+\input{chuyen-sau/bang/minh-chung}
+
+\section{Dữ liệu đầu vào}
+\input{chuyen-sau/bang/minh-chung-vao}

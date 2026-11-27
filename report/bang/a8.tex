@@ -1,0 +1,17 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{A8: MCTS (800 mô phỏng, rollout \texttt{light}) tắt và bật chiến thuật ở gốc, 100 ván mỗi dòng trên khai cuộc giữ riêng. Số mô phỏng trung bình gồm cả nước trả ngay (0 mô phỏng). Thời gian đo khi chạy 4 tiến trình song song với một giải khác.}
+  \label{tab:a8}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}llrrrrrr@{}}
+    \toprule
+    Gốc & Đối thủ & T/H/B & Điểm & Wilson 95\% & Số nước TB & Mô phỏng TB & P50 (ms) \\
+    \midrule
+    Tắt & L2-Rule & 0/0/100 & 0{,}0 & 0{,}0--3{,}7 & 10{,}6 & 800 & 597 \\
+    Tắt & L3-AlphaBeta & 0/0/100 & 0{,}0 & 0{,}0--3{,}7 & 12{,}8 & 800 & 652 \\
+    Bật & L2-Rule & 20/6/74 & 23{,}0 & 15{,}8--32{,}2 & 36{,}0 & 500 & 520 \\
+    Bật & L3-AlphaBeta & 3/5/92 & 5{,}5 & 2{,}5--11{,}8 & 31{,}6 & 577 & 810 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

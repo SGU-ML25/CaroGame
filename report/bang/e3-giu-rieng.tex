@@ -1,0 +1,21 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{E3 trên bộ khai cuộc giữ riêng, mỗi khai cuộc một ván. T/H/B và điểm tính cho X. Hai cột cuối tách theo bên đi ngay sau khai cuộc (khai cuộc 2 và 4 nước: X; 3 nước: O).}
+  \label{tab:e3-giu-rieng}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lrrrrrrr@{}}
+    \toprule
+    Tác tử & Ván & Ván khác nhau & X: T/H/B & Điểm X & Wilson 95\% & X đi tiếp & O đi tiếp \\
+    \midrule
+    L1-Random & 100 & 100 & 59/0/41 & 59{,}0 & 49{,}2--68{,}1 & 65{,}0 & 50{,}0 \\
+    L2-Rule & 100 & 100 & 65/4/31 & 67{,}0 & 57{,}3--75{,}4 & 72{,}5 & 58{,}8 \\
+    L3-AlphaBeta & 100 & 100 & 57/27/16 & 70{,}5 & 60{,}9--78{,}5 & 80{,}0 & 56{,}2 \\
+    L4-MCTS & 100 & 100 & 49/0/51 & 49{,}0 & 39{,}4--58{,}7 & 51{,}7 & 45{,}0 \\
+    L5-PolicySL & 100 & 100 & 57/3/40 & 58{,}5 & 48{,}7--67{,}7 & 54{,}2 & 65{,}0 \\
+    L6-PolicyRL & 100 & 99 & 62/7/31 & 65{,}5 & 55{,}8--74{,}1 & 65{,}8 & 65{,}0 \\
+    L7-PUCT & 100 & 100 & 67/7/26 & 70{,}5 & 60{,}9--78{,}5 & 74{,}2 & 65{,}0 \\
+    L8-AlphaZero & 100 & 100 & 43/38/19 & 62{,}0 & 52{,}2--70{,}9 & 65{,}0 & 57{,}5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

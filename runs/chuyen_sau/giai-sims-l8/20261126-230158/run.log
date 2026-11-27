@@ -1,0 +1,11 @@
+$ .venv/bin/python -m caro.arena.tournament experiments/l8_sims_heldout
+23:01:59 2026-11-26 23:01:59 INFO    run tournament/l8_sims_heldout/20261126-230159 — config experiments/l8_sims_heldout, seed 2026
+23:01:59 2026-11-26 23:01:59 INFO    Bắt đầu giải đấu: 500 ván cờ, 4 workers, chế độ challengers_vs_baselines.
+23:02:04 /mnt/data/1_Projects/AAI/CaroGame/.venv/lib/python3.13/site-packages/torch/cuda/__init__.py:228: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 803: system has unsupported display driver / cuda driver combination (Triggered internally at /__w/pytorch/pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+23:02:04   return torch._C._cuda_getDeviceCount() > 0
+23:02:04 /mnt/data/1_Projects/AAI/CaroGame/.venv/lib/python3.13/site-packages/torch/cuda/__init__.py:228: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 803: system has unsupported display driver / cuda driver combination (Triggered internally at /__w/pytorch/pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+23:02:04   return torch._C._cuda_getDeviceCount() > 0
+23:02:05 /mnt/data/1_Projects/AAI/CaroGame/.venv/lib/python3.13/site-packages/torch/cuda/__init__.py:228: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 803: system has unsupported display driver / cuda driver combination (Triggered internally at /__w/pytorch/pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+23:02:05   return torch._C._cuda_getDeviceCount() > 0
+23:02:05 /mnt/data/1_Projects/AAI/CaroGame/.venv/lib/python3.13/site-packages/torch/cuda/__init__.py:228: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 803: system has unsupported display driver / cuda driver combination (Triggered internally at /__w/pytorch/pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+23:02:05   return torch._C._cuda_getDeviceCount() > 0

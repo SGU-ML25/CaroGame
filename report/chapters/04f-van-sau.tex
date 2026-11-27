@@ -1,0 +1,138 @@
+% Phân tích sâu bốn ván, \input trong mục "Ván đấu minh hoạ" của 04-thuc-nghiem.tex.
+% Số liệu từ report/chuyen-sau/data/phan-tich-van-sau.json và kiem-tra-thay-the.json; hình, bảng do bang_van_sau.py sinh.
+\subsection{Phân tích sâu bốn ván: cách làm}
+\label{sec:cs-van-sau}
+Bốn ván được phân tích là các ván báo cáo đã dùng: ván 13 (L7--L8) và ván 26 (L3--L8) của hai lượt đấu ở trên, ván 1202
+(L2 thắng L8) và ván 2726 (L7 thắng L8) của giải tám cấp trên khai cuộc giữ riêng. Không chơi thêm ván nào; mọi nước
+lấy từ log. Mỗi nước được hai trọng tài xem xét:
+\begin{description}
+  \item[Bộ giải thắng ép.] Mở rộng bộ giải chuỗi tứ (Thuật toán~\ref{alg:cs-vcf}) sang cả ba hở: một nước là đe doạ nếu
+  sau nó, giả sử đối thủ bỏ lượt, bên công có chuỗi tứ thắng. Bên thủ được thử \emph{mọi} ô trống; ô nào không phá được
+  đe doạ thì thua, các ô còn lại phải bị bác bỏ bằng đệ quy. Vì vét hết đáp trả, khi bộ giải báo ``thắng ép'' thì đó là
+  chứng minh. Độ sâu là số đe doạ trước khi tới chuỗi tứ: 2 cho mọi nước, mở rộng tới 3 khi lùi từ điểm quyết định.
+  \item[KataGomo.] Engine mạnh độc lập \cite{katagomo}, 1\,600 lượt thăm mỗi thế. Điểm báo cáo là điểm kỳ vọng (thắng
+  cộng nửa hoà) và nước nó đề nghị. Đây là \emph{ước lượng}, không phải chứng minh; mô hình được huấn luyện trên bàn
+  15$\times$15 và dùng ở 11$\times$11.
+\end{description}
+\textbf{Nước khoá ván} là nước đầu tiên mà từ đó bên thắng luôn có đường thắng ép đã chứng minh. Ở nước ngay trước đó,
+script liệt kê các ô mà sau khi đi, đối thủ không còn đường thắng ép trong cùng độ sâu. Mỗi ô như vậy được kiểm thêm
+bằng tìm kiếm sâu hơn một bậc (ba đe doạ) và bằng KataGomo (Bảng~\ref{tab:cs-vs-thay-the}). Chỉ khi còn ô vượt qua cả
+hai phép kiểm (không bị bác bỏ và được engine chấm từ $20\%$) thì nước đã đi mới được gọi là \textbf{sai lầm quyết định}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{chuyen-sau/hinh/vs-ty-le-thang.png}
+  \caption{Điểm của X theo KataGomo trước mỗi nước. Đường đỏ đứt: sai lầm quyết định (chỉ ván 13 có); đường cam chấm: nước khoá ván.}
+  \label{fig:cs-vs-ty-le}
+\end{figure}
+
+\subsection{Ván 13: L8 thắng L7 sau khi cả hai cùng bỏ lỡ}
+\label{sec:cs-vs-13}
+L7 cầm X, L8 cầm O, khai cuộc F7--E4. KataGomo chấm khai cuộc này rất có lợi cho X ($94\%$ trước nước 3).
+\input{chuyen-sau/bang/hinh-vs-13}
+\paragraph{Diễn biến.} Đây là ván đổi chiều nhiều lần.
+\begin{itemize}
+  \item \textbf{Nước 9 (X, D7):} điểm của X rơi từ $95\%$ xuống $36\%$. KataGomo đề nghị F9. L7 đánh mất phần lớn lợi thế
+  khai cuộc.
+  \item \textbf{Nước 13 và 15 (X):} D6 rồi H7 đưa điểm của X xuống còn $1\%$. Lúc này L8 đang thắng theo engine.
+  \item \textbf{Nước 16 (O, G5):} sai lầm lớn nhất của L8 theo engine, điểm của X bật từ $1\%$ lên $96\%$. G5 tạo ba hở
+  ngang nhưng bỏ ô C5; ngay nước 17 L7 chiếm đúng C5 và dựng ba hở chéo xuôi của mình.
+  \item \textbf{Nước 17--24:} L7 giữ thế chủ động; L8 chủ yếu phải đỡ, chỉ xen được một phản tứ ở nước 18.
+  \item \textbf{Nước 25 (X, H6):} L7 đi một nước tứ mà engine đánh giá là sai. Ô chặn H8 mà O buộc phải đi lại cho O một ba hở
+  chéo xuôi, trả quyền chủ động; điểm của X từ $100\%$ xuống $48\%$. KataGomo đề nghị B6.
+  \item \textbf{Nước 26--30:} thế cân bằng, engine báo tỷ lệ hoà cao.
+\end{itemize}
+Các nhận định trên dựa vào KataGomo; trong đoạn này bộ giải (độ sâu 2) không chứng minh được đường thắng ép nào.
+
+\paragraph{Sai lầm quyết định: nước 31 (X, B6).} B6 là một nước tứ, buộc O phải chặn tại C6. Nhưng C6 đồng thời tạo cho
+O \emph{một tứ chéo ngược} (đe doạ G2). Quyền chủ động đổi sang O đúng ở lượt O buộc phải đỡ. Từ nước 32, bộ giải chứng
+minh O thắng bằng chuỗi tứ C6--G2--G3--G4--E3--C3--H3. Ba ô tránh được trong độ sâu của bộ giải là H3, H4 và C6 (chiếm
+luôn ô mà nước tứ sẽ biếu cho đối thủ). KataGomo cũng đề nghị C6; điểm của X trước nước 31 là $44\%$, sau B6 là $0\%$.
+
+\paragraph{Vì sao L8 thắng.} Nước 32 vừa đỡ vừa công. L7 buộc đỡ G2 (nước 33); nước 34 (G3) tạo cùng lúc một ba hở
+ngang và một tứ dọc. L7 đi B5 để dựng tứ của mình ở nước 35, nhưng O đến lượt trước và hoàn thành năm quân tại G4.
+Nước 35 (không chặn G4) trông như lỗi thua ván, nhưng ván đã thua từ nước 31: ngay cả khi
+chặn G4, chuỗi tứ đã chứng minh vẫn tiếp tục qua E3, C3 và H3.
+\input{chuyen-sau/bang/vs-13}
+
+\subsection{Ván 26: L3 thắng L8 bằng năm ba hở liên tiếp}
+\label{sec:cs-vs-26}
+L3 (Alpha-Beta) cầm X, L8 cầm O, khai cuộc H5--F8--G7. Trước nước 4, KataGomo chấm X $82\%$.
+\input{chuyen-sau/bang/hinh-vs-26}
+\paragraph{Diễn biến.}
+\begin{itemize}
+  \item \textbf{Nước 4 (O, G8) và 6 (O, F6):} hai nước của L8 đưa điểm của X từ $82\%$ lên $98\%$; engine đề nghị F7 cả hai
+  lần. Đây là chỗ L8 mất điểm; sau đó engine coi ván gần như đã định.
+  \item \textbf{Nước 7, 9, 11, 13, 15 (X):} L3 tạo năm ba hở liên tiếp theo cả bốn hướng (H7 dọc, F7 ngang, G6 chéo ngược,
+  F5 chéo xuôi, G5 ngang). Mỗi nước buộc L8 đỡ ngay (nước 8, 10, 12, 14, 16 đều là nước chặn đòn kép).
+\end{itemize}
+\paragraph{Nước 16 và nước khoá ván 17.} L8 chặn một đầu của ba hở ngang tại I5, và từ nước 17 bộ giải chứng minh X thắng
+bằng chuỗi tứ G4--G3--D7--E7--E6--H3--C8. Ở độ sâu của bộ giải, chỉ C8 (ô cuối của chuỗi) tránh được chuỗi đó; nhưng khi
+tìm sâu hơn một bậc, C8 cũng bị bác bỏ bằng một chuỗi đe doạ mở đầu D8, và engine chấm O $0\%$. Vậy I5 làm ván kết thúc
+nhanh hơn, \emph{không phải} nguyên nhân thua.
+
+\paragraph{Vì sao L3 thắng.} L3 không để mất quyền chủ động: từ nước 7, mọi nước của X đều là đe doạ. Nước 17 (G4) tạo tứ
+dọc; nước 19 (D7) tạo cùng lúc tứ ngang và ba hở chéo ngược; L8 chặn kèm phản tứ ở nước 20 (C8) nhưng X đến lượt trước
+và hoàn thành năm quân tại E7. Việc O đi C8 thay vì chặn E7 ở nước 20 không phải nguyên nhân thua: bộ giải cho thấy
+X đã thắng ép từ trước đó, kể cả khi O chặn E7.
+\input{chuyen-sau/bang/vs-26}
+
+\subsection{Ván 1202: tác tử luật L2 thắng L8}
+\label{sec:cs-vs-1202}
+L2 cầm X, L8 cầm O, khai cuộc F4--H5--D6--D8. Đây là một trong 7 ván L2 thắng trên 100 ván của cặp. Ngay sau khai cuộc,
+KataGomo chấm X $95\%$ và điểm của O không vượt quá vài phần trăm trong cả ván: theo engine, ván đã nghiêng từ thế mở đầu,
+trước khi L2 đi nước nào.
+\input{chuyen-sau/bang/hinh-vs-1202}
+\paragraph{Diễn biến.} L2 dựng đe doạ sớm: E5 (ba hở chéo ngược, nước 5), G3 (tứ chéo ngược, nước 7). L8 đỡ và ở nước 10
+(E9) còn tạo được một ba hở.
+
+\paragraph{Nước 14 và nước khoá ván 15.} E6 là một nước yên tĩnh: không chặn gì, cũng không tạo đe doạ. Sau nó, bộ giải
+chứng minh X thắng ép từ nước 15, với nước mở đầu F5 và hai đáp trả F3, F7 của O đều bị bác bỏ. Bốn ô H1, H3, H4, H6
+tránh được chuỗi đó ở độ sâu của bộ giải. Tìm sâu hơn bác bỏ H1 và H6; với H3 và H4 bộ giải không tìm thấy đường thắng,
+nhưng KataGomo chấm O khoảng $0\%$. Không đủ cơ sở để nói một nước khác ở lượt 14 đã cứu được ván.
+
+\paragraph{Vì sao L2 thắng.} L2 không đi đúng nước mở đầu mà bộ giải tìm ra (nó đi D4, tạo ba hở chéo xuôi), nhưng vẫn
+giữ được đường thắng ép ở mọi lượt sau. Từ nước 15, cả sáu nước của X đều là đe doạ, L8 chỉ còn đỡ. Nước 21 (F3) tạo
+cùng lúc tứ ngang và ba hở dọc; nước 23 (F5) tạo tứ hở dọc với hai ô thắng F2 và F7. L8 chỉ chặn được F2, X kết thúc tại
+F7. Một tác tử luật nhìn một nước đủ để thắng khi thế đã nghiêng: nó chỉ cần liên tục tạo đe doạ mà đối thủ buộc đỡ.
+\input{chuyen-sau/bang/vs-1202}
+
+\subsection{Ván 2726: L7 thắng L8 bằng một chuỗi tứ dài}
+\label{sec:cs-vs-2726}
+L7 cầm X, L8 cầm O, khai cuộc H7--E4--F7--E5. KataGomo chấm X $97\%$ trước nước 5; điểm của O không vượt quá $8\%$ sau đó.
+\input{chuyen-sau/bang/hinh-vs-2726}
+\paragraph{Diễn biến.} Hai bên đổi đe doạ: L7 tạo ba hở ngang ở nước 5, L8 đáp bằng ba hở ở nước 10 (C6) và nước 12 (C5).
+L7 chặn cả hai (F3, F5), và điểm engine của X lên $100\%$.
+
+\paragraph{Nước 14 và nước khoá ván 15.} L8 tiếp tục tấn công bằng một ba hở chéo xuôi (D6). Lúc đó X đã đủ quân cho chuỗi
+tứ F6--F4--H6--I6--F8--F9--I5--J4--E9. Mỗi nước tứ buộc đối thủ đỡ ngay, nên ba hở của O không kịp phát huy: \emph{tứ
+nhanh hơn ba}. Bảy ô (F4, A5, B5, F6, H6, B7, A8) tránh được chuỗi tứ này, nhưng cả bảy đều bị bác bỏ khi tìm sâu hơn một
+bậc và engine chấm O $0\%$. D6 làm ván kết thúc nhanh hơn; thế đã thua từ trước.
+
+\paragraph{Vì sao L7 thắng.} L7 không đi đường ngắn nhất ngay: nó chèn hai nước tứ khác (I8 ở nước 15, I7 ở nước 17) rồi
+mới đi F6. Đường thắng vẫn được giữ qua mọi lượt. Nước 23 (F8) vừa chặn vừa tạo tứ dọc và ba hở; nước 25 (E9) tạo tứ hở
+chéo ngược với hai ô thắng I5 và D10. L8 đi C7 để dựng tứ hở của mình, nhưng đến lượt X trước, và I5 kết thúc ván.
+\input{chuyen-sau/bang/vs-2726}
+
+\subsection{Các nước thay thế có cứu được ván không}
+Bảng~\ref{tab:cs-vs-thay-the} gom kết quả kiểm mọi ô thay thế ở lượt ngay trước nước khoá ván. Chỉ ở ván 13 các ô đó
+thật sự giữ được thế: cả ba không bị bác bỏ và được engine chấm $44$--$46\%$, bằng với đánh giá trước khi đi, trong khi
+nước đã đi còn $0\%$. Ở ba ván kia, ``tránh được chuỗi ép ngắn'' không đồng nghĩa với ``cứu được ván''. Đây cũng là lời
+nhắc về mọi số đo dựa trên bộ giải có độ sâu giới hạn.
+\input{chuyen-sau/bang/vs-thay-the}
+
+\subsection{Điểm chung của bốn ván}
+\label{sec:cs-vs-chung}
+\begin{enumerate}
+  \item \textbf{Khai cuộc lệch về bên đi trước.} Trước nước đầu tiên của tác tử, KataGomo đã chấm X từ $82\%$ đến $97\%$ ở
+  cả bốn khai cuộc. Ở ba ván 26, 1202 và 2726, bên cầm O thua khi chưa từng có thế cân bằng. Giải đấu đổi màu trên cùng
+  khai cuộc để bù, nhưng kết quả của một ván riêng lẻ phụ thuộc mạnh vào màu quân, và nhiều cặp ván có thể chỉ đo bên nào
+  được cầm X.
+  \item \textbf{Mất quyền chủ động là mất ván.} Từ nước khoá ván, bên thắng liên tục ra đe doạ; nước của bên thua là nước
+  chặn hoặc phản đòn đến chậm một lượt.
+  \item \textbf{Sai lầm quyết định thật sự chỉ thấy ở ván 13:} một nước tứ mà ô chặn bắt buộc lại cho đối thủ một tứ. Cả
+  hai bên trong ván này còn mất lợi thế nhiều lần (nước 9, 16, 25 theo engine) mà không có trọng tài nào ngoài engine
+  nhận ra, cho thấy lỗi nhìn xa vẫn phổ biến ở hai tác tử mạnh nhất.
+\end{enumerate}
+
+\paragraph{Giới hạn.} Bốn ván là minh hoạ, không phải mẫu thống kê. Điểm của KataGomo là ước lượng của một mô hình huấn
+luyện trên bàn 15$\times$15; riêng nhận định về khai cuộc cần được kiểm trên toàn bộ khai cuộc trước khi coi là kết luận.

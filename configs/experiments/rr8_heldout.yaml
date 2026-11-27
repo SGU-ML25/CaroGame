@@ -1,0 +1,9 @@
+# RR8 trên khai cuộc giữ riêng — cùng tám cấp và ngân sách với rr8_mode_b, chỉ đổi bộ khai cuộc.
+# 50 khai cuộc đầu × đổi màu ⇒ 100 ván mỗi cặp; 28 cặp ⇒ 2.800 ván.
+# Bộ khai cuộc sinh bằng experiments/sinh_khai_cuoc_giu_rieng.py (không trùng dữ liệu huấn luyện).
+defaults: [experiments/rr8_mode_b]
+experiment: {kind: tournament, name: rr8_heldout, rq: [RQ1, RQ2, RQ4]}
+arena:
+  games_per_pair: 100
+  workers: 1
+  openings: {file: runs/openings/openings_heldout_v2.json, seed: 20261126}

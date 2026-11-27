@@ -1,0 +1,208 @@
+% Phần cài đặt chi tiết của Chương 3, được \input ở cuối 03-phuong-phap.tex.
+% Hai đoạn mã trích tự động bởi report/scripts/chuyen_sau/trich_ma.py; không sửa tay trong chuyen-sau/ma/.
+% \par trước nhóm: nếu không, đoạn văn đứng ngay trước khối mã sẽ nhận giãn dòng đơn của khối mã.
+\providecommand{\trichma}[3]{\par{\linespread{1}\selectfont
+  \lstinputlisting[language=Python, caption={#2}, label={lst:cs-#3}]{chuyen-sau/ma/#1}}}
+
+\section{Cài đặt chi tiết và các quyết định thiết kế}
+\label{sec:cs-cai-dat}
+Các mục trước mô tả thiết kế ở mức khái niệm. Mục này tóm tắt những quyết định cài đặt ảnh hưởng tới kết quả, gồm cả
+những chỗ hành vi thực tế khác với ý đồ thiết kế. Các phép đo tương ứng nằm ở Chương~\ref{ch:thuc-nghiem}.
+
+\subsection{Tổ chức mã nguồn}
+Gói \texttt{caro} chia theo hướng phụ thuộc một chiều: \texttt{engine} không phụ thuộc gì ngoài thư viện chuẩn;
+\texttt{agents} chỉ dùng \texttt{engine} (và \texttt{nn} cho cấp 5--8); \texttt{arena} chỉ dùng tác tử qua
+interface; \texttt{training} dùng cả ba; \texttt{ui} đứng trên cùng. Nhờ đó một tác tử mới không đòi sửa arena, và
+cấp 1--4 chạy được khi chưa cài PyTorch (bảng đăng ký chỉ import lớp khi cần). Bảng~\ref{tab:cs-thu-muc} giới thiệu
+các thư mục chính, Bảng~\ref{tab:cs-tep-chinh} giới thiệu những tệp cốt lõi.
+\begin{table}[H]
+  \centering\small
+  \caption{Các thư mục chính của dự án}
+  \label{tab:cs-thu-muc}
+  \begin{tabular}{lp{10cm}}
+    \toprule
+    Thư mục & Vai trò\\
+    \midrule
+    \texttt{caro/engine/} & Luật chơi: bàn cờ bitboard, trạng thái ván, khoá Zobrist, đối xứng, lõi Cython\\
+    \texttt{caro/agents/} & Tác tử cấp 1--8 và bộ nối engine ngoài KataGomo, dùng chung một interface\\
+    \texttt{caro/nn/} & Mã hoá thế cờ, mạng policy--value, nạp dữ liệu huấn luyện\\
+    \texttt{caro/training/} & Sinh dữ liệu chuyên gia, học có giám sát, REINFORCE, vòng AlphaZero\\
+    \texttt{caro/arena/} & Khai cuộc, lịch đấu, chạy giải, thống kê và đo hiệu năng\\
+    \texttt{caro/ui/} & Máy chủ web và giao diện chơi, xem lại ván\\
+    \midrule
+    \texttt{configs/} & Cấu hình YAML của tác tử, ngân sách, huấn luyện và thí nghiệm\\
+    \texttt{experiments/} & Script cho các thí nghiệm riêng\\
+    \texttt{tests/} & Kiểm thử tự động\\
+    \texttt{notebooks/} & Notebook phân tích và vẽ hình\\
+    \texttt{runs/} & Log, cấu hình đã giải và kết quả của từng lượt chạy\\
+    \texttt{report/} & Mã nguồn LaTeX của báo cáo và script sinh bảng, hình\\
+    \texttt{docs/} & Đề bài, hướng dẫn và ghi chú kỹ thuật\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}[H]
+  \centering\small
+  \caption{Những tệp cốt lõi của gói \texttt{caro}}
+  \label{tab:cs-tep-chinh}
+  \begin{tabular}{lp{9.2cm}}
+    \toprule
+    Tệp & Nội dung\\
+    \midrule
+    \texttt{engine/bitboard.py} & Kiểm tra thắng, sinh nước ứng viên, đếm cửa sổ 5 ô, lượng giá\\
+    \texttt{engine/game.py} & Lớp \texttt{CaroGame}: đi, lùi, nước hợp lệ, kết quả\\
+    \texttt{agents/base.py} & Interface tác tử, ngân sách mỗi nước và đồng hồ\\
+    \texttt{agents/alphabeta.py} & Cấp 3: Negamax Alpha-Beta, bảng chuyển vị, sắp xếp nước\\
+    \texttt{agents/mcts.py} & Cấp 4: MCTS với rollout\\
+    \texttt{agents/puct.py} & Cấp 7, 8: tìm kiếm PUCT dẫn bằng mạng\\
+    \texttt{nn/model.py} & Mạng \texttt{CaroResNet}\\
+    \texttt{arena/tournament.py} & Chạy giải đấu và ghi log từng ván\\
+    \texttt{config.py} & Ghép cấu hình và giải tham chiếu tác tử\\
+    \texttt{runlog.py} & Tạo thư mục run, ghi cấu hình, seed và kết quả\\
+    \texttt{hub.py} & Tải và đẩy trọng số trên Hugging Face theo phiên bản đã ghim\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Cấu hình, seed và ngân sách}
+Một tệp YAML khai báo \texttt{defaults}; các tệp cha được ghép trước theo thứ tự trái sang phải, rồi tới nội dung của
+tệp và các tham số \texttt{a.b.c=giá trị} trên dòng lệnh. Từ điển được ghép đệ quy còn danh sách bị thay thế, nên
+một thí nghiệm khai báo lại \texttt{agents} không giữ sót tác tử của tệp cha. Tác tử được tham chiếu bằng tên tệp kèm
+phần ghi đè; thư mục run lưu bản cấu hình đã giải đầy đủ nên chạy lại không phụ thuộc các tệp cha về sau.
+
+Seed của mỗi ván và mỗi bên là mã băm BLAKE2b của bộ (seed gốc, mã ván, màu), ổn định giữa các tiến trình. Vì vậy kết
+quả ở chế độ ngân sách cố định không phụ thuộc số tiến trình song song; chế độ thời gian thì phụ thuộc tải máy.
+Ngân sách được kiểm tra ngay khi tạo (từ chối giá trị âm, bằng 0 hoặc thiếu \texttt{time\_ms}), và đồng hồ trừ một
+biên an toàn 10\,ms cho Alpha-Beta, 5\,ms cho MCTS và PUCT.
+
+\subsection{Cấp 2: thứ tự luật}
+Thứ tự P1--P7 chính là cách giải xung đột: luật đứng trước khớp thì các luật sau không được xét.
+\begin{itemize}
+  \item P3 và P4 trả nước \emph{đầu tiên} thoả điều kiện theo chỉ số ô, không so điểm giữa các nước cùng loại; khi đối
+  thủ có hai đe doạ đôi độc lập, chỉ đe doạ gặp trước được chặn.
+  \item P4 chỉ phòng thủ một nước, không phát hiện chuỗi tứ dài hơn, và đứng trước P5 (tạo tứ). Hệ quả được đo ở
+  Bảng~\ref{tab:cs-ct-l2}.
+  \item P6 và P7 chỉ khác nhau khi hoà điểm: chọn ô gần tâm, rồi ngẫu nhiên theo seed.
+\end{itemize}
+
+\subsection{Cấp 3: Alpha-Beta}
+\paragraph{Một lượt quét cho cả nút.} Thông tin đe doạ được tính một lần cho mọi ứng viên theo
+định lý~\ref{dl:cs-gain}. Điểm vị trí cũng vậy: đặt quân vào ô $m$ chỉ đổi các cửa sổ chứa $m$, nên
+\begin{equation}
+  S(M\cup\{m\},O)=S(M,O)+\sum_{h=1}^{4}\sum_{k=0}^{4}(w'_{k+1}-w'_k)\cdot\mathrm{popcount}(B_{h,k}\wedge A_{h}(m)),
+\end{equation}
+với $B_{h,k}$ là các cửa sổ sống hướng $h$ có $k$ quân, $A_h(m)$ là các cửa sổ hướng $h$ chứa $m$, $w'_0=w'_5=0$ và
+$w'_k=w_k$ còn lại. Mỗi ứng viên chỉ tốn vài phép AND và đếm bit.
+
+\paragraph{Trình tự trong một nút.} (1) đếm nút; (2) kiểm tra bên vừa đi đã thắng; (3) tra bảng chuyển vị; (4) lá hoặc
+hết giờ thì lượng giá; (5) sinh ứng viên bán kính 2; (6) thu về nước thắng ngay, nếu không có thì các nước chặn;
+(7) sắp xếp theo Bảng~\ref{tab:cs-thu-tu}; (8) duyệt, cắt tỉa, cập nhật killer và history; (9) ghi bảng nếu chưa hết
+giờ. Bước (6) thu hẹp cây khi có đe doạ nhưng không tăng độ sâu, nên chuỗi tứ dài hơn độ sâu còn lại vẫn bị cắt ở lá.
+\begin{table}[H]
+  \centering\small
+  \caption{Thang ưu tiên sắp xếp nước của cấp 3}
+  \label{tab:cs-thu-tu}
+  \begin{tabular}{rl}
+    \toprule
+    Điểm & Lớp nước\\
+    \midrule
+    10.000.000 & Nước lưu trong bảng chuyển vị cho đúng thế này\\
+    9.500.000 & Thắng ngay\\
+    9.000.000 & Tạo từ hai ô thắng trở lên (đòn kép)\\
+    8.000.000 & Tạo tứ, hoặc đang có tứ\\
+    7.000.000 & Chiếm ô mà đối thủ dùng để tạo đòn kép\\
+    6.000.000 / 5.000.000 & Hai nước killer của ply\\
+    1.000.000 $+h(m)$ & Lịch sử cắt tỉa, $h$ cộng $d^2$ mỗi lần cắt\\
+    dưới 1.000.000 & Điểm vị trí sau khi đi\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Gốc tìm kiếm và lặp sâu dần.}
+\begin{itemize}
+  \item Danh sách nước gốc không qua bộ lọc nước bắt buộc. Ở độ sâu 1, một nước không chặn ô thắng của đối thủ vẫn có
+  thể được chấm cao; các giải đấu dùng độ sâu từ 4 nên không gặp (xem Bảng~\ref{tab:cs-ct-l3}).
+  \item Nước tốt nhất của độ sâu trước được đưa lên đầu danh sách, nhưng hàm gốc lại sắp xếp danh sách đó nên thứ tự
+  này bị ghi đè; hệ quả đo ở Mục~\ref{sec:cs-goc}.
+  \item Hết giờ giữa chừng thì bỏ kết quả của độ sâu dở dang; tìm được đường thắng ép thì dừng ngay.
+\end{itemize}
+
+\paragraph{Bảng chuyển vị và giải hoà.} Bảng có kích thước cố định (64\,MB, ước lượng 200 byte mỗi mục), khi đầy thì
+đẩy mục được chèn sớm nhất. Khi hoà điểm, bước sắp xếp đặt ô chỉ số lớn trước, còn hàm sinh nhãn
+\texttt{scored\_moves} giữ ô chỉ số nhỏ trước; chi tiết thứ hai gây ra lỗi nhãn ở Mục~\ref{sec:cs-du-lieu}.
+
+\paragraph{Lõi Cython.} Bản native dịch từng dòng sang \texttt{unsigned \_\_int128}, giữ cả thứ tự duyệt, cách giải
+hoà và chính sách thay thế của bảng. Hai backend vì vậy cho cùng điểm, biến chính và số nút
+(\texttt{tests/test\_native.py}), chỉ khác tốc độ (Bảng~\ref{tab:cs-tk-backend-ab}).
+
+\subsection{Cấp 4: MCTS}
+Mỗi mô phỏng mở rộng một con chọn ngẫu nhiên trong các nước chưa thử, rồi chơi rollout đến hết ván. Chế độ
+\texttt{random} không xét thắng ngay; chế độ \texttt{light} thắng ngay rồi chặn trước khi đi ngẫu nhiên. $W$ của mỗi
+nút theo góc nhìn bên đã đi vào nút, nên công thức chọn dùng $W/N$ trực tiếp. Với khoảng 80 ứng viên ở gốc và ngân
+sách 400 mô phỏng, mỗi con chỉ có khoảng 5 mẫu, rất xa mức mà định lý~\ref{dl:cs-hoeffding} đòi hỏi. Nước được chọn là
+con có $N$ lớn nhất. Tuỳ chọn \texttt{root\_tactics} (A8) xử lý ở gốc việc thắng ngay, chặn và đòn kép trước khi tìm;
+đó là heuristic chứ không phải bộ giải, vì một tứ phản công cũng là phòng thủ.
+
+\subsection{Mạng và PUCT (cấp 5--8)}
+Đầu vào gồm 4 kênh: quân bên đi, quân đối thủ, hằng 1 nếu X đi, và một kênh luôn bằng 0 (không mang thông tin nhưng
+vẫn chiếm trọng số ở lớp vào). Thân mạng gồm sáu khối dư 64 kênh; ô đã có quân bị gán $-\infty$ trước softmax, đầu
+value kết thúc bằng $\tanh$. Phân bố tham số cho trong Bảng~\ref{tab:cs-mang-thamso}.
+\input{chuyen-sau/bang/mang-thamso}
+PUCT lưu $W$ theo góc nhìn bên đang đi tại nút, ngược với cấp 4, nên giá trị của con nhìn từ cha là $-W/n$:
+\trichma{puct-chon.py}{Quy tắc chọn con của PUCT, có virtual loss}{puct-chon}
+Tìm kiếm viết dạng generator: mỗi khi cần mạng, nó trả ra một lô thế cờ và nhận lại kết quả, nhờ đó cùng một thuật
+toán chạy được cho một ván hoặc ghép suy luận của nhiều ván tự đấu. Mỗi lượt gom lá đi xuống tới nút chưa mở, cộng
+virtual loss để các lá khác nhau, suy luận một lần cho cả lô rồi lan ngược; lá trùng trong lô chỉ mở rộng một lần. Bản
+Cython chỉ chuyển việc chọn và tạo con, biên dịch với \texttt{-ffp-contract=off} để điểm trùng từng bit với Python.
+
+\subsection{Huấn luyện}
+\paragraph{Dữ liệu chuyên gia.} Ở mỗi thế, Alpha-Beta chấm các ứng viên, giữ top-$k$, lấy softmax theo nhiệt độ làm
+nhãn policy rồi lấy mẫu nước đi từ chính phân bố đó. Nhãn value gán sau khi ván kết thúc. Thế trùng nhau qua tám phép
+đối xứng được loại.
+
+\paragraph{Học có giám sát.} Nhãn value được đổi sang góc nhìn bên đi, và tập được chia theo \emph{ván} để các thế gần
+giống nhau không rơi vào hai tập:
+\trichma{sl-chia.py}{Đổi nhãn value và chia tập theo ván}{sl-chia}
+Khi huấn luyện, mỗi mẫu train được áp ngẫu nhiên một phép đối xứng cho cả trạng thái và nhãn. Hàm mất mát là entropy
+chéo với nhãn mềm cộng MSE của value, tối ưu bằng Adam; mạng có loss validation thấp nhất được lưu.
+
+\paragraph{REINFORCE.} Mỗi vòng chơi 128 ván song song: một nửa tự đấu với bản mới nhất, nửa còn lại gặp một trong năm
+bản cũ gần nhất để giữ đa dạng đối thủ. Lợi thế $z-v$ không truyền gradient vào value; gradient được cộng dồn theo lô
+con và cắt chuẩn ở 1.
+
+\paragraph{Vòng AlphaZero.} Tự đấu dùng nhiễu Dirichlet ($\alpha=0{,}3$, $\varepsilon=0{,}25$) ở gốc và lấy mẫu theo lượt
+thăm trong 8 nước đầu \cite{silver2018alphazero}. Huấn luyện lấy mẫu đều theo thế cờ trong cửa sổ replay. Mạng mới phải
+đạt $0{,}55$ trước mạng đương nhiệm; nếu không, trọng số và trạng thái Adam được khôi phục nhưng các ván tự đấu vẫn
+được giữ.
+
+\subsection{Arena, giao diện và engine ngoài}
+Lịch đấu tất định: hai ván liên tiếp dùng chung khai cuộc và đổi màu. Thời gian mỗi nước đo ở arena, ngoài tác tử. Bộ
+chạy giải tạo mới tác tử cho từng ván; trường bộ nhớ nó ghi chỉ là mức tăng đỉnh RSS nên báo cáo đo RAM riêng. Tệp
+\texttt{stats.json} vẫn ghi Elo tuần tự để xem nhanh; mọi bảng Elo trong báo cáo dùng Bradley-Terry
+(Bảng~\ref{tab:cs-tk-elo}).
+
+Giao diện web dùng đúng tác tử và cấu hình của arena; nước của máy chạy trong thread pool, nên ngân sách bị chặn trên.
+Bảng~\ref{tab:cs-api} liệt kê các điểm cuối.
+\begin{table}[H]
+  \centering\small
+  \caption{API của máy chủ giao diện}
+  \label{tab:cs-api}
+  \begin{tabular}{p{6.4cm}p{8cm}}
+    \toprule
+    Điểm cuối & Chức năng\\
+    \midrule
+    \texttt{GET /agents}, \texttt{/budgets}, \texttt{/openings} & Danh sách tác tử, chế độ ngân sách, khai cuộc\\
+    \texttt{POST /games} & Tạo ván người--máy hoặc máy--máy\\
+    \texttt{GET /games/\{id\}} & Trạng thái ván và thống kê tìm kiếm gần nhất\\
+    \texttt{POST /games/\{id\}/move} (\texttt{ai-move}, \texttt{undo}) & Người đi, máy đi, lùi nước\\
+    \texttt{GET /replays}, \texttt{/replays/\{id\}} & Liệt kê và phát lại ván từ log\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+Tác tử KataGomo giữ một tiến trình GTP và đồng bộ lại cả ván trước mỗi nước; engine phải dùng nhánh đã vá để đúng luật
+năm quân freestyle (\repoFile{docs/KATAGOMO.md}) \cite{katagomo}.
+
+\subsection{Kiểm thử}
+Bộ test trong \repoFile{tests/} kiểm ba kiểu tính chất: đối chiếu engine với bản duyệt mảng ngây thơ; đối chiếu hai cài
+đặt của cùng một thuật toán (Python và Cython, mã hoá đặc trưng đơn và theo lô); và các bất biến như đếm cây trò chơi
+(perft), đối xứng, lùi nước khôi phục khoá. Ngoài ra có test cho cấu hình, arena, thống kê, huấn luyện, giao diện web
+và bộ giải VCF dùng trong phân tích.

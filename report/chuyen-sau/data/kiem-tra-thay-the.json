@@ -1,0 +1,276 @@
+[
+ {
+  "game_id": 13,
+  "ply": 30,
+  "move": 29,
+  "engine_score": 0.4515,
+  "refuted": null
+ },
+ {
+  "game_id": 13,
+  "ply": 30,
+  "move": 40,
+  "engine_score": 0.4393,
+  "refuted": null
+ },
+ {
+  "game_id": 13,
+  "ply": 30,
+  "move": 57,
+  "engine_score": 0.45999999999999996,
+  "refuted": null
+ },
+ {
+  "game_id": 26,
+  "ply": 15,
+  "move": 79,
+  "engine_score": 0.0034000000000000696,
+  "refuted": {
+   "move": 80,
+   "depth": 3,
+   "line": [
+    80,
+    48,
+    29,
+    70,
+    59
+   ],
+   "kind": "VCT",
+   "replies": [
+    48
+   ]
+  }
+ },
+ {
+  "game_id": 1202,
+  "ply": 13,
+  "move": 7,
+  "engine_score": 0.0017000000000000348,
+  "refuted": {
+   "move": 59,
+   "depth": 3,
+   "line": [
+    59,
+    57,
+    26,
+    29,
+    40
+   ],
+   "kind": "VCT",
+   "replies": [
+    57
+   ]
+  }
+ },
+ {
+  "game_id": 1202,
+  "ply": 13,
+  "move": 29,
+  "engine_score": 0.0043000000000000815,
+  "refuted": null
+ },
+ {
+  "game_id": 1202,
+  "ply": 13,
+  "move": 40,
+  "engine_score": 0.0041999999999999815,
+  "refuted": null
+ },
+ {
+  "game_id": 1202,
+  "ply": 13,
+  "move": 62,
+  "engine_score": 0.006200000000000094,
+  "refuted": {
+   "move": 27,
+   "depth": 3,
+   "line": [
+    27,
+    29,
+    40,
+    16,
+    24
+   ],
+   "kind": "VCT",
+   "replies": [
+    16,
+    29,
+    40,
+    49,
+    71
+   ]
+  }
+ },
+ {
+  "game_id": 2726,
+  "ply": 13,
+  "move": 38,
+  "engine_score": 0.0020000000000000018,
+  "refuted": {
+   "move": 39,
+   "depth": 3,
+   "line": [
+    39,
+    44,
+    45,
+    67,
+    77
+   ],
+   "kind": "VCT",
+   "replies": [
+    44,
+    45,
+    67,
+    77
+   ]
+  }
+ },
+ {
+  "game_id": 2726,
+  "ply": 13,
+  "move": 44,
+  "engine_score": 0.0036000000000000476,
+  "refuted": {
+   "move": 45,
+   "depth": 3,
+   "line": [
+    45,
+    38,
+    39,
+    67,
+    77
+   ],
+   "kind": "VCT",
+   "replies": [
+    38,
+    60,
+    62,
+    67,
+    77
+   ]
+  }
+ },
+ {
+  "game_id": 2726,
+  "ply": 13,
+  "move": 45,
+  "engine_score": 0.0034999999999999476,
+  "refuted": {
+   "move": 44,
+   "depth": 3,
+   "line": [
+    44,
+    38,
+    39,
+    67,
+    77
+   ],
+   "kind": "VCT",
+   "replies": [
+    38,
+    60,
+    62,
+    67,
+    77
+   ]
+  }
+ },
+ {
+  "game_id": 2726,
+  "ply": 13,
+  "move": 60,
+  "engine_score": 0.0015999999999999348,
+  "refuted": {
+   "move": 39,
+   "depth": 3,
+   "line": [
+    39,
+    44,
+    45,
+    67,
+    77
+   ],
+   "kind": "VCT",
+   "replies": [
+    44,
+    45,
+    67,
+    77
+   ]
+  }
+ },
+ {
+  "game_id": 2726,
+  "ply": 13,
+  "move": 62,
+  "engine_score": 0.0008000000000000229,
+  "refuted": {
+   "move": 39,
+   "depth": 3,
+   "line": [
+    39,
+    44,
+    45,
+    67,
+    77
+   ],
+   "kind": "VCT",
+   "replies": [
+    44,
+    45,
+    67,
+    77
+   ]
+  }
+ },
+ {
+  "game_id": 2726,
+  "ply": 13,
+  "move": 67,
+  "engine_score": 0.0032999999999999696,
+  "refuted": {
+   "move": 77,
+   "depth": 3,
+   "line": [
+    77,
+    38,
+    39,
+    44,
+    45
+   ],
+   "kind": "VCT",
+   "replies": [
+    38,
+    44,
+    45,
+    60,
+    62
+   ]
+  }
+ },
+ {
+  "game_id": 2726,
+  "ply": 13,
+  "move": 77,
+  "engine_score": 0.0020999999999999908,
+  "refuted": {
+   "move": 67,
+   "depth": 3,
+   "line": [
+    67,
+    38,
+    39,
+    44,
+    45
+   ],
+   "kind": "VCT",
+   "replies": [
+    38,
+    44,
+    45,
+    60,
+    62
+   ]
+  }
+ }
+]

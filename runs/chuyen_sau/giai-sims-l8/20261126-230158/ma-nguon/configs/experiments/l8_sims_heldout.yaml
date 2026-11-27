@@ -1,0 +1,19 @@
+# Độ nhạy theo số mô phỏng của L8: mỗi mức gặp L7 (200 mô phỏng, như RR8) trên khai cuộc giữ riêng.
+# Mức L8-sims200 lặp lại đúng cặp L7–L8 của RR8 giữ riêng.
+# 50 khai cuộc × 2 màu = 100 ván mỗi cặp.
+defaults: [base, budgets/mode_b_fixed, arena/round_robin]
+experiment: {kind: tournament, name: l8_sims_heldout, rq: [RQ1, RQ3]}
+run: {root: runs/eval}
+arena:
+  pairs: challengers_vs_baselines
+  games_per_pair: 100
+  workers: 4
+  openings: {file: runs/openings/openings_heldout_v2.json, seed: 20261126}
+baselines:
+  - {from: agents/l7_puct, id: L7-200, budget: {max_sims: 200}, params: {backend: native}}
+agents:
+  - {from: agents/l8_alphazero, id: L8-sims1,    budget: {max_sims: 1},    params: {backend: native}}
+  - {from: agents/l8_alphazero, id: L8-sims50,   budget: {max_sims: 50},   params: {backend: native}}
+  - {from: agents/l8_alphazero, id: L8-sims200,  budget: {max_sims: 200},  params: {backend: native}}
+  - {from: agents/l8_alphazero, id: L8-sims800,  budget: {max_sims: 800},  params: {backend: native}}
+  - {from: agents/l8_alphazero, id: L8-sims3200, budget: {max_sims: 3200}, params: {backend: native}}

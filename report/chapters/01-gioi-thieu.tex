@@ -2,7 +2,7 @@
 \label{ch:gioi-thieu}
 % Đề mục 4: Bối cảnh; game, luật và ý nghĩa; mục tiêu, câu hỏi nghiên cứu; phạm vi; sản phẩm.
 % Hình và các con số ở mục Đặc điểm trò chơi: uv run python report/scripts/ve_hinh_gioi_thieu.py
-% TRƯỚC KHI NỘP: cập nhật cột trạng thái ở Bảng tab:gt-cap, tab:gt-san-pham và ngày ghi trong chú thích.
+% TRƯỚC KHI NỘP: kiểm tra lại cột trạng thái ở Bảng tab:gt-cap, tab:gt-san-pham.
 
 \section{Bối cảnh}
 \label{sec:gt-boi-canh}
@@ -144,7 +144,7 @@ Mục tiêu này được cụ thể hoá thành ba nhóm trong Bảng~\ref{tab:
   \endhead
   \multicolumn{2}{@{}l}{\textbf{Mục tiêu 1: hạ tầng engine và môi trường mô phỏng}} \\
   Engine bitboard & \texttt{has\_five}, \texttt{winning\_squares}, \texttt{candidates} khớp bản duyệt mảng trên bàn ngẫu nhiên; ruff và pytest đạt trên CI. \\
-  Kiểm chuẩn cây trò chơi (perft) & Với độ sâu $d \le 8$ chưa bên nào có thể có 5 quân, nên số chuỗi nước phải đúng bằng $121!/(121-d)!$; ví dụ $d = 3$ cho \num{1727880}. \\
+  Kiểm chuẩn cây trò chơi (perft) & Với độ sâu $d \le 8$ chưa bên nào có thể có 5 quân, nên số chuỗi nước phải đúng bằng $121!/(121-d)!$; ví dụ $d = 2$ cho \num{14520} và $d = 3$ cho \num{1727880}. \\
   Giao diện người--máy, máy--máy & Chọn được mọi cấp đã cài; lùi nước; từ chối nước sai; mở lại ván từ log; hiện độ sâu, số nút, biến chính và bản đồ nhiệt. \\
   \midrule
   \multicolumn{2}{@{}l}{\textbf{Mục tiêu 2: hiện thực hệ tác tử đa cấp độ}} \\
@@ -202,7 +202,7 @@ Mục tiêu này được cụ thể hoá thành ba nhóm trong Bảng~\ref{tab:
 
 \begin{table}[!htb]
   \centering\small
-  \caption{Phạm vi và trạng thái các cấp tác tử tại ngày 04/11/2026.}
+  \caption{Phạm vi và trạng thái các cấp tác tử trong mã và log của bản báo cáo này.}
   \label{tab:gt-cap}
   \begin{tabularx}{\textwidth}{@{}c l X l l@{}}
     \toprule
@@ -212,10 +212,10 @@ Mục tiêu này được cụ thể hoá thành ba nhóm trong Bảng~\ref{tab:
     2 & Rule-based & Thứ tự ưu tiên P1--P7, nhìn trước 1 nước & Bắt buộc & Đã cài \\
     3 & Alpha-Beta & Negamax, iterative deepening, bảng chuyển vị & Bắt buộc & Đã cài \\
     4 & MCTS & UCT, rollout ngẫu nhiên và rollout nhẹ & Bắt buộc & Đã cài \\
-    5 & Policy SL & ResNet policy-value, học từ nhãn Cấp 3 & Bắt buộc* & Chưa cài \\
-    6 & REINFORCE & Policy gradient có baseline, tự chơi & Bắt buộc* & Chưa cài \\
-    7 & PUCT & Tìm kiếm PUCT với mạng cấp 5 & Khuyến khích & Chưa cài \\
-    8 & Vòng lặp self-play & Policy-value, PUCT, self-play, gating & Khuyến khích & Chưa cài \\
+    5 & Policy SL & ResNet policy-value, học từ nhãn Cấp 3 & Bắt buộc* & Đã cài \\
+    6 & REINFORCE & Policy gradient có baseline, tự chơi & Bắt buộc* & Đã cài \\
+    7 & PUCT & Tìm kiếm PUCT với mạng cấp 5 & Khuyến khích & Đã cài \\
+    8 & Vòng lặp self-play & Policy-value, PUCT, self-play, gating & Khuyến khích & Đã cài \\
     \bottomrule
     \multicolumn{5}{@{}l}{\footnotesize * Đề bài yêu cầu tối thiểu một trong hai cấp 5, 6; nhóm đặt mục tiêu làm cả hai.}
   \end{tabularx}
@@ -251,6 +251,7 @@ Giải chính là round-robin giữa các cấp đã cài, 200 ván mỗi cặp 
     \midrule
     Nhóm tự cài đặt & Engine bitboard, các tác tử, arena và thống kê, quy trình huấn luyện, giao diện, hệ thống config và log \\
     Thư viện kế thừa & NumPy, PyYAML, \texttt{huggingface\_hub}; PyTorch (cấp 5--8); FastAPI, Uvicorn (giao diện); pandas, Matplotlib, Jupyter (phân tích); pytest, ruff (kiểm thử, kiểm tra mã) \\
+    Mã và mô hình bên ngoài & KataGomo \cite{katagomo} (engine, bản vá luật, mô hình huấn luyện sẵn), chỉ dùng làm đối thủ đối chiếu ngoài thang L1--L8 \\
     Tham khảo thuật toán & Các tài liệu được trích dẫn ở Chương~\ref{ch:ly-thuyet}, trong đó có tài liệu đề bài gợi ý \cite{liu2024alphago,russell2021aima,sutton2018rl} \\
     \bottomrule
   \end{tabularx}
@@ -272,12 +273,13 @@ Bảng~\ref{tab:gt-san-pham} liệt kê các sản phẩm theo mục 3.7 của �
     Config và thư viện & \texttt{configs/}, \texttt{pyproject.toml} & Đã có \\
     Test tự động và CI & \texttt{tests/}, \texttt{.github/workflows/} & Đã có, mở rộng theo từng cấp \\
     Demo chơi được & \texttt{caro/ui/} & Có người--máy, máy--máy và phát lại; cấp neural cần đúng trọng số \\
-    Checkpoint & Hugging Face, ghim trong \texttt{configs/models.yaml} & L5/L6 có revision; L8 vòng 37 có checkpoint cục bộ \\
+    Checkpoint & Hugging Face, ghim trong \texttt{configs/models.yaml} & L5, L6, L8 (vòng 37) đều có revision ghim \\
     Log thô & \texttt{runs/} & Có benchmark, đối đầu, tự đấu và log huấn luyện \\
-    Notebook tạo bảng, hình & \texttt{notebooks/} & Có notebook benchmark, arena và phát lại L7--L8 \\
+    Notebook tạo bảng, hình & \texttt{notebooks/} & Có notebook benchmark, arena, phát lại L7--L8 và phân tích lỗi \\
     README, hướng dẫn & \texttt{README.md}, \texttt{docs/} & Có hướng dẫn cài đặt, huấn luyện và đánh giá \\
     Báo cáo & \texttt{report/} & Báo cáo và hồ sơ thực nghiệm \\
     Slide giữa kỳ & \texttt{report/} & Có bản tiến độ \\
+    Slide, poster cuối kỳ & \texttt{Slide.pptx}, \texttt{Poster.pptx} & Đã có bản đầu, cần đối chiếu số liệu với báo cáo \\
     Phân công, tỷ lệ đóng góp & Phụ lục~\ref{app:phan-cong} & Tổng hợp từ lịch sử GitHub khi nộp \\
     Tệp nộp & \texttt{Nhom13\_Caro\_TTNTNC\_HoTen\_MaSV.zip} & Đóng gói khi nộp \\
     \bottomrule

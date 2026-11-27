@@ -1,254 +1,213 @@
-"""Phân tích lỗi tác tử từ games.jsonl của giải đấu chính thức (issue #12).
+"""Phân tích lỗi chiến thuật của mọi tác tử từ games.jsonl (issue #12).
 
-Với mỗi nước đi, dùng AlphaBeta độ sâu cao đánh giá lại;
-nước khiến thế thành "thua ngay sau đó" = lỗi.
+Mỗi nước sau chuỗi khai cuộc được xét bằng bitboard, không dùng hàm lượng giá hay ngưỡng điểm. Theo thứ tự:
 
-Chạy:
-    python -m caro.analysis.error_analysis runs/tournament/main_mode_a_l1_l6
-    python -m caro.analysis.error_analysis runs/tournament/main_mode_b_l1_l6 --depth 3
+- thang_ngay    : bên đi có ô thắng ngay. Lỗi nếu không đi vào một ô đó.
+- chan_nam      : đối thủ có đúng một ô thắng ngay. Lỗi nếu không chặn.
+- chan_don_kep  : đối thủ có nước tạo từ hai ô thắng (tứ hở, đòn kép) và bên đi còn nước đỡ được.
+                  Lỗi nếu sau nước đã đi, đối thủ vẫn còn nước như vậy (thua ép trong 4 ply).
+- da_thua       : đối thủ có từ hai ô thắng, hoặc đe doạ kép không còn nước đỡ. Không tính lỗi ở nước này.
+
+Mỗi loại đếm cả số cơ hội và số lần sai. Các chuỗi ép dài hơn 4 ply (VCF, VCT) không được xét.
+
+    uv run python -m caro.analysis.error_analysis                 # sáu lượt giải chính thức
+    uv run python -m caro.analysis.error_analysis <thư mục giải hoặc lượt chạy> ...
+
+Kết quả ghi vào runs/analysis/error_analysis/<thời điểm>/: summary.json, errors.jsonl, meta.json, run.log.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import sys
-from collections import defaultdict
+import os
+from collections import Counter
+from concurrent.futures import ProcessPoolExecutor
+from contextlib import nullcontext
 from pathlib import Path
 
-from caro.agents.alphabeta import AlphaBetaAgent
-from caro.agents.base import Limits
-from caro.engine import CaroGame
-from caro.engine.bitboard import popcount, winning_squares
+from caro.config import PROJECT_ROOT, load_config, project_path
+from caro.engine.bitboard import (
+    FULL,
+    LINES,
+    WIN,
+    exactly,
+    iter_bits,
+    popcount,
+    window_counts,
+    winning_squares,
+)
+from caro.engine.game import CaroGame
+from caro.runlog import JsonlWriter, Run
 
-# ---------------------------------------------------------------------------
-# Hằng số
-# ---------------------------------------------------------------------------
+CATEGORIES = ("thang_ngay", "chan_nam", "chan_don_kep")
+LABELS = {"thang_ngay": "bỏ sót thắng ngay", "chan_nam": "bỏ sót chặn năm",
+          "chan_don_kep": "bỏ sót chặn đòn kép"}
+LOST = "da_thua"
 
-WIN_SCORE   = 1_000_000
-EVAL_DEPTH  = 3          # độ sâu đánh giá lại (tăng lên cho chính xác hơn, chậm hơn)
-EVAL_LIMITS = Limits(mode="fixed", max_depth=EVAL_DEPTH)
-
-# Ngưỡng để xác định "nước sai"
-BLUNDER_THRESHOLD = -5_000   # score giảm nhiều so với nước tốt nhất
+# Lượt chạy giải chính thức L1–L8 ở hai chế độ ngân sách.
+DEFAULT_RUNS = tuple(f"runs/tournament/main_mode_{mode}_{part}"
+                     for mode in "ab" for part in ("l1_l6", "l7_additional", "l8_additional"))
 
 
-# ---------------------------------------------------------------------------
-# Phân loại lỗi
-# ---------------------------------------------------------------------------
+def four_squares(me: int, opp: int) -> int:
+    """Các ô trống mà 'me' đặt vào sẽ tạo thêm một cửa sổ 4 quân còn sống (tức tạo tứ)."""
+    empty = ~(me | opp) & FULL
+    res = 0
+    for d, start in LINES:
+        w3 = exactly(3, *window_counts(me, opp, d, start))
+        for j in range(WIN):
+            res |= (w3 << (j * d)) & empty
+    return res
 
-def classify_error(game_before: CaroGame, move: int) -> str | None:
-    """Phân loại lỗi của nước đi `move` trong thế `game_before`.
 
-    Trả tên loại lỗi hoặc None nếu không phát hiện lỗi rõ ràng.
+def double_threats(attacker: int, defender: int) -> int:
+    """Các ô mà attacker đi vào thì thắng ép: defender đến lượt không có ô thắng và attacker có ≥ 2 ô thắng.
+
+    Chỉ gọi khi attacker chưa có ô thắng ngay: lúc đó mọi nước tạo hai ô thắng đều là nước tạo tứ.
     """
-    me, opp = game_before.me_opp()
-    bit_m = 1 << move
-
-    # 1. Bỏ sót thắng ngay
-    win_sqs = winning_squares(me, opp)
-    if win_sqs and not (bit_m & win_sqs):
-        return "bỏ_sót_thắng_ngay"
-
-    # 2. Bỏ sót chặn tứ (đối thủ có ô thắng ngay mà không chặn)
-    opp_win = winning_squares(opp, me)
-    if opp_win and not (bit_m & opp_win):
-        return "bỏ_sót_chặn_tứ"
-
-    # 3. Bỏ sót chặn đòn kép (đối thủ có ≥2 ô thắng)
-    if popcount(opp_win) >= 2 and not (bit_m & opp_win):
-        return "bỏ_sót_chặn_đòn_kép"
-
-    # 4. Bỏ sót tạo đòn kép cho mình
-    future_me = me | bit_m
-    if popcount(winning_squares(future_me, opp)) >= 2:
-        return None   # nước tốt, không phải lỗi
-
-    # 5. Đi xa vùng giao tranh (nước đi không gần quân nào)
-    occ = me | opp
-    if occ:
-        from caro.engine.bitboard import dilate
-        nearby = dilate(dilate(occ))   # vùng bán kính 2
-        if not (bit_m & nearby):
-            return "đi_xa_vùng_giao_tranh"
-
-    return "lỗi_chiến_lược"   # lỗi chung, không rõ loại
+    res = 0
+    for s in iter_bits(four_squares(attacker, defender)):
+        after = attacker | 1 << s
+        if popcount(winning_squares(after, defender)) >= 2 and not winning_squares(defender, after):
+            res |= 1 << s
+    return res
 
 
-# ---------------------------------------------------------------------------
-# Phân tích 1 ván
-# ---------------------------------------------------------------------------
+def safe_squares(me: int, opp: int, threats: int) -> int:
+    """Các nước của 'me' khiến 'opp' không còn đe doạ kép nào.
 
-def analyze_game(record: dict, agent: AlphaBetaAgent) -> list[dict]:
-    """Phân tích 1 ván, trả danh sách các nước bị đánh giá là lỗi."""
-    moves   = record["moves"]
-    agent_x = record.get("agent_x", "?")
-    agent_o = record.get("agent_o", "?")
-    result  = record.get("result", 0)   # +1 X thắng, -1 O thắng, 0 hoà
-    game_id = record.get("game_id", -1)
+    Một nước chỉ phá được đe doạ s khi chiếm s, chiếm một ô thắng mà s tạo ra, hoặc tự tạo tứ để giành
+    quyền đi trước; nên chỉ cần thử các ô đó.
+    """
+    options = threats | four_squares(me, opp)
+    for s in iter_bits(threats):
+        options |= winning_squares(opp | 1 << s, me)
+    res = 0
+    for m in iter_bits(options):
+        if not double_threats(opp, me | 1 << m):
+            res |= 1 << m
+    return res
 
+
+def classify_move(me: int, opp: int, move: int) -> tuple[str, bool, int] | None:
+    """Xét nước `move` của 'me'. Trả (loại, có sai không, các ô đúng) hoặc None nếu thế không có đe doạ."""
+    wins = winning_squares(me, opp)
+    if wins:
+        return "thang_ngay", not wins >> move & 1, wins
+    blocks = winning_squares(opp, me)
+    if popcount(blocks) >= 2:
+        return LOST, False, 0
+    if blocks:
+        return "chan_nam", not blocks >> move & 1, blocks
+    threats = double_threats(opp, me)
+    if not threats:
+        return None
+    safe = safe_squares(me, opp, threats)
+    if not safe:
+        return LOST, False, 0
+    return "chan_don_kep", not safe >> move & 1, safe
+
+
+def opening_length(record: dict) -> int:
+    if "opening_plies" in record:
+        return record["opening_plies"]
+    return len(record["moves"]) - len(record["time_ms"]) if record.get("time_ms") else 0
+
+
+def analyze_game(record: dict) -> tuple[dict[str, Counter], list[dict]]:
+    """Trả (bộ đếm theo tác tử, danh sách lỗi) của một ván; bỏ qua các nước khai cuộc."""
+    counts: dict[str, Counter] = {}
     errors: list[dict] = []
+    first = opening_length(record)
+    names = (record["agent_x"], record["agent_o"])
     game = CaroGame()
-
-    for ply, move in enumerate(moves):
-        side = game.side                        # 0=X, 1=O
-        agent_name = agent_x if side == 0 else agent_o
-
-       
-
-        # Đánh giá nước tốt nhất tại thế này
-        agent.reset(0)
-        best_move = agent.select_action(game, EVAL_LIMITS)
-        best_score = agent.last_stats().get("score", 0)
-
-        # Đánh giá nước thực tế được đi
-        game_copy = game.clone()
-        game_copy.step(move)
-        me_after, opp_after = game_copy.me_opp()
-
-        # Score sau khi đi nước thực tế (theo góc nhìn đối thủ → đảo dấu)
-        from caro.engine.bitboard import evaluate
-        actual_score = -evaluate(opp_after, me_after)
-
-        # Phát hiện lỗi
-        error_type = None
-        if move != best_move and best_score - actual_score > abs(BLUNDER_THRESHOLD):
-            error_type = classify_error(game, move)
-
-        if error_type:
-            # Xác định bên thua
-            
-            
-            errors.append({
-                "game_id":    game_id,
-                "agent_x":    agent_x,
-                "agent_o":    agent_o,
-                "result":     result,
-                "ply":        ply,
-                "side":       side,
-                "agent":      agent_name,
-                "move":       move,
-                "best_move":  best_move,
-                "best_score": best_score,
-                "actual_score": actual_score,
-                "score_drop": best_score - actual_score,
-                "error_type": error_type,
-            })
-
+    for ply, move in enumerate(record["moves"]):
+        side = game.side
+        if ply >= first:
+            me, opp = game.me_opp()
+            tally = counts.setdefault(names[side], Counter())
+            tally["moves"] += 1
+            found = classify_move(me, opp, move)
+            if found:
+                category, wrong, correct = found
+                tally[category] += 1
+                if wrong:
+                    tally[category + "_sai"] += 1
+                    result = record["result"] if side == 0 else -record["result"]
+                    errors.append({
+                        "game_id": record["game_id"], "opening_id": record.get("opening_id"), "ply": ply,
+                        "side": side, "agent": names[side], "opponent": names[side ^ 1], "move": move,
+                        "category": category, "correct": list(iter_bits(correct)), "result_for_agent": result,
+                    })
         game.step(move)
+    return counts, errors
 
-    return errors
+
+def find_games(path: Path) -> Path:
+    """games.jsonl của lượt chạy: chính thư mục đó, hoặc lượt mới nhất có log ván bên trong."""
+    if (path / "games.jsonl").is_file():
+        return path / "games.jsonl"
+    found = sorted(p for p in path.glob("*/games.jsonl")
+                   if not p.parent.is_symlink() and p.parent.name != "latest" and p.stat().st_size)
+    if not found:
+        raise FileNotFoundError(f"không tìm thấy games.jsonl trong {path}")
+    return found[-1]
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
+def summarise(counts: dict[str, Counter]) -> dict:
+    out = {}
+    for agent, c in sorted(counts.items()):
+        row = {"moves": c["moves"], LOST: c[LOST]}
+        for category in CATEGORIES:
+            row[category] = {"chances": c[category], "errors": c[category + "_sai"]}
+        out[agent] = row
+    return out
 
-def run_analysis(tournament_dir: str, depth: int, max_games: int, agent_filter: str) -> None:
-    path = Path(tournament_dir)
-    jsonl_files = list(path.rglob("games.jsonl"))
-    if not jsonl_files:
-        print(f"Không tìm thấy games.jsonl trong {tournament_dir}")
-        sys.exit(1)
 
-    # Nạp tất cả ván
-    all_games: list[dict] = []
-    for f in jsonl_files:
-        records = [json.loads(l) for l in f.read_text(encoding="utf-8").splitlines() if l.strip()]
-        all_games.extend(records)
+def relative(path: Path) -> str:
+    return path.relative_to(PROJECT_ROOT).as_posix() if path.is_relative_to(PROJECT_ROOT) else str(path)
 
-    # Lọc theo agent nếu có
-    if agent_filter:
-        all_games = [g for g in all_games
-                     if agent_filter in g.get("agent_x", "") or agent_filter in g.get("agent_o", "")]
 
-    if max_games:
-        all_games = all_games[:max_games]
-
-    print(f"Phân tích {len(all_games)} ván từ {tournament_dir}")
-
-    # Dùng AlphaBeta để đánh giá lại
-    global EVAL_DEPTH, EVAL_LIMITS
-    EVAL_DEPTH  = depth
-    EVAL_LIMITS = Limits(mode="fixed", max_depth=depth)
-    agent = AlphaBetaAgent(
-        pruning=True, move_ordering=True, tt=True,
-        iterative_deepening=False,
-    )
-
-    all_errors: list[dict] = []
-    for i, record in enumerate(all_games):
-        if i % 50 == 0:
-            print(f"  [{i}/{len(all_games)}] ván {record.get('game_id')}...")
-        errors = analyze_game(record, agent)
-        all_errors.extend(errors)
-
-    # Thống kê
-    print(f"\nTổng lỗi phát hiện: {len(all_errors)}")
-
-    # Thống kê theo loại lỗi
-    by_type: dict[str, int] = defaultdict(int)
-    for e in all_errors:
-        by_type[e["error_type"]] += 1
-
-    print("\n--- Phân loại lỗi ---")
-    for etype, count in sorted(by_type.items(), key=lambda x: -x[1]):
-        print(f"  {etype}: {count} ({count/len(all_errors)*100:.1f}%)")
-
-    # Thống kê theo agent
-    by_agent: dict[str, int] = defaultdict(int)
-    for e in all_errors:
-        by_agent[e["agent"]] += 1
-
-    print("\n--- Lỗi theo cấp ---")
-    for agent_name, count in sorted(by_agent.items(), key=lambda x: -x[1]):
-        print(f"  {agent_name}: {count}")
-
-    # Lưu kết quả
-    out_dir = path / "error_analysis"
-    out_dir.mkdir(exist_ok=True)
-
-    out_path = out_dir / "errors.jsonl"
-    with out_path.open("w", encoding="utf-8") as f:
-        for e in all_errors:
-            f.write(json.dumps(e, ensure_ascii=False) + "\n")
-    print(f"\nĐã lưu {len(all_errors)} lỗi vào {out_path}")
-
-    # Lưu thống kê tổng hợp
-    summary = {
-        "tournament_dir": tournament_dir,
-        "total_games":    len(all_games),
-        "total_errors":   len(all_errors),
-        "by_type":        dict(by_type),
-        "by_agent":       dict(by_agent),
-        "eval_depth":     depth,
-    }
-    summary_path = out_dir / "summary.json"
-    summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Đã lưu tổng hợp vào {summary_path}")
-
-    # In ván minh họa (ván có nhiều lỗi nhất)
-    games_with_errors: dict[int, list] = defaultdict(list)
-    for e in all_errors:
-        games_with_errors[e["game_id"]].append(e)
-
-    if games_with_errors:
-        worst_game_id = max(games_with_errors, key=lambda k: len(games_with_errors[k]))
-        worst_errors  = games_with_errors[worst_game_id]
-        print(f"\n--- Ván minh họa (game_id={worst_game_id}, {len(worst_errors)} lỗi) ---")
-        for e in worst_errors[:3]:
-            print(f"  ply={e['ply']} agent={e['agent']} lỗi={e['error_type']} "
-                  f"move={e['move']} best={e['best_move']} drop={e['score_drop']}")
+def run_analysis(paths: list[str], workers: int = 1, overrides: list[str] | tuple[str, ...] = ()) -> Path:
+    cfg = load_config("base", ["experiment.kind=analysis", "experiment.name=error_analysis", *overrides])
+    sources = [find_games(project_path(p)) for p in paths]
+    with Run(cfg) as run:
+        writer = JsonlWriter(run.dir / "errors.jsonl", flush_every=100)
+        total: dict[str, Counter] = {}
+        per_run = []
+        with ProcessPoolExecutor(max_workers=workers) if workers > 1 else nullcontext() as pool:
+            for source in sources:
+                records = [json.loads(line) for line in source.read_text(encoding="utf-8").splitlines()
+                           if line.strip()]
+                counts: dict[str, Counter] = {}
+                found = 0
+                results = pool.map(analyze_game, records, chunksize=20) if pool else map(analyze_game, records)
+                for game_counts, errors in results:
+                    for agent, c in game_counts.items():
+                        counts.setdefault(agent, Counter()).update(c)
+                    for error in errors:
+                        writer.write({"source": relative(source.parent), **error})
+                    found += len(errors)
+                for agent, c in counts.items():
+                    total.setdefault(agent, Counter()).update(c)
+                per_run.append({"source": relative(source.parent), "games": len(records), "errors": found,
+                                "by_agent": summarise(counts)})
+                run.log.info("%s: %d ván, %d lỗi", relative(source.parent), len(records), found)
+        writer.close()
+        run.finish(total_games=sum(r["games"] for r in per_run), total_errors=writer.count,
+                   by_agent=summarise(total), runs=per_run)
+    return run.dir
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Phân tích lỗi tác tử từ games.jsonl")
-    ap.add_argument("tournament_dir", help="thư mục tournament chứa games.jsonl")
-    ap.add_argument("--depth",      type=int, default=3,  help="độ sâu AlphaBeta đánh giá lại")
-    ap.add_argument("--max-games",  type=int, default=0,  help="giới hạn số ván (0=tất cả)")
-    ap.add_argument("--agent",      type=str, default="", help="lọc theo tên agent")
+    ap = argparse.ArgumentParser(description="Phân tích lỗi chiến thuật từ games.jsonl")
+    ap.add_argument("paths", nargs="*", help="thư mục giải hoặc lượt chạy (mặc định: sáu lượt giải chính thức)")
+    ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
+    ap.add_argument("--set", action="append", default=[], dest="overrides", metavar="KHOÁ=GIÁ_TRỊ",
+                    help="ghi đè config, ví dụ run.root=runs/scratch")
     args = ap.parse_args()
-    run_analysis(args.tournament_dir, args.depth, args.max_games, args.agent)
+    run_analysis(args.paths or list(DEFAULT_RUNS), args.workers, args.overrides)
 
 
 if __name__ == "__main__":

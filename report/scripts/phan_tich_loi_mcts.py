@@ -19,7 +19,8 @@ from caro.engine.bitboard import iter_bits, winning_squares
 from caro.engine.game import CaroGame
 
 GOC = Path(__file__).resolve().parents[2]
-RUNS = [GOC / "runs/tournament/a3_mcts_sims/latest", GOC / "runs/tournament/a4_rollout/latest"]
+# Hai lượt dùng trong báo cáo (liên kết `latest` không được commit).
+RUNS = [GOC / "runs/tournament/a3_mcts_sims/20261114-232353", GOC / "runs/tournament/a4_rollout/20261114-234556"]
 
 
 def doi_thu_co_don_kep(g: CaroGame) -> bool:
@@ -50,7 +51,10 @@ def phan_loai(moves: list[int], mcts_side: int) -> tuple[str, str]:
     if len(mc) < 2:
         return "thua sớm (<2 nước)", ""
     g2 = CaroGame.from_moves(moves[: mc[-2]])
-    if winning_squares(g2.bb[g2.side ^ 1], g2.bb[g2.side]).bit_count() >= 1:
+    threats = winning_squares(g2.bb[g2.side ^ 1], g2.bb[g2.side])
+    if threats:
+        if threats.bit_count() == 1 and threats >> moves[mc[-2]] & 1:
+            return "đã chặn bắt buộc nhưng vẫn thua (bị ép liên tiếp)", ""
         return "bỏ sót chặn năm (nước kế cuối)", ""
     if doi_thu_co_don_kep(g2):
         return "bỏ sót chặn ba hở / đòn kép", ""

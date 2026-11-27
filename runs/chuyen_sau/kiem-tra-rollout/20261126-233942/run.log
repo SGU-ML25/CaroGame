@@ -1,0 +1,2 @@
+$ .venv/bin/python report/scripts/chuyen_sau/kiem_tra_rollout.py
+23:40:31 {'positions': 100, 'rollouts': 200, 'block_value': 0.0695, 'other_value': -1.0, 'budgets': {400: {'blocked': 4, 'missed': 96, 'missed_score': 0.8406875, 'missed_visits': 33.510416666666664, 'missed_expanded': 32.479166666666664, 'missed_replies': 69.98958333333333, 'missed_found_win': 26}, 1600: {'blocked': 4, 'missed': 96, 'missed_score': 0.4371614583333333, 'missed_visits': 91.16666666666667, 'missed_expanded': 69.64583333333333, 'missed_replies': 71.82291666666667, 'missed_found_win': 93}}}

@@ -1,0 +1,507 @@
+% Phần chứng minh chi tiết của Chương 2, được \input ở cuối 02-co-so-ly-thuyet.tex.
+\section{Alpha-Beta: chứng minh đầy đủ và các hệ quả cho cài đặt}
+\label{sec:lt-ab-day-du}
+Mục~\ref{sec:lt-chung-minh} đã nêu ý chính vì sao cắt tỉa không đổi giá trị gốc. Cài đặt của đề tài còn dựa vào
+những tính chất mạnh hơn: ý nghĩa của giá trị trả về khi nó nằm \emph{ngoài} cửa sổ (để ghi bảng chuyển vị), tính
+đúng của cửa sổ lệch khi chỉ cần $k$ nước tốt nhất (để sinh dữ liệu), và quan hệ giữa độ sâu với số nút. Mục này
+chứng minh từng tính chất, đối chiếu với đoạn mã tương ứng trong \repoFile{caro/agents/alphabeta.py}.
+
+\subsection{Dạng Negamax}
+Gọi $V_d(s)$ là giá trị Minimax độ sâu $d$ của thế $s$ \emph{theo góc nhìn bên đang đi}. Với $s$ kết thúc hoặc
+$d=0$, $V_d(s)=E(s)$, trong đó $E$ là điểm thắng thua hoặc hàm lượng giá, cũng theo góc nhìn bên đang đi.
+
+\begin{dinhly}[Tương đương Negamax]
+\label{dl:cs-negamax}
+Với trò chơi hai người tổng bằng không và quy ước góc nhìn ở trên,
+\begin{equation}
+  V_d(s)=\max_{a\in A(s)}\bigl(-V_{d-1}(T(s,a))\bigr),
+  \label{eq:cs-negamax}
+\end{equation}
+và giá trị này trùng với Minimax viết theo góc nhìn cố định của một bên.
+\end{dinhly}
+\begin{proof}
+Đặt $M_d(s)$ là giá trị Minimax theo góc nhìn bên X: khi X đi lấy lớn nhất, khi O đi lấy nhỏ nhất các
+$M_{d-1}(T(s,a))$. Đặt $\sigma(s)=+1$ nếu X đi, $-1$ nếu O đi; ta chứng minh $M_d(s)=\sigma(s)V_d(s)$ bằng quy nạp theo $d$.
+Với $d=0$ hoặc thế kết thúc, đẳng thức là định nghĩa của $E$. Giả sử đúng tới $d-1$. Vì lượt đi đổi sau mỗi nước,
+$\sigma(T(s,a))=-\sigma(s)$. Nếu X đi:
+\[
+  M_d(s)=\max_a M_{d-1}(T(s,a))=\max_a \bigl(-V_{d-1}(T(s,a))\bigr)=V_d(s).
+\]
+Nếu O đi:
+\begin{align*}
+  M_d(s)&=\min_a M_{d-1}(T(s,a))=\min_a V_{d-1}(T(s,a))\\
+        &=-\max_a\bigl(-V_{d-1}(T(s,a))\bigr)=-V_d(s).\qedhere
+\end{align*}
+\end{proof}
+Tính tổng bằng không của $E$ là điều kiện cần: hàm lượng giá của engine là
+$E(s)=S(\text{ta})-S(\text{địch})$ nên đổi bên đi thì đổi dấu. Biến thể A7 \texttt{no\_defense} chỉ lấy
+$S(\text{ta})$, không còn đối xứng, nên với biến thể đó thuật toán không còn tính Minimax của một trò chơi tổng
+bằng không nào; nó vẫn chạy được nhưng giá trị gốc chỉ mang nghĩa heuristic.
+
+\subsection{Định lý fail-soft}
+\label{sec:cs-fail-soft}
+Cài đặt trả về \emph{điểm tốt nhất tìm được} kể cả khi điểm đó nằm ngoài cửa sổ $(\alpha,\beta)$ (kiểu
+fail-soft). Định lý sau là cơ sở cho ba cờ \texttt{EXACT}, \texttt{LOWER}, \texttt{UPPER}.
+
+\begin{dinhly}[Ý nghĩa của giá trị trả về]
+\label{dl:cs-fail-soft}
+Gọi $g=\mathrm{AB}(s,d,\alpha,\beta)$ với $\alpha<\beta$ (không dùng bảng chuyển vị). Khi đó:
+\begin{enumerate}
+  \item nếu $g\le\alpha$ thì $V_d(s)\le g$ (fail-low: $g$ là cận trên);
+  \item nếu $\alpha<g<\beta$ thì $V_d(s)=g$ (giá trị chính xác);
+  \item nếu $g\ge\beta$ thì $V_d(s)\ge g$ (fail-high: $g$ là cận dưới).
+\end{enumerate}
+\end{dinhly}
+\begin{proof}
+Quy nạp theo $d$. Ở lá, $g=V_d(s)$ nên cả ba mệnh đề đúng. Giả sử đúng ở độ sâu $d-1$. Tại nút $s$, các con
+$c_1,c_2,\dots$ được duyệt theo thứ tự; trước khi duyệt $c_i$, cận dưới hiện tại là
+$\alpha_i=\max(\alpha,v_1,\dots,v_{i-1})$, trong đó $v_j=-\mathrm{AB}(c_j,d-1,-\beta,-\alpha_j)$. Gọi
+$u_i=V_{d-1}(c_i)$, nên $V_d(s)=\max_i(-u_i)$. Áp dụng giả thiết quy nạp cho con $c_i$ với cửa sổ
+$(-\beta,-\alpha_i)$ và giá trị trả về $-v_i$:
+\begin{itemize}
+  \item nếu $v_i\ge\beta$ thì $-v_i\le-\beta$ (fail-low ở con), nên $u_i\le -v_i$, tức $-u_i\ge v_i$;
+  \item nếu $v_i\le\alpha_i$ thì $-v_i\ge-\alpha_i$ (fail-high ở con), nên $u_i\ge -v_i$, tức $-u_i\le v_i$;
+  \item nếu $\alpha_i<v_i<\beta$ thì $-u_i=v_i$.
+\end{itemize}
+\emph{Có cắt tỉa tại con $i$.} Khi đó $g=v_i\ge\beta$, và $V_d(s)\ge -u_i\ge v_i=g$: mệnh đề 3.
+
+\emph{Không cắt tỉa.} Mọi $v_i<\beta$ và $g=\max_i v_i$. Nếu $g\le\alpha$ thì $\alpha_i=\alpha$ với mọi $i$,
+nên $v_i\le\alpha_i$ và $-u_i\le v_i\le g$; suy ra $V_d(s)\le g$: mệnh đề 1. Nếu $\alpha<g<\beta$, gọi $j$ là
+chỉ số đầu tiên có $v_j=g$. Vì mọi $v$ đứng trước nhỏ hơn $g$ và $\alpha<g$, ta có $\alpha_j<g=v_j<\beta$, do
+đó $-u_j=g$. Với mọi $i$ khác, hoặc $v_i\le\alpha_i$ nên $-u_i\le v_i\le g$, hoặc $\alpha_i<v_i<\beta$ nên
+$-u_i=v_i\le g$. Vậy $V_d(s)=g$: mệnh đề 2.
+\end{proof}
+
+Đoạn mã ghi bảng chuyển vị dịch nguyên ba mệnh đề này: cờ \texttt{EXACT} khi
+$\alpha_0<g<\beta$ (với $\alpha_0$ là giá trị $\alpha$ lúc vào nút), \texttt{LOWER} khi $g\ge\beta$,
+\texttt{UPPER} trong trường hợp còn lại. Khi đọc lại, một mục \texttt{LOWER} chỉ được dùng để nâng $\alpha$, một
+mục \texttt{UPPER} chỉ để hạ $\beta$, và chỉ khi độ sâu đã lưu không nhỏ hơn độ sâu đang cần. Dùng mục sâu hơn
+làm thay đổi đại lượng được tính ($V_{d'}$ thay cho $V_d$ với $d'>d$); đó là lý do định lý
+\ref{dl:cs-fail-soft} được phát biểu cho bản không bảng chuyển vị, và phép thử A2 so giá trị gốc giữa hai cấu
+hình bằng thực nghiệm.
+
+\subsection{Cửa sổ lệch khi chỉ cần top-\texorpdfstring{$k$}{k}}
+Hàm \texttt{scored\_moves} sinh nhãn policy cho cấp 5 bằng $k$ nước gốc tốt nhất. Chấm đầy đủ mọi nước thì tốn;
+tuỳ chọn \texttt{prune\_root} tìm con thứ $i$ với cửa sổ $(-\infty,\,-\theta+1)$, trong đó $\theta$ là điểm hạng
+$k$ trong số các nước đã chấm.
+\begin{dinhly}
+\label{dl:cs-topk}
+Nếu mọi điểm là số nguyên thì tập $k$ nước điểm cao nhất (giải hoà theo thứ tự duyệt) và điểm của chúng không đổi
+khi bật cắt tỉa gốc.
+\end{dinhly}
+\begin{proof}
+Gọi $w_i=-V_{d-1}(c_i)$ là điểm thật của nước $i$ và $h$ là giá trị search con trả về, điểm ghi nhận là $-h$.
+Cửa sổ của con là $(-\infty,-\theta+1)$. Nếu $h<-\theta+1$, tức $h\le-\theta$ do $h$ nguyên, thì theo
+định lý~\ref{dl:cs-fail-soft} giá trị chính xác, nên $-h=w_i\ge\theta$. Nếu $h\ge-\theta+1$ thì
+$V_{d-1}(c_i)\ge h$, nên $w_i\le -h\le\theta-1<\theta$: nước $i$ không vào top-$k$, và điểm ghi nhận $-h$ cũng nhỏ
+hơn $\theta$ nên không chen vào danh sách. Vậy mọi nước thuộc top-$k$ được chấm chính xác, còn nước ngoài top-$k$
+vẫn ở ngoài. Ngưỡng $\theta$ chỉ tăng nên lập luận đúng ở mọi bước.
+\end{proof}
+Một chi tiết của hàm này dẫn tới hệ quả lớn trong dữ liệu: danh sách được sắp xếp \emph{ổn định} theo điểm, và
+các nước được duyệt theo chỉ số ô tăng dần. Khi mọi nước cùng điểm, $k$ nước ``tốt nhất'' chính là $k$ ứng viên
+có chỉ số nhỏ nhất, tức nằm phía trên, bên trái. Mục~\ref{sec:cs-hoa-diem} đo ảnh hưởng của điều này lên tập dữ
+liệu và lên mạng đã huấn luyện.
+
+\subsection{Cây tối thiểu của Knuth--Moore}
+\begin{dinhly}[Số lá khi thứ tự hoàn hảo]
+\label{dl:cs-knuth-moore}
+Trên cây đều hệ số rẽ nhánh $b$, độ sâu $d$, nếu nước tốt nhất luôn được duyệt đầu tiên thì Alpha-Beta lượng giá
+đúng $b^{\lceil d/2\rceil}+b^{\lfloor d/2\rfloor}-1$ lá.
+\end{dinhly}
+\begin{proof}
+Phân loại nút theo Knuth và Moore \cite{knuth1975alphabeta}. Nút loại 1 nằm trên biến chính: con đầu thuộc loại
+1, $b-1$ con còn lại thuộc loại 2. Nút loại 2 (nút bị cắt): chỉ cần duyệt con đầu, con đó thuộc loại 3. Nút loại
+3 (nút phải duyệt hết): cả $b$ con đều thuộc loại 2. Gọi $L_t(d)$ là số lá dưới một nút loại $t$ còn độ sâu $d$,
+với $L_t(0)=1$. Ta có
+\[
+  L_1(d)=L_1(d-1)+(b-1)L_2(d-1),\qquad L_2(d)=L_3(d-1),\qquad L_3(d)=b\,L_2(d-1).
+\]
+Hai phương trình sau cho $L_2(d)=b\,L_2(d-2)$ với $L_2(0)=L_2(1)=1$, nên $L_2(d)=b^{\lfloor d/2\rfloor}$ và
+$L_3(d)=b^{\lceil d/2\rceil}$. Thay vào phương trình đầu:
+\[
+  L_1(d)=1+(b-1)\sum_{k=0}^{d-1}b^{\lfloor k/2\rfloor}.
+\]
+Với $d=2m$, tổng bằng $2(b^m-1)/(b-1)$ nên $L_1=2b^m-1$. Với $d=2m+1$, thêm số hạng $b^m$ cho
+$L_1=2b^m-1+(b-1)b^m=b^{m+1}+b^m-1$. Cả hai trường hợp trùng công thức đã nêu.
+\end{proof}
+Hệ số rẽ nhánh hiệu dụng của cây tối thiểu xấp xỉ $\sqrt b$. Với $b\approx 80$ (số ứng viên trung bình ở thế
+trung cuộc), $\sqrt b\approx 9$. Bảng~\ref{tab:cs-tk-dosau} cho tỷ số số nút giữa hai độ sâu liên tiếp đo được
+trên engine; chênh lệch so với 9 phản ánh ba nguồn: thứ tự chưa hoàn hảo, bảng chuyển vị gộp các chuyển vị (làm
+giảm), và nước bắt buộc thu hẹp cây về một nhánh khi có đe doạ (cũng làm giảm).
+
+\subsection{Chi phí của lặp sâu dần}
+\begin{dinhly}
+Nếu số nút ở độ sâu $d$ là $N(d)=c\,\rho^d$ với $\rho>1$ thì tổng số nút của lặp sâu dần tới độ sâu $D$ nhỏ hơn
+$\dfrac{\rho}{\rho-1}\,N(D)$.
+\end{dinhly}
+\begin{proof}
+$\sum_{d=1}^{D}c\rho^d = c\rho^D\sum_{k=0}^{D-1}\rho^{-k}<c\rho^D\dfrac{1}{1-\rho^{-1}}=\dfrac{\rho}{\rho-1}N(D)$.
+\end{proof}
+Với $\rho\approx9$, phần thêm tối đa khoảng $12{,}5\%$. Đổi lại, lượt tìm nông để lại thông tin sắp xếp (bảng
+chuyển vị ở nút trong, lịch sử cắt tỉa) giúp lượt sâu hơn tiến gần cây tối thiểu, và ở chế độ thời gian luôn có
+sẵn một nước hoàn chỉnh khi hết giờ. Riêng ở gốc, cài đặt hiện tại không bảo đảm duyệt nước tốt nhất của độ sâu
+trước đầu tiên (Mục~\ref{sec:cs-goc}).
+
+\subsection{Điểm thắng phụ thuộc ply và bảng chuyển vị}
+\label{sec:cs-mate-tt}
+Cài đặt cho điểm thế thua tại độ sâu $p$ tính từ gốc là $-(W-p)$ với $W=10^6$, nên giữa hai đường thắng, đường
+ngắn hơn được chọn. Giá trị đó phụ thuộc $p$, trong khi khoá Zobrist chỉ phụ thuộc thế cờ. Một thế được lưu khi
+gặp ở ply $p_1$ rồi đọc lại ở ply $p_2$ sẽ mang khoảng cách thắng lệch $p_1-p_2$. Vì mọi điểm thắng đều lớn hơn
+mọi điểm lượng giá thường, \emph{dấu} và việc đây là thế thắng ép không đổi; chỉ thứ tự ưu tiên giữa các đường
+thắng có thể sai. Cách sửa chuẩn là lưu $g+p$ (khoảng cách tính từ thế đang lưu) và trừ ply khi đọc. Mã hiện tại
+chưa làm bước này; đây là một giới hạn đã biết của cấp 3, không ảnh hưởng kết quả thắng thua của một thế mà bộ
+tìm kiếm đã chứng minh trong độ sâu của nó.
+
+\subsection{Va chạm khoá Zobrist}
+\label{sec:cs-zobrist}
+Khoá của một thế là XOR các số 64 bit ngẫu nhiên ứng với từng quân và lượt đi \cite{zobrist1970}. Với các số độc
+lập đều trên $\{0,1\}^{64}$, hai thế khác nhau cho khoá độc lập theo từng cặp, nên xác suất trùng là $2^{-64}$.
+Với $m$ thế khác nhau được lưu, theo cận hợp
+\begin{equation}
+  P(\text{có ít nhất một va chạm})\le\binom{m}{2}2^{-64}<\frac{m^2}{2^{65}}.
+  \label{eq:cs-va-cham}
+\end{equation}
+Với $m=10^6$ cận này khoảng $2{,}7\cdot10^{-8}$; với $m=10^9$ khoảng $0{,}027$. Bảng chuyển vị của đề tài giới
+hạn $64$ MB, ước lượng $200$ byte mỗi mục, tức tối đa khoảng $3{,}4\cdot10^5$ mục, nên rủi ro va chạm không đáng
+kể. Bảng không lưu lại thế cờ để kiểm tra, nên va chạm nếu xảy ra sẽ không bị phát hiện.
+
+\section{Chuỗi ép bằng tứ: định nghĩa và tính đúng đắn}
+\label{sec:cs-vcf-lt}
+Chương~\ref{ch:thuc-nghiem} dùng một bộ giải chuỗi tứ liên tiếp (VCF, \emph{victory by continuous fours}) làm
+trọng tài cho phân tích chiến thuật. Mục này phát biểu chính xác bài toán mà bộ giải giải và chứng minh lời giải
+của nó là chắc chắn. Ý tưởng tìm kiếm trong không gian đe doạ được Allis và cộng sự dùng để giải Go-moku
+\cite{allis1996gomoku,allis1994}; bộ giải ở đây chỉ xét lớp đe doạ mạnh nhất.
+
+\subsection{Ký hiệu}
+Một thế là cặp $(M,O)$ các tập ô của bên đang đi và đối thủ. $\mathcal W$ là tập các cửa sổ 5 ô liên tiếp theo
+bốn hướng ($|\mathcal W|=252$ trên bàn 11$\times$11). Tập ô thắng ngay của bên $M$ trước $O$ là
+\begin{equation}
+  W(M,O)=\{\,e\notin M\cup O:\ \exists w\in\mathcal W,\ e\in w,\ w\cap O=\emptyset,\ |w\cap M|=4\,\}.
+\end{equation}
+Trong luật freestyle, đặt quân vào $e\in W(M,O)$ tạo đúng một dãy ít nhất 5 nên thắng ngay; ngược lại, một nước
+thắng ngay luôn thuộc $W$.
+
+\begin{dinhnghia}[Nước tứ và chuỗi VCF]
+Nước $m\notin M\cup O$ là \emph{nước tứ} nếu $W(M\cup\{m\},O)\neq\emptyset$. Một \emph{chuỗi VCF độ dài $n$} từ
+$(M,O)$ là:
+\begin{itemize}
+  \item $n=1$: một ô $e\in W(M,O)$;
+  \item $n\ge2$: khi $W(M,O)=\emptyset$, một nước tứ $m$ sao cho $W(O,M\cup\{m\})=\emptyset$, và hoặc
+  $|W(M\cup\{m\},O)|\ge2$ (khi đó $n=2$), hoặc $W(M\cup\{m\},O)=\{b\}$ và từ $(M\cup\{m\},\,O\cup\{b\})$ có chuỗi
+  VCF độ dài $n-1$.
+\end{itemize}
+\end{dinhnghia}
+
+\begin{dinhly}[Tính chắc chắn]
+\label{dl:cs-vcf}
+Nếu từ $(M,O)$, lượt của $M$, có chuỗi VCF độ dài $n$ thì bên $M$ có chiến lược thắng trong không quá $2n-1$ nước
+đi (tính cả hai bên), bất kể đối thủ đáp thế nào.
+\end{dinhly}
+\begin{proof}
+Quy nạp theo $n$. Với $n=1$, đặt quân vào $e\in W(M,O)$ thắng ngay. Với $n\ge2$, bên $M$ đi $m$. Vì
+$W(O,M\cup\{m\})=\emptyset$, đối thủ không có nước thắng ngay. Xét đáp trả $r$ bất kỳ. Nếu
+$r\notin W(M\cup\{m\},O)$ thì vẫn còn một ô $e\in W(M\cup\{m\},O)$, $e\ne r$; thêm quân đối thủ vào $r$ không
+làm cửa sổ chứa $e$ có quân đối thủ trừ khi $r$ nằm trong cửa sổ đó, nhưng một cửa sổ có 4 quân $M$ và 1 ô trống
+$e$ không còn ô nào khác để $r$ chiếm. Vậy $M$ đi $e$ và thắng ở nước thứ ba. Nếu $|W|\ge2$ và
+$r\in W(M\cup\{m\},O)$, còn ít nhất một ô thắng khác và lập luận trên áp dụng: tổng 3 nước, đúng $2n-1$ với $n=2$.
+Nếu $W=\{b\}$ và $r=b$, ta tới $(M\cup\{m\},O\cup\{b\})$ với lượt của $M$, theo giả thiết quy nạp thắng trong
+$2(n-1)-1$ nước nữa, cộng hai nước vừa đi được $2n-1$.
+\end{proof}
+
+\paragraph{Điều kiện về phản đòn.} Nếu sau một nước chặn $b$, đối thủ tình cờ tạo được tứ của chính mình, thế mới
+có $W(O',M')\neq\emptyset$. Định nghĩa buộc nước tứ tiếp theo của $M$ phải thoả $W(O',M'\cup\{m'\})=\emptyset$,
+tức $m'$ vừa chặn tứ đối thủ vừa là tứ của mình; nếu đối thủ có từ hai ô thắng thì không nước nào thoả và nhánh bị
+loại. Riêng khi $W(M',O')\neq\emptyset$ thì $M$ thắng ngay, không cần chặn.
+
+\paragraph{Không đầy đủ.} Chiều ngược lại của định lý~\ref{dl:cs-vcf} sai: có thế thắng ép nhờ ba hở (VCT) hoặc
+nhờ nước chuẩn bị yên tĩnh mà không có VCF. Vì vậy ``không có VCF'' không có nghĩa là thế an toàn; mọi số đo ở
+Chương~\ref{ch:thuc-nghiem} dựa trên bộ giải phải đọc là \emph{cận dưới} của số đường thắng bị bỏ lỡ hay bị để hở.
+
+\subsection{Đẳng thức tăng cường dùng khi sắp xếp nước}
+Khi sắp xếp nước, cấp 3 cần $W(M\cup\{m\},O)$ cho mọi ứng viên $m$. Tính lại cho từng ứng viên tốn một lần quét
+252 cửa sổ; đẳng thức sau cho phép tính một lần cho cả nút.
+\begin{dinhly}
+\label{dl:cs-gain}
+Gọi $G(m)$ là tập các ô trống còn lại của những cửa sổ sống chứa đúng 3 quân $M$ và có $m$ là một trong hai ô
+trống. Với mọi ô trống $m$:
+\begin{equation}
+  W(M\cup\{m\},O)=\bigl(W(M,O)\setminus\{m\}\bigr)\cup G(m).
+  \label{eq:cs-gain}
+\end{equation}
+\end{dinhly}
+\begin{proof}
+($\supseteq$) Nếu $e\in W(M,O)$ và $e\ne m$, cửa sổ chứng tỏ điều đó có 4 quân và ô trống $e$; vì $m\ne e$ và $m$
+trống nên $m$ nằm ngoài cửa sổ đó, và sau khi thêm $m$ cửa sổ vẫn nguyên. Nếu $e\in G(m)$, cửa sổ tương ứng có 3
+quân và hai ô trống $m,e$; sau khi thêm $m$ nó có 4 quân và ô trống $e$.
+($\subseteq$) Lấy $e\in W(M\cup\{m\},O)$ với cửa sổ $w$ có 4 quân của $M\cup\{m\}$. Rõ ràng $e\ne m$. Nếu
+$m\notin w$ thì $w$ đã có 4 quân của $M$ nên $e\in W(M,O)\setminus\{m\}$. Nếu $m\in w$ thì $w$ có đúng 3 quân của
+$M$ và hai ô trống $m,e$, nên $e\in G(m)$.
+\end{proof}
+Test \repoFile{tests/test_alphabeta.py} đối chiếu thứ tự nước thu được từ đẳng thức này với cách đi thử từng nước.
+
+\section{Ước lượng Monte Carlo và giới hạn mẫu}
+\label{sec:cs-mc}
+\subsection{Rollout ước lượng cái gì}
+Một rollout từ thế $s$ chơi đến hết ván theo chính sách mô phỏng $\pi_r$ và trả $Z\in\{-1,0,1\}$. Trung bình của
+$n$ rollout độc lập là ước lượng không chệch của $\mu_{\pi_r}(s)=\mathbb E[Z\mid s,\pi_r]$, với phương sai
+$\sigma^2/n$, $\sigma^2\le 1$. Đại lượng $\mu_{\pi_r}$ \emph{không phải} giá trị Minimax. Ví dụ: một thế đối thủ
+có đúng một ô thắng ngay, bên đi có $k$ ứng viên. Giá trị Minimax không bị quyết định bởi đe doạ này (chỉ cần
+chặn), nhưng rollout ngẫu nhiên chặn đúng với xác suất $1/k$; với $k=40$, thế bị đánh giá gần như thua. Rollout
+\texttt{light} (thắng ngay, rồi chặn) sửa đúng lớp lỗi này nhưng vẫn bỏ qua đòn kép hai nước.
+
+\subsection{Số mẫu cần để phân biệt hai nước}
+\begin{dinhly}
+\label{dl:cs-hoeffding}
+Cho hai nước có kỳ vọng $\mu_1-\mu_2=\Delta>0$, phần thưởng trong $[-1,1]$, mỗi nước lấy $n$ mẫu độc lập. Nếu
+$n\ge \dfrac{8}{\Delta^2}\ln\dfrac{4}{\delta}$ thì với xác suất ít nhất $1-\delta$, nước 1 có trung bình mẫu cao hơn.
+\end{dinhly}
+\begin{proof}
+Bất đẳng thức Hoeffding \cite{hoeffding1963} cho biến trong khoảng độ dài 2:
+$P(|\hat\mu-\mu|\ge\varepsilon)\le 2e^{-n\varepsilon^2/2}$. Lấy $\varepsilon=\Delta/2$:
+$P\le 2e^{-n\Delta^2/8}$ cho mỗi nước; cận hợp cho hai nước là $4e^{-n\Delta^2/8}\le\delta$ khi $n$ thoả điều kiện.
+Khi cả hai sai số nhỏ hơn $\Delta/2$, $\hat\mu_1>\mu_1-\Delta/2=\mu_2+\Delta/2>\hat\mu_2$.
+\end{proof}
+Với $\Delta=0{,}1$ và $\delta=0{,}05$ cần $n\ge 3\,506$ mẫu cho \emph{mỗi} nước. Chia đều 6\,400 mô phỏng cho 80
+ứng viên chỉ được 80 mẫu mỗi nước, đủ để phân biệt chênh lệch cỡ $\Delta\approx0{,}66$. UCT không chia đều mà dồn
+mẫu cho nước triển vọng, nhưng cận này giải thích vì sao ở ngân sách của đề tài, MCTS rollout chỉ phát hiện được
+những khác biệt rất lớn; Bảng~\ref{tab:cs-ct-l4} đo trực tiếp điều đó.
+
+\subsection{Chứng minh cận hồi quy của UCB1}
+\begin{dinhly}[Auer, Cesa-Bianchi, Fischer \cite{auer2002ucb}]
+Với $K$ máy có phần thưởng trong $[0,1]$, chiến lược chọn máy có $\bar X_a+\sqrt{2\ln t/n_a}$ lớn nhất cho
+$\mathbb E[n_a(n)]\le \dfrac{8\ln n}{\Delta_a^2}+1+\dfrac{\pi^2}{3}$ với mọi máy dưới tối ưu $a$.
+\end{dinhly}
+\begin{proof}
+Đặt $c_{t,s}=\sqrt{2\ln t/s}$ và $\ell=\lceil 8\ln n/\Delta_a^2\rceil$. Sau khi máy $a$ đã được kéo $\ell$ lần,
+nó chỉ được chọn tại bước $t$ nếu tồn tại $s<t$ và $s_a\in[\ell,t)$ sao cho
+$\bar X^*_s+c_{t,s}\le \bar X_{a,s_a}+c_{t,s_a}$. Bất đẳng thức này kéo theo ít nhất một trong ba biến cố:
+\[
+  \text{(i) } \bar X^*_s\le\mu^*-c_{t,s};\qquad \text{(ii) } \bar X_{a,s_a}\ge\mu_a+c_{t,s_a};\qquad
+  \text{(iii) } \mu^*<\mu_a+2c_{t,s_a}.
+\]
+(Nếu cả ba sai thì $\bar X^*_s+c_{t,s}>\mu^*\ge\mu_a+2c_{t,s_a}>\bar X_{a,s_a}+c_{t,s_a}$.) Vì $s_a\ge\ell$ và
+$t\le n$, $2c_{t,s_a}\le 2\sqrt{2\ln n/\ell}\le\Delta_a$, nên (iii) không xảy ra. Hoeffding cho mỗi biến cố (i),
+(ii) xác suất không quá $e^{-4\ln t}=t^{-4}$. Cộng trên mọi $t,s,s_a$:
+\[
+  \mathbb E[n_a(n)]\le\ell+\sum_{t=1}^{\infty}\sum_{s=1}^{t}\sum_{s_a=1}^{t}2t^{-4}
+  \le\ell+2\sum_{t=1}^{\infty}t^{-2}=\ell+\frac{\pi^2}{3},
+\]
+và $\ell\le 8\ln n/\Delta_a^2+1$.
+\end{proof}
+Nhân với $\Delta_a$ và cộng theo $a$ cho cận~\eqref{eq:ucb-regret}. Với phần thưởng trong $[-1,1]$, đổi biến
+$r'=(r+1)/2$ cho thấy hằng số tương đương là $c_{uct}=2\sqrt2\approx2{,}83$. Đề tài dùng $c_{uct}=1{,}4$ (khai
+thác nhiều hơn); Bảng~\ref{tab:cs-ct-cuct} đo ảnh hưởng của hằng số này trên bộ thế chiến thuật.
+
+\section{Hành vi của quy tắc chọn PUCT}
+\label{sec:cs-puct-lt}
+Cấp 7 và 8 chọn con theo $Q(a)+c\,P(a)\sqrt{N}/(1+n_a)$ \cite{rosin2011puct,silver2017alphagozero}. Hai tính chất
+sau đọc trực tiếp từ công thức và giải thích hành vi quan sát được.
+
+\subsection{Phân bố lượt thăm tiệm cận}
+Quy tắc tham lam trên điểm có xu hướng \emph{cân bằng điểm} giữa các nước đang cạnh tranh: nước nào điểm cao hơn
+được thăm, làm số hạng thăm dò của nó giảm. Khi $N$ lớn và $Q$ đã ổn định, các nước được thăm đều có điểm xấp xỉ
+một mức chung $\lambda$:
+\begin{equation}
+  Q(a)+c\,P(a)\frac{\sqrt N}{1+n_a}\approx\lambda
+  \quad\Longrightarrow\quad
+  1+n_a\approx \frac{c\sqrt N\,P(a)}{\lambda-Q(a)}\qquad(Q(a)<\lambda),
+  \label{eq:cs-puct-can-bang}
+\end{equation}
+với $\lambda$ xác định bởi $\sum_a n_a=N$. Hai trường hợp giới hạn: khi mọi $Q$ bằng nhau, $n_a$ tỷ lệ với tiên
+nghiệm $P(a)$; khi một nước có $Q$ vượt trội, $\lambda-Q$ của nó nhỏ và nó nhận phần lớn lượt thăm dù tiên nghiệm
+không cao nhất. Grill và cộng sự chứng minh phân bố lượt thăm xấp xỉ nghiệm của bài toán tối ưu chính sách có
+chính quy hoá $\max_y\,Q^\top y-\lambda_N\,\mathrm{KL}(P\,\Vert\,y)$ với $\lambda_N$ giảm theo cỡ $1/\sqrt N$
+\cite{grill2020mcts}; nghiệm có đúng dạng~\eqref{eq:cs-puct-can-bang}.
+
+Hệ quả quan trọng cho huấn luyện: nhãn policy $\pi_{\text{tìm kiếm}}\propto n_a$ ở ngân sách hữu hạn là một hỗn
+hợp giữa tiên nghiệm và đánh giá tìm được. Ở ít mô phỏng, nhãn gần với chính mạng đang sinh ra nó, nên tín hiệu
+cải thiện yếu.
+
+\subsection{Giá trị của nước chưa thăm}
+Mã đặt $Q=0$ cho con chưa được thăm (``coi như hoà''). Khi thế đang tốt (các con đã thăm có $Q>0$), con chưa thăm
+kém hấp dẫn, tìm kiếm tập trung; khi thế đang xấu ($Q<0$), mọi con chưa thăm trông tốt hơn các con đã thăm, tìm
+kiếm tự lan rộng. Đây là một lựa chọn thiết kế (first-play urgency); các lựa chọn khác như lấy $Q$ của cha chưa
+được thử trong đề tài.
+
+\subsection{Virtual loss}
+Để gom $B$ lá cho một lần suy luận, mỗi lượt đi xuống cộng một ``trận thua tạm'' vào các nút trên đường: số thăm
+hiệu dụng $n+v$ và tổng giá trị của con tăng $v$ (con thắng, tức cha thua). Điểm của đường vừa đi giảm ở cả hai
+số hạng, nên lượt kế tiếp rẽ sang nhánh khác. Khi $B=1$, virtual loss không còn tồn tại lúc chọn nên PUCT trùng
+bản tuần tự. Khi $B$ lớn, các lựa chọn trong lô dựa trên thông tin cũ và bị đẩy ra khỏi nhánh tốt; đây là đánh
+đổi giữa thông lượng suy luận và chất lượng tìm kiếm, đo ở Bảng~\ref{tab:cs-ct-batch} và
+\ref{tab:cs-tk-backend-puct}.
+
+\section{Mạng nơ-ron: các tính chất dùng trong phân tích}
+\label{sec:cs-mang-lt}
+\subsection{Trường tiếp nhận}
+Mỗi lớp tích chập $3\times3$ đệm 1 mở rộng trường tiếp nhận thêm 2 ô. CaroResNet có một lớp vào và sáu khối, mỗi
+khối hai lớp, tổng 13 lớp, nên trường tiếp nhận là $1+2\cdot13=27$ ô. Để một ô ở góc ``nhìn thấy'' góc đối diện
+trên bàn 11$\times$11 cần $21$ ô, tức 10 lớp. Vậy từ khối thứ năm trở đi, mỗi vị trí đầu ra phụ thuộc toàn bàn;
+các đầu ra không bị giới hạn bởi tính cục bộ.
+
+\subsection{Đẳng biến tịnh tiến và đối xứng}
+Tích chập đẳng biến với phép tịnh tiến (ở xa biên), nhưng không đẳng biến với phép quay hay lật: không có lý do
+cấu trúc nào để $f(g\cdot x)=g\cdot f(x)$ với $g\in D_4$. Đầu policy còn có lớp kết nối đầy đủ
+$242\to121$ gán trọng số riêng cho từng ô, nên cũng mất đẳng biến tịnh tiến. Vì vậy đối xứng của luật chơi phải
+được \emph{học}, qua tăng cường dữ liệu, hoặc \emph{áp đặt}, qua lấy trung bình trên nhóm.
+
+\begin{dinhly}
+\label{dl:cs-d4}
+Cho $f$ trả phân bố trên các ô. Đặt $\bar f(x)=\frac18\sum_{g\in D_4}g^{-1}\cdot f(g\cdot x)$. Khi đó
+$\bar f(h\cdot x)=h\cdot\bar f(x)$ với mọi $h\in D_4$; và với mọi nhãn $\pi$, entropy chéo của $\bar f(x)$ không
+lớn hơn trung bình entropy chéo của tám phân bố $g^{-1}\cdot f(g\cdot x)$.
+\end{dinhly}
+\begin{proof}
+Đổi biến $k=gh$ (khi $g$ chạy khắp nhóm, $k$ cũng vậy), $g=kh^{-1}$, $g^{-1}=hk^{-1}$:
+$\bar f(h\cdot x)=\frac18\sum_g g^{-1}f(gh\cdot x)=\frac18\sum_k h k^{-1}f(k\cdot x)=h\cdot\bar f(x)$.
+Phần hai: $-\log$ lồi nên theo Jensen
+$-\sum_a\pi_a\log\frac18\sum_g p_g(a)\le \frac18\sum_g\bigl(-\sum_a\pi_a\log p_g(a)\bigr)$.
+\end{proof}
+Định lý chỉ so với \emph{trung bình} của tám hướng, không bảo đảm tốt hơn hướng gốc; việc đó là kết quả thực
+nghiệm ở Bảng~\ref{tab:cs-mang-doixung}.
+
+\subsection{Gradient của hàm mất mát}
+Gọi $z\in\mathbb R^{121}$ là logit, $p=\mathrm{softmax}(z)$, $\pi$ là nhãn. Với $L_p=-\sum_a\pi_a\log p_a$ và
+$\log p_a=z_a-\log\sum_b e^{z_b}$:
+\begin{equation}
+  \frac{\partial L_p}{\partial z_b}=-\pi_b+\Bigl(\sum_a\pi_a\Bigr)p_b=p_b-\pi_b.
+\end{equation}
+Gradient bị chặn và bằng 0 đúng khi $p=\pi$. Với đầu value $v=\tanh u$ và $L_v=(v-z)^2$:
+\begin{equation}
+  \frac{\partial L_v}{\partial u}=2(v-z)(1-v^2).
+\end{equation}
+Khi $v$ bão hoà sai phía (gần $-1$ mà $z=1$), thừa số $1-v^2$ gần 0 làm gradient tắt. Đây là một lý do lỗi quy ước
+dấu ở SL v2 (Chương~\ref{ch:phuong-phap}) khó tự sửa trong học tăng cường.
+
+\subsection{Chuẩn hoá theo lô và kết nối tắt}
+Batch normalization biến đổi mỗi kênh $x\mapsto\gamma\,(x-\mu_B)/\sqrt{\sigma_B^2+\epsilon}+\beta$ với thống kê
+của lô khi huấn luyện, và thống kê chạy tích luỹ khi suy luận. Vì vậy cùng một thế cho đầu ra khác nhau ở hai chế
+độ; mọi tác tử gọi \texttt{model.eval()} trước khi suy luận. Kết nối tắt $y=\mathrm{ReLU}(x+F(x))$ \cite{he2016resnet}
+cho $\partial(x+F(x))/\partial x=I+\partial F/\partial x$, giữ một đường truyền gradient không suy giảm qua sáu khối.
+
+\subsection{Calibration và phân rã sai số value}
+\begin{dinhly}
+\label{dl:cs-mse}
+Với $v=v(S)$ dự đoán và $z$ kết quả,
+$\mathbb E[(v-z)^2]=\mathbb E\bigl[(v-\mathbb E[z\mid S])^2\bigr]+\mathbb E\bigl[\mathrm{Var}(z\mid S)\bigr]$.
+\end{dinhly}
+\begin{proof}
+Viết $v-z=(v-m)+(m-z)$ với $m=\mathbb E[z\mid S]$ rồi bình phương. Hạng chéo
+$\mathbb E[(v-m)(m-z)]=\mathbb E\bigl[(v-m)\,\mathbb E[m-z\mid S]\bigr]=0$ vì $v,m$ là hàm của $S$.
+\end{proof}
+Số hạng thứ hai là nhiễu không giảm được: cùng một thế có thể dẫn tới kết quả khác nhau do người chơi. Vì vậy MSE
+không thể về 0, và hằng số 0 cho MSE bằng $\mathbb E[z^2]$ (tỷ lệ ván có thắng thua). Mạng được gọi là calibrated
+nếu $\mathbb E[z\mid v]=v$; Hình~\ref{fig:cs-mang-calib} vẽ đại lượng vế trái theo $v$.
+
+\section{Định lý policy gradient cho ván hai người}
+\label{sec:cs-pg-lt}
+\subsection{Dạng quỹ đạo}
+Một ván tự đấu cho quỹ đạo $\tau=(s_0,a_0,\dots,s_T)$ với xác suất
+$P_\theta(\tau)=\prod_t\pi_\theta(a_t\mid s_t)$ (chuyển trạng thái tất định; khai cuộc ngẫu nhiên không phụ thuộc
+$\theta$). Gọi $z_t\in\{-1,0,1\}$ là kết quả theo góc nhìn bên đi ở bước $t$. Với mục tiêu của một bên,
+\begin{equation}
+  \nabla_\theta\,\mathbb E_\tau[R(\tau)]
+  =\mathbb E_\tau\Bigl[R(\tau)\sum_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)\Bigr],
+\end{equation}
+vì $\nabla P_\theta=P_\theta\nabla\log P_\theta$. Khi học cả hai bên bằng cùng tham số, mỗi nước dùng $z_t$ của
+chính bên đi nước đó; đó là dòng tính \texttt{zs} trong \repoFile{caro/training/train_pg.py}. Gradient của nước
+$t$ chỉ cần phần thưởng về sau, và ở đây phần thưởng duy nhất ở cuối ván nên $z_t$ dùng trực tiếp.
+
+\subsection{Baseline tối ưu và điều kiện giảm phương sai}
+Đặt $g=\nabla_\theta\log\pi_\theta(a\mid s)$. Ước lượng $(z-b)g$ không chệch với mọi $b=b(s)$. Phương sai tổng
+(vết hiệp phương sai) là $\mathbb E[(z-b)^2\Vert g\Vert^2]-\Vert\mathbb E[zg]\Vert^2$; lấy đạo hàm theo $b$ tại
+mỗi $s$ cho baseline tối ưu
+\begin{equation}
+  b^*(s)=\frac{\mathbb E\bigl[z\,\Vert g\Vert^2\mid s\bigr]}{\mathbb E\bigl[\Vert g\Vert^2\mid s\bigr]}.
+\end{equation}
+Value head xấp xỉ $\mathbb E[z\mid s]$, trùng $b^*$ khi $\Vert g\Vert^2$ ít tương quan với $z$. Nếu coi
+$\Vert g\Vert^2$ gần hằng, baseline $v$ giảm phương sai khi và chỉ khi $\mathbb E[(z-v)^2]<\mathbb E[z^2]$. Với lỗi
+quy ước dấu đã phát hiện, MSE của value theo nhãn bên đi là $1{,}38$ trong khi hằng số 0 đạt $0{,}91$
+(\repoFile{docs/GHI_CHU_value_head.md}): baseline khi đó \emph{làm tăng} phương sai.
+
+\subsection{Vai trò của entropy và nhiệt độ}
+Thưởng entropy $\beta H(\pi)$ có gradient theo logit $\beta\,\partial H/\partial z_b=-\beta\,p_b(\log p_b+H)$, đẩy
+xác suất cao xuống và xác suất thấp lên. Khi lấy mẫu với nhiệt độ $\tau$, $\pi=\mathrm{softmax}(z/\tau)$ và
+$\partial\log\pi_a/\partial z_b=(\mathbb 1[a{=}b]-\pi_b)/\tau$; đề tài dùng $\tau=1$ và $\beta=0{,}01$ giảm theo
+hệ số $0{,}999$ mỗi vòng, tức sau 390 vòng còn $\beta\approx0{,}0068$.
+
+\subsection{Cổng chọn mạng như một phép thử}
+Vòng AlphaZero chỉ nhận mạng mới khi điểm của nó trước mạng đương nhiệm đạt $\theta=0{,}55$ trên $n=100$ ván
+\cite{silver2017alphagozero}. Nếu các ván độc lập và điểm thật là $p$ (bỏ qua hoà),
+$P(\text{nhận})\approx\Phi\bigl((p-\theta)/\sqrt{p(1-p)/n}\bigr)$, cho trong Bảng~\ref{tab:cs-gating}.
+\begin{table}[H]
+  \centering\small
+  \caption{Xác suất xấp xỉ một mạng ứng viên qua cổng $0{,}55$ với 100 ván độc lập}
+  \label{tab:cs-gating}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Điểm thật $p$ & 0{,}45 & 0{,}50 & 0{,}55 & 0{,}60 & 0{,}65\\
+    \midrule
+    Xác suất nhận (\%) & 2{,}2 & 15{,}9 & 50{,}0 & 84{,}6 & 98{,}2\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+Một mạng không mạnh hơn vẫn qua cổng khoảng một trong sáu lần. Các ván của cổng chơi tất định ($\tau=0$) trên
+khai cuộc đổi màu nên không độc lập hoàn toàn; bảng này chỉ cho bậc độ lớn.
+
+\section{Chi tiết các phương pháp thống kê}
+\label{sec:cs-tk-lt}
+\subsection{Kiểm định dấu theo khai cuộc và kiểm định McNemar}
+Hai ván đổi màu trên một khai cuộc cho điểm gộp thuộc $\{0;\,0{,}25;\,0{,}5;\,0{,}75;\,1\}$. Dưới giả thuyết hai tác
+tử ngang sức, khai cuộc ``nghiêng'' về mỗi bên với xác suất bằng nhau, nên số khai cuộc nghiêng về A trong số
+$n$ khai cuộc không hoà điểm theo phân bố $\mathrm{Bin}(n,\tfrac12)$. Giá trị $p$ hai phía chính xác là
+$\min\bigl(1,\,2\sum_{k\ge\max(w,l)}\binom nk 2^{-n}\bigr)$. Kiểm định này không cần giả định phân bố điểm và dùng
+đúng đơn vị độc lập (khai cuộc). Kiểm định McNemar \cite{mcnemar1947} áp dụng cùng công thức cho hai tác tử giải
+cùng một tập thế: chỉ những thế một bên đúng, một bên sai mang thông tin.
+
+\subsection{Hiệu chỉnh Holm}
+Sắp $m$ giá trị $p_{(1)}\le\dots\le p_{(m)}$, đặt
+$\tilde p_{(i)}=\max_{j\le i}\min\bigl(1,(m-j+1)p_{(j)}\bigr)$ và bác bỏ khi $\tilde p_{(i)}<\alpha$
+\cite{holm1979}.
+\begin{dinhly}
+Thủ tục Holm kiểm soát xác suất bác bỏ nhầm ít nhất một giả thuyết đúng (FWER) ở mức $\alpha$, không cần giả định
+độc lập.
+\end{dinhly}
+\begin{proof}
+Gọi $I$ là tập giả thuyết đúng, $m_0=|I|$, và $(j)$ là vị trí đầu tiên trong dãy đã sắp thuộc $I$. Có ít nhất
+$j-1$ giả thuyết sai đứng trước nên $j\le m-m_0+1$, tức $m-j+1\ge m_0$. Muốn bác bỏ nhầm phải bác bỏ tới vị trí
+$j$, tức $(m-j+1)p_{(j)}<\alpha$, kéo theo $p_{(j)}<\alpha/m_0$. Vậy biến cố bác bỏ nhầm nằm trong
+$\bigcup_{i\in I}\{p_i<\alpha/m_0\}$, có xác suất không quá $m_0\cdot\alpha/m_0=\alpha$.
+\end{proof}
+
+\subsection{Bootstrap phân vị}
+Với đơn vị quan sát $x_1,\dots,x_m$ (ở đây là khai cuộc) và thống kê $T$, bootstrap \cite{efron1979} lấy $B$ mẫu
+có hoàn lại cỡ $m$, tính $T^*_b$ và dùng phân vị $\alpha/2$, $1-\alpha/2$ của $\{T^*_b\}$. Phương pháp thay phân
+bố chưa biết của dữ liệu bằng phân bố thực nghiệm. Nó không tạo thêm thông tin: với $m=50$ khai cuộc, khoảng vẫn
+rộng, và khi mọi khai cuộc cho cùng kết quả (cặp toàn thắng), khoảng bootstrap suy biến thành một điểm. Trong
+trường hợp đó khoảng Wilson trên số ván là cách trình bày thận trọng hơn.
+
+\subsection{Cỡ mẫu}
+Để phát hiện $p_1\neq\tfrac12$ bằng kiểm định hai phía mức $\alpha$ với lực $1-\beta$, xấp xỉ chuẩn cho
+\begin{equation}
+  n\ge\left(\frac{z_{1-\alpha/2}\cdot\frac12+z_{1-\beta}\sqrt{p_1(1-p_1)}}{p_1-\frac12}\right)^2,
+\end{equation}
+vì thống kê $\hat p$ có độ lệch chuẩn $\tfrac12/\sqrt n$ dưới giả thuyết không và $\sqrt{p_1(1-p_1)/n}$ dưới giả
+thuyết đối; điều kiện lực là khoảng cách $p_1-\tfrac12$ bằng tổng hai biên. Giá trị tính sẵn ở
+Bảng~\ref{tab:cs-tk-luc}.
+
+\subsection{Bradley-Terry: tồn tại, duy nhất và cách giải}
+\begin{dinhly}
+\label{dl:cs-bt}
+Đặt $\theta_i$ là điểm trên thang log-odds, $\ell(\theta)=\sum_{i\ne j}y_{ij}\log\sigma(\theta_i-\theta_j)$. Nếu mỗi
+cặp đã gặp nhau có $y_{ij}>0$ và $y_{ji}>0$, và đồ thị các cặp đã gặp liên thông, thì $\ell$ có điểm cực đại duy
+nhất trên mặt phẳng $\sum_i\theta_i=0$.
+\end{dinhly}
+\begin{proof}
+Hessian của $\ell$ là $-L$, trong đó $L$ là Laplacian của đồ thị với trọng số cạnh
+$w_{ij}=n_{ij}p_{ij}(1-p_{ij})>0$, $n_{ij}=y_{ij}+y_{ji}$. Với mọi $x$, $x^\top Lx=\sum_{i<j}w_{ij}(x_i-x_j)^2\ge0$,
+bằng 0 chỉ khi $x$ hằng trên mỗi thành phần liên thông. Đồ thị liên thông nên trên mặt phẳng tổng bằng 0, $\ell$
+lõm chặt: cực đại nếu có là duy nhất. Tồn tại: nếu $\Vert\theta\Vert\to\infty$ trên mặt phẳng đó thì
+$\max_i\theta_i-\min_i\theta_i\to\infty$, nên theo tính liên thông có một cạnh với $\theta_i-\theta_j\to-\infty$ mà
+$y_{ij}>0$; số hạng đó tiến tới $-\infty$ và các số hạng khác không dương, nên $\ell\to-\infty$. Hàm liên tục tiến
+tới $-\infty$ ở vô cực đạt cực đại.
+\end{proof}
+Ván hoà ảo bảo đảm điều kiện $y_{ij},y_{ji}>0$ ngay cả khi một cặp toàn thắng; Ford chỉ ra điều kiện liên thông
+mạnh tương tự cho dữ liệu gốc \cite{ford1957}, và Hunter bàn các thuật toán MM thay thế \cite{hunter2004}. Mã giải
+bằng Newton: bước $\Delta=(L+\tfrac1n\mathbf 1\mathbf 1^\top)^{-1}\nabla\ell$; số hạng hạng một làm ma trận khả
+nghịch mà không đổi thành phần vuông góc với $\mathbf 1$, rồi chia đôi bước cho tới khi $\ell$ không giảm.

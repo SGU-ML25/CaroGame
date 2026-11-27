@@ -26,8 +26,8 @@ Muốn trả lời đầy đủ cho toàn bộ tám cấp, cần chạy thêm mo
 Có, nhưng mức cải thiện phụ thuộc vào giai đoạn, đối thủ và điều kiện khởi tạo. Năm lớp bằng
 chứng:
 \begin{itemize}
-  \item \textbf{Dữ liệu/augmentation (A6):} SL v3 có augmentation đạt top-1 67,8\% và L3 21,0\%;
-        bản no-aug chỉ 60,5\% và 7,0\%. Augmentation giúp policy và sức chơi.
+  \item \textbf{Dữ liệu/augmentation (A6):} SL v3 có augmentation đạt top-1 66,8\% và L3 21,0\%;
+        bản no-aug chỉ 56,2\% và 7,0\%. Augmentation giúp policy và sức chơi.
   \item \textbf{Khởi tạo (A5b):} RL from-random 49\,920 episode thua L2/L3/L5 toàn bộ 100 ván;
         from-SL đạt L2 81,0\%, L3 37,0\%, L5 66,5\%. Khởi tạo từ SL là điều kiện cần ở ngân sách
         này.
@@ -46,16 +46,12 @@ cuối từng được dùng trong gating. Chưa có lặp nhiều seed để đ
 
 \paragraph{RQ3. Cắt tỉa alpha-beta và sắp xếp nước giảm chi phí bao nhiêu mà vẫn giữ nước đi?}
 A1 cho thấy cắt tỉa giảm khoảng 20,4 lần số nút và 20,9 lần thời gian, giữ nguyên giá trị gốc
-trên 100\% số thế. Đây là bằng chứng mạnh nhất về tính đúng đắn của cài đặt. A2 cho thấy sắp
-xếp nước giảm khoảng 24,5 lần số nút trong cùng 1 giây, nhưng không giảm thời gian vì ngân sách
-thời gian cố định; nó giúp tìm sâu hơn. A7 cho thấy bỏ thành phần phòng thủ thay đổi giá trị
+trên 100\% số thế. Đây là bằng chứng mạnh nhất về tính đúng đắn của cài đặt. A2 ở độ sâu cố định cho
+thấy sắp xếp nước giảm số nút 5,7--190 lần (độ sâu 3--5) và giữ nguyên nước chọn trên 10/10 thế. A7 cho thấy bỏ thành phần phòng thủ thay đổi giá trị
 gốc trên 90\% số thế, tức thành phần này không thể bỏ qua.
 
-Hai hạn chế. Thứ nhất, benchmark A2 không ghi độ sâu đạt được, nên không tách được ``nhiều nút
-hơn vì tìm sâu hơn'' với ``nhiều nút hơn vì TT kém hiệu quả''. Thứ hai, báo cáo chưa đo tỷ lệ
-chọn cùng nước khi có nhiều nước đồng hạng; trường nhất quán của benchmark chỉ so giá trị gốc.
-A7b và A8b (nếu chạy xong) bổ sung phần đối đầu, nhưng vẫn cần một phép đo cố định độ sâu để
-tách chi phí khỏi chất lượng.
+Hạn chế: A2 chỉ đo trên 10 thế, và trường nhất quán của A1 so giá trị gốc nên không đếm đầy đủ các
+nước đồng hạng.
 
 \paragraph{RQ4. Lợi thế đi trước trên 11×11 lớn đến mức nào giữa các tác tử cùng cấp?}
 Lợi thế đi trước không phải một hằng số. Kết quả E3 mở rộng 100 ván/cấp:
@@ -121,7 +117,7 @@ kiểm tra tự động cho mọi ván.
 
 \paragraph{Đa dạng dữ liệu quan trọng hơn số epoch.} SL v1 và v2 dùng cùng kiến trúc, cùng số
 epoch, nhưng v2 có 297\,098 mẫu với temperature 8 thay vì 27\,720 mẫu với temperature 0,5. Top-1
-tăng từ 44,0\% lên 65,3\%. SL v3 thêm 30 epoch chỉ tăng 2,5 điểm. Bài học: khi trần dữ liệu
+tăng từ 44,8\% lên 65,3\%. SL v3 thêm 30 epoch chỉ tăng 1,5 điểm. Bài học: khi trần dữ liệu
 đã đạt, thêm epoch không giúp; phải đổi nguồn nhãn hoặc tăng đa dạng.
 
 \paragraph{Chọn checkpoint theo tiêu chí định trước.} Điểm gating của L8 dao động 43--62\% và

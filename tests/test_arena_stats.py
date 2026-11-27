@@ -4,6 +4,7 @@ import pytest
 
 from caro.arena.stats import (
     bootstrap,
+    bradley_terry,
     calculate_performance,
     detailed_record_by_turn,
     elo,
@@ -112,6 +113,26 @@ def test_performance_separates_nodes_and_sims():
 
     assert result["L8-AlphaZero"]["nodes_mean"] == 0
     assert result["L8-AlphaZero"]["sims_mean"] == 600
+def test_bradley_terry_matches_two_player_odds():
+    # A thắng 3/4 ván, không ván ảo ⇒ chênh lệch đúng 400·log10(3) điểm.
+    matches = [("A", "B", 1), ("A", "B", 1), ("B", "A", -1), ("B", "A", 1)]
+
+    ratings = bradley_terry(matches, prior_draws=0.0)
+
+    assert ratings["A"] - ratings["B"] == pytest.approx(400 * 0.47712125, abs=1e-3)
+    assert (ratings["A"] + ratings["B"]) / 2 == pytest.approx(1000)
+
+
+def test_bradley_terry_stays_finite_and_ordered_with_shutouts():
+    matches = [("A", "B", 1)] * 50 + [("B", "C", 1)] * 50 + [("A", "C", 1)] * 50
+
+    ratings = bradley_terry(matches)
+
+    assert ratings["A"] > ratings["B"] > ratings["C"]
+    assert all(-3000 < v < 5000 for v in ratings.values())
+    assert ratings == bradley_terry(list(reversed(matches)))
+
+
 def test_detailed_record_by_turn():
     df = pd.DataFrame([
         {
@@ -232,6 +253,26 @@ def test_summarize_self_play():
     assert ci["low"] <= 0.25 <= ci["high"]
 
     assert "B" not in result
+
+def _self_play(rows):
+    return pd.DataFrame([
+        {"game_id": i, "agent_x": "A", "agent_o": "A", "opening_id": op, "opening_plies": 2, "result": r}
+        for i, (op, r) in enumerate(rows)
+    ])
+
+
+def test_summarize_self_play_accepts_one_game_per_opening():
+    result = summarize_self_play(_self_play([(0, 1), (1, 1), (2, -1), (3, 0)]), n_boot=200)["A"]
+
+    assert result["games"] == 4
+    assert result["as_first"] == {"wins": 2, "draws": 1, "losses": 1, "score": 0.625}
+    assert result["first_move_advantage_ci"]["opening_pairs"] == 4
+
+
+def test_summarize_self_play_rejects_mixed_games_per_opening():
+    with pytest.raises(ValueError, match="mọi opening"):
+        summarize_self_play(_self_play([(0, 1), (0, -1), (1, 1)]), n_boot=200)
+
 
 def test_summarize_self_play_corrects_odd_opening_plies():
     df = pd.DataFrame([

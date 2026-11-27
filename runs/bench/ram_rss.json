@@ -1,0 +1,10 @@
+{
+  "L1-Random": 21,
+  "L2-Rule": 21,
+  "L3-AlphaBeta": 24,
+  "L4-MCTS": 24,
+  "L5-PolicySL": 535,
+  "L6-PolicyRL": 535,
+  "L7-PUCT": 546,
+  "L8-AlphaZero": 546
+}

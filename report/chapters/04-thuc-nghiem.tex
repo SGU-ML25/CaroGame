@@ -20,17 +20,67 @@ Huấn luyện L6 & Episode tự đấu và đánh giá định kỳ & 49.920 ep
 Huấn luyện L8 & Tự đấu và đấu kiểm tra ứng viên & 50 vòng \\
 L8 gặp L7 & Cùng 200 mô phỏng, 10 khai cuộc đổi màu & 20 ván \\
 L8 gặp L3 & L8 200 mô phỏng, L3 độ sâu 6 & 40 ván \\
+Giải chính A, B & L1--L8, 200 ván/cặp, 100 khai cuộc & 5.600 + 5.600 ván \\
+Phân tích lỗi theo cấp & Mọi nước sau khai cuộc của giải chính & 11.200 ván \\
+RR8 (cũ và giữ riêng) & L1--L8, 100 ván/cặp, 50 khai cuộc & 2.800 + 2.800 ván \\
+E3 & Tự đấu từng cấp & 1.200 + 800 ván (bộ cũ), 800 ván (giữ riêng) \\
+A5b, A6 & Đánh giá checkpoint, 100 ván/ô & một seed \\
+A8 & MCTS tắt/bật chiến thuật tại gốc gặp L2, L3 & 400 ván \\
 \bottomrule
 \end{tabularx}
 \caption{Các nguồn đã có số liệu. Một số nguồn có thể dùng chung khai cuộc; không cộng chúng để suy ra cỡ mẫu độc lập.}
 \end{table}
 
+Các lượt chạy nằm trên ba máy (Bảng~\ref{tab:phan-cung}). Số liệu thời gian chỉ so sánh được trong cùng một lượt chạy. Hầu hết lượt chạy ghi \texttt{dirty: true}, tức working tree có thay đổi chưa commit so với commit ghi trong \texttt{meta.json}.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{Phần cứng và phần mềm theo \texttt{meta.json} của các lượt chạy.}
+\label{tab:phan-cung}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{.34\textwidth} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Máy} & \textbf{Lượt chạy} \\
+\midrule
+Intel Core i7-11800H (16 luồng), RAM 15{,}3 GB, Linux, Python 3.13.16, PyTorch 2.14.1; GPU NVIDIA RTX A2000 Laptop & Huấn luyện L6, A5b, L8 (CUDA). A3, A4, RR8, L8 gặp L3, E3 tám cấp, các thí nghiệm trên khai cuộc giữ riêng, A2 độ sâu cố định, phân tích lỗi theo cấp (CPU) \\
+Intel Family 6 Model 154 (16 luồng), Windows 11, Python 3.13.1 & Giải chính A và B (cả sáu lượt), E3 sáu cấp, E3 bổ sung cho L7, L8 \\
+Intel Family 6 Model 140 (4 luồng), Windows 11, Python 3.13.3 & A1, A2 lượt đầu, A7 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{Giải đấu chính}
+Giải chính là round-robin cả tám cấp ở hai chế độ ngân sách: 28 cặp, mỗi cặp 200 ván từ 100 khai cuộc đổi màu, tức \num{5600} ván mỗi chế độ. Mỗi chế độ ghép từ ba lượt dùng cùng bộ khai cuộc và seed: L1--L6 vòng tròn, L7 gặp L1--L6, rồi L8 gặp L1--L7 (Bảng~\ref{tab:giai-luot}); mỗi cặp nằm trọn trong một lượt. Giữa các commit này, mã tác tử cấp 1--6 và engine bitboard không đổi về hành vi; phần thêm vào là cấp 7, cấp 8 và đường mã hoá đặc trưng theo lô. Giải dùng bộ \texttt{openings\_v1}, bộ này có trong dữ liệu huấn luyện của L5 và các cấp khởi tạo từ nó (Mục~\ref{sec:khai-cuoc}); phép kiểm tra trên khai cuộc giữ riêng ở Mục~\ref{sec:rr8-giu-rieng}.
+\input{bang/giai-luot}
+Ở chế độ A, mọi tác tử tìm kiếm có cùng 1\,000 ms, nhưng khối lượng đạt được khác nhau giữa các lượt: L4 trung bình khoảng 5\,500 mô phỏng mỗi nước ở lượt L1--L6 và 2\,700--3\,000 ở hai lượt sau; L7 khoảng 1\,200 ở lượt của nó và 1\,800 ở lượt gặp L8. Log không ghi tải máy nên chưa xác định được nguyên nhân. Hai tác tử trong một ô của ma trận chạy cùng lượt, còn điểm tổng ở chế độ A gộp các lượt có tốc độ khác nhau nên cần đọc thận trọng.
+
 \subsection{Ma trận đối đầu --- chế độ A (thời gian/nước)}
+\input{bang/giai-a}
+\input{bang/giai-a-matran}
+Ở 1\,000 ms mỗi nước, L8 (91{,}0\%) và L7 (84{,}6\%) tách hẳn khỏi sáu cấp còn lại. L8 đạt 70{,}25\% trước L7 (120 thắng, 41 hoà, 39 thua; khoảng Wilson 95\% 63{,}6--76{,}2\%), và hai cấp này thắng L3 với 89{,}0\% và 88{,}0\%. L6 (59{,}8\%) và L3 (58{,}8\%) có khoảng Wilson chồng nhau; trận trực tiếp giữa hai bên là 52{,}8\% nghiêng về L3 trên 200 ván, cũng chưa tách khỏi 50\%. L4 dùng gần hết ngân sách nhưng chỉ đạt 1{,}0\% trước L3. L5 và L6 trả lời sau vài mili giây vì không tìm kiếm, nên chế độ A không làm chúng mạnh thêm.
+
 \subsection{Ma trận đối đầu --- chế độ B (ngân sách cố định)}
+\input{bang/giai-b}
+\input{bang/giai-b-matran}
+Chế độ B giữ L3 ở độ sâu 4, còn L4, L7 và L8 cùng 800 mô phỏng. Thứ tự tám cấp không đổi so với chế độ A. L4 thắng toàn bộ 200 ván trước L1 ở cả hai chế độ, đạt chỉ tiêu 0{,}95 đặt ra ở Bảng~\ref{tab:gt-muc-tieu}, còn ở chế độ B không ghi điểm trước L2, L3, L6, L7 và L8. L8 đạt 67{,}0\% trước L7 (khoảng Wilson 95\% 60{,}2--73{,}1\%). L3 giảm từ 58{,}8\% xuống 56{,}6\% và trước L6 từ 52{,}8\% xuống 45{,}5\%. Các cặp giữa hai tác tử không tìm kiếm cho cùng kết quả ở hai chế độ (chẳng hạn L5 đạt 33{,}0\% trước L6, và các ván trùng từng nước), nên đó không phải hai bằng chứng độc lập. Thời gian trung vị mỗi nước của L3 là khoảng 335 ms (p95 gần 1{,}9 s), của L7 và L8 khoảng 2{,}2 s, lớn hơn nhiều mức đo trong RR8 (Bảng~\ref{tab:chi-phi-nuoc}). RR8 chạy trên máy khác, dùng lõi Cython và ít mô phỏng hơn, nên không dùng thời gian của giải này để mô tả chi phí của lõi Cython.
+
+\subsection{Giải tám cấp trên khai cuộc giữ riêng}
+\label{sec:rr8-giu-rieng}
+RR8 là round-robin cả tám cấp ở ngân sách cố định nhỏ hơn giải chính (Bảng~\ref{tab:ngan-sach}), 50 khai cuộc đổi màu, 100 ván mỗi cặp. Giải chạy hai lần cùng cấu hình: lần đầu trên bộ khai cuộc cũ, lần sau trên 50 khai cuộc đầu của bộ giữ riêng (Mục~\ref{sec:khai-cuoc}). Lần sau dùng để kiểm tra thứ hạng trên các thế mở đầu không có trong dữ liệu huấn luyện.
+\input{bang/rr8-giu-rieng}
+\input{bang/rr8-giu-rieng-matran}
+\input{bang/rr8-so-sanh}
+Trên khai cuộc giữ riêng, L8 đạt 88{,}5\%, tiếp theo là L7 82{,}3\%, L6 60{,}1\%, L3 59{,}1\%, L5 50{,}4\%, L2 45{,}4\%, L4 14{,}1\% và L1 0{,}1\% (L1 thắng đúng một ván, trước L4). L6 và L3 có khoảng Wilson chồng nhau, trận trực tiếp 54{,}5\% cho L6 cũng chưa tách khỏi 50\%. Điểm trực tiếp của L8 trước L7 là 64{,}0\% (58 thắng, 12 hoà, 30 thua; khoảng Wilson 95\% 54{,}2--72{,}7\%).
+
+Thứ tự tám cấp trên bộ giữ riêng trùng với thứ tự ở giải chính, cả hai chế độ. So với bộ cũ, thứ hạng điểm không đổi và không cấp nào lệch quá 1{,}8 điểm phần trăm. Ở độ phân giải của giải này, chưa thấy việc khai cuộc đánh giá từng có trong dữ liệu huấn luyện làm L5--L8 tăng điểm đáng kể. Kết luận này có giới hạn: bộ giữ riêng chỉ loại trùng ở thế mở đầu, tỷ lệ khai cuộc dài 2, 3, 4 nước của hai bộ không giống hệt nhau, và chênh lệch nhỏ hơn vài điểm không phát hiện được với 700 ván mỗi tác tử. Trong 2.800 ván giữ riêng, X thắng 1.566, O thắng 1.166 và hoà 68.
+
 \subsection{Thắng / hoà / thua và xếp hạng Elo}
 Arena cũ chạy sáu cấu hình, mỗi tác tử có 500 ván. Hai cấu hình L5 là hai phiên bản lịch sử. L3 của lượt này ghi độ sâu 3 trong nhãn, nên kết quả không dùng làm mốc trực tiếp cho L3 độ sâu 6 trong A5. Toàn bộ trận lịch sử chỉ có tổng kết và số nước; dữ liệu này hỗ trợ bảng xếp hạng và phân tích theo màu nhưng không hỗ trợ gán lỗi chiến thuật cho từng nước.
+\begin{table}[H]
+\centering
+\caption{Điểm tổng của sáu cấu hình trong arena cũ.}
+\label{tab:arena-tong}
 \input{ban-mo-rong/so-lieu-arena}
+\end{table}
 
 \begin{table}[H]
 \centering\small
@@ -59,8 +109,37 @@ L4 thắng 96/100 trước L1, nhưng không ghi điểm trước bốn cấu h�
 Trong 1.500 ván lịch sử, X thắng 828, O thắng 668 và hòa 4; chênh lệch
 tỷ lệ thắng thuần là 10,67 điểm phần trăm. Đây là hiệu ứng gộp theo cơ cấu cặp đấu cũ.
 \subsubsection{Elo và khoảng tin cậy của thứ hạng}
+\label{sec:elo}
+\input{bang/elo}
+Bảng~\ref{tab:elo} chuyển toàn bộ kết quả của từng giải thành một thang Elo (Mục~\ref{sec:lt-bt-uoc-luong}); đây là ước lượng đồng thời, không phụ thuộc thứ tự ván. Ở cả bốn cột, L8 và L7 đứng đầu, L4 và L1 đứng cuối. Trên RR8 giữ riêng, khoảng 95\% của L8 (1513--1586) và L7 (1434--1502) không chồng nhau, còn L6 và L3 chồng nhau gần hết. Điểm của L1 rất nhạy với tiên nghiệm vì L1 gần như thua mọi ván. Mỗi cột có điều kiện ngân sách và trung bình riêng, nên không trừ điểm giữa hai cột để so một tác tử.
 
 \section{Chi phí tính toán}
+\subsection{Thời gian mỗi nước và khối lượng tìm kiếm}
+\label{sec:chi-phi-tg}
+\input{bang/chi-phi-nuoc}
+L5 và L6 trả lời trong khoảng 1 ms, L3 ở độ sâu 4 khoảng 11 ms, L4 ở 400 mô phỏng khoảng 62 ms. L7 và L8 ở 200 mô phỏng có trung vị 36--37 ms ở lượt cũ nhưng khoảng 91 ms ở lượt giữ riêng, trong khi các cấp khác gần như không đổi. Hai lượt dùng cùng máy và cùng lõi Cython; mã PUCT được tái cấu trúc giữa hai commit và tải nền của máy không được kiểm soát, nên chưa xác định được nguyên nhân. Vì vậy thời gian của L7, L8 chỉ nên đọc theo cỡ độ lớn (vài chục đến dưới 200 ms mỗi nước). Số mô phỏng và số ván không phụ thuộc tốc độ máy vì ngân sách cố định.
+
+\subsection{Bộ nhớ}
+\input{bang/ram}
+Phép đo dùng \texttt{experiments/do\_bo\_nho.py}. Mức nền của các tác tử neural chủ yếu là PyTorch, không phải trọng số (479\,874 tham số, khoảng 2 MB). Suy luận khi thi đấu trong RR8 chạy trên CPU nên không dùng VRAM. VRAM lúc huấn luyện không được log.
+
+\subsection{Chi phí huấn luyện}
+\begin{table}[H]
+\centering\small
+\caption{Thời gian các lượt huấn luyện trên GPU RTX A2000, theo \texttt{summary.json}. Thời gian sinh dữ liệu chuyên gia và huấn luyện SL không được log.}
+\label{tab:chi-phi-huan-luyen}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Lượt & Khối lượng & Thời gian \\
+\midrule
+REINFORCE v3 (từ SL v3) & \num{49920} episode & 45{,}7 phút \\
+A5b, REINFORCE từ ngẫu nhiên & \num{49920} episode & 26{,}3 phút \\
+L8, 50 vòng & \num{10000} ván tự đấu & 12 giờ 19 phút \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Phân bổ thời gian của lượt L8}
 Cộng đồng hồ của nước tự đấu trong log L8 cho khoảng 8 giờ 16 phút; cộng đồng hồ nước đấu kiểm tra cho khoảng 2 giờ 23 phút. So với 44.327,952 giây của lượt chạy, hai tổng lần lượt chiếm khoảng 67\% và 19\%.
 Phần thời gian còn lại gồm cập nhật trọng số, chuẩn bị mẫu, lưu checkpoint và các chi phí
 điều phối ngoài phép đo từng nước. Log chưa tách được chi phí của từng thành phần trong phần còn lại. Chúng phản ánh nơi chi phí tập trung trong lượt đã chạy. Không dùng chênh lệch giữa hai lượt huấn luyện có trạng thái hệ thống khác nhau để kết luận Cython nhanh hay chậm hơn. Bản mới có gom suy luận giữa ván và ghi thời gian từng pha. Đây là thay đổi của mã; chưa có phép đo đối chứng GPU đủ để báo tỷ lệ tăng tốc toàn vòng.
@@ -71,12 +150,25 @@ Các log SL v1, v2 và v3 lần lượt ghi 30, 30 và 60 epoch. Ở từng lư�
 dựa trên validation loss ghi nhận epoch 30, 28 và 55. Với SL v3, validation loss thấp nhất
 là 1,4723 và giá trị ở epoch cuối là 1,4758. Đó là độ đo huấn luyện, còn sức chơi phải
 đối chiếu riêng theo checkpoint và đối thủ.
+\begin{table}[H]
+\centering
+\caption{Validation loss của ba lượt SL (trên) và đánh giá đối đầu từng checkpoint, 100 ván mỗi dòng (dưới).}
+\label{tab:sl-checkpoint}
 \input{ban-mo-rong/so-lieu-hoc}
+\end{table}
 \subsubsection{Top-1 và top-3 trên tập giữ riêng}
+\input{bang/sl-test}
+Top-1 là tỷ lệ nước có logit cao nhất trùng với nước có xác suất cao nhất trong nhãn của chuyên gia; top-3 là tỷ lệ nước đó nằm trong ba logit cao nhất. SL v3 đạt 66{,}8\% và 89{,}0\%. Bước tăng lớn nhất là từ v1 sang v2, đi cùng việc đổi dữ liệu (Bảng~\ref{tab:du-lieu}); từ v2 sang v3 top-1 chỉ tăng 1{,}5 điểm. Cột value cho thấy lỗi quy ước dấu: v1 và v2 gần như không tương quan với kết quả theo góc nhìn người đi, v3 đạt tương quan 0{,}73 và đúng dấu 77{,}0\% (tính cả mẫu thuộc ván hoà là sai).
 \subsection{Cấp 6 và cấp 8 --- learning curve}
 L6 dùng REINFORCE từ checkpoint SL. Lượt v3 ghi 49.920 episode và hơn 1,5 triệu nước.
-Điểm cuối trong log huấn luyện là 78,5\% trước L2 và 26,0\% trước AlphaBeta.
-Kết quả trước L2 và L3 phản ánh sức chơi của một checkpoint với đối thủ cụ thể. Trong phép đánh giá riêng, RL v3 best đạt 81,0\% trước L2 và 37,0\% trước L3, trong khi SL v3 đạt 66,0\% và 21,0\%. Trong lượt huấn luyện RL v3, đánh giá vòng cuối ghi 78,5\% trước L2 và 26,0\% trước L3. Các cặp số này đến từ checkpoint và phép đánh giá khác nhau, nên không gộp thành một đường tăng đơn điệu. Chưa có đối chứng nhiều seed giữ nguyên ngân sách để tách riêng tác động của điều kiện khởi tạo.
+Đánh giá vòng cuối trong log huấn luyện là 78,5\% trước L2 và 26,0\% trước AlphaBeta.
+Kết quả trước L2 và L3 phản ánh sức chơi của một checkpoint với đối thủ cụ thể. Trong phép đánh giá riêng, RL v3 best đạt 81,0\% trước L2 và 37,0\% trước L3, trong khi SL v3 đạt 66,0\% và 21,0\%. Hai nhóm số về RL v3 đến từ checkpoint và phép đánh giá khác nhau, nên không gộp thành một đường tăng đơn điệu. Tác động của điều kiện khởi tạo được đối chứng ở A5b (Bảng~\ref{tab:a5b}), mỗi nhánh một seed.
+
+\begin{figure}[H]
+\centering\includegraphics[width=.85\textwidth]{ban-mo-rong/hinh/l6-RLv3.png}
+\caption{Learning curve của lượt REINFORCE v3 trước hai đối thủ cố định L2 và L3, 100 ván mỗi điểm.}
+\label{fig:l6-curve}
+\end{figure}
 
 \begin{table}[H]
 \centering\small
@@ -108,17 +200,27 @@ và đánh lại trên một tập giữ riêng sẽ giúp phân biệt hai kh�
 
 Lượt \repoFile{20261124-160615_gpu-native} dùng CUDA và PUCT Cython, khởi tạo từ L5. Thiết lập gốc có 200 ván tự đấu mỗi vòng ở 400 mô phỏng/nước, 1.000 bước cập nhật và 100 ván kiểm tra ứng viên ở 200 mô phỏng/nước. Tổng thời gian là khoảng 12 giờ 19 phút. Máy ghi nhận Intel Core i7-11800H, NVIDIA RTX A2000 Laptop GPU, Python 3.13.16 và PyTorch 2.14.1 với CUDA 13.0. Seed là 2026. Lượt này chạy trước thay đổi gom suy luận giữa nhiều ván tự đấu.
 
+\begin{table}[H]
+\centering
+\caption{Các ứng viên được nhận qua gating của L8; đối thủ là bản đương nhiệm tại vòng đó.}
+\label{tab:l8-gating}
 \input{ban-mo-rong/so-lieu-l8}
+\end{table}
 Ứng viên được duyệt ở các vòng 12, 18, 19, 24, 29 và 37. Vòng 37 đạt 61,0\% trước bản đang giữ và là lần duyệt cuối; đây là checkpoint \repoFile{best.pt}. Ứng viên vòng 50 chỉ đạt 46,0\% trước bản đang giữ; file \repoFile{last.pt} vì vậy không phải checkpoint phục vụ kết quả cuối. Điểm gating của vòng 29 là 62,0\% trước bản đương nhiệm lúc đó. Không thể so trực tiếp 62,0\% với 61,0\% để xếp hai checkpoint, vì đối thủ đã đổi.
 \begin{figure}[H]
 \centering\includegraphics[width=.9\textwidth]{ban-mo-rong/hinh/l8.png}
 \caption{Gating và loss trong 50 vòng. Điểm gating là điểm trước bản đương nhiệm ở từng thời điểm.}
 \end{figure}
+L8 không có learning curve trước một đối thủ cố định: lượt chạy chỉ lưu \texttt{best.pt} và \texttt{last.pt}, nên không đánh giá lại được các vòng trung gian. Đường gating trong hình đo tiến bộ tương đối và không cộng dồn thành sức chơi.
 
 \section{Ablation và phân tích độ nhạy}
 \subsection{A1, A2 --- cắt tỉa, sắp xếp nước, TT}
-\input{ban-mo-rong/so-lieu-benchmark}
-A1 cho thấy số nút và thời gian trung vị cùng giảm khoảng 20 lần trong phép đo này. Giá trị ở gốc trùng trên cả 50 thế theo trường nhất quán của benchmark. Trường này đo giá trị gốc, không đếm số lần chọn cùng nước khi có nhiều nước đồng hạng. Với A2, số nút của hai cấu hình có sắp xếp thấp hơn rõ, trong khi thời gian trung vị xấp xỉ nhau. Vì các lượt chạy dùng ngân sách thời gian gần một giây, số nút ở đây phản ánh cả thứ tự, chi phí mỗi nút, và độ sâu có thể hoàn thành; không thể quy mức chênh lệch đó thành tăng tốc ở cùng độ sâu.
+\input{bang/a1}
+A1 cho thấy cắt tỉa giảm số nút trung vị khoảng 20 lần (từ \num{802217} xuống \num{39322}) và thời gian trung vị cũng khoảng 20 lần ở độ sâu 3, đồng thời cho cùng giá trị gốc và cùng nước chọn trên cả 50 thế.
+
+\input{bang/a2}
+A2 đo ở độ sâu cố định bằng mã hiện tại (\texttt{configs/experiments/a2\_fixed\_depth.yaml}). Sắp xếp nước giảm số nút 5{,}7 lần ở độ sâu 3, 46 lần ở độ sâu 4 và 190 lần ở độ sâu 5, tức lợi ích tăng theo độ sâu; thêm bảng chuyển vị nâng mức giảm lên 261 lần ở độ sâu 5. Giá trị gốc và nước chọn trùng trên 10/10 thế ở cả ba độ sâu. Thời gian giảm ít hơn số nút vì mỗi nút có sắp xếp đắt hơn: ở độ sâu 3, giảm 5{,}7 lần số nút chỉ đổi được khoảng 2 lần thời gian. Lượt A2 đầu tiên (\texttt{a2\_ordering\_tt}, ngân sách khoảng 1 giây, mã cũ thử từng ứng viên khi sắp xếp) cho số nút trung vị \num{9106}, 372 và 486; vì dừng theo giờ và không ghi độ sâu, các số đó chủ yếu phản ánh chi phí mỗi nút và không được dùng để kết luận mức giảm số nút.
+
 \subsection{A3, A4 --- số mô phỏng và kiểu rollout của MCTS}
 \paragraph{Thiết lập.}
 Cả hai thực nghiệm dùng cặp đấu \texttt{challengers\_vs\_baselines}: mỗi MCTS đấu với Cấp~2 (luật) và Cấp~3 (Alpha-Beta, độ sâu 4), seed gốc 2026, 100 khai cuộc, mỗi khai cuộc đấu hai ván đổi màu, nên mỗi cặp có 200 ván. A3 đổi số mô phỏng (100, 400, 1600, 6400; rollout \texttt{random}); A4 giữ 800 mô phỏng và đổi \texttt{rollout} giữa \texttt{random} và \texttt{light}. Thực nghiệm chạy bằng \texttt{notebooks/a3\_a4\_mcts.ipynb} với 4 worker; A3 gồm 1600 ván (22 phút), A4 gồm 800 ván (9 phút), không ván nào lỗi. Log nằm ở \texttt{runs/tournament/a3\_mcts\_sims/20261114-232353} và \texttt{runs/tournament/a4\_rollout/20261114-234556}. Cả hai run ghi \texttt{dirty: true} trong \texttt{meta.json} vì chạy khi working tree chưa commit (commit nền \texttt{27d6525}).
@@ -154,48 +256,86 @@ Cả hai thực nghiệm dùng cặp đấu \texttt{challengers\_vs\_baselines}:
 Ở 800 mô phỏng, cả \texttt{random} lẫn \texttt{light} đều thua toàn bộ 400 ván (điểm $0{,}000$, Wilson [0,000; 0,019], trước cả hai đối thủ), nên \emph{không phân biệt được hai kiểu rollout} qua điểm số. Hai kiểu khác nhau rõ về chi phí: \texttt{random} mất 147,2 ms/nước (p95 177,8 ms; 5435 mô phỏng/s), \texttt{light} mất 551,7 ms/nước (p95 745,8 ms; 1450 mô phỏng/s), tức chậm khoảng 3,7 lần. (Dòng ``tốt hơn: MCTS-random'' trong notebook chỉ là so sánh hai số bằng nhau, không nên dùng làm kết luận.)
 
 \paragraph{Thảo luận và kiểm tra.}
-Phân tích ván gợi ý rằng một nguyên nhân là thiếu nhìn xa về chiến thuật: MCTS không chặn một ba hở trên đường chéo, đối thủ đi tiếp thành tứ hở và thắng; để thấy sự cố này cần cây sâu khoảng 4 ply (đi, đối thủ tạo tứ hở, đi, đối thủ thắng), trong khi 800 mô phỏng chia cho khoảng 40 nước gốc chỉ cho mỗi nước chừng 20 lượt thăm. Rollout \texttt{light} chỉ thắng/chặn \emph{ngay lập tức} nên không bù được chỗ này. Hai đối thủ lại có sẵn các luật chiến thuật (thắng ngay, chặn, đòn kép) nên khai thác điểm yếu đó. Các ván rất ngắn, trung bình khoảng 10--12 nước kể cả khai cuộc; toàn bộ
+Phân tích ván gợi ý rằng một nguyên nhân là thiếu nhìn xa về chiến thuật: MCTS không chặn một ba hở trên đường chéo, đối thủ đi tiếp thành tứ hở và thắng; để thấy sự cố này cần cây sâu khoảng 4 ply (đi, đối thủ tạo tứ hở, đi, đối thủ thắng), trong khi 800 mô phỏng chia cho khoảng 40 nước gốc chỉ cho mỗi nước chừng 20 lượt thăm. Rollout \texttt{light} chỉ thắng/chặn \emph{ngay lập tức} nên không bù được chỗ này. Hai đối thủ lại có sẵn các luật chiến thuật (thắng ngay, chặn, đòn kép) nên khai thác điểm yếu đó. Các ván rất ngắn, trung bình khoảng 11--12 nước kể cả khai cuộc; toàn bộ
 ván trong hai log đều kết thúc bằng năm quân liền. Vì thắng hoặc thua đến sớm,
 tăng số mô phỏng có thể không có ích nếu cây chưa phân bổ đủ lượt thăm cho nhánh
 phòng thủ hiếm. Đây là cơ chế phù hợp với phân tích nước đi, chưa phải một phép
 đo riêng về độ sâu hữu hiệu của cây.
 
-Điều này nghĩa là với ngân sách thực nghiệm, tăng số mô phỏng chỉ có tác dụng ở mức rất cao (6400), và A4 chưa đủ sức phân biệt. Để trả lời RQ1 đầy đủ, cần thêm đối thủ yếu hơn (ví dụ Random, hoặc Cấp~2 chỉ bật P1--P2) để điểm không dồn về 0, và đối chiếu với chế độ A (cùng thời gian mỗi nước). Đây là kết luận về mức độ thực nghiệm, chưa phải về MCTS nói chung.
+Điều này nghĩa là với ngân sách thực nghiệm, tăng số mô phỏng chỉ có tác dụng ở mức rất cao (6400), và A4 chưa đủ sức phân biệt. So sánh cùng thời gian với Cấp~3 có ở giải chính chế độ A (Bảng~\ref{tab:giai-a-matran}). Muốn đường cong A3 phân biệt được các mức thấp, cần thêm một đối thủ yếu hơn (ví dụ Cấp~2 chỉ bật P1--P2) để điểm không dồn về 0. Đây là kết luận về mức độ thực nghiệm, chưa phải về MCTS nói chung.
 
 \subsection{A5, A5b --- policy-only so với policy + MCTS; khởi tạo RL}
 \subsubsection{A5: ảnh hưởng của PUCT khi giữ cùng mạng}
+\begin{table}[H]
+\centering
+\caption{A5: policy trực tiếp và PUCT cùng mạng, 200 ván mỗi dòng; L3 ở độ sâu 6.}
+\label{tab:a5}
 \input{ban-mo-rong/so-lieu-a5}
+\end{table}
 Ở cùng đối thủ L3 và cùng mạng L5, policy trực tiếp đạt 21,0\%, còn L7 ở 200 mô phỏng đạt 58,5\%, chênh 37,5 điểm phần trăm. Ở trận trực tiếp, L7 tại ngân sách đó thắng L5 191/200 ván. So sánh cùng mạng làm rõ đóng góp của tìm kiếm trong cấu hình đã thử. Trong bốn mức mô phỏng, điểm trước L3 lên từ 46,25\% đến 67,0\%; log tổng hợp không có thời gian mỗi nước, do đó không xếp được các mức theo chi phí. Chênh giữa L7 dùng mạng L5 và mạng L6 ở 200 mô phỏng chỉ 0,75 điểm phần trăm; dữ liệu hiện có chưa đủ để xếp thứ tự hai mạng trong PUCT.
 \begin{figure}[H]
 \centering\includegraphics[width=.88\textwidth]{ban-mo-rong/hinh/a5.png}
 \caption{Điểm L7 dùng mạng L5 trước L3 theo số mô phỏng. Đường ngang là mốc 50\%.}
 \end{figure}
-\subsubsection{A5b: đối chứng điều kiện khởi tạo qua nhiều seed}
+\subsubsection{A5b: đối chứng điều kiện khởi tạo}
+\input{bang/a5b}
+Hai lượt REINFORCE cùng \num{49920} episode, khác điểm khởi tạo (từ SL v3 hoặc ngẫu nhiên). Bản từ ngẫu nhiên thắng toàn bộ 100 ván trước L1 nhưng thua toàn bộ trước L2, L3 và L5; bản từ SL đạt 81{,}0\%, 37{,}0\% và 66{,}5\%. Ở ngân sách này, khởi tạo từ SL quyết định phần lớn sức chơi. Kết quả không cho biết bản từ ngẫu nhiên sẽ đạt tới đâu với ngân sách lớn hơn, và mỗi nhánh chỉ có một seed nên chưa đo được độ dao động giữa các lần huấn luyện.
+
 \subsection{A6, A7 --- augmentation, trọng số hàm đánh giá}
 \subsubsection{A6: so sánh tăng cường đối xứng}
+\input{bang/a6}
+Bản không augment (\texttt{a6\_noaug}) dùng cùng cấu hình SL v3. Trên tập test, nó đạt top-1 56{,}2\% so với 66{,}8\%, MSE value 0{,}619 so với 0{,}440 (Bảng~\ref{tab:sl-test}); khi đấu, điểm giảm từ 66\% xuống 54\% trước L2 và từ 21\% xuống 7\% trước L3. Bản này dừng sớm ở epoch 13 do validation loss không giảm thêm, trong khi bản có augment chạy đủ 60 epoch. Vì vậy chênh lệch là của cả quy trình ``bỏ augment rồi dừng sớm'', và chỉ có một seed mỗi nhánh.
+
 \subsubsection{A7: đối chiếu giá trị ở gốc}
-A7 cho thấy khi bỏ thành phần phòng thủ, giá trị gốc chỉ trùng trên 1/10 thế. Log tổng hợp này không cho biết có bao nhiêu nước được chọn thay đổi. Muốn suy ra mức tác động lên sức chơi cần kết quả đối đầu.
+\input{bang/a7}
+Khi bỏ thành phần phòng thủ, giá trị gốc chỉ trùng trên 1/10 thế và nước được chọn trùng trên 5/10 thế. Phép đo giới hạn theo thời gian và không có kết quả đối đầu (A7b chưa chạy), nên chưa suy ra được tác động lên sức chơi.
+
 \subsection{E3 --- lợi thế đi trước}
+\label{sec:e3}
+E3 cho mỗi tác tử tự đấu và đo điểm của X, bên đặt quân đầu tiên. Số liệu chính lấy trên bộ khai cuộc giữ riêng, mỗi khai cuộc đúng một ván (\texttt{e3\_heldout}). Chơi một ván mỗi khai cuộc là cần thiết: với tác tử tất định tự đấu, đổi màu chỉ sinh lại đúng ván cũ.
+\input{bang/e3-giu-rieng}
+Khoảng Wilson của điểm X nằm hoàn toàn trên 50\% ở L2, L3, L6, L7 và L8; ở L1, L4 và L5 khoảng còn chứa 50\%. L3 và L7 lệch nhiều nhất (70{,}5\%), L4 gần cân bằng (49{,}0\%). L8, cấp mạnh nhất trong RR8, chỉ đạt 62{,}0\% với 38 ván hoà. Gộp 800 ván, X thắng 459, O thắng 255 và hoà 86. Ở phần lớn tác tử, điểm X cao hơn khi X cũng là bên đi ngay sau khai cuộc, nhưng mỗi nhóm chỉ có 40--60 ván nên chưa tách được ảnh hưởng của số nước khai cuộc.
+
+Một lượt E3 chế độ B cho L7 và L8 (800 mô phỏng, bộ cũ) dừng ở 300/400 ván: L7 đủ 200 ván nhưng chỉ có 100 ván khác nhau, điểm X 69{,}5\%; L8 có 100 ván (50 khác nhau), điểm X 69{,}0\%. Lượt này chưa hoàn tất và lặp ván theo cặp, nên chỉ ghi lại và không dùng làm số liệu chính.
+
+\input{bang/e3-cu}
+Hai lượt tự đấu trước trên bộ cũ được giữ để đối chiếu (Bảng~\ref{tab:e3-cu}). Ở đó mỗi khai cuộc chơi hai ván đổi màu, nên nhiều tác tử chỉ có một nửa số ván khác nhau và khoảng tin cậy tính trên tổng số ván sẽ hẹp hơn thực tế. Một nguồn khác là \num{10000} ván tự đấu từ bàn trống trong lúc huấn luyện L8: X thắng \num{7701}, O thắng 923, hoà \num{1376}. Các ván này có nhiễu Dirichlet, lấy mẫu theo nhiệt độ ở 8 nước đầu và trọng số đổi qua các vòng, nên chúng mô tả quá trình huấn luyện, không phải một tác tử cố định.
+
 
 \section{Trả lời câu hỏi nghiên cứu}
-RQ1 có kết quả theo số mô phỏng, nhưng còn thiếu đối chứng cùng thời gian.
-RQ2 có bằng chứng từ checkpoint SL/RL, A5 và đối đầu L8--L7. RQ3 được hỗ trợ bởi
-benchmark A1; A2 cần đọc cùng ngân sách thời gian đã dùng. RQ4 có phân tích theo màu
-trong hai đối sánh cụ thể, còn khảo sát tự đấu từng cấp chưa có số liệu chính thức.
-Chương~\ref{ch:ket-luan} nêu mức độ trả lời của từng kết quả.
+Bảng~\ref{tab:tl-rq} tóm tắt bằng chứng; Chương~\ref{ch:ket-luan} thảo luận mức độ trả lời.
+
+\begin{table}[H]
+\centering\small
+\caption{Bằng chứng cho bốn câu hỏi nghiên cứu.}
+\label{tab:tl-rq}
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{.26\textwidth}@{}}
+\toprule
+\textbf{RQ} & \textbf{Bằng chứng chính} & \textbf{Còn thiếu} \\
+\midrule
+RQ1 & Cùng 1\,000 ms, L3 đạt 99{,}0\% trước L4 (200 ván); A3/A4: L4 thua gần hết ở 100--6400 mô phỏng; A8: thêm chiến thuật ở gốc đạt 5{,}5\% trước L3 & Mới có một mức thời gian \\
+RQ2 & L6 đạt 59{,}5\% và L8 93{,}5\% trước L5 (RR8 giữ riêng); L8 đạt 70{,}25\% và 67{,}0\% trước L7 ở giải chính A, B; A5b: khởi tạo ngẫu nhiên thua L5 cả 100 ván & Một seed; L8 không có learning curve trước đối thủ cố định \\
+RQ3 & A1: cắt tỉa giảm 20 lần số nút; A2: sắp xếp giảm 5{,}7--190 lần; cùng nước và giá trị & A2 trên 10 thế \\
+RQ4 & E3 giữ riêng: điểm của X từ 49{,}0\% đến 70{,}5\%, trên 50\% rõ ở L2, L3, L6--L8 (Mục~\ref{sec:e3}) & 100 ván mỗi tác tử; khai cuộc ngẫu nhiên, không xuất phát từ bàn trống \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Ván đấu minh hoạ}
 \subsection{L8 vòng 37 trước L7 và AlphaBeta}
+\begin{table}[H]
+\centering
+\caption{Hai lượt đối đầu của L8 vòng 37, tách theo màu L8 cầm. Bootstrap 95\% theo khai cuộc.}
+\label{tab:l8-doi-dau}
 \input{ban-mo-rong/so-lieu-doi-dau}
-Cùng ngân sách 200 mô phỏng, L8 thắng L7 ở cả hai màu trong 20 ván đã lưu. Đối đầu L3, L8 có 92,5\% điểm khi cầm X và 45,0\% khi cầm O. Khoảng bootstrap ghép theo khai cuộc dùng hai ván của cùng khai cuộc làm một cụm. Hai thí nghiệm có cỡ mẫu nhỏ và không được coi là mẫu hoàn toàn độc lập với quá trình phát triển. Cụ thể, cả 10 khai cuộc của L8 gặp L7 trước đây đã xuất hiện trong gating. Phép so sánh với L7 trước L3 đạt 58,5\% trong A5 dựa trên 200 ván; chênh 10,25 điểm phần trăm giữa hai lượt là mô tả, vì chưa đối chiếu L7 và L8 trên đúng tập 20 khai cuộc ở cùng lượt.
+\end{table}
+Hai đối đầu trong mục này có 20 và 40 ván, dưới mức 100 ván mỗi cặp của đề; chúng dùng để phân tích ván, còn so sánh sức chơi lấy theo RR8 (Mục~\ref{sec:rr8-giu-rieng}). Cùng ngân sách 200 mô phỏng, L8 thắng L7 ở cả hai màu trong 20 ván đã lưu. Đối đầu L3, L8 có 92,5\% điểm khi cầm X và 45,0\% khi cầm O. Khoảng bootstrap ghép theo khai cuộc dùng hai ván của cùng khai cuộc làm một cụm. Hai thí nghiệm có cỡ mẫu nhỏ và không được coi là mẫu hoàn toàn độc lập với quá trình phát triển. Cụ thể, cả 10 khai cuộc của L8 gặp L7 trước đây đã xuất hiện trong gating. Phép so sánh với L7 trước L3 đạt 58,5\% trong A5 dựa trên 200 ván; chênh 10,25 điểm phần trăm giữa hai lượt là mô tả, vì chưa đối chiếu L7 và L8 trên đúng tập 20 khai cuộc ở cùng lượt.
 \begin{figure}[H]
 \centering\includegraphics[width=.84\textwidth]{ban-mo-rong/hinh/mau.png}
 \caption{Điểm theo màu của L8 trong hai lượt đấu. Mỗi cột tính hòa nửa điểm.}
 \end{figure}
 
 Trong 20 ván L7--L8, X thắng 11 ván, O thắng 8 và hòa 1. X hơn O 15 điểm phần trăm về tỷ lệ thắng thuần. Bootstrap theo 10 khai cuộc cho khoảng tham khảo từ $-20$ đến $+50$ điểm phần trăm. Khoảng đi qua 0, nên mẫu hiện tại chưa xác định được dấu của hiệu ứng đi trước một cách ổn định. Chênh lệch theo màu của L8 trước L3 lớn hơn trong phép thử đó. Kết quả có thể phụ thuộc đối thủ, tập khai cuộc và lối chơi; E3 tự đấu từng cấp vẫn là một khảo sát riêng.
-
-Quy tắc phát lại chỉ kiểm chứng tình huống có bằng chứng bằng bitboard: thắng ngay, bỏ lỡ thắng ngay, bỏ chặn duy nhất, chặn bắt buộc và tạo hai ô thắng khi đối thủ không có nước thắng tức thì. Các tình huống không thể cứu ngay ở nước kế tiếp được xếp riêng thay vì quy thành lỗi của nước vừa đánh. Ván 13 của lượt L7--L8 minh họa trường hợp L7 đi B5 khi cần chặn G4. Phụ lục ván đấu ghi mã ván, thế cờ, các lựa chọn và trình tự nước để kiểm tra lại.
 
 Hai lượt đối đầu khác nhau rõ về mức độ đảo kết quả khi đổi màu. Trước L7,
 L8 thắng cả hai ván trên sáu khai cuộc, thắng một và hòa một trên một khai cuộc,
@@ -221,16 +361,7 @@ L3 & 20 & 27 & 8 & 5 & 47,5 đpt \\
 điểm phần trăm. Kết quả này hỗ trợ lợi thế màu trên mẫu đang xét, nhưng không
 thay thế E3 vì hai tác tử có kiến trúc khác nhau và cùng dùng một corpus khai cuộc.
 
-\paragraph{Ván 13: L7 bỏ nước chặn duy nhất trước L8.}
-Khai cuộc 48, L7 cầm X. Trước nước 35, O có quân ở G3, G5, G6 và G7;
-G4 là ô thắng ngay duy nhất của O. X chọn B5. O đặt G4 ở nước 36 để nối
-G3--G7. Kiểm tra luật xác nhận G4 chặn được đe dọa trực tiếp; từ đó chưa
-suy ra rằng X sẽ thắng hoặc hòa nếu chặn đúng.
-
-\paragraph{Ván 26: L8 cũng có sai sót chiến thuật trước AlphaBeta.}
-Khai cuộc 6, AlphaBeta cầm X và L8 cầm O. Ở nước 20, O đi C8 khi E7 là ô
-chặn duy nhất. X đi E7 ở nước 21, hoàn thành dãy D7--H7. Hai ví dụ dùng cùng
-quy tắc kiểm chứng, nên lỗi được mô tả theo thế cờ thay vì theo tác tử yêu thích.
+Quy tắc phát lại dưới đây chỉ kiểm chứng tình huống có bằng chứng bằng bitboard: thắng ngay, bỏ lỡ thắng ngay, bỏ chặn duy nhất, chặn bắt buộc và tạo hai ô thắng khi đối thủ không có nước thắng tức thì. Các tình huống không thể cứu ngay ở nước kế tiếp được xếp riêng thay vì quy thành lỗi của nước vừa đánh. Hai ván tiêu biểu của hai lượt này (ván 13 và ván 26) được phân tích từng nước ở Mục~\ref{sec:cs-van-sau}.
 Để biết lỗi hiếm hay thường gặp, Bảng~\ref{tab:co-hoi-chien-thuat} đếm cả cơ hội thực hiện
 nước đúng. Một cơ hội chặn chỉ được tính khi đối thủ có đúng một ô thắng và
 bên đang đi không có ô thắng ngay. L8 chặn đúng toàn bộ 46 lần trước L7, nhưng
@@ -254,9 +385,28 @@ L3--L8 & L8 & 137 & 3 & 25/25 \\
 \label{tab:co-hoi-chien-thuat}
 \end{table}
 
+\input{chapters/04f-van-sau}
+
 \section{Phân tích lỗi}
+\subsection{Lỗi chiến thuật theo cấp trên giải chính}
+\label{sec:loi-theo-cap}
 \paragraph{Phương pháp.}
-Với mọi ván MCTS thua trong A3 và A4 (tổng 2\,381 ván), script \texttt{report/scripts/phan\_tich\_loi\_mcts.py} phân loại lỗi bằng engine (\texttt{winning\_squares}), không đoán tay. Tại nước cuối của MCTS, nếu đối thủ có đúng một ô thắng ngay mà MCTS không chặn thì là ``bỏ sót chặn năm''. Nếu đối thủ đã có từ hai ô thắng (tứ hở, đòn kép) thì ván đã thua, và script xét nước kế cuối: đối thủ có nước tạo từ hai ô thắng mà MCTS không ngăn là ``bỏ sót chặn ba hở / đòn kép''.
+Mô-đun \repoFile{caro/analysis/error_analysis.py} phát lại \num{11200} ván của giải chính và xét mọi nước sau chuỗi khai cuộc bằng bitboard, không dùng hàm lượng giá. Mỗi thế rơi vào nhiều nhất một loại, theo thứ tự: có ô thắng ngay (sai nếu không đi vào đó); đối thủ có đúng một ô thắng ngay (sai nếu không chặn); đối thủ có nước tạo từ hai ô thắng và bên đi còn nước đỡ được (sai nếu sau nước đã đi, đối thủ vẫn còn nước như vậy). Thế mà đối thủ đã có hai ô thắng, hoặc đe doạ kép không còn nước đỡ, được đếm riêng là đã thua. Mỗi lỗi được định nghĩa chính xác trong 4 ply; chuỗi ép dài hơn không được xét.
+\input{bang/loi-theo-cap}
+Bảng~\ref{tab:loi-theo-cap} đếm cả số cơ hội, nên tỷ lệ cho biết lỗi hiếm hay thường gặp. Mỗi tác tử gặp một tập thế khác nhau, do đó tỷ lệ mô tả các thế thực sự xuất hiện chứ không phải một bài thi chung.
+\begin{itemize}
+\item L3 không sai lần nào ở cả ba loại. Nó vẫn thua, nghĩa là các ván thua của L3 bắt đầu từ trước tầm 4 ply này.
+\item L2 không bỏ thắng ngay hay chặn năm, nhưng sai 6{,}1--7{,}1\% số cơ hội chặn đòn kép. Cho L2 đi lại đúng 466 thế đó, nó chọn lại đúng nước cũ và cả 466 lần đều do luật P4: P4 chiếm ô đe doạ đầu tiên theo chỉ số mà không kiểm tra đối thủ còn ô đe doạ kép khác hay không.
+\item L4 sai nhiều ở hai loại phòng thủ. Ở chế độ A, khi có nhiều mô phỏng hơn, tỷ lệ bỏ chặn năm là 23{,}5\% so với 78{,}8\% ở chế độ B (800 mô phỏng), và tỷ lệ bỏ chặn đòn kép là 58{,}7\% so với 82{,}2\%.
+\item L5 chặn năm đúng mọi lần nhưng bỏ 13{,}4--15{,}4\% cơ hội thắng ngay, phù hợp với lỗi nhãn ở thế thắng ngay (Mục~\ref{sec:cs-du-lieu}). L6 giảm còn 3{,}1--5{,}1\%. Trong cả hai chế độ, L5 thua ván sau 36 trong 227 lần bỏ thắng ngay.
+\item L7 bỏ 8{,}6--9{,}4\% cơ hội thắng ngay, nhưng cả 230 lần đó L7 vẫn thắng ván: đây là thắng chậm hơn chứ không đổi kết quả. L8 còn 1{,}1\% (28 lần, đều vẫn thắng).
+\item Phòng thủ phân biệt rõ hai cấp có tìm kiếm trên mạng với policy thuần: tỷ lệ bỏ chặn đòn kép của L7, L8 là 0{,}1--0{,}4\%, của L5, L6 là 1{,}9--3{,}2\%.
+\end{itemize}
+Ván minh hoạ chọn theo quy tắc định trước, là ván thua dài nhất có lỗi của chính tác tử. L7 thua L8 ở ván 1225 (chế độ A, 92 nước), sai ở nước 89: đi E1 trong khi các nước đỡ được là A11, C11, F11. L8 thua L3 ở ván 405 (chế độ B, 71 nước), sai ở nước 68: đi I7 trong khi các nước đỡ được là D1, G1, I1. Hai ván xem lại được trên giao diện (\repoFile{notebooks/error_analysis.ipynb} liệt kê mã ván và nước đi).
+
+\subsection{MCTS trong A3 và A4}
+\paragraph{Phương pháp.}
+Với mọi ván MCTS thua trong A3 và A4 (tổng 2\,381 ván), script \texttt{report/scripts/phan\_tich\_loi\_mcts.py} phân loại lỗi bằng engine (\texttt{winning\_squares}), không đoán tay. Tại nước cuối của MCTS, nếu đối thủ có đúng một ô thắng ngay mà MCTS không chặn thì là ``bỏ sót chặn năm''. Nếu đối thủ đã có từ hai ô thắng (tứ hở, đòn kép) thì ván đã thua, và script xét nước kế cuối: nếu MCTS khi đó phải chặn một ô duy nhất và đã chặn đúng thì ván thua vì bị ép liên tiếp; nếu đối thủ có nước tạo từ hai ô thắng mà MCTS không ngăn là ``bỏ sót chặn ba hở / đòn kép''.
 
 \begin{table}[H]
   \centering
@@ -266,30 +416,33 @@ Với mọi ván MCTS thua trong A3 và A4 (tổng 2\,381 ván), script \texttt{
     \textbf{Cấu hình} & \textbf{Ván thua} & \textbf{Bỏ sót chặn ba hở / đòn kép} & \textbf{Bỏ sót chặn năm} \\
     \midrule
     A3, 100 mô phỏng   & 400 & 92{,}5\% & 7{,}5\% \\
-    A3, 400 mô phỏng   & 400 & 91{,}2\% & 8{,}8\% \\
+    A3, 400 mô phỏng   & 400 & 91{,}2\% & 8{,}5\% \\
     A3, 1600 mô phỏng  & 400 & 88{,}5\% & 11{,}5\% \\
-    A3, 6400 mô phỏng  & 381 & 92{,}9\% & 7{,}1\% \\
+    A3, 6400 mô phỏng  & 381 & 92{,}9\% & 5{,}8\% \\
     A4, \texttt{random} (800) & 400 & 89{,}8\% & 10{,}2\% \\
     A4, \texttt{light} (800)  & 400 & 65{,}2\% & 34{,}8\% \\
     \bottomrule
   \end{tabular}
-  \caption{Phân loại lỗi trong các ván MCTS thua. Một vài ván (dưới 2\%) thuộc lớp ``bỏ sót chặn năm ở nước kế cuối'' và được tính vào cột cuối.}
+  \caption{Phân loại lỗi trong các ván MCTS thua. Phần còn thiếu để đủ 100\% (1 ván ở mức 400 và 5 ván ở mức 6400 mô phỏng) là các ván đã chặn đúng nước bắt buộc nhưng vẫn thua.}
   \label{tab:loi-mcts}
 \end{table}
 
-Hai nhận xét rút ra từ Bảng~\ref{tab:loi-mcts}. Thứ nhất, lỗi chủ đạo ở mọi mức mô phỏng là không ngăn đe doạ kép sớm (khoảng 90\%); tăng mô phỏng từ 100 lên 6400 không đổi tỷ lệ này, khớp với thảo luận ở A3/A4 rằng cây quá nông cho cấu trúc 4 ply. Thứ hai, với rollout \texttt{light} tỷ lệ bỏ sót chặn năm \emph{tăng} lên 34{,}8\%, dù rollout đã biết chặn. Nguyên nhân là rollout chỉ chặn bên trong mô phỏng, còn ở gốc cây thì thống kê thăm quá thưa nên nước chặn bắt buộc có thể không được chọn.
+Hai nhận xét rút ra từ Bảng~\ref{tab:loi-mcts}. Thứ nhất, lỗi chủ đạo ở mọi mức mô phỏng là không ngăn đe doạ kép sớm (khoảng 90\%); tăng mô phỏng từ 100 lên 6400 không đổi tỷ lệ này, khớp với thảo luận ở A3/A4 rằng cây quá nông cho cấu trúc 4 ply. Thứ hai, với rollout \texttt{light} tỷ lệ bỏ sót chặn năm \emph{tăng} lên 34{,}8\%, dù rollout đã biết chặn. Nguyên nhân là rollout chỉ chặn bên trong mô phỏng, còn ở gốc cây thì thống kê thăm quá thưa nên nước chặn bắt buộc có thể không được chọn. Cơ chế cụ thể được đo ở Mục~\ref{sec:cs-chien-thuat}
+(Bảng~\ref{tab:cs-ct-rollout}): rollout chặn hộ sau một đáp trả ngẫu nhiên của đối thủ, làm nước không chặn trông tốt.
 
 \subsection{Kiểm chứng A8: chiến thuật tại gốc trên tập giữ riêng}
+A8 bật tuỳ chọn \texttt{root\_tactics} (Mục~\ref{sec:root-tactics}) cho MCTS rollout \texttt{light}, 800 mô phỏng, và so với bản tắt trên khai cuộc giữ riêng (\texttt{a8\_heldout}).
+\input{bang/a8}
+Bản tắt thua cả 200 ván. Bản bật đạt 23{,}0\% trước L2 và 5{,}5\% trước L3, và ván kéo dài từ khoảng 11 lên hơn 30 nước. Phân loại lỗi bằng cùng script: bản tắt thua 135 ván (67{,}5\%) do không ngăn đe doạ kép và 65 ván (32{,}5\%) do bỏ sót chặn năm. Trong 166 ván thua của bản bật, không còn ván nào bỏ sót chặn năm; 89 ván (53{,}6\%) thua sau khi đã chặn đúng nước bắt buộc (bị ép liên tiếp) và 77 ván (46{,}4\%) do không ngăn được đe doạ kép. Xử lý chiến thuật ở gốc sửa được lỗi nhìn một nước, nhưng MCTS vẫn kém xa L2 và L3 trước các chuỗi ép dài hơn. A8 chỉ đo hai đối thủ; trận trực tiếp giữa hai bản MCTS chưa chạy.
+
+\input{chapters/04b-du-lieu-mang}
+\input{chapters/04c-chien-thuat}
+\input{chapters/04d-van-thong-ke}
+\input{chapters/04e-tim-kiem}
 
 \section{Thảo luận}
-Các biến thể tìm kiếm cần được so sánh đồng thời về điểm và chi phí. Kết quả 82,5\%
-của L8 trước L7 là bằng chứng về cặp checkpoint đã đo. Cỡ mẫu 20 ván và sự trùng khai cuộc
-với giai đoạn gating giới hạn khả năng ngoại suy. L8 ghi 68,75\% trước AlphaBeta sau khi đổi màu. Để đo phần cải thiện
-trước AlphaBeta một cách ghép cặp, cần cho L7 và L8 gặp cùng phiên bản L3, dùng cùng
-khai cuộc, đổi màu, rồi bootstrap chênh lệch điểm trên từng khai cuộc.
-So sánh thời gian mỗi nước cũng cần giữ nguyên loại máy, backend và cách khởi tạo.
-Kết quả xác định sức chơi trên các đối sánh đã chạy, chưa xác định sức chơi tối ưu. Nên tái kiểm định trên bộ khai cuộc giữ riêng trước khi dùng các mức điểm này
-để xếp hạng chung.
+\paragraph{Sức chơi và chi phí.} Trên RR8 giữ riêng, hai cấp dùng mạng kèm tìm kiếm (L7, L8) đứng đầu và cũng tốn thời gian mỗi nước nhiều nhất. L6 đạt điểm ngang L3 ở độ sâu 4 với thời gian mỗi nước nhỏ hơn khoảng mười lần, nhưng phải trả trước chi phí huấn luyện. L4 tốn nhiều thời gian hơn L3 mà điểm thấp hơn nhiều, nên trong cài đặt này lấy mẫu không có tri thức là cách dùng ngân sách kém hiệu quả nhất.
 
-\subsection{Giải trên khai cuộc giữ riêng}
-\subsection{So sánh PUCT Python, Cython và gom suy luận trên GPU}
+\paragraph{Cỡ mẫu.} L8 trước L7 đạt 82{,}5\% trong lượt 20 ván sau huấn luyện nhưng 66{,}5\% và 64{,}0\% trong hai lượt RR8 100 ván. Lượt 20 ván có khoảng bất định rộng và cả 10 khai cuộc của nó đã xuất hiện trong gating, nên số từ RR8 đáng tin hơn. Giải chính với 200 ván cho 70{,}25\% (chế độ A) và 67{,}0\% (chế độ B). Tương tự, L8 trước L3 đạt 68{,}75\% khi L3 tìm ở độ sâu 6 và 82{,}5\% khi L3 ở độ sâu 4 (RR8 giữ riêng); hai số này đo hai đối thủ khác nhau.
+
+\paragraph{Giới hạn.} Mọi checkpoint chỉ huấn luyện một seed. So sánh cùng thời gian mới có một mức 1\,000 ms, và các lượt chế độ A đạt khối lượng tìm kiếm không đều. Giải chính dùng khai cuộc đã có trong dữ liệu huấn luyện, còn RR8 giữ riêng chỉ chạy ở chế độ ngân sách cố định. Phân tích độ nhạy theo độ sâu của L3 chưa làm riêng. Kết quả xác định sức chơi trên các đối sánh đã chạy, không phải sức chơi tối ưu.

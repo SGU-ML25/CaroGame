@@ -1,0 +1,19 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\footnotesize
+  \caption{Sáu lượt chạy tạo nên giải chính L1--L8: commit và cờ \texttt{dirty} trong \texttt{meta.json}, thời gian trung vị mỗi nước của L3 và số mô phỏng trung bình mỗi nước có tìm kiếm.}
+  \label{tab:giai-luot}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}llrlrrrrr@{}}
+    \toprule
+    Chế độ & Lượt & Ván & Commit & Dirty & L3 P50 (ms) & L4 mp & L7 mp & L8 mp \\
+    \midrule
+    A & L1--L6 & 3\,000 & \texttt{473e0f1} & không & 990 & 5\,485 & --- & --- \\
+    A & L7 & 1\,200 & \texttt{a9358da} & không & 990 & 2\,745 & 1\,197 & --- \\
+    A & L8 & 1\,400 & \texttt{a9358da} & có & 990 & 3\,042 & 1\,798 & 2\,600 \\
+    B & L1--L6 & 3\,000 & \texttt{473e0f1} & có & 295 & 800 & --- & --- \\
+    B & L7 & 1\,200 & \texttt{9cf55cd} & không & 368 & 800 & 800 & --- \\
+    B & L8 & 1\,400 & \texttt{6d10f33} & không & 432 & 800 & 800 & 800 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

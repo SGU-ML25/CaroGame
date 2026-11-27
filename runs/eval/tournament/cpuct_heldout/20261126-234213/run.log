@@ -1,0 +1,5 @@
+2026-11-26 23:42:13 INFO    run tournament/cpuct_heldout/20261126-234213 — config experiments/cpuct_heldout, seed 2026
+2026-11-26 23:42:13 INFO    Bắt đầu giải đấu: 400 ván cờ, 4 workers, chế độ challengers_vs_baselines.
+2026-11-26 23:59:32 INFO    Bảng điểm chung cuộc: {'L8-c0.5': 56.0, 'L7-200': 159.5, 'L8-c1.0': 66.0, 'L8-c3.0': 59.5, 'L8-c5.0': 59.0}
+2026-11-26 23:59:32 INFO    Đã lưu báo cáo thống kê tại: /mnt/data/1_Projects/AAI/CaroGame/runs/eval/tournament/cpuct_heldout/20261126-234213/reports
+2026-11-26 23:59:32 INFO    kết thúc: ok sau 1039.0 s

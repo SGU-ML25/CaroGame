@@ -1,0 +1,7 @@
+$ .venv/bin/python report/scripts/chuyen_sau/kiem_tra_goc.py
+22:51:14 .................................................. Current d=3
+22:51:48 .................................................. PreviousFirst d=3
+22:51:48 {'depth': 3, 'passes': 94, 'previous_first': 54, 'rank_median': 0, 'rank_max': 64, 'nodes_current': 391016, 'nodes_fixed': 384501, 'time_current': 35411.0, 'time_fixed': 34109.0, 'same_score': 50, 'same_move': 48, 'positions': 50}
+22:54:10 .................................................. Current d=4
+22:55:37 .................................................. PreviousFirst d=4
+22:55:37 {'depth': 4, 'passes': 134, 'previous_first': 61, 'rank_median': 1, 'rank_max': 64, 'nodes_current': 1351979, 'nodes_fixed': 1204604, 'time_current': 141688.7, 'time_fixed': 87273.3, 'same_score': 50, 'same_move': 47, 'positions': 50}

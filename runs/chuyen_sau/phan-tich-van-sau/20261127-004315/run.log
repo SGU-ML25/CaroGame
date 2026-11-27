@@ -1,0 +1,4 @@
+$ .venv/bin/python report/scripts/chuyen_sau/phan_tich_van_sau.py
+00:43:15 [(2749, 'L8-AlphaZero', 27, 58), (2769, 'L7-PUCT', 26, 30), (1216, 'L2-Rule', 27, 7), (1749, 'L8-AlphaZero', 27, 76), (2534, 'L6-PolicyRL', 29, 22)]
+00:44:01 KataGomo xong ván 2749
+00:45:02 KataGomo xong ván 2769

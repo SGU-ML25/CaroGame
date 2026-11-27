@@ -1,0 +1,128 @@
+{
+  "detailed_record_by_turn": {
+    "L7-200": {
+      "first_hand_X": {
+        "wins": 88,
+        "draws": 43,
+        "losses": 69
+      },
+      "second_hand_O": {
+        "wins": 43,
+        "draws": 14,
+        "losses": 143
+      },
+      "total": {
+        "wins": 131,
+        "draws": 57,
+        "losses": 212,
+        "score": 0.39875
+      }
+    },
+    "L8-c0.5": {
+      "first_hand_X": {
+        "wins": 28,
+        "draws": 5,
+        "losses": 17
+      },
+      "second_hand_O": {
+        "wins": 21,
+        "draws": 9,
+        "losses": 20
+      },
+      "total": {
+        "wins": 49,
+        "draws": 14,
+        "losses": 37,
+        "score": 0.56
+      }
+    },
+    "L8-c1.0": {
+      "first_hand_X": {
+        "wins": 40,
+        "draws": 1,
+        "losses": 9
+      },
+      "second_hand_O": {
+        "wins": 19,
+        "draws": 13,
+        "losses": 18
+      },
+      "total": {
+        "wins": 59,
+        "draws": 14,
+        "losses": 27,
+        "score": 0.66
+      }
+    },
+    "L8-c3.0": {
+      "first_hand_X": {
+        "wins": 36,
+        "draws": 4,
+        "losses": 10
+      },
+      "second_hand_O": {
+        "wins": 16,
+        "draws": 11,
+        "losses": 23
+      },
+      "total": {
+        "wins": 52,
+        "draws": 15,
+        "losses": 33,
+        "score": 0.595
+      }
+    },
+    "L8-c5.0": {
+      "first_hand_X": {
+        "wins": 39,
+        "draws": 4,
+        "losses": 7
+      },
+      "second_hand_O": {
+        "wins": 13,
+        "draws": 10,
+        "losses": 27
+      },
+      "total": {
+        "wins": 52,
+        "draws": 14,
+        "losses": 34,
+        "score": 0.59
+      }
+    }
+  },
+  "performance": {
+    "L7-200": {
+      "time_mean_ms": 256.5157255969319,
+      "time_p95_ms": 333.546,
+      "nodes_mean": 200.0
+    },
+    "L8-c0.5": {
+      "time_mean_ms": 249.21378758486904,
+      "time_p95_ms": 325.7055,
+      "nodes_mean": 200.0
+    },
+    "L8-c1.0": {
+      "time_mean_ms": 248.3044888888889,
+      "time_p95_ms": 325.156,
+      "nodes_mean": 200.0
+    },
+    "L8-c3.0": {
+      "time_mean_ms": 253.9788839941263,
+      "time_p95_ms": 331.599,
+      "nodes_mean": 200.0
+    },
+    "L8-c5.0": {
+      "time_mean_ms": 262.14565437089436,
+      "time_p95_ms": 347.922,
+      "nodes_mean": 200.0
+    }
+  },
+  "elo": {
+    "L8-c0.5": 1044.2661028209154,
+    "L7-200": 913.5857616031897,
+    "L8-c1.0": 1074.1834799467167,
+    "L8-c3.0": 989.563022054297,
+    "L8-c5.0": 978.401633574882
+  }
+}

@@ -71,7 +71,7 @@ Ablation & A1/A2/A3/A4/A5/A6/A7, A5b & A7b/A8b chưa chạy; A6 cần run 60 epo
 \paragraph{Quy ước dấu value.} Nhãn value trong dữ liệu SL v1/v2 là tuyệt đối (+1 nếu X thắng),
 trong khi mạng và RL cần tương đối (người đi thắng). Lỗi làm baseline REINFORCE và value của
 PUCT sai dấu ở khoảng một nửa số thế. Đã sửa ở SL v3 bằng \texttt{mover\_relative\_values}; đo
-lại MSE 0,356 và tương quan +0,778. Các run SL v1/v2 vẫn giữ nhãn cũ và được ghi rõ trong báo
+lại MSE 0,440 và tương quan +0,729. Các run SL v1/v2 vẫn giữ nhãn cũ và được ghi rõ trong báo
 cáo.
 
 \paragraph{Tham số model trong YAML.} File \texttt{resnet\_small.yaml} ghi \texttt{fc\_hidden:

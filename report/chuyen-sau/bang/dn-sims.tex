@@ -1,0 +1,17 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{Sức chơi của L8 theo số mô phỏng, đối thủ cố định L7}
+  \label{tab:cs-dn-sims}
+  \begin{tabular}{lcrcrrrr}
+    \toprule
+    Cấu hình L8 & T/H/B & Điểm & KTC 95\% & Khi X & Khi O & $p$ & Dài \\
+    \midrule
+    1 mô phỏng & 32/15/53 & 39,5 & [31; 48] & 53 & 26 & 0,110 & 30 \\
+    50 mô phỏng & 41/13/46 & 47,5 & [39; 56] & 68 & 27 & 1,000 & 29 \\
+    200 mô phỏng & 58/12/30 & 64,0 & [55; 72] & 81 & 47 & 0,005 & 28 \\
+    800 mô phỏng & 69/7/24 & 72,5 & [65; 80] & 86 & 59 & $<0{,}001$ & 28 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Mỗi dòng 100 ván gặp L7 (200 mô phỏng, $c_{puct}=1{,}5$) trên 50 khai cuộc giữ riêng đổi màu. $p$: kiểm định dấu theo khai cuộc, chưa hiệu chỉnh so sánh nhiều lần.}
+\end{table}

@@ -1,0 +1,21 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{Nước cuối cùng của bên thua trong các ván có thắng thua}
+  \label{tab:cs-nuoc-ketthuc}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    Bên thua & Ván & Đòn kép & Sót chặn & Bỏ thắng & Hết nước đỡ & Khác \\
+    \midrule
+    L1 Random & 699 & 640 & 48 & 11 & 0 & 0 \\
+    L2 Rule & 378 & 378 & 0 & 0 & 0 & 0 \\
+    L3 AlphaBeta & 270 & 270 & 0 & 0 & 0 & 0 \\
+    L4 MCTS & 601 & 573 & 28 & 0 & 0 & 0 \\
+    L5 PolicySL & 343 & 336 & 0 & 7 & 0 & 0 \\
+    L6 PolicyRL & 267 & 252 & 15 & 0 & 0 & 0 \\
+    L7 PUCT & 111 & 92 & 19 & 0 & 0 & 0 \\
+    L8 AlphaZero & 63 & 61 & 2 & 0 & 0 & 0 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize ``Đòn kép'': trước nước cuối của bên thua, đối thủ đã có từ hai ô thắng. ``Sót chặn'': còn một ô thắng mà không chặn. ``Bỏ thắng'': bên thua có nước thắng ngay nhưng đi chỗ khác. ``Hết nước đỡ'': không nước nào ngăn được VCF.}
+\end{table}

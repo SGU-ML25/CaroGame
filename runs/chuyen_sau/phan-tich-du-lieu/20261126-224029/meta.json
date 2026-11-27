@@ -1,0 +1,81 @@
+{
+  "started": "2026-11-26T22:40:29",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/phan_tich_du_lieu.py"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "phan-tich-du-lieu",
+  "title": "Nhãn policy hoà điểm trong dữ liệu expert và ảnh hưởng lên tập test",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "runs/data/expert_v2/expert_dataset.npz",
+      "bytes": 8587462,
+      "sha256": "1328859331a5e03b36e2a6c438d8c0b5e7e6c8df3f42218aad61af8535cd5837"
+    },
+    {
+      "path": "runs/data/expert_v1/expert_dataset.npz",
+      "bytes": 529428,
+      "sha256": "0b9d71ab610e74ebefcdd60c27fd06bdeb5d3cd77f0078880ec3283c092ccdc0"
+    },
+    {
+      "path": "runs/train/a6_noaug/best.pt",
+      "bytes": 1953169,
+      "sha256": "b5ba91e7e3a76b3bb27599319655e78f7f8aa186aa81ad24229a5c91c93662c7"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/phan_tich_du_lieu.py",
+      "bytes": 6551,
+      "sha256": "7ceff9f4e19b3f4dfbb3a9d232d5c8ae8ebcdaeac991b12e71b39388efed1cc0"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/phan_tich_mang.py",
+      "bytes": 9475,
+      "sha256": "06ae6305bd0e4c40e91fd4c377ff77b1a0040342ffce2ed2f513b5cc174cd57e"
+    },
+    {
+      "path": "caro/training/gen_expert_data.py",
+      "bytes": 12826,
+      "sha256": "6b2cd28e206eada50e012dbb51838180d4eff7807a9dea842235b72dd33a7abb"
+    },
+    {
+      "path": "caro/agents/alphabeta.py",
+      "bytes": 21464,
+      "sha256": "3dccf8180d071d634f21c1d86c0a0301e188e0c197e91ba00f65a1b188f98deb"
+    }
+  ],
+  "ended": "2026-11-26T22:41:45",
+  "duration_s": 76.6,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/data/phan-tich-du-lieu.json",
+      "bytes": 18242,
+      "sha256": "5e2f7f6910ebbee016da55d709dd300d584627729ae7ebb91002fd753a5f0227"
+    }
+  ]
+}

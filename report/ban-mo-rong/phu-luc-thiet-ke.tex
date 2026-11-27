@@ -48,7 +48,7 @@ L2. Rẻ và có thể cho thấy một phần lý do MCTS yếu.
 $\lambda=0.5$; \texttt{batch\_leaves} 1 hoặc 32.
 \paragraph{Phân tích.} $c_{\text{puct}}$ điều chỉnh mức tin vào prior. Nếu prior tốt, $c$ nhỏ
 giúp khai thác; nếu prior kém, $c$ lớn giúp tìm kiếm sửa sai. Trong dự án, prior đến từ SL v3
-(top-1 67,8\%), không hoàn hảo, nên $c=1.5$ là lựa chọn trung dung. \texttt{leaf\_eval=mix}
+(top-1 66,8\%), không hoàn hảo, nên $c=1.5$ là lựa chọn trung dung. \texttt{leaf\_eval=mix}
 trộn value với rollout, có thể giảm phương sai nhưng thêm chi phí; chưa đo. \texttt{batch\_leaves}
 ảnh hưởng thông lượng, không ảnh hưởng kết quả lý thuyết nếu virtual loss đúng.
 \paragraph{Khuyến nghị.} Chạy A11: L7 200 mô phỏng với $c_{\text{puct}} \in \{0.5,1.0,1.5,2.5\}$
@@ -57,7 +57,7 @@ trước L3, 100 ván mỗi mức. Đây là ablation có khả năng tạo khá
 \section{Dữ liệu chuyên gia}
 \paragraph{Hiện tại.} \texttt{expert\_v2}: 20\,000 ván, top-k 5, temperature 8.0, depth 3.
 \paragraph{Phương án.} Top-k 3 với temperature 0.5 (v1), top-k 5 với temperature 1, depth 4.
-\paragraph{Bằng chứng.} SL v1 (v1 data) top-1 44,0\%; SL v2 (v2 data) top-1 65,3\%. Đây là bằng
+\paragraph{Bằng chứng.} SL v1 (v1 data) top-1 44,8\%; SL v2 (v2 data) top-1 65,3\%. Đây là bằng
 chứng mạnh rằng đa dạng dữ liệu quan trọng hơn số epoch. Tuy nhiên, chưa tách riêng tác dụng
 của top-k và temperature; cả hai thay đổi cùng lúc.
 \paragraph{Phân tích.} Temperature cao làm nhãn mềm hơn, mạng học nhiều nước hơn nhưng có thể

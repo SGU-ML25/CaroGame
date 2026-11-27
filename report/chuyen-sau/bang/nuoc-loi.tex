@@ -1,0 +1,21 @@
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \caption{Lỗi chiến thuật từng nước trong 2.800 ván RR8 giữ riêng}
+  \label{tab:cs-nuoc-loi}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    Tác tử & Nước & Bỏ thắng & Sót chặn & Bỏ VCF & Để hở VCF & Lỗi/100 \\
+    \midrule
+    L1 Random & 3.553 & 56/57 & 120/122 & 133/137 & 847/2421 & 32,54 \\
+    L2 Rule & 7.094 & 0/313 & 0/1053 & 42/384 & 293/4941 & 4,72 \\
+    L3 AlphaBeta & 9.028 & 0/398 & 0/1031 & 59/615 & 97/6693 & 1,73 \\
+    L4 MCTS & 3.727 & 253/352 & 66/73 & 358/433 & 636/2280 & 35,23 \\
+    L5 PolicySL & 7.544 & 60/408 & 0/912 & 26/558 & 173/5329 & 3,43 \\
+    L6 PolicyRL & 8.389 & 14/422 & 20/1163 & 34/610 & 191/5925 & 3,09 \\
+    L7 PUCT & 8.300 & 23/586 & 21/1064 & 59/922 & 72/5635 & 2,11 \\
+    L8 AlphaZero & 9.053 & 1/603 & 10/1344 & 64/978 & 41/6063 & 1,28 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\parbox{.95\linewidth}{\footnotesize Mẫu số của mỗi cột là số lượt mà tình huống đó xuất hiện. ``Để hở VCF'': không có đường thắng ép, còn nước an toàn nhưng chọn nước cho đối thủ có VCF; mẫu số là mọi lượt yên tĩnh.}
+\end{table}

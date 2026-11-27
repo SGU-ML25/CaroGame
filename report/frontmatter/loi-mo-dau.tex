@@ -5,13 +5,26 @@
 \section*{1. Lý do chọn đề tài}
 Caro 11×11 có luật đủ đơn giản để kiểm chứng bằng một engine dùng chung, đồng thời có đủ tình huống chiến thuật để so sánh cách ra quyết định. Đồ án xây dựng tám cấp tác tử, từ chọn nước ngẫu nhiên, luật, tìm kiếm đến policy học được và tự đấu với PUCT. Các đối sánh đổi màu trên cùng khai cuộc giúp phân biệt sức chơi với một phần ảnh hưởng của bên đi trước.
 
-Các kết quả chính cho thấy cắt tỉa AlphaBeta giảm chi phí trên bộ thế đã benchmark.
-Với cùng mạng L5, thêm PUCT ở 200 mô phỏng nâng điểm trước AlphaBeta từ 21,0\% lên
-58,5\%. Checkpoint L8 được giữ ở vòng 37 đạt 82,5\% trước L7 và 68,75\% trước AlphaBeta
-trong hai lượt đánh giá riêng. Kết quả đủ để so sánh trong các thiết lập đã đo,
-còn sức chơi theo cùng thời gian và độ ổn định trên khai cuộc mới cần thí nghiệm bổ sung.
+Các kết quả chính: cắt tỉa Alpha-Beta giảm số nút khoảng 20 lần ở độ sâu 3 và sắp xếp nước giảm thêm 5,7--190 lần ở độ sâu 3--5 mà không đổi nước chọn. Trên giải tám cấp với bộ khai cuộc không trùng dữ liệu huấn luyện (100 ván mỗi cặp), L8 đạt 88,5\%, L7 82,3\%, L6 60,1\%, L3 59,1\%, L5 50,4\%, L2 45,4\%, L4 14,1\% và L1 0,1\%. Giải chính tám cấp, 200 ván mỗi cặp ở hai chế độ ngân sách, cho cùng thứ tự đó. Với cùng mạng L5, thêm PUCT ở 200 mô phỏng nâng điểm trước Alpha-Beta độ sâu 6 từ 21,0\% lên 58,5\%. Các kết luận chỉ áp dụng cho cấu hình và ngân sách đã đo, với một seed huấn luyện cho mỗi mô hình.
 
 \section*{2. Kế hoạch và tiến độ 8 tuần}
+Lộ trình đặt ra ở đề xuất đồ án và công việc thực tế lấy từ lịch sử repo (chi tiết ở Phụ lục~\ref{app:nhat-ky}) được đối chiếu trong bảng sau.
+
+{\small\noindent
+\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Tuần} & \textbf{Kế hoạch} & \textbf{Thực tế đến 27/11/2026} \\
+\midrule
+1 & Engine bitboard, test đối chiếu & Đã xong \\
+2 & Interface, cấp 1--2, arena, thống kê, CI & Interface và cấp 1 xong; cấp 2, arena và thống kê kéo sang tuần 3--4 \\
+3 & Cấp 3; A1, A2, A7 & Cấp 2, cấp 3, A1, A2, A7 xong \\
+4 & Cấp 4; A3, A4; giao diện bản đầu & Giao diện, arena, cấp 4; A3, A4 chạy ở tuần 5 \\
+5 & Mạng, dữ liệu chuyên gia, cấp 5 & Đã xong, cùng bản đầu của cấp 6 \\
+6 & Cấp 6, nếu kịp thì cấp 7 & Cấp 6, 7 xong; dữ liệu v2, SL v3 sửa lỗi value, lõi Cython \\
+7 & Giải chính thức, nếu kịp thì cấp 8; hoàn thiện giao diện & Cấp 8, giải chính L1--L8, RR8, A5, A5b, A6, E3, phân tích lỗi; giao diện \\
+8 & Phân tích lỗi, notebook, README, demo, báo cáo, slide, poster & Chưa diễn ra; tuần 7 đã có phân tích lỗi, báo cáo, bản đầu slide và poster \\
+\bottomrule
+\end{tabularx}}
 
 \section*{3. Cấu trúc báo cáo}
 Chương 1 giới thiệu bài toán và câu hỏi nghiên cứu. Chương 2 trình bày cơ sở thuật toán. Chương 3 mô tả cách mã hóa bàn cờ, cài đặt tác tử và huấn luyện. Chương 4 trình bày kết quả cùng điều kiện từng phép đo. Chương 5 tổng hợp kết luận và hướng phát triển. Phụ lục~\ref{app:tai-lap} chỉ rõ nguồn số liệu và cách tái lập; các ván minh họa được phân tích ở Chương~\ref{ch:thuc-nghiem}.

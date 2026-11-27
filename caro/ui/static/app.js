@@ -23,6 +23,7 @@ const ui = {
   replay: null,      // {record, ply}
   busy: false,       // đang chờ tác tử đi
   creatingEve: false,
+  eveApplied: null,  // cấu hình trên bảng lúc tạo ván máy–máy đang chơi
   running: null,     // định danh lượt chạy tự động hiện tại
   playing: false,    // đang phát replay
   token: 0,          // tăng mỗi khi đổi ván / chế độ, để bỏ qua phản hồi của ván cũ
@@ -290,6 +291,7 @@ function renderControls() {
     $("pve-undo").disabled = ui.busy || !undoable;
   }
   $("eve-run").textContent = ui.running ? "Tạm dừng" : "Chạy";
+  $("eve-stale").hidden = !(ui.mode === "eve" && live && !ui.creatingEve && eveSettings() !== ui.eveApplied);
   $("eve-new").disabled = ui.creatingEve;
   $("eve-run").disabled = ui.creatingEve || Boolean(g && !live) || (ui.busy && !ui.running);
   $("eve-step").disabled = ui.creatingEve || !live || Boolean(ui.running) || ui.busy;
@@ -370,6 +372,20 @@ function readBudget(id) {
     budget[label.dataset.key] = value;
   }
   return budget;
+}
+
+// Mọi ô cấu hình chỉ có tác dụng khi tạo ván: gom giá trị đang hiện để biết người dùng đã đổi gì chưa.
+function eveSettings() {
+  const values = ["eve-x", "eve-o", "eve-opening", "eve-seed"].map((id) => $(id).value);
+  for (const side of ["eve-x", "eve-o"]) {
+    const container = document.querySelector(`[data-agent="${side}"]`);
+    if (container.querySelector(".budget-mode").hidden) continue;
+    values.push(container.querySelector('input[type="radio"]:checked').value);
+    for (const label of container.querySelectorAll("[data-key]")) {
+      if (!label.hidden) values.push(label.querySelector("input").value);
+    }
+  }
+  return JSON.stringify(values);
 }
 
 function readSeed(id) {
@@ -497,9 +513,11 @@ async function newEve() {
     };
     if (kind === "id") body.opening_id = value;
     else body.opening_plies = Number(value);
+    const settings = eveSettings();
     const g = await api("/games", { method: "POST", body });
     if (token !== ui.token) return;
     ui.game = g;
+    ui.eveApplied = settings;
     ui.evePly = null;
     return g;
   } catch (error) {
@@ -694,6 +712,7 @@ async function main() {
     if (ui.game || await newEve()) runEve();
   });
   $("eve-step").addEventListener("click", stepEve);
+  for (const type of ["input", "change"]) $("panel-eve").addEventListener(type, renderControls);
   $("eve-prev").addEventListener("click", () => seekEve(-1));
   $("eve-next").addEventListener("click", () => seekEve(1));
   $("heat").addEventListener("change", (e) => {

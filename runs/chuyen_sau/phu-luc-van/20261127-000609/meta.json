@@ -1,0 +1,76 @@
+{
+  "started": "2026-11-27T00:06:09",
+  "argv": [
+    ".venv/bin/python",
+    "report/scripts/chuyen_sau/phu_luc_van.py"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "phu-luc-van",
+  "title": "Sinh phụ lục 28 ván đại diện",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "inputs": [
+    {
+      "path": "runs/eval/tournament/rr8_heldout/20261126-194315/games.jsonl",
+      "bytes": 1962914,
+      "sha256": "a3e6b19239dd4171fcd45c77cc2c178cfd83eded2eaef753a03b6bcf2767d4d0"
+    },
+    {
+      "path": "report/chuyen-sau/data/phan-tich-van.json",
+      "bytes": 1554922,
+      "sha256": "ecd4690ffa66b11a01abadd64a03da88bee0caea6b8184eb95281b4fc00b284c"
+    },
+    {
+      "path": "report/chuyen-sau/data/phan-tich-thong-ke.json",
+      "bytes": 65938,
+      "sha256": "56844a28a81a7cf3583daf6c0c9a6a9db9681eaa543c31e849d35eee7b761b10"
+    }
+  ],
+  "code": [
+    {
+      "path": "report/scripts/chuyen_sau/phu_luc_van.py",
+      "bytes": 8172,
+      "sha256": "598790cbc709e8849a5681444043c27cf0056e21ed4f9325605ea231380b608a"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/vcf.py",
+      "bytes": 4756,
+      "sha256": "b62049548276e40bc40925ce0288bc0ce432283efcda3a8be85d45b1216666af"
+    },
+    {
+      "path": "report/scripts/chuyen_sau/chung.py",
+      "bytes": 5979,
+      "sha256": "aabcf97ed8fa0727e84d8215e73bded79050f0a0110d89ef82ec5539f21d94e1"
+    }
+  ],
+  "ended": "2026-11-27T00:06:09",
+  "duration_s": 0.2,
+  "exit_code": 0,
+  "outputs": [
+    {
+      "path": "report/chuyen-sau/bang/pl-van.tex",
+      "bytes": 241715,
+      "sha256": "b28573feef89fc58cc33cd21dd21f097618ff49068acb8e4b543b9331d8c3fc5"
+    }
+  ]
+}

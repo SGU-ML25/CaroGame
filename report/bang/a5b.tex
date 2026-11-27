@@ -1,0 +1,17 @@
+% Sinh bởi report/scripts/bang_chuong4.py — không sửa tay.
+\begin{table}[H]
+  \centering\small
+  \caption{A5b: điểm (\%) và khoảng Wilson 95\% của checkpoint tốt nhất sau 49\,920 episode REINFORCE, 100 ván mỗi ô, một seed.}
+  \label{tab:a5b}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    Đối thủ & Khởi tạo từ SL v3 & Khởi tạo ngẫu nhiên \\
+    \midrule
+    L1-Random & 100{,}0 [96{,}3; 100{,}0] & 100{,}0 [96{,}3; 100{,}0] \\
+    L2-Rule & 81{,}0 [72{,}2; 87{,}5] & 0{,}0 [0{,}0; 3{,}7] \\
+    L3-AlphaBeta & 37{,}0 [28{,}2; 46{,}8] & 0{,}0 [0{,}0; 3{,}7] \\
+    L5-PolicySL & 66{,}5 [56{,}8; 75{,}0] & 0{,}0 [0{,}0; 3{,}7] \\
+    \bottomrule
+  \end{tabular}
+\end{table}

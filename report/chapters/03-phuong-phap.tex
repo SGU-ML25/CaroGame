@@ -295,6 +295,7 @@ Hình~\ref{fig:o-thang} ghép hàng 5 của ví dụ với một chuỗi chéo $
 \end{figure}
 
 \subsubsection{Hàm đánh giá theo cửa sổ}
+\label{sec:bb-luong-gia}
 Hàm \texttt{evaluate} chấm thế cờ bằng số cửa sổ sống của mỗi bên, cửa sổ càng nhiều quân càng có giá trị. Gọi $n_k^{(d)}$ là số bit 1 của $\mathrm{exactly}(k)$ theo hướng $d$ và $w = (w_1, w_2, w_3, w_4) = (1, 8, 64, 512)$:
 \begin{align}
   \mathrm{score}(\mathit{me}, \mathit{opp}) &= \sum_{d} \sum_{k=1}^{4} w_k\, n_k^{(d)}, \\
@@ -460,7 +461,7 @@ Lỗi bitboard thường chỉ lộ ở mép bàn, nên ngoài các ca dựng ta
   \end{tabularx}
 \end{table}
 
-Ba file \texttt{test\_bitboard.py}, \texttt{test\_game.py} và \texttt{test\_symmetry.py} gồm 57 test (lần lượt 33, 20 và 4), và cả 57 test đều đạt khi chạy ngày 04/11/2026 trên commit \texttt{9c501f8}. Bộ test cũng là một phần của CI trong \texttt{.github/workflows/ci.yml}.
+Ba file \texttt{test\_bitboard.py}, \texttt{test\_game.py} và \texttt{test\_symmetry.py} gồm 57 test (lần lượt 33, 20 và 4), và cả 57 test đều đạt khi chạy ngày 04/11/2026 trên commit \texttt{9c501f8}. Bộ test cũng là một phần của CI trong \texttt{.github/workflows/ci.yml}. Ngoài ba file này, \texttt{test\_perft.py} đếm mọi chuỗi nước qua \texttt{step}/\texttt{undo} ở độ sâu 1--3 và đối chiếu với $121!/(121-d)!$ (\num{121}, \num{14520}, \num{1727880}); cả ba độ sâu đều khớp.
 
 \section{Interface tác tử}
 Mọi tác tử cấp 1--8 chỉ giao tiếp với arena, huấn luyện và giao diện qua một giao thức chung \texttt{Agent} trong \texttt{caro/agents/base.py}, gồm ba phương thức:
@@ -475,7 +476,7 @@ Lớp \texttt{BaseAgent} cài sẵn phần chung (tên, ngân sách mặc địn
 Lớp \texttt{Limits} (bất biến) gồm \texttt{mode} $\in$ \{\texttt{time}, \texttt{fixed}\} cùng ba giới hạn \texttt{time\_ms}, \texttt{max\_depth}, \texttt{max\_sims}; giá trị \texttt{None} nghĩa là tác tử tự chọn mặc định. Chế độ \texttt{time} bắt buộc có \texttt{time\_ms} (chế độ A), chế độ \texttt{fixed} dùng độ sâu hoặc số mô phỏng cố định (chế độ B). Lớp \texttt{Deadline} được tạo ngay khi vào \texttt{select\_action}, và vòng tìm kiếm gọi \texttt{expired()} để biết lúc dừng; có thể trừ một biên an toàn (10\,ms cho Alpha-Beta, 5\,ms cho MCTS).
 
 \paragraph{Đăng ký và dựng tác tử.}
-Bảng \texttt{REGISTRY} ánh xạ \texttt{kind} trong file YAML sang lớp cài đặt (\texttt{random}, \texttt{rule\_based}, \texttt{alphabeta}, \texttt{mcts}). Hàm \texttt{make\_agent} đọc config đã ghép, chuyển \texttt{params} thành tham số khởi tạo, \texttt{limits} thành \texttt{Limits}, \texttt{id} thành tên, và báo lỗi nếu có tham số lạ. Lớp chỉ được import khi cần nên cấp 1--4 không kéo theo PyTorch.
+Bảng \texttt{REGISTRY} ánh xạ \texttt{kind} trong file YAML sang lớp cài đặt (\texttt{random}, \texttt{rule\_based}, \texttt{alphabeta}, \texttt{mcts}, \texttt{policy}, \texttt{puct}, \texttt{katagomo}). Hàm \texttt{make\_agent} đọc config đã ghép, chuyển \texttt{params} thành tham số khởi tạo, \texttt{limits} thành \texttt{Limits}, \texttt{id} thành tên, và báo lỗi nếu có tham số lạ. Lớp chỉ được import khi cần nên cấp 1--4 không kéo theo PyTorch.
 
 \paragraph{Khoá thống kê chuẩn.}
 \texttt{last\_stats()} chỉ ghi các khoá tác tử có, theo tên cố định để arena và giao diện đọc thống nhất: \texttt{nodes}, \texttt{sims}, \texttt{depth}, \texttt{time\_ms}, \texttt{pv}, \texttt{score}, \texttt{reason}, \texttt{visits}, \texttt{policy}, \texttt{value}.
@@ -496,9 +497,9 @@ Cấp 2 (\texttt{rule\_agent.py}, \texttt{kind: rule\_based}) nhìn trước đ�
 \end{enumerate}
 Thứ tự này giải quyết các xung đột giữa luật: tự tạo đòn kép (P3) đứng trước phá đòn kép của đối thủ (P4), vì thế nếu cả hai cùng có thì bên mình ra đòn trước; phá đòn kép (P4) đứng trước tạo tứ (P5) vì tứ chưa thắng ngay còn đòn kép của đối thủ thì thắng chắc. Danh sách luật bật (\texttt{priorities}) và trọng số (\texttt{eval\_weights}) đều cấu hình được để làm ablation A7. Hạn chế của cấp 2 là chỉ nhìn một nước nên không thấy chuỗi tấn công dài (VCF) và dễ bị đòn kép hình thành từ hai nước trở lên.
 \subsection{Cấp 3 --- Negamax Alpha-Beta}
-Cấp 3 (\texttt{alphabeta.py}, \texttt{kind: alphabeta}) hiện thực Negamax với cắt tỉa Alpha-Beta theo Mục~\ref{sec:lt-alpha-beta}. Điểm thắng là $\text{WIN\_SCORE}=10^6$ trừ đi số ply, nhờ vậy tác tử ưu tiên thắng nhanh và kéo dài khi sắp thua. Nút lá được chấm bằng hàm \texttt{evaluate} theo cửa sổ 5 ô của engine (Mục~\ref{sec:lt-bo-tro}), và nước đi ứng viên lấy từ \texttt{candidates} bán kính 2. Các thành phần, mỗi thành phần có công tắc riêng trong config để phục vụ ablation A1, A2, A7:
+Cấp 3 (\texttt{alphabeta.py}, \texttt{kind: alphabeta}) hiện thực Negamax với cắt tỉa Alpha-Beta theo Mục~\ref{sec:lt-alpha-beta}. Điểm thắng là $\text{WIN\_SCORE}=10^6$ trừ đi số ply, nhờ vậy tác tử ưu tiên thắng nhanh và kéo dài khi sắp thua. Nút lá được chấm bằng hàm \texttt{evaluate} theo cửa sổ 5 ô của engine (Mục~\ref{sec:bb-luong-gia}), và nước đi ứng viên lấy từ \texttt{candidates} bán kính 2. Các thành phần, mỗi thành phần có công tắc riêng trong config để phục vụ ablation A1, A2, A7:
 \begin{itemize}
-  \item \textbf{Iterative deepening} (\texttt{iterative\_deepening}): tìm lần lượt độ sâu $1,2,\dots$ đến \texttt{max\_depth} (mặc định 6); dừng khi hết giờ hoặc khi đã thấy thắng ép buộc, và đưa nước tốt nhất của độ sâu trước lên đầu danh sách. Kết quả của độ sâu dở dang bị bỏ.
+  \item \textbf{Iterative deepening} (\texttt{iterative\_deepening}): tìm lần lượt độ sâu $1,2,\dots$ đến \texttt{max\_depth} (mặc định 6); dừng khi hết giờ hoặc khi đã thấy thắng ép buộc, và đưa nước tốt nhất của độ sâu trước lên đầu danh sách (hàm tìm ở gốc sau đó sắp xếp lại danh sách nên thứ tự này không phải lúc nào cũng được giữ, Mục~\ref{sec:cs-goc}). Kết quả của độ sâu dở dang bị bỏ.
   \item \textbf{Cắt tỉa} (\texttt{pruning}, A1): tắt thì duyệt đầy đủ minimax để đo hiệu quả của cắt tỉa.
   \item \textbf{Bảng chuyển vị} (\texttt{tt}, A2): bảng băm theo khoá Zobrist, mỗi mục lưu (giá trị, độ sâu, cờ, nước tốt nhất) với cờ \texttt{EXACT}/\texttt{LOWER}/\texttt{UPPER} theo cận alpha--beta; thay thế kiểu replace-always, kích thước \texttt{tt\_size\_mb} (64\,MB mặc định). Không ghi bảng khi đã hết giờ để tránh lưu giá trị chưa trọn vẹn.
   \item \textbf{Nước bắt buộc} (\texttt{forced\_moves}): nếu có ô thắng ngay thì chỉ xét các ô đó; nếu không, mà đối thủ có ô thắng thì chỉ xét các ô chặn.
@@ -557,21 +558,98 @@ L8 dùng cùng lớp PUCT khi thi đấu. Sự khác biệt nằm ở checkpoint
 
 \section{Dữ liệu và quy trình huấn luyện}
 \subsection{Sinh dữ liệu chuyên gia}
-Bộ sinh chuyên gia gọi AlphaBeta lấy top-$k$ nước và điểm ở gốc. Nhãn policy là phân phối mềm trên các nước được chọn; nhãn value đến từ kết quả cuối. Cấu hình sinh dữ liệu chia tập theo ván, không chia các thế liên tiếp của cùng ván giữa train và validation. Khóa đối xứng D4 được dùng khi khử trùng. Các kích thước trong YAML là mục tiêu chạy, không thay thế số mẫu thực tế từ log.
+Bộ sinh chuyên gia (\texttt{gen\_expert\_data.py}) cho Alpha-Beta độ sâu 3 chấm top-$k$ nước ở gốc, đi một nước lấy mẫu theo softmax của điểm và dùng chính phân phối đó làm nhãn policy mềm; nhãn value là kết quả cuối ván. Mỗi ván bắt đầu từ một khai cuộc chọn ngẫu nhiên trong \texttt{runs/openings/openings\_v1.json}. Các thế trùng nhau theo đối xứng D4 chỉ giữ một lần, và tập được chia 80/10/10 \emph{theo ván}. Bảng~\ref{tab:du-lieu} ghi quy mô thực tế của hai bộ dữ liệu.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Hai bộ dữ liệu chuyên gia. Số mẫu và số ván đóng góp đếm từ tệp \texttt{expert\_dataset.npz}; ván mà mọi thế đều đã gặp không còn mẫu nào sau khử trùng.}
+  \label{tab:du-lieu}
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    & expert\_v1 & expert\_v2 \\
+    \midrule
+    Số ván chơi & \num{20000} & \num{20000} \\
+    Top-$k$ / nhiệt độ softmax & 3 / 0{,}5 & 5 / 8 \\
+    Số ván còn mẫu sau khử trùng & \num{2758} & \num{18822} \\
+    Số mẫu (thế khác nhau) & \num{27720} & \num{297098} \\
+    Mẫu train / val / test & --- & \num{238083} / \num{30360} / \num{28655} \\
+    Checkpoint học trên bộ này & SL v1 & SL v2, SL v3 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Điểm của các nước tốt nhất thường cách nhau vài chục đơn vị, nên nhiệt độ 0{,}5 ở bản đầu gần như luôn chọn đúng một nước: \num{20000} ván chỉ còn \num{27720} thế khác nhau. Bản hai tăng nhiệt độ lên 8 và lấy top-5 để dữ liệu đa dạng hơn. Cả hai bộ dùng khai cuộc của tệp trên, cũng là bộ khai cuộc của các giải đầu tiên; Mục~\ref{sec:khai-cuoc} nêu hệ quả và cách kiểm soát.
+
 \subsection{Huấn luyện có giám sát và học tăng cường}
-Học có giám sát tối ưu đồng thời phân phối policy và value. Khi tăng cường D4, bàn cờ và nhãn policy cùng biến đổi; value và bên đến lượt được giữ nguyên. Về sau REINFORCE thay mục tiêu policy bằng log-xác suất của nước đã đi có trọng số ưu thế, còn L8 thay bằng phân phối thăm PUCT. Không dùng một giá trị loss để xếp hạng các cấp có mục tiêu khác nhau.
+Học có giám sát tối ưu đồng thời phân phối policy và value. Khi tăng cường D4, bàn cờ và nhãn policy cùng biến đổi; value và bên đến lượt được giữ nguyên. Về sau REINFORCE thay mục tiêu policy bằng log-xác suất của nước đã đi có trọng số ưu thế, còn L8 thay bằng phân phối thăm PUCT. Không dùng một giá trị loss để xếp hạng các cấp có mục tiêu khác nhau. Bảng~\ref{tab:sieu-tham-so} ghi siêu tham số của các lượt chạy tạo ra checkpoint được dùng, lấy từ \texttt{config.yaml} đã lưu cùng lượt chạy.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Siêu tham số huấn luyện. Seed gốc của mọi lượt là 2026; mỗi cấu hình chỉ chạy một seed.}
+  \label{tab:sieu-tham-so}
+  \begin{tabularx}{\textwidth}{@{}l X@{}}
+    \toprule
+    \textbf{Giai đoạn} & \textbf{Thiết lập} \\
+    \midrule
+    SL (cấp 5) & Adam, tốc độ học $10^{-3}$, weight decay $10^{-4}$, batch 256, loss = cross-entropy policy $+$ MSE value, augment D4 trên tập train. v1, v2: 30 epoch, tốc độ học cố định; v3: 60 epoch, giảm theo cosine. Cấu hình đặt dừng sớm khi validation loss không giảm sau 5 epoch liên tiếp. \\
+    REINFORCE (cấp 6, v3) & Khởi tạo từ SL v3; Adam $2\cdot10^{-4}$; 128 ván/vòng; \num{49920} episode; $\gamma = 1$; baseline là value head; entropy $0{,}01$ nhân $0{,}999$ mỗi vòng; nhiệt độ 1; khai cuộc ngẫu nhiên 2 nước; đối thủ 50\% bản mới nhất, 50\% checkpoint cũ (thêm vào pool mỗi 5 vòng); cắt gradient 1{,}0; đánh giá mỗi \num{5000} episode, 100 ván trước L2 và L3. \\
+    Tự đấu L8 & 50 vòng, mỗi vòng 200 ván ở 400 mô phỏng; $c_{\mathrm{PUCT}} = 1{,}5$; nhiễu Dirichlet $\alpha = 0{,}3$, $\varepsilon = 0{,}25$; nhiệt độ 1 trong 8 nước đầu rồi về 0. \\
+    Cập nhật L8 & Khởi tạo từ L5; Adam $10^{-3}$, weight decay $10^{-4}$; batch 256; \num{1000} bước/vòng; cửa sổ \num{5000} ván; augment D4. \\
+    Gating L8 & 100 ván đổi màu ở 200 mô phỏng; nhận ứng viên khi điểm từ 55\% trở lên. \\
+    PUCT khi thi đấu (L7, L8) & $c_{\mathrm{PUCT}} = 1{,}5$; lá chấm bằng value; không nhiễu; gom 8 lá mỗi lô với virtual loss. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Lỗi quy ước dấu của value head.} Dữ liệu chuyên gia lưu nhãn value tuyệt đối ($+1$ nếu X thắng), còn đầu vào mạng và mục tiêu của RL theo góc nhìn bên đang đi. SL v1 và v2 học thẳng nhãn tuyệt đối, nên value của chúng ngược dấu với RL ở các thế O đi; lượt REINFORCE v2 khởi tạo từ SL v2 nên cũng chịu ảnh hưởng. Từ SL v3, \texttt{train\_sl.mover\_relative\_values} đổi nhãn trước khi huấn luyện. Nhãn policy không bị ảnh hưởng; hai đầu dùng chung thân mạng nên tác động gián tiếp lên policy chưa được đo. L5 được đánh giá trong các giải dùng checkpoint SL v3; L6 và L7 dùng các checkpoint sinh từ SL v3.
+
 \subsection{Checkpoint và tài nguyên}
 Cấu hình model ghim revision của trọng số từ xa; một lượt phát lại có thể chỉ đến checkpoint cục bộ chính xác. Huấn luyện lưu \texttt{last.pt} là ứng viên gần nhất và \texttt{best.pt} là bản được giữ. Để tái lập cần ghi cả checkpoint, backend, seed và corpus khai cuộc; dùng cùng tên tác tử hoặc cùng mã nguồn không đủ nếu trọng số đã thay.
 
 \section{Thiết kế giải đấu công bằng}
-\subsection{Round-robin và khai cuộc cân bằng}
+\subsection{Round-robin và bộ khai cuộc}
+\label{sec:khai-cuoc}
+Một khai cuộc gồm 2--4 nước chọn ngẫu nhiên trong vùng $5\times5$ giữa bàn; chúng không được lọc theo mức cân bằng, nên việc đổi màu mới là biện pháp trung hoà lợi thế của thế mở đầu. Bộ \texttt{openings\_v1.json} (100 khai cuộc) được lưu trong repo và dùng chung cho dữ liệu huấn luyện, giải chính, A5, RR8 đầu tiên, E3 đầu tiên và gating. Tệp này được sinh không đặt seed, nên chỉ tái lập được bằng chính tệp đã lưu; khoá \texttt{seed: 7} trong cấu hình không sinh lại được nó. Vì L5 (và L6, L7, L8 khởi tạo từ L5) đã học các ván bắt đầu từ những khai cuộc này, nhóm sinh thêm bộ giữ riêng \texttt{openings\_heldout\_v2.json} (seed 20261126, \texttt{experiments/sinh\_khai\_cuoc\_giu\_rieng.py}): mỗi thế mở đầu, tính cả 8 phép đối xứng, không có trong bộ cũ và không xuất hiện trong bất kỳ mẫu nào của expert\_v1, expert\_v2. Bộ mới gồm 19, 40 và 41 khai cuộc dài 2, 3 và 4 nước. Việc này loại trùng ở thế mở đầu; nó không loại khả năng ván đấu về sau đi vào thế đã gặp khi huấn luyện, và chưa loại trùng với các ván tự đấu của L6, L8.
+
 Cho mỗi khai cuộc, đấu hai ván đổi màu để lựa chọn khai cuộc xuất hiện ở cả hai phía của so sánh. X là màu đặt quân đầu tiên trên bàn; nếu khai cuộc đã gồm số lẻ nước, O là bên đánh nước đầu tiên do tác tử lựa chọn. So sánh L7 và L8 theo cùng khai cuộc làm giảm nhiễu do trạng thái mở đầu, nhưng không biến một corpus đã dùng trong gating thành tập giữ riêng.
 \subsection{Hai chế độ ngân sách}
-Chế độ thời gian cố định trả lời câu hỏi về sức chơi dưới cùng độ trễ. Chế độ ngân sách cố định giữ độ sâu hoặc số mô phỏng theo loại thuật toán; 200 mô phỏng PUCT không tương đương độ sâu 6 của AlphaBeta về thời gian, phép tính hay số lần mở rộng. Vì thế số liệu chế độ này không thay thế kết quả đối sánh theo mili giây.
+Chế độ thời gian cố định (A) trả lời câu hỏi về sức chơi dưới cùng độ trễ. Chế độ ngân sách cố định (B) giữ độ sâu hoặc số mô phỏng theo loại thuật toán; 200 mô phỏng PUCT không tương đương độ sâu 6 của AlphaBeta về thời gian, phép tính hay số lần mở rộng. Vì thế số liệu chế độ này không thay thế kết quả đối sánh theo mili giây. Độ sâu của L3 khác nhau giữa các lượt chạy (Bảng~\ref{tab:ngan-sach}), nên mỗi con số về L3 phải đọc cùng lượt tạo ra nó.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Ngân sách mỗi nước ở từng lượt đánh giá. Cấp 1, 2, 5, 6 không tìm kiếm.}
+  \label{tab:ngan-sach}
+  \begin{tabularx}{\textwidth}{@{}X l l l@{}}
+    \toprule
+    \textbf{Lượt} & \textbf{L3 (độ sâu)} & \textbf{L4 (mô phỏng)} & \textbf{L7, L8 (mô phỏng)} \\
+    \midrule
+    Giải chính, chế độ A (1\,000 ms) & tối đa 6, giới hạn giờ & theo giờ & theo giờ \\
+    Giải chính, chế độ B & 4 & 800 & 800 \\
+    E3 sáu cấp & 4 & 800 & không tham gia \\
+    RR8 (cả hai bộ khai cuộc), E3 tám cấp & 4 & 400 & 200 \\
+    Arena cũ & 3 & 200 & không tham gia \\
+    A3, A4 & 4 & theo thí nghiệm & --- \\
+    A5 và đánh giá checkpoint & 6 & --- & theo thí nghiệm \\
+    L8 gặp L3 & 6 & --- & 200 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 \subsection{Độ đo và khoảng tin cậy}
 Tỷ lệ thắng là $W/n$ và điểm là $(W+D/2)/n$. Chọn đơn vị khai cuộc khi bootstrap để giữ sự phụ thuộc giữa hai ván đổi màu. Thời gian mỗi nước nên ghi riêng theo tác tử và báo trung vị cùng p95, nêu rõ chạy tuần tự hay song song. Các khoảng Wilson đã lưu trong một số log được giữ như số liệu lịch sử; chúng không phải ước lượng đã hiệu chỉnh theo cặp.
 \subsection{Ablation}
-Mỗi ablation đổi một yếu tố: A1 cắt tỉa, A2 thứ tự nước và bảng chuyển vị, A3 số mô phỏng, A4 rollout, A5 thêm PUCT vào policy, A5b điều kiện khởi tạo, A6 đối xứng, A7 trọng số lượng giá. Với mỗi so sánh cần ghi yếu tố thực sự thay, biến nào giữ cố định và biến nào còn nhiễu. Khi thư mục chỉ có cấu hình, đề mục tương ứng được để trống.
+Mỗi ablation đổi một yếu tố: A1 cắt tỉa, A2 thứ tự nước và bảng chuyển vị, A3 số mô phỏng, A4 rollout, A5 thêm PUCT vào policy, A5b điều kiện khởi tạo, A6 đối xứng, A7 trọng số lượng giá. Với mỗi so sánh cần ghi yếu tố thực sự thay, biến nào giữ cố định và biến nào còn nhiễu. A8 so sánh MCTS có và không xử lý chiến thuật ở gốc (Mục~\ref{sec:root-tactics}).
 
 \section{Giao diện người dùng}
-FastAPI quản lý ván người--máy và máy--máy, xác thực nước hợp lệ và dùng lịch sử để phát lại. Frontend có thể hiển thị điểm, số lượt thăm và phương án chính nếu tác tử cung cấp. Dữ liệu giải thích này mô tả quá trình tìm kiếm; một prior lớn hoặc nhiều lượt thăm không chứng minh nước đó tối ưu.
+FastAPI quản lý ván người--máy và máy--máy, xác thực nước hợp lệ và dùng lịch sử để phát lại. Frontend có thể hiển thị điểm, số lượt thăm và phương án chính nếu tác tử cung cấp. Dữ liệu giải thích này mô tả quá trình tìm kiếm; một prior lớn hoặc nhiều lượt thăm không chứng minh nước đó tối ưu. Hình~\ref{fig:ui-may-may} là một ván máy--máy với bản đồ nhiệt số lượt thăm của cấp 8, và Hình~\ref{fig:ui-xem-lai} là chế độ phát lại một ván của giải chính.
+\begin{figure}[H]
+  \centering\includegraphics[width=.86\textwidth]{ui-may-may-moi.png}
+  \caption{Chế độ máy--máy: cấp 3 (X) gặp cấp 8 (O). Ô tô đậm hơn có nhiều lượt thăm hơn; số nhỏ trong ô là thứ tự phương án chính.}
+  \label{fig:ui-may-may}
+\end{figure}
+\begin{figure}[H]
+  \centering\includegraphics[width=.86\textwidth]{ui-xem-lai.png}
+  \caption{Chế độ xem lại: chọn một ván từ log giải đấu và đi từng nước; năm quân thắng được tô vàng.}
+  \label{fig:ui-xem-lai}
+\end{figure}
+
+\input{chapters/03b-cai-dat}

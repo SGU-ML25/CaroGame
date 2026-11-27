@@ -76,11 +76,11 @@ L3--L7, mỗi cặp 100 ván. Khoảng 1--2 giờ.
 \section{A6: tăng cường đối xứng}
 \paragraph{Câu hỏi.} Huấn luyện có tăng cường D4 có cải thiện sức chơi so với không tăng cường?
 \paragraph{Trạng thái.} Đã có run no-aug (\texttt{runs/train/a6\_noaug}) nhưng early stopping
-dừng ở epoch 13; so với SL v3 60 epoch chưa công bằng. Kết quả tạm: top-1 60,5\% so với 67,8\%,
-L2 54\% so với 66\%, L3 7\% so với 21\%; value MSE 0,281 so với 0,356.
+dừng ở epoch 13; so với SL v3 60 epoch chưa công bằng. Kết quả tạm: top-1 56,2\% so với 66,8\%,
+L2 54\% so với 66\%, L3 7\% so với 21\%; value MSE 0,619 so với 0,440.
 \paragraph{Lý do.} Cần chạy no-aug 60 epoch, tắt early stopping, để so cùng số epoch với SL v3.
-\paragraph{Tác động.} Trung bình. Kết quả hiện tại đã cho thấy augmentation giúp policy/sức chơi;
-run công bằng sẽ chốt được ảnh hưởng lên calibration value.
+\paragraph{Tác động.} Trung bình. Kết quả hiện tại cho thấy augmentation giúp cả policy, value và sức
+chơi; run công bằng sẽ tách được phần đóng góp của số epoch.
 \paragraph{Khuyến nghị.} Chạy thêm một lần no-aug 60 epoch, tắt early stopping, khoảng 45 phút,
 rồi chốt kết luận A6.
 
@@ -119,7 +119,7 @@ sức tốt.
         E3 (1\,200 ván).
   \item RR8: 2\,800 ván, tám tác tử, 50 khai cuộc đổi màu.
   \item E3 mở rộng: 800 ván, tám cấp tự đấu, 50 khai cuộc đổi màu.
-  \item Top-1/top-3 và calibration value trên 29\,161 mẫu test, gồm A6 no-aug.
+  \item Top-1/top-3 và calibration value trên 28\,655 mẫu test, gồm A6 no-aug.
   \item A6: augmentation bật/tắt; A5b: RL from-SL vs from-random.
   \item Phân tích chiến thuật trên hàng nghìn ván, đếm bỏ thắng/bỏ chặn.
   \item Hai mươi ván phân tích sâu với bàn TikZ và cơ chế kết thúc.

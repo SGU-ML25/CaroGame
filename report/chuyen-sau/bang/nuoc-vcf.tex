@@ -1,0 +1,20 @@
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Số lần bỏ lỡ VCF theo độ dài (số nước tấn công)}
+  \label{tab:cs-nuoc-vcf}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Tác tử & 2 & 3 & 4 & $\ge 5$ \\
+    \midrule
+    L1 Random & 92/94 & 22/22 & 11/12 & 8/9 \\
+    L2 Rule & 0/294 & 13/37 & 20/35 & 9/18 \\
+    L3 AlphaBeta & 0/387 & 1/111 & 21/56 & 37/61 \\
+    L4 MCTS & 309/381 & 29/32 & 12/12 & 8/8 \\
+    L5 PolicySL & 0/358 & 0/95 & 13/54 & 13/51 \\
+    L6 PolicyRL & 0/397 & 6/110 & 8/53 & 20/50 \\
+    L7 PUCT & 0/560 & 3/189 & 34/102 & 22/71 \\
+    L8 AlphaZero & 1/585 & 11/209 & 23/108 & 29/76 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

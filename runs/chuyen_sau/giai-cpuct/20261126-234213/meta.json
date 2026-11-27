@@ -1,0 +1,53 @@
+{
+  "started": "2026-11-26T23:42:13",
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "caro.arena.tournament",
+    "experiments/cpuct_heldout"
+  ],
+  "git": {
+    "commit": "23e30b15efe1c0da6087e465d0007aacfdc2468b",
+    "dirty": true
+  },
+  "python": "3.13.16",
+  "packages": {
+    "caro": "0.1.0",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "torch": "2.14.1",
+    "fastapi": "0.143.3"
+  },
+  "hardware": {
+    "host": "fedora",
+    "os": "Linux-7.3.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "cpu_count": 16,
+    "ram_gb": 15.3,
+    "gpu": null
+  },
+  "step": "giai-cpuct",
+  "title": "L8 với c_puct 0,5/1/3/5 gặp L7, 400 ván",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1"
+  },
+  "inputs": [
+    {
+      "path": "runs/openings/openings_heldout_v2.json",
+      "bytes": 3379,
+      "sha256": "9d5f00f04bea652299a4b5695044a0cb93c9168065d964bc3f49615b72c40c74"
+    }
+  ],
+  "code": [
+    {
+      "path": "configs/experiments/cpuct_heldout.yaml",
+      "bytes": 1036,
+      "sha256": "bca1cf7260a59eca0133fc94c7a3792ed987f6e27d1f251f7b141931fc441fce"
+    }
+  ],
+  "ended": "2026-11-26T23:59:32",
+  "duration_s": 1039.2,
+  "exit_code": 0,
+  "outputs": []
+}
