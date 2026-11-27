@@ -21,13 +21,13 @@ nước cho đối thủ một VCF. Hai loại cuối dùng trọng tài VCF nê
   chọn đường chậm hơn mà không phải đường tứ liên tiếp. Nhãn ``bỏ VCF'' không có nghĩa nước đó làm mất thế thắng.
 \end{itemize}
 Tổng số lỗi trên 100 nước xếp L8 ($1{,}28$) trước L3 ($1{,}73$), L7 ($2{,}11$), L6, L5, L2 rồi MCTS và ngẫu nhiên. Thứ tự
-này gần trùng xếp hạng giải đấu, ngoại trừ L3 đứng trên L7 về lỗi trong khi L7 mạnh hơn rõ khi đấu: lỗi VCF không đo
+này gần trùng xếp hạng giải đấu, ngoại trừ L3 đứng trên L7 và L6 về lỗi (và L1 trên L4); riêng L7 mạnh hơn L3 rõ khi đấu: lỗi VCF không đo
 được chất lượng nước yên tĩnh, vốn là chỗ mạng giúp L7.
 
 \input{chuyen-sau/bang/nuoc-vcf}
 \input{chuyen-sau/bang/nuoc-giaidoan}
 Bảng~\ref{tab:cs-nuoc-giaidoan} cho thấy hầu như không có lỗi ở 8 nước đầu với các tác tử có kiến thức, và đỉnh lỗi
-rơi vào nước 17--32, giai đoạn các đe doạ dày lên. Với MCTS và ngẫu nhiên, tỷ lệ tăng liên tục.
+rơi vào nước 17--32, giai đoạn các đe doạ dày lên. Với MCTS và ngẫu nhiên, tỷ lệ cao hơn hẳn, tăng mạnh từ nước 17 đến nước 32 rồi giảm nhẹ.
 
 \subsection{Ai tạo được đường thắng ép trước}
 \input{chuyen-sau/bang/nuoc-dautien}
@@ -48,7 +48,7 @@ quyết định thường xảy ra \emph{trước} nước cuối, lúc bên thu
 \input{chuyen-sau/bang/tk-capdau}
 Cột KC ghi số khai cuộc nghiêng về tác tử đứng trước / hoà điểm / nghiêng về đối thủ; $p$ là kiểm định dấu hai phía đã
 hiệu chỉnh Holm trên 28 phép thử (Mục~\ref{sec:cs-tk-lt}). 26 trong 28 cặp có khác biệt ở mức $0{,}05$. Hai cặp chưa phân
-biệt được là L3--L6 ($p=0{,}52$; 42/7/51) và L5--L6 ($p\approx0{,}06$), đúng các cặp mà Mục~\ref{sec:lt-thong-ke} gọi là
+biệt được là L3--L6 ($p=0{,}52$; 42/7/51) và L5--L6 ($p\approx0{,}06$); theo quy ước ở Mục~\ref{sec:lt-thong-ke}, hai cặp này được ghi là
 ``chưa phân biệt được''. L7--L8 đạt mức ý nghĩa ($p\approx0{,}02$) nhưng chỉ nhờ 100 ván và biên độ $14$ điểm.
 \begin{figure}[H]
   \centering

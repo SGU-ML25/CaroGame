@@ -1,0 +1,28 @@
+project: caro-11x11
+seed: 2026
+device: auto
+engine:
+  size: 11
+  win_length: 5
+  layout: stride11
+experiment:
+  kind: analysis
+  name: error_analysis
+  description: ''
+  rq: []
+  config: base
+run:
+  root: runs
+  tag: null
+  index: runs/index.jsonl
+log:
+  level: INFO
+  console: true
+  file: run.log
+  games: games.jsonl
+  metrics: metrics.jsonl
+  per_move_stats: true
+  flush_every: 1
+checkpoint:
+  dir: checkpoints
+  keep_last: 5

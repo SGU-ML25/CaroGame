@@ -71,7 +71,7 @@ lớn ở độ sâu 6, nên ngân sách theo độ sâu cho thời gian mỗi n
 Ở Alpha-Beta, lõi Cython nhanh hơn khoảng $25$--$39$ lần, với số nút và nước chọn trùng khớp trên cả 20 thế ở mọi độ
 sâu: đúng yêu cầu thiết kế ``cùng tìm kiếm, khác tốc độ''.
 \input{chuyen-sau/bang/tk-backend-puct}
-Với PUCT, backend gần như không đổi thời gian (tỷ số dao động quanh 1, một ô thậm chí chậm hơn), vì thời gian bị chi
+Với PUCT, backend gần như không đổi thời gian (tỷ số phần lớn quanh 1--1,3; riêng L7 ở lô 1 và lô 4, bản Cython còn chậm hơn), vì thời gian bị chi
 phối bởi suy luận mạng trên CPU; phần chọn con được Cython hoá quá nhỏ để thấy qua nhiễu đo. Gom lá mới là yếu tố tăng
 tốc: từ lô 1 lên lô 8 giảm thời gian khoảng 40 đến 70\%. Đổi lại, lô lớn đổi nước chọn so với tìm kiếm tuần
 tự: ở lô 32, chỉ 13--15 trên 20 thế giữ cùng nước. Trên bộ chiến thuật (Bảng~\ref{tab:cs-ct-batch}) sự đổi nước này

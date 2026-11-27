@@ -17,6 +17,13 @@ Các giải trong báo cáo chạy bằng những lệnh sau (cấu hình nằm 
 # Giải chính L1-L6, hai chế độ ngân sách
 uv run python -m caro.arena.tournament experiments/main_mode_a_l1_l6
 uv run python -m caro.arena.tournament experiments/main_mode_b_l1_l6
+# Bổ sung L7, L8 cho đủ tám cấp (cần trọng số L5, L8)
+uv run python -m caro.arena.tournament experiments/main_mode_a_l7_additional
+uv run python -m caro.arena.tournament experiments/main_mode_a_l8_additional
+uv run python -m caro.arena.tournament experiments/main_mode_b_l7_additional
+uv run python -m caro.arena.tournament experiments/main_mode_b_l8_additional
+# Phân tích lỗi theo cấp trên sáu lượt trên (vài giây)
+uv run python -m caro.analysis.error_analysis
 # Bộ khai cuộc giữ riêng, rồi RR8 và E3 trên bộ đó
 uv run python experiments/sinh_khai_cuoc_giu_rieng.py   # cần runs/data/expert_v1, v2
 uv run python -m caro.arena.tournament experiments/rr8_heldout
@@ -44,18 +51,21 @@ Từ gốc repo, chạy \repoFile{uv run python report/scripts/phan_tich_hoc.py}
 rồi \repoFile{uv run python report/scripts/bang_chuong4.py} để sinh các bảng và bàn cờ trong
 \repoFile{report/bang/} từ log. Một số bảng và hình khác lấy từ \repoFile{report/ban-mo-rong/}, sinh bằng
 \repoFile{report/scripts/sinh-ho-so-caro.py} và \repoFile{report/scripts/phan-tich-tong-hop.py};
-vài bảng nhỏ trong Chương~\ref{ch:thuc-nghiem} được chép từ log. Từ thư mục \repoFile{report/}, chạy
+một số bảng nhỏ trong Chương~\ref{ch:thuc-nghiem} (A3, arena cũ, các mốc REINFORCE, phân loại lỗi MCTS, hai bảng về ván L8) được chép tay
+từ log và đã đối chiếu lại ngày 27/11/2026. Từ thư mục \repoFile{report/}, chạy
 \repoFile{latexmk main.tex}. Mục lục, danh mục hình, danh mục bảng và trích dẫn vẫn theo template.
 
 \section{Demo}
-Từ gốc repo, chạy \repoFile{uv run uvicorn caro.ui.server:app}. Giao diện có hai chế độ
-đối đầu và phát lại. Tác tử neural chỉ sẵn sàng khi nạp đúng checkpoint.
+Từ gốc repo, chạy \repoFile{uv run uvicorn caro.ui.server:app}. Giao diện có ba chế độ:
+người--máy, máy--máy và xem lại ván. Tác tử neural chỉ sẵn sàng khi nạp đúng checkpoint.
 
 \section{Chỉ mục nguồn thực nghiệm}
 \sloppy
 \begin{itemize}
 \item A1, A2, A7: \repoFile{run.log} dưới \repoFile{runs/bench/} (A2 báo cáo dùng \repoFile{runs/bench/a2_fixed_depth/}).
-\item Giải chính: \repoFile{runs/tournament/main_mode_a_l1_l6/} và \repoFile{runs/tournament/main_mode_b_l1_l6/}.
+\item Giải chính: sáu thư mục \repoFile{runs/tournament/main_mode_*} (hậu tố \texttt{l1\_l6}, \texttt{l7\_additional}, \texttt{l8\_additional}).
+\item Phân tích lỗi theo cấp: \repoFile{runs/analysis/error_analysis/}; hình và ván minh hoạ: \repoFile{notebooks/error_analysis.ipynb}.
+Các thư mục \texttt{error\_analysis} nằm trong từng giải là kết quả của bản script cũ, không dùng.
 \item RR8 và E3: \repoFile{runs/eval/tournament/} (\texttt{rr8\_mode\_b}, \texttt{rr8\_heldout}, \texttt{e3\_heldout}, \texttt{e3\_selfplay}) và \repoFile{runs/tournament/e3_first_move_l1_l6/}.
 \item A5b, A6: \repoFile{runs/eval/} (\texttt{a5b\_*.csv}, \texttt{a6\_*.csv}); A8: \repoFile{runs/eval/tournament/a8_heldout/}.
 \item Phân loại lỗi MCTS: \repoFile{report/scripts/phan_tich_loi_mcts.py}, truyền đường dẫn hai lượt A3, A4 ở trên vì liên kết \texttt{latest} không được commit.

@@ -103,7 +103,7 @@ trong dữ liệu, nhưng mạng học phân bố, không chỉ argmax. Một d�
 \input{chuyen-sau/bang/dl-mang-thang}
 Bảng~\ref{tab:cs-dl-mang} tách số đo trên tập test theo hai nhóm. SL v3 đạt top-1 $75{,}3\%$ trên mẫu không hoà nhưng
 chỉ $21{,}6\%$ trên mẫu hoà (nơi nhãn đúng chỉ là một quy ước tuỳ ý trong năm ô ngang nhau). Con số $66{,}8\%$ báo cáo
-ở Mục~\ref{sec:lt-mang} và Bảng~\ref{tab:cs-mang-tong} là trung bình của hai nhóm, nên \emph{thấp hơn} khả năng dự đoán
+ở Bảng~\ref{tab:sl-test} và Bảng~\ref{tab:cs-mang-tong} là trung bình của hai nhóm, nên \emph{thấp hơn} khả năng dự đoán
 trên các thế có đáp án thật. Cũng trên các thế đã thua, SL v3 dồn $58{,}3\%$ xác suất vào hàng 1, mạng không augment
 $80{,}2\%$: mạng đã học lỗi. Hai mạng được huấn luyện tiếp bằng tự đấu dồn ít hơn hẳn (L6 $28{,}4\%$, L8
 $22{,}9\%$), vì kết quả ván không thưởng cho quy ước đó.
@@ -182,7 +182,7 @@ Bộ thế mô tả ở Mục~\ref{sec:cs-chien-thuat}. Ở đây chỉ dùng đ
 \input{chuyen-sau/bang/mang-ct-top1}
 \input{chuyen-sau/bang/mang-ct-value}
 Trên các thế thắng ngay (C1), SL v3 chỉ chọn đúng $80\%$ dù đáp án là nước hiển nhiên nhất của luật chơi: dấu vết trực
-tiếp của Lỗi 2. Chặn (C2) và tạo đòn kép (C3) gần như hoàn hảo ở cả bốn mạng. Value nhận đúng dấu ở C1, C3, C4 (bên đi
+tiếp của Lỗi 2. Chặn (C2) gần như hoàn hảo ở cả bốn mạng; tạo đòn kép (C3) cũng vậy, trừ mạng không augment ($89\%$). Value nhận đúng dấu ở C1, C3, C4 (bên đi
 đang thắng ép), nhưng trung bình chỉ $0{,}46$--$0{,}71$ ở C4, các chuỗi dài. Ở C2, giá trị đúng không xác định (chặn
 xong có thể vẫn cân bằng), và mạng trả giá trị gần 0 hơi âm.
 

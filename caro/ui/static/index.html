@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Caro 11×11</title>
-  <link rel="stylesheet" href="/static/app.css?v=2">
+  <link rel="stylesheet" href="/static/app.css?v=3">
 </head>
 <body>
   <header class="topbar">
@@ -80,6 +80,7 @@
           <button id="eve-run">Chạy</button>
           <button id="eve-step">Từng nước</button>
         </div>
+        <p id="eve-stale" class="note warn" role="status" hidden>Cấu hình đã đổi, ván đang chơi vẫn dùng cấu hình cũ. Bấm “Ván mới” để áp dụng.</p>
         <fieldset id="eve-review" class="eve-group" hidden>
           <legend>Xem lại ván</legend>
           <div class="eve-review-controls">
@@ -121,6 +122,6 @@
       </section>
     </aside>
   </main>
-  <script src="/static/app.js?v=2"></script>
+  <script src="/static/app.js?v=3"></script>
 </body>
 </html>

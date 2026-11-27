@@ -225,6 +225,9 @@ Thời gian là của các lượt đã chạy trên CPU i7-11800H, chỉ để 
 | `-m caro.arena.tournament experiments/a8_heldout` | A8: MCTS tắt / bật chiến thuật ở gốc, 400 ván, 4 tiến trình | khoảng 9 phút |
 | `-m caro.arena.tournament experiments/main_mode_a_l1_l6` | Giải chính L1–L6, 1.000 ms/nước | khoảng 56 phút (máy Intel Model 154) |
 | `-m caro.arena.tournament experiments/main_mode_b_l1_l6` | Giải chính L1–L6, ngân sách cố định | khoảng 30 phút (máy Intel Model 154) |
+| `-m caro.arena.tournament experiments/main_mode_a_l7_additional` (và `_l8_`) | Bổ sung L7, L8, 1.000 ms/nước | khoảng 67 và 114 phút (máy Intel Model 154) |
+| `-m caro.arena.tournament experiments/main_mode_b_l7_additional` (và `_l8_`) | Bổ sung L7, L8, ngân sách cố định | khoảng 2 và 3,6 giờ (máy Intel Model 154) |
+| `-m caro.analysis.error_analysis` | Phân tích lỗi của giải chính, 11.200 ván | dưới 1 phút |
 | `-m caro.arena.bench experiments/a2_fixed_depth budget.max_depth=3 run.tag=d3` | A2 độ sâu 3 | vài giây |
 | `-m caro.arena.bench experiments/a2_fixed_depth budget.max_depth=4 run.tag=d4` | A2 độ sâu 4 | dưới 1 phút |
 | `-m caro.arena.bench experiments/a2_fixed_depth budget.max_depth=5 run.tag=d5` | A2 độ sâu 5 | khoảng 7 phút |

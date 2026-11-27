@@ -27,10 +27,20 @@ OUT = ROOT / "report/bang"
 LEVELS = ["L1-Random", "L2-Rule", "L3-AlphaBeta", "L4-MCTS", "L5-PolicySL", "L6-PolicyRL", "L7-PUCT",
           "L8-AlphaZero"]
 
-# Mỗi bảng trỏ tới đúng một lượt chạy (không dùng liên kết `latest`, vốn không được commit).
+# Mỗi bảng trỏ tới lượt chạy chỉ định (không dùng liên kết `latest`, vốn không được commit). Giải chính L1–L8
+# gộp ba lượt mỗi chế độ: L1–L6, rồi L7 gặp L1–L6, rồi L8 gặp L1–L7; đủ 28 cặp, mỗi cặp đúng một lượt.
+MAIN_RUNS = {
+    "a": ("tournament/main_mode_a_l1_l6/20261124-212727",
+          "tournament/main_mode_a_l7_additional/20261126-154639",
+          "tournament/main_mode_a_l8_additional/20261126-174418"),
+    "b": ("tournament/main_mode_b_l1_l6/20261124-222606",
+          "tournament/main_mode_b_l7_additional/20261126-200736",
+          "tournament/main_mode_b_l8_additional/20261126-221554"),
+}
+ERROR_RUN = "analysis/error_analysis/*"
 GAMES = {
-    "main_a": "tournament/main_mode_a_l1_l6/20261124-212727",
-    "main_b": "tournament/main_mode_b_l1_l6/20261124-222606",
+    "main_a": MAIN_RUNS["a"],
+    "main_b": MAIN_RUNS["b"],
     "rr8": "eval/tournament/rr8_mode_b/20261125-233308",
     "rr8_ho": "eval/tournament/rr8_heldout/*",
     "e3_main": "tournament/e3_first_move_l1_l6/20261124-230633",
@@ -40,15 +50,17 @@ GAMES = {
 }
 
 
-def run_dir(key: str) -> Path:
-    found = sorted(p for p in RUNS.glob(GAMES[key]) if p.name != "latest" and (p / "summary.json").is_file())
+def run_dir(pattern: str) -> Path:
+    found = sorted(p for p in RUNS.glob(pattern) if p.name != "latest" and (p / "summary.json").is_file())
     if not found:
-        raise SystemExit(f"không tìm thấy lượt chạy hoàn chỉnh: runs/{GAMES[key]}")
+        raise SystemExit(f"không tìm thấy lượt chạy hoàn chỉnh: runs/{pattern}")
     return found[-1]
 
 
 def games(key: str) -> list[dict]:
-    return [json.loads(line) for line in (run_dir(key) / "games.jsonl").open(encoding="utf-8") if line.strip()]
+    patterns = GAMES[key] if isinstance(GAMES[key], tuple) else (GAMES[key],)
+    return [json.loads(line) for pattern in patterns
+            for line in (run_dir(pattern) / "games.jsonl").open(encoding="utf-8") if line.strip()]
 
 
 def num(x: float, digits: int = 1) -> str:
@@ -155,6 +167,55 @@ def ranking_tables(key: str, name: str, title: str) -> None:
     table(name + "-matran", f"{title}: ma trận điểm (\\%) của tác tử ở hàng trước tác tử ở cột, "
           f"{'/'.join(map(str, sorted(per_pair)))} ván mỗi cặp.", "l" + "r" * len(agents),
           ["Tác tử"] + [short(a) for a in agents], matrix, r"\footnotesize")
+
+
+def main_runs_table() -> None:
+    """Điều kiện của sáu lượt tạo nên giải chính: commit, trạng thái mã và khối lượng tìm kiếm đạt được."""
+    rows = []
+    for mode in ("a", "b"):
+        for pattern, label in zip(MAIN_RUNS[mode], ("L1--L6", "L7", "L8"), strict=True):
+            folder = run_dir(pattern)
+            records = [json.loads(line) for line in (folder / "games.jsonl").open(encoding="utf-8")]
+            git = json.loads((folder / "meta.json").read_text(encoding="utf-8"))["git"]
+            cells = [mode.upper(), label, count(len(records)), rf"\texttt{{{git['commit'][:7]}}}",
+                     "có" if git["dirty"] else "không",
+                     count(float(np.median(move_values(records, "L3-AlphaBeta", "time_ms"))))]
+            for agent in ("L4-MCTS", "L7-PUCT", "L8-AlphaZero"):
+                values = move_values(records, agent, "sims")
+                cells.append(count(np.mean([v for v in values if v])) if values else "---")
+            rows.append(cells)
+    table("giai-luot", "Sáu lượt chạy tạo nên giải chính L1--L8: commit và cờ \\texttt{dirty} trong "
+          "\\texttt{meta.json}, thời gian trung vị mỗi nước của L3 và số mô phỏng trung bình mỗi nước có tìm kiếm.",
+          "llrlrrrrr", ["Chế độ", "Lượt", "Ván", "Commit", "Dirty", "L3 P50 (ms)", "L4 mp", "L7 mp", "L8 mp"],
+          rows, r"\footnotesize")
+
+
+def error_table() -> None:
+    summary = json.loads((run_dir(ERROR_RUN) / "summary.json").read_text(encoding="utf-8"))
+    categories = ("thang_ngay", "chan_nam", "chan_don_kep")
+    rows = []
+    for mode in ("a", "b"):
+        total = defaultdict(Counter)
+        for item in summary["runs"]:
+            if f"main_mode_{mode}_" not in item["source"]:
+                continue
+            for agent, row in item["by_agent"].items():
+                total[agent].update(moves=row["moves"], lost=row["da_thua"])
+                for c in categories:
+                    total[agent].update({c: row[c]["chances"], c + "_sai": row[c]["errors"]})
+        rule = r"\midrule " if mode == "b" else ""
+        rows.append([rule + rf"\multicolumn{{6}}{{@{{}}l}}{{\textit{{Chế độ {mode.upper()}}}}}"])
+        for agent in LEVELS:
+            t = total[agent]
+            cells = [agent, count(t["moves"])]
+            for c in categories:
+                cells.append(f"{count(t[c + '_sai'])}/{count(t[c])} ({num(100 * t[c + '_sai'] / t[c])})"
+                             if t[c] else "---")
+            rows.append(cells + [count(t["lost"])])
+    table("loi-theo-cap", "Lỗi chiến thuật trên toàn bộ giải chính L1--L8: số nước sai / số cơ hội (tỷ lệ \\%). "
+          "Nước khai cuộc không tính. Cột cuối đếm số lượt đi ở thế đã thua không cứu được trong 4 ply.",
+          "lrrrrr", ["Tác tử", "Nước xét", "Thắng ngay", "Chặn năm", "Chặn đòn kép", "Đã thua"], rows,
+          r"\footnotesize")
 
 
 def elo_table() -> None:
@@ -284,8 +345,8 @@ def sl_table() -> None:
                      num(v["corr"], 3), num(100 * v["sign_acc"])])
     test = f"{data['n_test']:,}".replace(",", r"\,")
     table("sl-test", f"Đo trên tập test của expert\\_v2 ({test} mẫu, {data['n_games_test']} ván, tách theo ván "
-          f"đúng như lúc huấn luyện, seed {data['split_seed']}). Value theo góc nhìn người đi. SL v1 học trên "
-          "expert\\_v1 nên dòng đó là phép đo chéo dữ liệu.", "lrrrrrr",
+          f"đúng như lúc huấn luyện, seed {data['split_seed']}). Value theo góc nhìn người đi; cột đúng dấu tính trên mọi mẫu, "
+          "mẫu thuộc ván hoà luôn bị tính là sai. SL v1 học trên expert\\_v1 nên dòng đó là phép đo chéo dữ liệu.", "lrrrrrr",
           ["Mạng", "Top-1 (\\%)", "Top-3 (\\%)", "CE policy", "MSE value", "Tương quan", "Đúng dấu (\\%)"], rows, r"\footnotesize")
 
 
@@ -422,6 +483,8 @@ def main() -> None:
     ranking_tables("main_a", "giai-a", "Giải chính, chế độ A (1\\,000 ms/nước)")
     ranking_tables("main_b", "giai-b", "Giải chính, chế độ B (ngân sách cố định)")
     ranking_tables("rr8_ho", "rr8-giu-rieng", "RR8 trên khai cuộc giữ riêng")
+    main_runs_table()
+    error_table()
     heldout_compare_table()
     elo_table()
     cost_table()

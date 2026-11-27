@@ -371,7 +371,8 @@ def net_tables() -> None:
     table("mang-tong", "Bốn mạng trên cùng tập test", "lrrrrrr",
           ["Mạng", "Top-1", "Top-3", "Top-5", "Entropy", "MSE $v$", "Đúng dấu"], rows, size=r"\footnotesize",
           note="Top-$k$ đo mức trùng với nước tốt nhất của expert L3; L6 và L8 không được huấn luyện để bắt "
-               "chước expert nên cột này không phải thước đo sức mạnh của chúng.")
+               "chước expert nên cột này không phải thước đo sức mạnh của chúng. Đúng dấu chỉ tính trên mẫu thuộc ván "
+               "có thắng thua, nên cao hơn cột cùng tên ở Bảng~\\ref{tab:sl-test}.")
 
     for key, name, caption, fmt in (
         ("top1", "mang-giaidoan-top1", "Top-1 (\\%) theo số quân trên bàn", lambda v: num(100 * v)),

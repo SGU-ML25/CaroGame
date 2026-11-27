@@ -4,6 +4,8 @@ cho nhãn đều trên các ô chỉ số nhỏ, và thế thắng ngay được
 hai; hai vòng tự đấu (L6, L8) sửa được phần lớn.
 \item \textbf{MCTS với rollout có luật vẫn bỏ nước chặn} vì nút mở rộng trong cây không dùng cùng tri thức: rollout chặn
 hộ sau một đáp trả ngẫu nhiên của đối thủ (Bảng~\ref{tab:cs-ct-rollout}). Đây là lời giải thích cơ chế cho quan sát ở A4.
+\item \textbf{Lỗi nhìn gần phân hoá theo cấp} (Mục~\ref{sec:loi-theo-cap}): trên toàn giải chính, Alpha-Beta không sai lần
+nào trong tầm 4 ply, mọi lỗi chặn đòn kép của L2 đến từ luật P4, còn L5 bỏ 13--15\% cơ hội thắng ngay.
 \item \textbf{Thứ tự luật gây xung đột}: phòng thủ đòn kép tiềm năng đứng trước tạo tứ làm L2 và tuỳ chọn chiến thuật gốc
 của MCTS bỏ lỡ chuỗi tứ thắng ép.
 \item \textbf{Cấp 3 không duyệt nước tốt nhất của độ sâu trước đầu tiên} ở gốc trong phần lớn lượt ở độ sâu 4; sửa thứ tự

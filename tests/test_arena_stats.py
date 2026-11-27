@@ -113,6 +113,26 @@ def test_performance_separates_nodes_and_sims():
 
     assert result["L8-AlphaZero"]["nodes_mean"] == 0
     assert result["L8-AlphaZero"]["sims_mean"] == 600
+def test_bradley_terry_matches_two_player_odds():
+    # A thắng 3/4 ván, không ván ảo ⇒ chênh lệch đúng 400·log10(3) điểm.
+    matches = [("A", "B", 1), ("A", "B", 1), ("B", "A", -1), ("B", "A", 1)]
+
+    ratings = bradley_terry(matches, prior_draws=0.0)
+
+    assert ratings["A"] - ratings["B"] == pytest.approx(400 * 0.47712125, abs=1e-3)
+    assert (ratings["A"] + ratings["B"]) / 2 == pytest.approx(1000)
+
+
+def test_bradley_terry_stays_finite_and_ordered_with_shutouts():
+    matches = [("A", "B", 1)] * 50 + [("B", "C", 1)] * 50 + [("A", "C", 1)] * 50
+
+    ratings = bradley_terry(matches)
+
+    assert ratings["A"] > ratings["B"] > ratings["C"]
+    assert all(-3000 < v < 5000 for v in ratings.values())
+    assert ratings == bradley_terry(list(reversed(matches)))
+
+
 def test_detailed_record_by_turn():
     df = pd.DataFrame([
         {
